@@ -38,11 +38,11 @@ function validarEmail(email) {
 }
 function isPreenchido(items = []) {
   return items.every(item => {
-    if (item == null) return false;              // null ou undefined
-    if (typeof item === 'string') return item.trim() !== ''; // string não vazia
-    if (typeof item === 'number') return !isNaN(item);      // número válido
-    if (Array.isArray(item)) return item.length > 0;        // array não vazio
-    if (typeof item === 'object') return Object.keys(item).length > 0; // objeto não vazio
-    return true; // booleanos ou outros tipos
+    if (item == null) return false;              
+    if (typeof item === 'string') return item.trim() !== ''; 
+    if (typeof item === 'number') return !isNaN(item);     
+    if (Array.isArray(item)) return item.length > 0;       
+    if (typeof item === 'object') return Object.keys(item).length > 0;
+    return true;
   });
 }
