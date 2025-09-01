@@ -1,7 +1,7 @@
 
 function tratarCPF(cpf){
     if(validarCPF(cpf)){
-        return limparCPF(cpf)
+        return limparCampoNumerico(cpf)
     }else{
         return "CPF Inválido"
     }
@@ -10,7 +10,7 @@ function tratarCPF(cpf){
  function validarCPF(cpf) {
   if (!cpf) return false;
 
-  cpf = limparCPF(cpf);
+  cpf = limparCampoNumerico(cpf);
   if (cpf.length !== 11) return false;
   if (/^(\d)\1+$/.test(cpf)) return false;
 
@@ -29,10 +29,10 @@ function tratarCPF(cpf){
   return digito1 === parseInt(cpf[9]) && digito2 === parseInt(cpf[10]);
 }
 
-
-function limparCPF(cpf) { 
-    return cpf.replace(/\D/g, ''); 
+function limparCampoNumerico(valorParaLimpar) { 
+    return valorParaLimpar.replace(/\D/g, ''); 
 }
+
 function validarEmail(email) {
     return /\S+@\S+\.\S+/.test(email); 
 }
