@@ -1,0 +1,22 @@
+{
+    "cadastro": [
+        {   
+            "id": "1",
+            "nome": "Macari",
+            "email": "macarimarcelino@gmail.com",
+            "telefone": "995988763",
+            "cpf": "30130130130",
+            "senha": "kakakakakakak"
+        }
+    ],
+
+    "banda": [
+        {
+            "nomeBanda": "GraxaHub",
+            "integrantes": {
+                "nome": "macari",
+                "funcao": "Vocalista"
+            }
+        }
+    ]
+}
