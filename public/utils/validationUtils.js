@@ -1,5 +1,5 @@
 
-function tratarCPF(cpf){
+export function tratarCPF(cpf){
     if(validarCPF(cpf)){
         return limparCampoNumerico(cpf)
     }else{
@@ -7,7 +7,7 @@ function tratarCPF(cpf){
     }
 }
 
- function validarCPF(cpf) {
+ export function validarCPF(cpf) {
   if (!cpf) return false;
 
   cpf = limparCampoNumerico(cpf);
@@ -26,17 +26,17 @@ function tratarCPF(cpf){
   const digito1 = calcularDigito(cpf.slice(0, 9));
   const digito2 = calcularDigito(cpf.slice(0, 9) + digito1);
 
-  return digito1 === parseInt(cpf[9]) && digito2 === parseInt(cpf[10]);
+  return{cpfValido:digito1 === parseInt(cpf[9]) && digito2 === parseInt(cpf[10]),"cpf":cpf};
 }
 
 function limparCampoNumerico(valorParaLimpar) { 
     return valorParaLimpar.replace(/\D/g, ''); 
 }
 
-function validarEmail(email) {
+export function validarEmail(email) {
     return /\S+@\S+\.\S+/.test(email); 
 }
-function isPreenchido(items = []) {
+export function isPreenchido(items = []) {
   return items.every(item => {
     if (item == null) return false;              
     if (typeof item === 'string') return item.trim() !== ''; 

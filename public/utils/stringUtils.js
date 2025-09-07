@@ -1,7 +1,13 @@
-function capitalizar(str) {
+export function capitalizar(str) {
   if (!str) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str
+    .toLowerCase()
+    .replace(/(?:^|\s)\S/g, function (char) {
+      return char.toUpperCase();
+    });
 }
+
+
 
 function paraMaiusculas(str) {
   return str.toUpperCase();
@@ -40,6 +46,12 @@ export function formatarTelefone(numero) {
 
   return ddd ? `(${ddd}) ${primeiraParteNumero}-${segundaParteNumero}` : `${primeiraParteNumero}-${segundaParteNumero}`;
 }
+
+export function limparTelefone(telefone) {
+  if (!telefone) return '';
+  return telefone.replace(/\D/g, '');
+}
+
 
 export function formatarCPF(cpf) {
   if (!cpf) return '';
