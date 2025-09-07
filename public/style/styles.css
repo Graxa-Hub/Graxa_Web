@@ -1,3 +1,5 @@
+@import url('../style/utils.css');
+
 /* Reset e configurações base */
 * {
     margin: 0;
@@ -5,24 +7,7 @@
     box-sizing: border-box;
 }
 
-:root {
-    --primary-color: #000;
-    --secondary-color: #fff;
-    --accent-color: #FF5300;
-    --accent-blue: #4285f4;
-    --accent-green: #34a853;
-    --accent-yellow: #fbbc05;
-    --accent-purple: #FF5300;
-    --text-primary: #000;
-    --text-secondary: #666;
-    --text-light: #999;
-    --border-color: #e0e0e0;
-    --background-light: #f8f9fa;
-    --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
-    --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
-    --border-radius: 8px;
-    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -251,58 +236,9 @@ body {
 }
 
 /* Buttons */
-.btn-primary {
-    padding: 18px 24px;
-    background: var(--primary-color);
-    color: var(--secondary-color);
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
 
-.btn-primary:hover {
-    background: var(--accent-color);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-medium);
-}
 
-.btn-primary:active {
-    transform: translateY(0);
-}
 
-.btn-social {
-    padding: 16px 24px;
-    background: var(--secondary-color);
-    color: var(--text-primary);
-    border: 2px solid var(--border-color);
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-}
-
-.btn-social:hover {
-    border-color: var(--accent-blue);
-    background: rgba(66, 133, 244, 0.05);
-    transform: translateY(-2px);
-}
-
-.social-icon {
-    width: 20px;
-    height: 20px;
-}
 
 /* Links */
 .link-primary {

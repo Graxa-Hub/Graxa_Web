@@ -21,13 +21,13 @@
       "statusUsuario": true
     },
     {
-      "nome": "Gabriel da Silva Sousa",
-      "email": "gabrielsilva.sousa2004@gmail.com",
+      "nome": "Gabriel Da Silva Sousa Atualizado",
+      "email": "gabriel.sousa@sptech.school",
       "telefone": "11977977038",
-      "cpf": "33333333333",
-      "senha": "12345",
+      "cpf": "47060193898",
+      "senha": "123",
       "tipoUsuario": "produtor",
-      "statusUsuario": true,
+      "statusUsuario": false,
       "id": 3
     }
   ]

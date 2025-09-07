@@ -45,10 +45,9 @@ export async function getUsuariosById(id) {
             };
         }
         const usuario = await response.json();
-        const { senha, ...usuarioSemSenha } = usuario;
         return {
             sucesso: true,
-            usuario: usuarioSemSenha,
+            usuario: usuario,
             mensagem: 'Usuário encontrado com sucesso'
         };
 
@@ -103,40 +102,53 @@ export async function cadastrarUsuario(nome, email, telefone, cpf, senha, tipoUs
     }
 }
 
-export async function atualizarUsuario(id, nome, email, telefone, cpf, senha, tipoUsuario) {
-    const usuario = {
-        nome,
-        email,
-        telefone,
-        cpf,
-        senha,
-        tipoUsuario,
-        statusUsuario: true
-    }
+export async function atualizarUsuario(id, nome, email, telefone, cpf, tipoUsuario) {
+
     try {
-        const response = await fetch(`${baseURL}/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(usuario)
-        })
-        if (!response.ok) {
+        const usuarioExistente = await getUsuariosById(id)
+
+        if (usuarioExistente.sucesso) {
+            console.log('Usuário enviado para atualização:', usuarioExistente);
+
+
+            const usuario = {
+                nome,
+                email,
+                telefone,
+                cpf,
+                senha: usuarioExistente.usuario.senha,
+                tipoUsuario,
+                statusUsuario: true
+            }
+            const response = await fetch(`${baseURL}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(usuario)
+            })
+            if (!response.ok) {
+                return {
+                    sucesso: false,
+                    usuario: null,
+                    mensagem: `Erro HTTP: ${response.status}`
+                };
+            }
+
+            const usuarioAtualizado = await response.json();
+
+
+            const { senha, ...usuarioSemSenha } = usuarioAtualizado;
+            return {
+                sucesso: true,
+                usuario: usuarioSemSenha,
+                mensagem: 'Usuário atualizado com sucesso'
+            };
+        }else{
             return {
                 sucesso: false,
                 usuario: null,
-                mensagem: `Erro HTTP: ${response.status}`
+                mensagem: 'Usuário não existe'
             };
         }
-
-        const usuarioAtualizado = await response.json();
-
-
-        const { senha, ...usuarioSemSenha } = usuarioAtualizado;
-        return {
-            sucesso: true,
-            usuario: usuarioSemSenha,
-            mensagem: 'Usuário atualizado com sucesso'
-        };
-
     } catch (error) {
         return {
             sucesso: false,
@@ -144,6 +156,7 @@ export async function atualizarUsuario(id, nome, email, telefone, cpf, senha, ti
             mensagem: 'Erro ao atualizar usuário'
         };
     }
+
 }
 
 export async function checkCredentials(email, senha) {
@@ -197,26 +210,33 @@ export async function safeDeleteUsuario(id) {
 
     try {
         const usuario = await getUsuariosById(id)
-        if(usuario.sucesso){
+        if (usuario.sucesso) {
 
             const response = await fetch(`${baseURL}/${id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: { statusUsuario: false }
+                body: JSON.stringify({ statusUsuario: false })
+
             })
 
-            if(!response.ok){
+            if (!response.ok) {
                 return {
-                sucesso: false,
-                mensagem: `Erro HTTP: ${response.status}`
-            };
+                    sucesso: false,
+                    mensagem: `Erro HTTP: ${response.status}`
+                };
             }
 
-        }else{
-             return {
-            sucesso: false,
-            mensagem: 'Usuario não encontrado'
-        };
+            return {
+                    sucesso: true,
+                    mensagem: `Usuario desativado com sucesso!`
+                };
+
+
+        } else {
+            return {
+                sucesso: false,
+                mensagem: 'Usuario não encontrado'
+            };
         }
     } catch (error) {
         return {
