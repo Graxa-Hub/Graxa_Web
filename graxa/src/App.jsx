@@ -5,6 +5,7 @@ import "./index.css";
 import { Login } from "./pages/Login";
 import { Route, Routes } from "react-router-dom";
 import { Homepage } from "./pages/Homepage";
+import { Cadastro } from "./pages/Cadastro";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<Homepage />}></Route>
         <Route path="/home" element={<Homepage />}></Route>
         <Route path="/login" element={<Login />}></Route>
+        <Route path="/cadastro" element={<Cadastro />}></Route>
       </Routes>
   );
 }

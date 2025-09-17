@@ -16,8 +16,7 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-.grid-background {
-  background-color: #FF5300; /* A cor de fundo principal */
+.grid-background { /* A cor de fundo principal */
   background-image:
     linear-gradient(to right, #ffffff44 1px, transparent 1px),
     linear-gradient(to bottom, #ffffff44 1px, transparent 1px);

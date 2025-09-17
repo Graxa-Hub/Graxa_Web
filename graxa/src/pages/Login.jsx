@@ -32,15 +32,17 @@ export const Login = () => {
 
             <ButtonExtra>Esqueceu a senha?</ButtonExtra>
 
-            <ButtonLogarCadastrar>Entrar</ButtonLogarCadastrar>
+            <ButtonLogarCadastrar className="hover:bg-purple-900">Entrar</ButtonLogarCadastrar>
 
             <div className="w-full flex flex-nowrap justify-center">
               <p className="text-sm mr-2">Não tem conta? </p>
-              <ButtonExtra className="text-orange-500">Cadastre-se</ButtonExtra>
+              <ButtonExtra to="/cadastro" className="text-orange-500">
+                Cadastre-se
+              </ButtonExtra>
             </div>
           </form>
         </div>
-        <div className="w-full h-full grid-background rounded-tr-lg rounded-br-lg"></div>
+        <div className="w-full h-full bg-orange-500 grid-background rounded-tr-lg rounded-br-lg"></div>
       </div>
     </div>
   );
