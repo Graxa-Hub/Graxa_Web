@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+:root {
+  --primary-dark: #252525;
+  --primary-dark-light: #364153;
+  --primary-color: #FF5300;
+  --primary-light: #ebe6e7;
+
+}
+
 * {
   box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+.grid-background {
+  background-color: #FF5300; /* A cor de fundo principal */
+  background-image:
+    linear-gradient(to right, #ffffff44 1px, transparent 1px),
+    linear-gradient(to bottom, #ffffff44 1px, transparent 1px);
+  background-size: 50px 50px; /* Define o tamanho de cada quadrado */
 }
