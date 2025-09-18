@@ -1,10 +1,11 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React from "react";
+import { Link } from "react-router-dom";
+import { NavButton } from "../components/NavButton";
 
 export const Homepage = () => {
   return (
     <div>
-        <Link to="/login">Logar</Link>
+      <NavButton></NavButton>
     </div>
-  )
-}
+  );
+};
