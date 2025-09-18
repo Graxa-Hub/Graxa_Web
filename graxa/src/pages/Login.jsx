@@ -7,9 +7,9 @@ import { ButtonLogarCadastrar } from "../components/ButtonLogarCadastrar";
 
 export const Login = () => {
   return (
-    <div className="w-full h-screen flex justify-center items-center bg-[url('/login-bg.png')] bg-cover bg-center bg-no-repeat">
-      <div className="w-[80vw] h-[90vh] grid grid-cols-2 shadow-md ">
-        <div className="w-full h-full p-6 rounded-bl-xl rounded-tl-xl bg-white">
+    <div className="w-full h-screen flex justify-center items-center bg-gray-600 bg-[url('/login-bg.png')] bg-cover bg-center bg-no-repeat">
+      <div className="w-[80vw] grid grid-cols-2 shadow-md">
+        <div className="w-full p-6 rounded-bl-xl rounded-tl-xl bg-gray-50">
           {/* Botão de voltar */}
           <VoltarButton to="/">Voltar</VoltarButton>
 
@@ -32,14 +32,20 @@ export const Login = () => {
 
             <ButtonExtra>Esqueceu a senha?</ButtonExtra>
 
-            <ButtonLogarCadastrar className="hover:bg-purple-900">Entrar</ButtonLogarCadastrar>
+            <ButtonLogarCadastrar className="transition duration-0 ease-in-out hover:bg-orange-500">
+              Entrar
+            </ButtonLogarCadastrar>
 
-            <div className="w-full flex flex-nowrap justify-center">
-              <p className="text-sm mr-2">Não tem conta? </p>
+            <div className="w-full flex flex-nowrap justify-center text-md">
+              <p className="mr-2">Não tem conta? </p>
               <ButtonExtra to="/cadastro" className="text-orange-500">
                 Cadastre-se
               </ButtonExtra>
             </div>
+
+            <p className="w-full text-end font-bold text-orange-500 text-xl">
+              Graxa
+            </p>
           </form>
         </div>
         <div className="w-full h-full bg-orange-500 grid-background rounded-tr-lg rounded-br-lg"></div>

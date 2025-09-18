@@ -1,24 +1,22 @@
 @import "tailwindcss";
 
-:root {
-  --primary-dark: #252525;
-  --primary-dark-light: #364153;
-  --primary-color: #FF5300;
-  --primary-light: #ebe6e7;
-
-}
 
 * {
   box-sizing: border-box;
 }
 
 body {
+  /* remove default browser margin so full-viewport backgrounds fill the screen */
+  margin: 0;
   font-family: 'Poppins', sans-serif;
+  /* ensure body is at least full height and show a dark fallback behind backgrounds */
+  min-height: 100vh;
+  /* background-color: #000; */
 }
 
-.grid-background { /* A cor de fundo principal */
+.grid-background {
   background-image:
     linear-gradient(to right, #ffffff44 1px, transparent 1px),
     linear-gradient(to bottom, #ffffff44 1px, transparent 1px);
-  background-size: 50px 50px; /* Define o tamanho de cada quadrado */
+  background-size: 50px 50px;
 }

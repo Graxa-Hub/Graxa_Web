@@ -7,24 +7,30 @@ import { ButtonLogarCadastrar } from "../components/ButtonLogarCadastrar";
 
 export const Cadastro = () => {
   return (
-    <div className="w-full h-screen flex justify-center items-center bg-[url('/cadastro-bg.png')] bg-cover bg-center">
-      <div className="w-[80vw] h-[90vh] grid grid-cols-2 shadow-md ">
+    <div className="w-full h-[180vh] flex justify-center items-center bg-gray-600 bg-[url('/cadastro-bg.png')] bg-cover bg-center">
+      <div className="w-[80vw] grid grid-cols-2 shadow-md ">
         <div className="w-full h-full bg-purple-950 grid-background rounded-tl-lg rounded-bl-lg"></div>
-        <div className="w-full h-full p-6 rounded-br-xl rounded-tr-xl bg-white">
+        <div className="w-full p-6 rounded-br-xl rounded-tr-xl bg-gray-50">
           {/* Botão de voltar */}
           <VoltarButton to="/">Voltar</VoltarButton>
 
           {/* Título */}
           <div className="mt-8 text-gray-900">
-            <h2 className="text-3xl font-bold">Faça seu login</h2>
-            <p className="mt-2">Entre na sua conta para organizar a sua vida</p>
+            <h2 className="text-3xl font-bold">Cria a sua conta</h2>
+            <p className="mt-2">Comece a sua jornada conosco!</p>
           </div>
 
           {/* Formulário */}
           <form className="mt-6 space-y-6">
-            <div>
-              <Label>Email:</Label>
-              <Input placeholder={"seu@email.com"} />
+            <div className="grid grid-cols-2 gap-5">
+              <div className="">
+                <Label>Nome:</Label>
+                <Input placeholder={"Nome"} />
+              </div>
+              <div className="">
+                <Label>Sobrenome:</Label>
+                <Input placeholder={"Sobrenome"} />
+              </div>
             </div>
             <div className="mt-2">
               <Label>Senha:</Label>
@@ -51,14 +57,20 @@ export const Cadastro = () => {
               <Input type="password" placeholder={"Selecione a opção"} />
             </div>
 
-            <ButtonLogarCadastrar>Criar Conta</ButtonLogarCadastrar>
+            <ButtonLogarCadastrar className="hover:bg-purple-500">
+              Criar Conta
+            </ButtonLogarCadastrar>
 
-            <div className="w-full flex flex-nowrap justify-center">
-              <p className="text-sm mr-2">Já tem uma conta? </p>
-              <ButtonExtra to="/cadastro" className="text-purple-950">
+            <div className="text-dm w-full flex flex-nowrap justify-center">
+              <p className="mr-2">Já tem uma conta? </p>
+              <ButtonExtra to="/login" className="text-purple-950">
                 Faça Login
               </ButtonExtra>
             </div>
+
+            <p className="w-full text-end font-bold text-purple-950 text-xl">
+              Graxa
+            </p>
           </form>
         </div>
       </div>

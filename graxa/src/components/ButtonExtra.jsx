@@ -7,7 +7,7 @@ export const ButtonExtra = ({ children, className, to }) => {
   return (
     <Link
       to={to}
-      className={`bg-transparent text-sm text-gray-900 font-semibold outline-none ${className}`}
+      className={`bg-transparent text-gray-900 font-semibold outline-none underline ${className}`}
     >
       {children}
     </Link>
