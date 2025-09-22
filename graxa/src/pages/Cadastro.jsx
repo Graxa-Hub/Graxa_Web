@@ -4,6 +4,7 @@ import { VoltarButton } from "../components/VoltarButton";
 import { Label } from "../components/Label";
 import { ButtonExtra } from "../components/ButtonExtra";
 import { ButtonLogarCadastrar } from "../components/ButtonLogarCadastrar";
+import { Select } from "../components/Select";
 
 export const Cadastro = () => {
   return (
@@ -32,29 +33,35 @@ export const Cadastro = () => {
                 <Input placeholder={"Sobrenome"} />
               </div>
             </div>
-            <div className="mt-2">
-              <Label>Senha:</Label>
-              <Input type="password" placeholder={"********"} />
+            <div className="grid grid-cols-2 gap-5">
+              <div className="">
+                <Label>Data de Nascimento:</Label>
+                <Input type="date" placeholder={"Nome"} />
+              </div>
+              <div className="">
+                <Label>Telefone:</Label>
+                <Input placeholder={"(11) 99999-8888"} />
+              </div>
             </div>
-            <div className="mt-2">
+            <div className="">
+              <Label>CPF:</Label>
+              <Input placeholder={"000.000.000-00"} />
+            </div>
+            <div className="">
               <Label>Email:</Label>
               <Input type="password" placeholder={"seu@email.com"} />
             </div>
-            <div className="mt-2">
-              <Label>Telefone:</Label>
-              <Input type="password" placeholder={"(11) 99999-8888"} />
-            </div>
-            <div className="mt-2">
+            <div className="">
               <Label>Senha:</Label>
               <Input type="password" placeholder={"********"} />
             </div>
-            <div className="mt-2">
+            <div className="">
               <Label>Confirmar Senha:</Label>
               <Input type="password" placeholder={"********"} />
             </div>
-            <div className="mt-2">
+            <div className="">
               <Label>Tipo de usuário:</Label>
-              <Input type="password" placeholder={"Selecione a opção"} />
+              <Select></Select>
             </div>
 
             <ButtonLogarCadastrar className="hover:bg-purple-500">
