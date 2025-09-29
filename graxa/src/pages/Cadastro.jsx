@@ -1,6 +1,6 @@
 import React from "react";
 import { Input } from "../components/Input";
-import { VoltarButton } from "../components/VoltarButton";
+import { ButtonVoltar } from "../components/ButtonVoltar";
 import { Label } from "../components/Label";
 import { ButtonExtra } from "../components/ButtonExtra";
 import { ButtonLogarCadastrar } from "../components/ButtonLogarCadastrar";
@@ -8,12 +8,12 @@ import { Select } from "../components/Select";
 
 export const Cadastro = () => {
   return (
-    <div className="w-full h-[180vh] flex justify-center items-center bg-gray-600 bg-[url('/cadastro-bg.png')] bg-cover bg-center">
-      <div className="w-[80vw] grid grid-cols-2 shadow-md ">
+    <div className="w-full py-3 flex justify-center items-center bg-gray-600 bg-[url('/cadastro-bg.png')] bg-cover bg-center">
+      <div className="w-full mx-20 grid grid-cols-2 shadow-md">
         <div className="w-full h-full bg-purple-950 grid-background rounded-tl-lg rounded-bl-lg"></div>
         <div className="w-full p-6 rounded-br-xl rounded-tr-xl bg-gray-50">
           {/* Botão de voltar */}
-          <VoltarButton to="/">Voltar</VoltarButton>
+          <ButtonVoltar to="/">Voltar</ButtonVoltar>
 
           {/* Título */}
           <div className="mt-8 text-gray-900">
@@ -58,10 +58,6 @@ export const Cadastro = () => {
             <div className="">
               <Label>Confirmar Senha:</Label>
               <Input type="password" placeholder={"********"} />
-            </div>
-            <div className="">
-              <Label>Tipo de usuário:</Label>
-              <Select></Select>
             </div>
 
             <ButtonLogarCadastrar className="hover:bg-purple-500">

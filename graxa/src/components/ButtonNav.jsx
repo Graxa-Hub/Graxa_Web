@@ -10,7 +10,7 @@ import {
 import React from "react";
 import { Link } from "react-router-dom";
 
-export const NavButton = () => {
+export const ButtonNav = () => {
   return (
     <div className="w-full h-15 flex justify-between items-center bg-gray-300 px-5">
       {/* Logo */}
