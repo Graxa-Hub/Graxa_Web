@@ -38,7 +38,9 @@ export const Login = () => {
           <ButtonExtra>Esqueceu a senha?</ButtonExtra>
 
           {/* Button de Logar */}
-          <ButtonSign className="hover:bg-orange-500">Entrar</ButtonSign>
+          <ButtonSign className="hover:bg-orange-500" to={"../dashboard"}>
+            Entrar
+          </ButtonSign>
 
           {/* Button login para cadastro */}
           <ButtonAlt

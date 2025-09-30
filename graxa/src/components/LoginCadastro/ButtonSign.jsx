@@ -1,9 +1,12 @@
-export const ButtonSign = ({ children, className }) => {
+import { Link } from "react-router-dom";
+
+export const ButtonSign = ({ children, className, to }) => {
   return (
-    <button
-      className={`w-full bg-[#252525] py-2 rounded-md text-white transition duration-0 ease-in-out ${className}`}
+    <Link
+      className={`block w-full bg-[#252525] py-2 rounded-md text-white transition duration-0 ease-in-out text-center ${className}`}
+      to={to}
     >
       {children}
-    </button>
+    </Link>
   );
 };
