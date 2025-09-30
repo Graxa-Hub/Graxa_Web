@@ -1,82 +1,98 @@
 import React from "react";
-import { Input } from "../components/Input";
-import { ButtonVoltar } from "../components/ButtonVoltar";
-import { Label } from "../components/Label";
-import { ButtonExtra } from "../components/ButtonExtra";
-import { ButtonLogarCadastrar } from "../components/ButtonLogarCadastrar";
-import { Select } from "../components/Select";
+import { Input } from "../components/LoginCadastro/Input";
+import { Label } from "../components/LoginCadastro/Label";
+import { Layout } from "../components/LoginCadastro/Layout";
+import { Grid } from "../components/LoginCadastro/Grid";
+import { Titulo } from "../components/LoginCadastro/Titulo";
+import { Forms } from "../components/LoginCadastro/Forms";
+import { Logo } from "../components/LoginCadastro/Logo";
+import { ButtonAlt } from "../components/LoginCadastro/ButtonAlt";
+import { ButtonSign } from "../components/LoginCadastro/ButtonSign";
 
 export const Cadastro = () => {
   return (
-    <div className="w-full py-3 flex justify-center items-center bg-gray-600 bg-[url('/cadastro-bg.png')] bg-cover bg-center">
-      <div className="w-full mx-20 grid grid-cols-2 shadow-md">
-        <div className="w-full h-full bg-purple-950 grid-background rounded-tl-lg rounded-bl-lg"></div>
-        <div className="w-full p-6 rounded-br-xl rounded-tr-xl bg-gray-50">
-          {/* Botão de voltar */}
-          <ButtonVoltar to="/">Voltar</ButtonVoltar>
+    <Layout backgroundImage="/cadastro-bg2.png" padding="py-10">
+      {/* Tela Roxo a Esquerda */}
+      <Grid
+        backgroundColor="bg-purple-950"
+        borderRadius="rounded-tl-lg rounded-bl-lg"
+      />
+      <div className="w-full p-6 rounded-br-xl rounded-tr-xl bg-gray-50">
+        {/* Título */}
+        <Titulo
+          titulo="Crie a sua conta"
+          descricao="Comece a sua jornada conosco!"
+        />
 
-          {/* Título */}
-          <div className="mt-8 text-gray-900">
-            <h2 className="text-3xl font-bold">Cria a sua conta</h2>
-            <p className="mt-2">Comece a sua jornada conosco!</p>
+        {/* Formulário */}
+        <Forms>
+          {/* Nome */}
+          <div className="grid grid-cols-2 gap-5">
+            <div className="">
+              <Label>Nome:</Label>
+              <Input placeholder={"Nome"} />
+            </div>
+
+            {/* Sobrenome */}
+            <div className="">
+              <Label>Sobrenome:</Label>
+              <Input placeholder={"Sobrenome"} />
+            </div>
           </div>
 
-          {/* Formulário */}
-          <form className="mt-6 space-y-6">
-            <div className="grid grid-cols-2 gap-5">
-              <div className="">
-                <Label>Nome:</Label>
-                <Input placeholder={"Nome"} />
-              </div>
-              <div className="">
-                <Label>Sobrenome:</Label>
-                <Input placeholder={"Sobrenome"} />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-5">
-              <div className="">
-                <Label>Data de Nascimento:</Label>
-                <Input type="date" placeholder={"Nome"} />
-              </div>
-              <div className="">
-                <Label>Telefone:</Label>
-                <Input placeholder={"(11) 99999-8888"} />
-              </div>
-            </div>
+          {/* Data de Nascimento */}
+          <div className="grid grid-cols-2 gap-5">
             <div className="">
-              <Label>CPF:</Label>
-              <Input placeholder={"000.000.000-00"} />
-            </div>
-            <div className="">
-              <Label>Email:</Label>
-              <Input type="password" placeholder={"seu@email.com"} />
-            </div>
-            <div className="">
-              <Label>Senha:</Label>
-              <Input type="password" placeholder={"********"} />
-            </div>
-            <div className="">
-              <Label>Confirmar Senha:</Label>
-              <Input type="password" placeholder={"********"} />
+              <Label>Data de Nascimento:</Label>
+              <Input type="date" placeholder={"Nome"} />
             </div>
 
-            <ButtonLogarCadastrar className="hover:bg-purple-500">
-              Criar Conta
-            </ButtonLogarCadastrar>
-
-            <div className="text-dm w-full flex flex-nowrap justify-center">
-              <p className="mr-2">Já tem uma conta? </p>
-              <ButtonExtra to="/login" className="text-purple-950">
-                Faça Login
-              </ButtonExtra>
+            {/* Telefone */}
+            <div className="">
+              <Label>Telefone:</Label>
+              <Input placeholder={"(11) 99999-8888"} />
             </div>
+          </div>
 
-            <p className="w-full text-end font-bold text-purple-950 text-xl">
-              Graxa
-            </p>
-          </form>
-        </div>
+          {/* CPF */}
+          <div className="">
+            <Label>CPF:</Label>
+            <Input placeholder={"000.000.000-00"} />
+          </div>
+
+          {/* Email */}
+          <div className="">
+            <Label>Email:</Label>
+            <Input type="password" placeholder={"seu@email.com"} />
+          </div>
+
+          {/* Senha */}
+          <div className="">
+            <Label>Senha:</Label>
+            <Input type="password" placeholder={"********"} />
+          </div>
+
+          {/* Confirmar Senha */}
+          <div className="">
+            <Label>Confirmar Senha:</Label>
+            <Input type="password" placeholder={"********"} />
+          </div>
+
+          {/* Button de Cadastrar */}
+          <ButtonSign className="hover:bg-purple-950">Cadastrar</ButtonSign>
+
+          {/* Já tem uma conta? Button */}
+          <ButtonAlt
+            text={"Já tem uma conta?"}
+            buttonText={"Faça Login"}
+            textColor="purple-950"
+            to={"../login"}
+          />
+
+          {/* Logo Graxa no final do Card */}
+          <Logo textColor="purple-950" />
+        </Forms>
       </div>
-    </div>
+    </Layout>
   );
 };

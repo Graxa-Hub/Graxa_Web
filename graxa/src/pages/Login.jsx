@@ -1,54 +1,63 @@
 import React from "react";
-import { Input } from "../components/Input";
-import { ButtonVoltar } from "../components/ButtonVoltar";
-import { Label } from "../components/Label";
-import { ButtonExtra } from "../components/ButtonExtra";
-import { ButtonLogarCadastrar } from "../components/ButtonLogarCadastrar";
-import { Layout } from "../components/Login e Cadastro/Layout";
+import { Input } from "../components/LoginCadastro/Input";
+import { Label } from "../components/LoginCadastro/Label";
+import { ButtonExtra } from "../components/LoginCadastro/ButtonExtra";
+import { ButtonSign } from "../components/LoginCadastro/ButtonSign";
+import { Layout } from "../components/LoginCadastro/Layout";
+import { Grid } from "../components/LoginCadastro/Grid";
+import { Titulo } from "../components/LoginCadastro/Titulo";
+import { Forms } from "../components/LoginCadastro/Forms";
+import { ButtonAlt } from "../components/LoginCadastro/ButtonAlt";
+import { Logo } from "../components/LoginCadastro/Logo";
 
 export const Login = () => {
   return (
-    <Layout>
+    <Layout backgroundImage="/login-bg.png">
       <div className="p-6 rounded-bl-xl rounded-tl-xl bg-gray-50">
-        {/* Botão de voltar */}
-        <ButtonVoltar to="/">Voltar</ButtonVoltar>
-
         {/* Título */}
-        <div className="mt-8 text-gray-900">
-          <h2 className="text-3xl font-bold">Faça seu login</h2>
-          <p className="mt-2">Entre na sua conta para organizar a sua vida</p>
-        </div>
+        <Titulo
+          titulo="Faça seu login"
+          descricao="Entre na sua conta para organizar a sua vida"
+        />
 
         {/* Formulário */}
-        <form className="mt-6 space-y-6">
+        <Forms>
+          {/* Email */}
           <div>
             <Label>Email:</Label>
             <Input placeholder={"seu@email.com"} />
           </div>
+
+          {/* Senha */}
           <div className="mt-2">
             <Label>Senha:</Label>
             <Input type="password" placeholder={"********"} />
           </div>
 
+          {/* Esqueceu a senha */}
           <ButtonExtra>Esqueceu a senha?</ButtonExtra>
 
-          <ButtonLogarCadastrar className="transition duration-0 ease-in-out hover:bg-orange-500">
-            Entrar
-          </ButtonLogarCadastrar>
+          {/* Button de Logar */}
+          <ButtonSign className="hover:bg-orange-500">Entrar</ButtonSign>
 
-          <div className="w-full flex flex-nowrap justify-center text-md">
-            <p className="mr-2">Não tem conta? </p>
-            <ButtonExtra to="/cadastro" className="text-orange-500">
-              Cadastre-se
-            </ButtonExtra>
-          </div>
+          {/* Button login para cadastro */}
+          <ButtonAlt
+            text={"Não tem conta?"}
+            buttonText={"Cadastre-se"}
+            textColor={"orange-500"}
+            to={"../cadastro"}
+          />
 
-          <p className="w-full text-end font-bold text-orange-500 text-xl">
-            Graxa
-          </p>
-        </form>
+          {/* Logo */}
+          <Logo />
+        </Forms>
       </div>
-      <div className="w-full h-full bg-orange-500 grid-background rounded-tr-lg rounded-br-lg"></div>
+
+      {/* Tela Laranja a Direita */}
+      <Grid
+        backgroundColor="bg-orange-500"
+        borderRadius="rounded-tr-lg rounded-br-lg"
+      />
     </Layout>
   );
 };

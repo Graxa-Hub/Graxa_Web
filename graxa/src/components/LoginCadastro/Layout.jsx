@@ -1,9 +1,9 @@
 import React from "react";
 
-export const Layout = ({ children, backgroundImage }) => {
+export const Layout = ({ children, backgroundImage, padding = "" }) => {
   return (
     <div
-      className="w-full h-screen flex justify-center items-center bg-gray-600 bg-cover bg-center bg-no-repeat"
+      className={`w-full min-h-screen ${padding} flex justify-center items-center bg-gray-600 bg-cover bg-center bg-no-repeat`}
       style={{
         backgroundImage: `url('${backgroundImage}')`,
       }}
