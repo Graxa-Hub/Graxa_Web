@@ -2,7 +2,7 @@ import React from "react";
 
 export const RootLayout = ({ children }) => {
   return (
-    <main className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden lg:p-14 md:p-12 sm:p-7 p-4">
+    <main className="w-full h-screen flex flex-col items-center justify-center relative overflow-hidden lg:p-10 md:p-7 sm:p-3 p-2">
       {children}
     </main>
   );
