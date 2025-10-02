@@ -1,6 +1,10 @@
 import { isPreenchido, validarEmail, validarCPF } from '../utils/validationUtils.js';
 import { limparTelefone, formatarCPF, formatarTelefone } from '../utils/stringUtils.js';
 import { checkCredentials, cadastrarUsuario, getUsuariosById, atualizarUsuario, safeDeleteUsuario } from '../services/usuarios.js'
+import { buscarAeroportoMaisProximo } from '../services/aeroportoService.js';
+
+const result = await buscarAeroportoMaisProximo(lat, lon);
+console.log(result.aeroporto, result.distancia_km);
 
 if (document.getElementById('botao-login')) {
     document.getElementById('botao-login').addEventListener('click', checarCredenciais);

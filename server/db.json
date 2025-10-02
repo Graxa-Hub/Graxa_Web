@@ -29,6 +29,16 @@
       "tipoUsuario": "produtor",
       "statusUsuario": false,
       "id": 3
+    },
+    {
+      "nome": "Michelle Gomes Marcelino",
+      "email": "michelle.g.marcelino@gmail.com",
+      "telefone": "11995988763",
+      "cpf": "45829677873",
+      "senha": "123",
+      "tipoUsuario": "produtor",
+      "statusUsuario": false,
+      "id": 4
     }
   ]
 }

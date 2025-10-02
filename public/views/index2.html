@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
-    <link rel="stylesheet" href="../style/styles2.css">
-    <link rel="stylesheet" href="../style/modal.css">
+    <link rel="stylesheet" href="../style/styles3.css">
+    <script src="../utils/api-functions.js"></script>
     <title>Graxa - Awwwards Style</title>
 </head>
 
@@ -17,9 +17,9 @@
                 <a href="#" class="logo-link">GRAXA</a>
             </div>
             <nav class="nav">
-                <a href="#" class="nav-link">Aeroporto</a>
-                <a href="#" class="nav-link">Restaurante</a>
-                <a href="#" class="nav-link">Mapa</a>
+                <a href="#" class="nav-link" onclick="openModal('aeroporto')">Aeroporto</a>
+                <a href="#" class="nav-link" onclick="openModal('restaurante')">Restaurante</a>
+                <a href="#" class="nav-link" onclick="openModal('mapa')">Mapa</a>
             </nav>
             <div class="user-dropdown" id="userDropdown">
                 <div id="btn-dropdown">
@@ -102,9 +102,164 @@
         </div>
     </div>
 
+    <!-- Modal Dinâmico Principal -->
+    <div id="modal-dinamico" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 id="modal-title">Buscar</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-content">
+                <!-- Formulário de busca -->
+                <form id="search-form" class="search-form">
+                    <div id="form-fields">
+                        <!-- Campos serão inseridos dinamicamente -->
+                    </div>
+                    <button type="submit" class="btn-primary" id="search-btn">Buscar</button>
+                </form>
+                
+                <!-- Área de resultados -->
+                <div id="results-container" class="results-container" style="display: none;">
+                    <h3>Resultados:</h3>
+                    <div id="results-content"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </body>
 
 </html>
+<script>
+    // Variável global para controlar o tipo de busca atual
+    let currentSearchType = '';
+
+    // Função para abrir o modal dinâmico
+    function openModal(type) {
+        currentSearchType = type;
+        const modal = document.getElementById('modal-dinamico');
+        const title = document.getElementById('modal-title');
+        const formFields = document.getElementById('form-fields');
+        const resultsContainer = document.getElementById('results-container');
+        
+        // Limpar resultados anteriores
+        resultsContainer.style.display = 'none';
+        document.getElementById('results-content').innerHTML = '';
+        
+        // Configurar título e campos baseado no tipo
+        switch(type) {
+            case 'aeroporto':
+                title.textContent = 'Buscar Aeroporto';
+                formFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="endereco" class="form-label">Endereço</label>
+                        <input type="text" id="endereco" class="form-input" placeholder="Digite seu endereço" required>
+                    </div>
+                `;
+                break;
+            case 'restaurante':
+                title.textContent = 'Buscar Restaurantes';
+                formFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="endereco" class="form-label">Endereço</label>
+                        <input type="text" id="endereco" class="form-input" placeholder="Digite seu endereço" required>
+                    </div>
+                `;
+                break;
+            case 'mapa':
+                title.textContent = 'Buscar Rota';
+                formFields.innerHTML = `
+                    <div class="form-group">
+                        <label for="endereco-origem" class="form-label">Endereço de Origem</label>
+                        <input type="text" id="endereco-origem" class="form-input" placeholder="Digite o endereço de origem" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endereco-destino" class="form-label">Endereço de Destino</label>
+                        <input type="text" id="endereco-destino" class="form-input" placeholder="Digite o endereço de destino" required>
+                    </div>
+                `;
+                break;
+        }
+        
+        // Mostrar modal
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+    }
+
+    // Função para fechar o modal
+    function closeModal() {
+        const modal = document.getElementById('modal-dinamico');
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+        currentSearchType = '';
+    }
+
+    // Função para realizar a busca
+    async function performSearch(event) {
+        event.preventDefault();
+        
+        const searchBtn = document.getElementById('search-btn');
+        const resultsContainer = document.getElementById('results-container');
+        const resultsContent = document.getElementById('results-content');
+        
+        // Mostrar loading
+        searchBtn.textContent = 'Buscando...';
+        searchBtn.disabled = true;
+        
+        try {
+            let results = '';
+            
+            switch(currentSearchType) {
+                case 'aeroporto':
+                    const endereco = document.getElementById('endereco').value;
+                    results = await buscarAeroporto(endereco);
+                    break;
+                case 'restaurante':
+                    const enderecoRest = document.getElementById('endereco').value;
+                    results = await buscarRestaurantes(enderecoRest);
+                    break;
+                case 'mapa':
+                    const origem = document.getElementById('endereco-origem').value;
+                    const destino = document.getElementById('endereco-destino').value;
+                    results = await buscarRota(origem, destino);
+                    break;
+            }
+            
+            // Mostrar resultados
+            resultsContent.innerHTML = results;
+            resultsContainer.style.display = 'block';
+            
+        } catch (error) {
+            resultsContent.innerHTML = '<p class="error">Erro ao realizar a busca. Tente novamente.</p>';
+            resultsContainer.style.display = 'block';
+        } finally {
+            // Restaurar botão
+            searchBtn.textContent = 'Buscar';
+            searchBtn.disabled = false;
+        }
+    }
+
+    // Funções de busca usando APIs reais
+    async function buscarAeroporto(endereco) {
+        return await buscarAeroportoReal(endereco);
+    }
+
+    async function buscarRestaurantes(endereco) {
+        return await buscarRestaurantesReal(endereco);
+    }
+
+    async function buscarRota(origem, destino) {
+        return await buscarRotaReal(origem, destino);
+    }
+
+    // Event listener para o formulário
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchForm = document.getElementById('search-form');
+        if (searchForm) {
+            searchForm.addEventListener('submit', performSearch);
+        }
+    });
+</script>
 <script type="module" src="../pages/usuarios.js"></script>
 
 <script type="module">
