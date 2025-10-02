@@ -9,6 +9,7 @@
     "express": "^5.1.0"
   },
   "scripts": {
+    "dev": "concurrently \"node app.js\" \"json-server --watch ./server/db.json --port 3000\"",
     "start": "concurrently \"node app.js\" \"json-server --watch ./server/db.json --port 3000\"",
     "aeroporto-api": "node server/aeroportoApi.js"
   }

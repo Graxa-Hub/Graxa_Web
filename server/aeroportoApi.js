@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const PORT = 3001; // PORTA AJUSTADA PARA 3001
+const PORT = 3001;
 
 const aeroportos = [
   { nome: "Aeroporto de Guarulhos", iata: "GRU", lat: -23.4356, lon: -46.4731 },

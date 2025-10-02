@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
     <link rel="stylesheet" href="../style/styles3.css">
     <script src="../utils/api-functions.js"></script>
-    <title>Graxa - Awwwards Style</title>
+    <title>Graxa</title>
 </head>
 
 <body>
@@ -17,9 +17,9 @@
                 <a href="#" class="logo-link">GRAXA</a>
             </div>
             <nav class="nav">
-                <a href="#" class="nav-link" onclick="openModal('aeroporto')">Aeroporto</a>
-                <a href="#" class="nav-link" onclick="openModal('restaurante')">Restaurante</a>
-                <a href="#" class="nav-link" onclick="openModal('mapa')">Mapa</a>
+                <a href="#" class="nav-link" onclick="abrirModal('aeroporto')">Aeroporto</a>
+                <a href="#" class="nav-link" onclick="abrirModal('restaurante')">Restaurante</a>
+                <a href="#" class="nav-link" onclick="abrirModal('mapa')">Mapa</a>
             </nav>
             <div class="user-dropdown" id="userDropdown">
                 <div id="btn-dropdown">
@@ -31,13 +31,8 @@
             </div>
         </header>
 
-        <main class="main-content">
+        <main id="main-content" class="main-content">
             <div class="profile-container">
-                <!-- <div class="profile-header">
-                    <h1 class="profile-title">Seja bem Vindo! <span id="nomeUsuarioTitle"></span></h1>
-                    <button id="btn-buscar-aeroporto" class="btn-primary">Aeroporto mais próximo</button>
-                </div> -->
-
                 <div class="profile-card">
                     <div class="card-header">
                         <h2 class="card-title">Seus Dados</h2>
@@ -50,110 +45,91 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="input_nome" class="form-label">Nome</label>
-                                <input type="text" id="input_nome" class="form-input">
+                                <input tipoPesquisa="text" id="input_nome" class="form-input">
                             </div>
                             <div class="form-group">
                                 <label for="input_tipoUsuario" class="form-label">Tipo de Usuário</label>
-                                <input type="text" id="input_tipoUsuario" class="form-input" disabled>
+                                <input tipoPesquisa="text" id="input_tipoUsuario" class="form-input">
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="input_email" class="form-label">Email</label>
-                            <input type="email" id="input_email" class="form-input" disabled>
+                            <input tipoPesquisa="email" id="input_email" class="form-input">
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="input_cpf" class="form-label">CPF</label>
-                                <input type="text" id="input_cpf" class="form-input" disabled>
+                                <input tipoPesquisa="text" id="input_cpf" class="form-input">
                             </div>
                             <div class="form-group">
                                 <label for="input_telefone" class="form-label">Telefone</label>
-                                <input type="text" id="input_telefone" class="form-input" disabled>
+                                <input tipoPesquisa="text" id="input_telefone" class="form-input">
                             </div>
                         </div>
                         <div class="form-actions">
-                            <button type="button" class="btn-primary" id="btn-atualizar" style="display: none;">Atualizar</button>
+                            <button tipoPesquisa="button" class="btn-primary" id="btn-atualizar" style="display: none;">Atualizar</button>
                         </div>
                     </form>
                 </div>
                 <div id="message-container"></div>
             </div>
         </main>
-    </div>
 
-    <div id="modal-desativar" class="modal-overlay">
-        <div class="modal-box">
-            <h2>Desativar Conta</h2>
-            <p>Você tem certeza que deseja desativar sua conta?</p>
-            <div class="modal-actions">
-                <button id="cancelar-desativar" class="btn-cancelar">Cancelar</button>
-                <button id="confirmar-desativar" class="btn-confirmar">Desativar</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="modal-aeroporto" class="modal-overlay">
-        <div class="modal-box">
-            <h2>Aeroporto mais próximo</h2>
-            <div id="aeroporto-info"></div>
-            <div class="modal-actions">
-                <button id="fechar-modal-aeroporto" class="btn-cancelar">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Dinâmico Principal -->
-    <div id="modal-dinamico" class="modal-overlay">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h2 id="modal-title">Buscar</h2>
-                <button class="modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="modal-content">
-                <!-- Formulário de busca -->
-                <form id="search-form" class="search-form">
-                    <div id="form-fields">
-                        <!-- Campos serão inseridos dinamicamente -->
+        <div id="modal-dinamico" class="modal-overlay">
+            <div class="modal-box">
+                <div class="modal-header">
+                    <h2 id="modal-title">Buscar</h2>
+                    <button class="modal-close" onclick="fecharModal()">&times;</button>
+                </div>
+                <div class="modal-content">
+                    
+                    <form id="search-form" class="search-form">
+                        <div id="form-fields">
+                        
+                        </div>
+                        <button tipoPesquisa="submit" class="btn-primary" id="search-btn">Buscar</button>
+                    </form>
+                    
+                    
+                    <div id="results-container" class="results-container" style="display: none;">
+                        <h3>Resultados:</h3>
+                        <div id="results-content"></div>
                     </div>
-                    <button type="submit" class="btn-primary" id="search-btn">Buscar</button>
-                </form>
-                
-                <!-- Área de resultados -->
-                <div id="results-container" class="results-container" style="display: none;">
-                    <h3>Resultados:</h3>
-                    <div id="results-content"></div>
                 </div>
             </div>
         </div>
     </div>
-
 </body>
-
 </html>
-<script>
-    // Variável global para controlar o tipo de busca atual
-    let currentSearchType = '';
 
-    // Função para abrir o modal dinâmico
-    function openModal(type) {
-        currentSearchType = type;
+<script>
+    
+    let pesquisaAtual = '';
+
+    
+    function abrirModal(tipoPesquisa) {
+        pesquisaAtual = tipoPesquisa;
         const modal = document.getElementById('modal-dinamico');
         const title = document.getElementById('modal-title');
         const formFields = document.getElementById('form-fields');
         const resultsContainer = document.getElementById('results-container');
+        const mainContent = document.getElementById('main-content'); 
+
+       
+        if (mainContent) mainContent.style.display = "none";
+
         
-        // Limpar resultados anteriores
         resultsContainer.style.display = 'none';
         document.getElementById('results-content').innerHTML = '';
         
         // Configurar título e campos baseado no tipo
-        switch(type) {
+        switch(tipoPesquisa) {
             case 'aeroporto':
                 title.textContent = 'Buscar Aeroporto';
                 formFields.innerHTML = `
                     <div class="form-group">
                         <label for="endereco" class="form-label">Endereço</label>
-                        <input type="text" id="endereco" class="form-input" placeholder="Digite seu endereço" required>
+                        <input tipoPesquisa="text" id="endereco" class="form-input" placeholder="Digite seu endereço" required>
                     </div>
                 `;
                 break;
@@ -162,7 +138,7 @@
                 formFields.innerHTML = `
                     <div class="form-group">
                         <label for="endereco" class="form-label">Endereço</label>
-                        <input type="text" id="endereco" class="form-input" placeholder="Digite seu endereço" required>
+                        <input tipoPesquisa="text" id="endereco" class="form-input" placeholder="Digite seu endereço" required>
                     </div>
                 `;
                 break;
@@ -171,27 +147,32 @@
                 formFields.innerHTML = `
                     <div class="form-group">
                         <label for="endereco-origem" class="form-label">Endereço de Origem</label>
-                        <input type="text" id="endereco-origem" class="form-input" placeholder="Digite o endereço de origem" required>
+                        <input tipoPesquisa="text" id="endereco-origem" class="form-input" placeholder="Digite o endereço de origem" required>
                     </div>
                     <div class="form-group">
                         <label for="endereco-destino" class="form-label">Endereço de Destino</label>
-                        <input type="text" id="endereco-destino" class="form-input" placeholder="Digite o endereço de destino" required>
+                        <input tipoPesquisa="text" id="endereco-destino" class="form-input" placeholder="Digite o endereço de destino" required>
                     </div>
                 `;
                 break;
         }
         
-        // Mostrar modal
+        
         modal.style.display = 'flex';
         modal.classList.add('active');
     }
 
-    // Função para fechar o modal
-    function closeModal() {
+    
+    function fecharModal() {
         const modal = document.getElementById('modal-dinamico');
+        const mainContent = document.getElementById('main-content');
+        
         modal.style.display = 'none';
         modal.classList.remove('active');
-        currentSearchType = '';
+        pesquisaAtual = '';
+
+        // mostrar main-content novamente
+        if (mainContent) mainContent.style.display = "block";
     }
 
     // Função para realizar a busca
@@ -209,7 +190,7 @@
         try {
             let results = '';
             
-            switch(currentSearchType) {
+            switch(pesquisaAtual) {
                 case 'aeroporto':
                     const endereco = document.getElementById('endereco').value;
                     results = await buscarAeroporto(endereco);
@@ -225,7 +206,7 @@
                     break;
             }
             
-            // Mostrar resultados
+            
             resultsContent.innerHTML = results;
             resultsContainer.style.display = 'block';
             
@@ -233,13 +214,12 @@
             resultsContent.innerHTML = '<p class="error">Erro ao realizar a busca. Tente novamente.</p>';
             resultsContainer.style.display = 'block';
         } finally {
-            // Restaurar botão
             searchBtn.textContent = 'Buscar';
             searchBtn.disabled = false;
         }
     }
 
-    // Funções de busca usando APIs reais
+    
     async function buscarAeroporto(endereco) {
         return await buscarAeroportoReal(endereco);
     }
@@ -252,98 +232,34 @@
         return await buscarRotaReal(origem, destino);
     }
 
-    // Event listener para o formulário
+   
     document.addEventListener('DOMContentLoaded', function() {
         const searchForm = document.getElementById('search-form');
         if (searchForm) {
             searchForm.addEventListener('submit', performSearch);
         }
     });
-</script>
-<script type="module" src="../pages/usuarios.js"></script>
 
-<script type="module">
-    import { getIdUsuarios } from "../pages/usuarios.js";
-    getIdUsuarios();
-</script>
-<script>
-    function editarUsuario() {
-        const inputs = document.querySelectorAll("#form-container-usuario input")
-        if (inputs[0].disabled == false) {
-            inputs.forEach(input => {
-                input.disabled = true;
-            });
-            document.getElementById("btn-atualizar").style.display = "none"
-            return
-        }
-        inputs.forEach(input => {
-            input.disabled = false;
-        });
-
-        document.getElementById("btn-atualizar").style.display = "block"
-    }
-</script>
-<script src="https://unpkg.com/imask"></script>
-<script type="module">
-    import { capitalizar } from "../utils/stringUtils.js";
-    var cpfElement = document.getElementById("input_cpf");
-    var telefoneElement = document.getElementById("input_telefone");
-    var nomeElement = document.getElementById("input_nome");
-    var cpfMask = IMask(cpfElement, {
-        mask: "000.000.000-00"
-    });
-
-    var telefoneMask = IMask(telefoneElement, {
-        mask: "(00) 00000-0000"
-    });
-
-    nomeElement.addEventListener("blur", () => {
-        nomeElement.value = capitalizar(nomeElement.value);
-
-    });
-</script>
-<script>
-
-    if (document.querySelector("#btn-dropdown")) {
-        document.querySelector("#btn-dropdown").addEventListener("click", abrirDropDown);
-    }
-    function abrirDropDown() {
-        const dropdown = document.querySelector(".dropdown-content");
-        const displayAtual = window.getComputedStyle(dropdown).display;
-
-        if (displayAtual === "none") {
-            dropdown.style.display = "flex";
-        } else {
-            dropdown.style.display = "none";
-        }
-    }
-
-    function logout(){
-        sessionStorage.clear()
-        window.location.href = 
-'/login';
-    }
-
-</script>
-
-<script>
     const modal = document.getElementById("modal-desativar");
-const btnDesativar = document.getElementById("btn-desativar");
-const btnCancelar = document.getElementById("cancelar-desativar");
-const btnConfirmar = document.getElementById("confirmar-desativar");
+    const btnDesativar = document.getElementById("btn-desativar");
+    const btnCancelar = document.getElementById("cancelar-desativar");
+    const btnConfirmar = document.getElementById("confirmar-desativar");
+    const mainContent = document.getElementById("main-content");
 
-btnDesativar.addEventListener("click", () => {
-  modal.style.display = "flex";
-});
+    btnDesativar.addEventListener("click", () => {
+    modal.style.display = "flex";
+    if (mainContent) mainContent.style.display = "none";
+    });
 
-btnCancelar.addEventListener("click", () => {
-  modal.style.display = "none";
-});
+    btnCancelar.addEventListener("click", () => {
+    modal.style.display = "none";
+    if (mainContent) mainContent.style.display = "block";
+    });
 
-btnConfirmar.addEventListener("click", async () => {
-    
-  modal.style.display = "none";
-});
-
+    btnConfirmar.addEventListener("click", async () => {
+    modal.style.display = "none";
+    if (mainContent) mainContent.style.display = "block";
+    });
 </script>
+
 

@@ -1007,11 +1007,13 @@ body {
     cursor: not-allowed;
     pointer-events: none;
 }
-
-/* Animações para o modal */
-.modal-overlay {
+.modal-overlay{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    display: none;
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: opacity 0.3s ease-in-out
 }
 
 .modal-overlay.active {
