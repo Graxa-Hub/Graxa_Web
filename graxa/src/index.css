@@ -39,4 +39,17 @@ body {
   color: white;
 }
 
+/* Modificando os botões em cima do calendário */
+.fc-button {
+  background-color: #FF5300 !important;
+  border: solid 1px white !important;
+}
+
+.fc-button:disabled {
+  background-color: #702702;
+  border: solid 1px gray !important;
+
+  color: #aaa;
+}
+
 /* Modificando os eventos registrados */
