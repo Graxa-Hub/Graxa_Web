@@ -10,7 +10,8 @@ export const Content = () => {
       <SecondaryNav />
 
       {/* Routing or Content */}
-      <Routes>{/* <Route path="/" element={}/> */}</Routes>
+
+      {/* <Routes><Route path="/" element={}/></Routes> */}
     </Layout>
   );
 };
