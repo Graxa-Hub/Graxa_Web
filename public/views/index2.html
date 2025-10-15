@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
     <link rel="stylesheet" href="../style/styles3.css">
+
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
+
+    <script src="https://unpkg.com/@mapbox/polyline"></script>
     <script src="../utils/api-functions.js"></script>
     <title>Graxa</title>
 </head>
@@ -240,26 +245,26 @@
         }
     });
 
-    const modal = document.getElementById("modal-desativar");
+    //const modal = document.getElementById("modal-desativar");
     const btnDesativar = document.getElementById("btn-desativar");
     const btnCancelar = document.getElementById("cancelar-desativar");
     const btnConfirmar = document.getElementById("confirmar-desativar");
     const mainContent = document.getElementById("main-content");
 
-    btnDesativar.addEventListener("click", () => {
-    modal.style.display = "flex";
-    if (mainContent) mainContent.style.display = "none";
-    });
+    // btnDesativar.addEventListener("click", () => {
+    // modal.style.display = "flex";
+    // if (mainContent) mainContent.style.display = "none";
+    // });
 
-    btnCancelar.addEventListener("click", () => {
-    modal.style.display = "none";
-    if (mainContent) mainContent.style.display = "block";
-    });
+    // btnCancelar.addEventListener("click", () => {
+    // modal.style.display = "none";
+    // if (mainContent) mainContent.style.display = "block";
+    // });
 
-    btnConfirmar.addEventListener("click", async () => {
-    modal.style.display = "none";
-    if (mainContent) mainContent.style.display = "block";
-    });
+    // btnConfirmar.addEventListener("click", async () => {
+    // modal.style.display = "none";
+    // if (mainContent) mainContent.style.display = "block";
+    // });
 </script>
 
 
