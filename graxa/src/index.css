@@ -20,3 +20,23 @@ body {
     linear-gradient(to bottom, #ffffff44 1px, transparent 1px);
   background-size: 50px 50px;
 }
+
+/* FullCalendar header title branco */
+.fc-toolbar-title {
+  color: #fff !important;
+}
+
+
+/* Modificando os dias do calendário */
+.fc-daygrid-day-number {
+  color: #fff !important;
+  font-weight: normal !important;
+}
+
+/* Modificando os dias de semana do calendário */
+.fc-col-header-cell {
+  background-color: rgba(255, 85, 0, 1);
+  color: white;
+}
+
+/* Modificando os eventos registrados */
