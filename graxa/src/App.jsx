@@ -4,6 +4,9 @@ import { Login } from "./pages/Login";
 import { Route, Routes } from "react-router-dom";
 import { Cadastro } from "./pages/Cadastro";
 import { Dashboard } from "./pages/Dashboard";
+import { Local } from "./pages/Local";
+import { Grupo } from "./pages/Grupo";
+import { Shows } from "./pages/Shows";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -14,6 +17,9 @@ function App() {
       <Route path="/login" element={<Login />}></Route>
       <Route path="/cadastro" element={<Cadastro />}></Route>
       <Route path="/dashboard" element={<Dashboard />}></Route>
+      <Route path="/local" element={<Local />}></Route>
+      <Route path="/grupo" element={<Grupo />}></Route>
+      <Route path="/shows" element={<Shows />}></Route>
     </Routes>
   );
 }

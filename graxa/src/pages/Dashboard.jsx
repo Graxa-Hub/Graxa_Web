@@ -2,6 +2,8 @@ import React from "react";
 import { RootLayout } from "../components/Dashboard/RootLayout";
 import BgImg from "/cadastro-bg2.png";
 import { Navbar } from "../components/Dashboard/Navbar";
+import { SecondaryNav } from "../components/Dashboard/SecondaryNav";
+import { Calendar } from "../components/Dashboard/Calendar";
 import { Content } from "../components/Dashboard/Content";
 
 export const Dashboard = () => {
@@ -23,7 +25,12 @@ export const Dashboard = () => {
         <Navbar />
 
         {/* Dashboard */}
-        <Content />
+        <Content>
+          {/* Secondary Navbar */}
+          <SecondaryNav />
+          {/* Routing or Content */}
+          <Calendar />
+        </Content>
       </div>
     </RootLayout>
   );

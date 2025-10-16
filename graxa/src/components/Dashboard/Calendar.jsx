@@ -2,7 +2,7 @@ import React from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 
-const Calendar = () => {
+export const Calendar = () => {
   return (
     <FullCalendar
       height={550}
