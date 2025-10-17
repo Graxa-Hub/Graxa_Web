@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   TbBell,
@@ -7,8 +7,12 @@ import {
   TbSearch,
   TbUser,
 } from "react-icons/tb";
+import { Endereço } from "./Endereço";
 
 export const SecondaryNav = () => {
+  const [open, setOpen] = useState(false);
+  const [resultado, setResultado] = useState(null);
+
   return (
     <nav className="w-full flex items-center justify-between border-b border-neutral-200/20 pb-2">
       {/* Logo Section */}
@@ -18,9 +22,18 @@ export const SecondaryNav = () => {
       </div>
 
       <div className="flex items-center justify-center">
-        <div className="w-10 h-10 rounded-full bg-neutral-950/20 p-1 flex items-center justify-center cursor-pointer ease-in-out duration-300 text-lg text-neutral-100">
+        <button
+          onClick={() => setOpen(true)}
+          className="w-10 h-10 rounded-full bg-neutral-950/20 p-1 flex items-center justify-center cursor-pointer ease-in-out duration-300 text-lg text-neutral-100"
+        >
           <TbSearch className="text-2xl" />
-        </div>
+        </button>
+
+        <Endereço
+          open={open}
+          onClose={() => setOpen(false)}
+          onResult={(r) => setResultado(r)}
+        />
       </div>
 
       <div className="flex items-center gap-x-5">
