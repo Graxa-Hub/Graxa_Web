@@ -21,6 +21,10 @@ body {
   background-size: 50px 50px;
 }
 
+/* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
+/* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
+/* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
+
 /* FullCalendar header title branco */
 .fc-toolbar-title {
   color: #fff !important;
@@ -35,21 +39,68 @@ body {
 
 /* Modificando os dias de semana do calendário */
 .fc-col-header-cell {
-  background-color: rgba(255, 85, 0, 1);
+  background-color: rgb(217, 217, 217, 30%);
   color: white;
 }
 
 /* Modificando os botões em cima do calendário */
 .fc-button {
-  background-color: #FF5300 !important;
+  background-color: rgb(217, 217, 217, );
   border: solid 1px white !important;
 }
 
 .fc-button:disabled {
-  background-color: #702702;
+  background-color: rgb(255, 255, 255, 30%);
   border: solid 1px gray !important;
 
   color: #aaa;
 }
 
-/* Modificando os eventos registrados */
+/* LISTA LISTA LISTA LISTA LISTA */
+/* LISTA LISTA LISTA LISTA LISTA */
+/* LISTA LISTA LISTA LISTA LISTA */
+
+/* Cabeçalho do dia/mês: .fc-list-day-cushion, .fc-list-day-text, .fc-list-day-side-text
+Linha do evento: .fc-list-event
+Hora do evento: .fc-list-event-time
+Título do evento: .fc-list-event-title a
+Bolinha do evento: .fc-list-event-dot (fica dentro de .fc-list-event-graphic)
+Tabela da lista: .fc-list-table */
+
+/* Se quiser esconder a bolinha completamente: */
+.fc .fc-list-event-graphic {
+  display: none;
+}
+
+/* Cabeçalho do dia/mês totalmente transparente */
+.fc .fc-list-day,
+.fc .fc-list-day-cushion {
+  /* background: transparent !important; */
+  background-color: orangered;
+  box-shadow: none !important;
+}
+
+/* Texto do cabeçalho legível sobre seu fundo */
+.fc .fc-list-day-cushion .fc-list-day-text,
+.fc .fc-list-day-cushion .fc-list-day-side-text {
+  color: white !important;
+}
+
+/* Header do month grid */
+.fc-col-header-cell {
+  /* background-color: rgba(217, 217, 217, 0.3); */
+  color: white;
+}
+
+/* Espaçamento geral da tabela para criar “respiro” entre blocos */
+.fc .fc-list-table>tbody>tr>td,
+.fc .fc-list-table>thead>tr>td {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background: rgb(255, 255, 255, 50%);
+  cursor: pointer;
+}
+
+.fc-h-event .fc-event-title-container {
+  cursor: pointer;
+}

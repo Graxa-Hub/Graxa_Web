@@ -5,6 +5,7 @@ import { Navbar } from "../components/Dashboard/Navbar";
 import { SecondaryNav } from "../components/Dashboard/SecondaryNav";
 import { Calendar } from "../components/Dashboard/Calendar";
 import { Content } from "../components/Dashboard/Content";
+import { Lista } from "../components/Dashboard/Lista";
 
 export const Dashboard = () => {
   return (
@@ -28,8 +29,10 @@ export const Dashboard = () => {
         <Content>
           {/* Secondary Navbar */}
           <SecondaryNav />
-          {/* Routing or Content */}
-          <Calendar />
+          <div className="flex flex-row gap-1 col-2">
+            <Calendar />
+            <Lista />
+          </div>
         </Content>
       </div>
     </RootLayout>

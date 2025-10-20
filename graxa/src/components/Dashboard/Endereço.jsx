@@ -1,12 +1,12 @@
 // EnderecoModal.jsx
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
 
 export function Endereço({ open, onClose, onResult }) {
   const [origem, setOrigem] = useState("");
   const [destino, setDestino] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
+  const [tab, setTab] = useState("aeroporto"); // aeroporto | hotel | mapa
 
   if (!open) return null;
 
@@ -26,61 +26,58 @@ export function Endereço({ open, onClose, onResult }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/40 flex flex-col items-center justify-start p-6 z-50"
+      className="absolute inset-0 bg-black/40 flex flex-col items-center justify-start p-4 z-50"
       onClick={onClose}
     >
       <div
-        className="flex flex-row justify-between items-center bg-white rounded-full h-10 px-3 w-full max-w-sm shadow-xl ml-25"
+        className="flex flex-row justify-between items-center gap-4 bg-white rounded-full h-10 px-2 w-full max-w-sm shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <NavLink
-          to=""
-          className={({ isActive }) =>
-            `flex items-center justify-center w-25 p-1 bg-neutral-400 rounded-full
-          ${
-            isActive
-              ? "bg-neutral-300/30 text-white ring-2 ring-white/20"
-              : "hover:bg-neutral-300/20 text-neutral-100 hover:text-neutral-200"
-          }`
-          }
+        <button
+          type="button"
+          onClick={() => setTab("aeroporto")}
+          className={`flex items-center justify-center w-30 px-3 py-1 rounded-full transition-colors duration-300 ${
+            tab === "aeroporto"
+              ? "text-white bg-black"
+              : "text-neutral-900 font-bold hover:bg-neutral-300/60"
+          }`}
         >
           Aeroporto
-        </NavLink>
-        <NavLink
-          to=""
-          className={({ isActive }) =>
-            `w-25 p-1 rounded-full flex items-center justify-center text-lg transition-all duration-300
-          ${
-            isActive
-              ? "bg-black  text-white"
-              : "hover:bg-neutral text-neutral-100 hover:text-neutral-200 text-black"
-          }`
-          }
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("hotel")}
+          className={`lex items-center justify-center w-30 px-3 py-1 rounded-full transition-colors duration-300 ${
+            tab === "hotel"
+              ? "text-white bg-black"
+              : "text-neutral-900 font-bold hover:bg-neutral-300/60"
+          }`}
+        >
+          Restaurante
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("mapa")}
+          className={`lex items-center justify-center w-30 px-3 py-1 rounded-full transition-colors duration-300 ${
+            tab === "mapa"
+              ? "text-white bg-black"
+              : "text-neutral-900 font-bold hover:bg-neutral-300/60"
+          }`}
         >
           Hotel
-        </NavLink>
-        <NavLink
-          to=""
-          className={({ isActive }) =>
-            `flex items-center justify-center w-25 p-1 bg-neutral-400 rounded-full
-          ${
-            isActive
-              ? "bg-neutral-300/30 text-white ring-2 ring-white/20"
-              : "hover:bg-neutral-300/20 text-neutral-100 hover:text-neutral-200"
-          }`
-          }
-        >
-          Aeroporto
-        </NavLink>
+        </button>
       </div>
 
       <div
-        className="bg-white rounded-lg p-4 w-full max-w-sm shadow-xl mt-12 ml-25"
+        className="bg-white rounded-lg p-4 w-full max-w-sm shadow-xl mt-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-2xl font-bold">Buscar Aeroporto</h2>
-          <p>Ajustar sem margin</p>
+          <h2 className="text-2xl font-bold">
+            {tab === "aeroporto" && "Buscar Aeroporto"}
+            {tab === "hotel" && "Buscar Restaurante"}
+            {tab === "mapa" && "Buscar Hotel"}
+          </h2>
           <div
             className="h-6 w-6 flex items-center justify-center rounded-full bg-black
             hover:bg-neutral-200 text-white hover:text-neutral-800 transition-all duration-100 ease-in-out
