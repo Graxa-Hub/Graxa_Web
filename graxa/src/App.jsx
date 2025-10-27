@@ -1,7 +1,8 @@
 import { useState } from "react";
 import "./index.css";
-import { Login } from "./pages/Login";
 import { Route, Routes } from "react-router-dom";
+
+import { Login } from "./pages/Login";
 import { Cadastro } from "./pages/Cadastro";
 import { Dashboard } from "./pages/Dashboard";
 import { Local } from "./pages/Local";
@@ -13,13 +14,13 @@ function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<Login />}></Route>
-      <Route path="/login" element={<Login />}></Route>
-      <Route path="/cadastro" element={<Cadastro />}></Route>
-      <Route path="/dashboard" element={<Dashboard />}></Route>
-      <Route path="/local" element={<Local />}></Route>
-      <Route path="/grupo" element={<Grupo />}></Route>
-      <Route path="/shows" element={<Shows />}></Route>
+      <Route path="/" element={<Login />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/cadastro" element={<Cadastro />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/local" element={<Local />} />
+      <Route path="/grupo" element={<Grupo />} />
+      <Route path="/shows" element={<Shows />} />
     </Routes>
   );
 }
