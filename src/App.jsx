@@ -8,19 +8,24 @@ import { Dashboard } from "./pages/Dashboard";
 import { Local } from "./pages/Local";
 import { Grupo } from "./pages/Grupo";
 import { Shows } from "./pages/Shows";
+import { HomeRedirect } from "./components/HomeRedirect";
+import { ProtectedLayout } from "./components/ProtectedLayout";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
+    
     <Routes>
-      <Route path="/" element={<Login />} />
+      <Route path="/" element={<HomeRedirect />} />
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<Cadastro />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/local" element={<Local />} />
-      <Route path="/grupo" element={<Grupo />} />
-      <Route path="/shows" element={<Shows />} />
+      <Route element={<ProtectedLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/local" element={<Local />} />
+        <Route path="/grupo" element={<Grupo />} />
+        <Route path="/shows" element={<Shows />} />
+      </Route>
     </Routes>
   );
 }

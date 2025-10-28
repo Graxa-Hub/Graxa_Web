@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Input } from "../components/LoginCadastro/Input";
 import { Label } from "../components/LoginCadastro/Label";
 import { ButtonExtra } from "../components/LoginCadastro/ButtonExtra";
@@ -9,53 +9,111 @@ import { Titulo } from "../components/LoginCadastro/Titulo";
 import { Forms } from "../components/LoginCadastro/Forms";
 import { ButtonAlt } from "../components/LoginCadastro/ButtonAlt";
 import { Logo } from "../components/LoginCadastro/Logo";
+import { useLogin } from "../hooks/useLogin";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export const Login = () => {
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const { handleLogin, loading } = useLogin();
+  const { loginToContext } = useAuth();
+  const navigate = useNavigate();
+
+  const loginUser = async () => {
+    const errors = {};
+
+    if (!email.trim()) errors.identificador = "Preencha o email";
+    if (!senha.trim()) errors.senha = "Preencha a senha";
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      return;
+    }
+
+    setFieldErrors({});
+
+    const data = await handleLogin({ identificador: email, senha });
+
+    if (data?.token) {
+      loginToContext(data);
+      navigate("/dashboard");
+    } else if (Array.isArray(data?.erros)) {
+      const errorsByField = data.erros.reduce((acc, err) => {
+        acc[err.campo] = err.mensagem;
+        return acc;
+      }, {});
+      setFieldErrors(errorsByField);
+    } else if (data.status === 401) {
+      setFieldErrors({ geral: "Usuario ou Senha invalido(s)"});
+    } else {
+      console.log(data)
+      setFieldErrors({ geral: "Erro ao fazer login" });
+    }
+  };
+
   return (
     <Layout backgroundImage="/login-bg.png">
       <div className="p-6 rounded-bl-xl rounded-tl-xl bg-gray-50">
-        {/* Título */}
         <Titulo
           titulo="Faça seu login"
           descricao="Entre na sua conta para organizar a sua vida"
         />
 
-        {/* Formulário */}
-        <Forms>
-          {/* Email */}
+        <Forms onSubmit={(e) => e.preventDefault()}>
           <div>
             <Label>Email:</Label>
-            <Input placeholder={"seu@email.com"} />
+            <Input
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={fieldErrors.identificador ? "border-red-500" : "border-gray-400"}
+            />
+            {fieldErrors.identificador && (
+              <p className="text-red-500 text-sm mt-1">{fieldErrors.identificador}</p>
+            )}
           </div>
 
-          {/* Senha */}
           <div className="mt-2">
             <Label>Senha:</Label>
-            <Input type="password" placeholder={"********"} />
+            <Input
+              type="password"
+              placeholder="********"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              className={fieldErrors.senha ? "border-red-500" : "border-gray-400"}
+            />
+            {fieldErrors.senha && (
+              <p className="text-red-500 text-sm mt-1">{fieldErrors.senha}</p>
+            )}
           </div>
 
-          {/* Esqueceu a senha */}
           <ButtonExtra>Esqueceu a senha?</ButtonExtra>
 
-          {/* Button de Logar */}
-          <ButtonSign className="hover:bg-orange-500" to={"../dashboard"}>
-            Entrar
+          <ButtonSign
+            className="hover:bg-orange-500"
+            onClick={loginUser}
+            disabled={loading}
+          >
+            {loading ? "Entrando..." : "Entrar"}
           </ButtonSign>
 
-          {/* Button login para cadastro */}
+          {fieldErrors.geral && (
+            <p className="text-red-500 text-sm mt-2">{fieldErrors.geral}</p>
+          )}
+
           <ButtonAlt
-            text={"Não tem conta?"}
-            buttonText={"Cadastre-se"}
-            textColor={"orange-500"}
-            to={"../cadastro"}
+            text="Não tem conta?"
+            buttonText="Cadastre-se"
+            textColor="orange-500"
+            to="../cadastro"
           />
 
-          {/* Logo */}
           <Logo />
         </Forms>
       </div>
 
-      {/* Tela Laranja a Direita */}
       <Grid
         backgroundColor="bg-orange-500"
         borderRadius="rounded-tr-lg rounded-br-lg"
