@@ -34,7 +34,7 @@ export const Login = () => {
 
     setFieldErrors({});
 
-    const data = await handleLogin({ identificador: email, senha });
+    const data = await handleLogin({ identificador: email.trim(), senha: senha.trim() });
 
     if (data?.token) {
       loginToContext(data);

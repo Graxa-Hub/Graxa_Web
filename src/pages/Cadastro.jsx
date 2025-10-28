@@ -49,20 +49,21 @@ export const Cadastro = () => {
     }
 
     const response = await handleRegister({
-      nome,
-      apelido,
-      dataNascimento,
-      telefone,
-      cpf,
-      tipoUsuario,
-      email,
-      senha,
-      confirmarSenha,
+      nome: nome.trim(),
+      apelido: apelido.trim(),
+      dataNascimento: dataNascimento.trim(),
+      telefone: telefone.trim(),
+      cpf: cpf.trim(),
+      tipoUsuario: tipoUsuario.trim(),
+      email: email.trim(),
+      senha: senha.trim(),
+      confirmarSenha: confirmarSenha.trim(),
     });
+
     console.log("Resposta do registro:", response);
 
     if (response) {
-      loginToContext({token:response.token,usuario: response.usuario});
+      loginToContext({ token: response.token, usuario: response.usuario });
       setNome("");
       setApelido("");
       setDataNascimento("");
