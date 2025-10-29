@@ -104,3 +104,57 @@ Tabela da lista: .fc-list-table */
 .fc-h-event .fc-event-title-container {
   cursor: pointer;
 }
+
+/* ...existing code... */
+.meteors {
+  position: absolute;
+  /* cobre o container pai */
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+  /* ajustar para ficar atrás ou na frente do conteúdo */
+}
+
+.meteor {
+  position: absolute;
+  left: var(--left, 50%);
+  top: var(--top, 5%);
+  width: var(--size, 120px);
+  height: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
+  transform: rotate(var(--angle, -30deg));
+  filter: blur(0.8px);
+  opacity: 0;
+  animation: meteor-shoot var(--duration, 3s) linear var(--delay, 0s) forwards;
+}
+
+@keyframes meteor-shoot {
+  0% {
+    transform: translate(0, 0) rotate(var(--angle, -30deg));
+    opacity: 0;
+  }
+
+  8% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translate(-120vw, 120vh) rotate(calc(var(--angle, -30deg) + 25deg));
+    opacity: 0;
+  }
+}
+
+.meteor.small {
+  height: 1px;
+  filter: blur(0.5px);
+  width: calc(var(--size) * 0.6);
+}
+
+.meteor.long {
+  height: 3px;
+  filter: blur(1.4px);
+  width: calc(var(--size) * 1.4);
+}
+
+/* ...existing code... */
