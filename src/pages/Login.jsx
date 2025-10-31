@@ -21,6 +21,8 @@ export const Login = () => {
   const { loginToContext } = useAuth();
   const navigate = useNavigate();
 
+  // note: responsive hiding of Grid is handled in markup via Tailwind classes
+
   const loginUser = async () => {
     const errors = {};
 
@@ -34,7 +36,10 @@ export const Login = () => {
 
     setFieldErrors({});
 
-    const data = await handleLogin({ identificador: email.trim(), senha: senha.trim() });
+    const data = await handleLogin({
+      identificador: email.trim(),
+      senha: senha.trim(),
+    });
 
     if (data?.token) {
       loginToContext(data);
@@ -46,16 +51,16 @@ export const Login = () => {
       }, {});
       setFieldErrors(errorsByField);
     } else if (data.status === 401) {
-      setFieldErrors({ geral: "Usuario ou Senha invalido(s)"});
+      setFieldErrors({ geral: "Usuario ou Senha invalido(s)" });
     } else {
-      console.log(data)
+      console.log(data);
       setFieldErrors({ geral: "Erro ao fazer login" });
     }
   };
 
   return (
-    <Layout backgroundImage="/login-bg.png">
-      <div className="p-6 rounded-bl-xl rounded-tl-xl bg-gray-50">
+    <Layout>
+      <div className="p-6 bg-gray-50">
         <Titulo
           titulo="Faça seu login"
           descricao="Entre na sua conta para organizar a sua vida"
@@ -68,10 +73,14 @@ export const Login = () => {
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={fieldErrors.identificador ? "border-red-500" : "border-gray-400"}
+              className={
+                fieldErrors.identificador ? "border-red-500" : "border-gray-400"
+              }
             />
             {fieldErrors.identificador && (
-              <p className="text-red-500 text-sm mt-1">{fieldErrors.identificador}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {fieldErrors.identificador}
+              </p>
             )}
           </div>
 
@@ -82,7 +91,9 @@ export const Login = () => {
               placeholder="********"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className={fieldErrors.senha ? "border-red-500" : "border-gray-400"}
+              className={
+                fieldErrors.senha ? "border-red-500" : "border-gray-400"
+              }
             />
             {fieldErrors.senha && (
               <p className="text-red-500 text-sm mt-1">{fieldErrors.senha}</p>
@@ -110,14 +121,14 @@ export const Login = () => {
             to="../cadastro"
           />
 
-          <Logo />
+          <Logo textColor={"orange"} />
         </Forms>
       </div>
 
-      <Grid
-        backgroundColor="bg-orange-500"
-        borderRadius="rounded-tr-lg rounded-br-lg"
-      />
+      {/* hide Grid on small screens via Tailwind: hidden below sm (640px) */}
+      <div className="hidden sm:block">
+        <Grid backgroundColor="bg-orange-500" />
+      </div>
     </Layout>
   );
 };

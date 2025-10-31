@@ -24,7 +24,8 @@ export const Cadastro = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
-  const { handleRegister, loading, fieldErrors, setFieldErrors } = useRegister();
+  const { handleRegister, loading, fieldErrors, setFieldErrors } =
+    useRegister();
   const { loginToContext } = useAuth();
   const navigate = useNavigate();
 
@@ -32,13 +33,15 @@ export const Cadastro = () => {
     const errors = {};
     if (!nome) errors.nome = "Nome é obrigatório";
     if (!apelido) errors.apelido = "Apelido é obrigatório";
-    if (!dataNascimento) errors.dataNascimento = "Data de nascimento é obrigatória";
+    if (!dataNascimento)
+      errors.dataNascimento = "Data de nascimento é obrigatória";
     if (!telefone) errors.telefone = "Telefone é obrigatório";
     if (!cpf) errors.cpf = "CPF é obrigatório";
     if (!tipoUsuario) errors.tipoUsuario = "Tipo de usuário é obrigatório";
     if (!email) errors.email = "Email é obrigatório";
     if (!senha) errors.senha = "Senha é obrigatória";
-    if (!confirmarSenha) errors.confirmarSenha = "Confirmação de senha é obrigatória";
+    if (!confirmarSenha)
+      errors.confirmarSenha = "Confirmação de senha é obrigatória";
     return errors;
   };
 
@@ -78,10 +81,16 @@ export const Cadastro = () => {
   };
 
   return (
-    <Layout backgroundImage="/cadastro-bg2.png" padding="py-10">
-      <Grid backgroundColor="bg-purple-950" borderRadius="rounded-tl-lg rounded-bl-lg" />
+    <Layout padding="py-10">
+      <Grid
+        backgroundColor="bg-purple-950"
+        borderRadius="rounded-tl-lg rounded-bl-lg"
+      />
       <div className="w-full p-6 rounded-br-xl rounded-tr-xl bg-gray-50">
-        <Titulo titulo="Crie a sua conta" descricao="Comece a sua jornada conosco!" />
+        <Titulo
+          titulo="Crie a sua conta"
+          descricao="Comece a sua jornada conosco!"
+        />
         <Forms>
           <div className="grid grid-cols-2 gap-5">
             <div>
@@ -92,7 +101,9 @@ export const Cadastro = () => {
                 placeholder="Nome"
                 className={fieldErrors.nome ? "border-red-500" : ""}
               />
-              {fieldErrors.nome && <p className="text-red-500 text-sm">{fieldErrors.nome}</p>}
+              {fieldErrors.nome && (
+                <p className="text-red-500 text-sm">{fieldErrors.nome}</p>
+              )}
             </div>
 
             <div>
@@ -103,7 +114,9 @@ export const Cadastro = () => {
                 placeholder="Apelido"
                 className={fieldErrors.apelido ? "border-red-500" : ""}
               />
-              {fieldErrors.apelido && <p className="text-red-500 text-sm">{fieldErrors.apelido}</p>}
+              {fieldErrors.apelido && (
+                <p className="text-red-500 text-sm">{fieldErrors.apelido}</p>
+              )}
             </div>
           </div>
 
@@ -116,7 +129,11 @@ export const Cadastro = () => {
                 onChange={(e) => setDataNascimento(e.target.value)}
                 className={fieldErrors.dataNascimento ? "border-red-500" : ""}
               />
-              {fieldErrors.dataNascimento && <p className="text-red-500 text-sm">{fieldErrors.dataNascimento}</p>}
+              {fieldErrors.dataNascimento && (
+                <p className="text-red-500 text-sm">
+                  {fieldErrors.dataNascimento}
+                </p>
+              )}
             </div>
 
             <div>
@@ -134,7 +151,9 @@ export const Cadastro = () => {
                   />
                 )}
               </InputMask>
-              {fieldErrors.telefone && <p className="text-red-500 text-sm">{fieldErrors.telefone}</p>}
+              {fieldErrors.telefone && (
+                <p className="text-red-500 text-sm">{fieldErrors.telefone}</p>
+              )}
             </div>
           </div>
 
@@ -153,7 +172,9 @@ export const Cadastro = () => {
                 />
               )}
             </InputMask>
-            {fieldErrors.cpf && <p className="text-red-500 text-sm">{fieldErrors.cpf}</p>}
+            {fieldErrors.cpf && (
+              <p className="text-red-500 text-sm">{fieldErrors.cpf}</p>
+            )}
           </div>
 
           <div>
@@ -167,7 +188,9 @@ export const Cadastro = () => {
               ]}
               className={fieldErrors.tipoUsuario ? "border-red-500" : ""}
             />
-            {fieldErrors.tipoUsuario && <p className="text-red-500 text-sm">{fieldErrors.tipoUsuario}</p>}
+            {fieldErrors.tipoUsuario && (
+              <p className="text-red-500 text-sm">{fieldErrors.tipoUsuario}</p>
+            )}
           </div>
 
           <div>
@@ -179,10 +202,10 @@ export const Cadastro = () => {
               placeholder="seu@email.com"
               className={fieldErrors.email ? "border-red-500" : ""}
             />
-            {fieldErrors.email && <p className="text-red-500 text-sm">{fieldErrors.email}</p>}
+            {fieldErrors.email && (
+              <p className="text-red-500 text-sm">{fieldErrors.email}</p>
+            )}
           </div>
-
-
 
           <div>
             <Label>Senha:</Label>
@@ -193,7 +216,9 @@ export const Cadastro = () => {
               placeholder="********"
               className={fieldErrors.senha ? "border-red-500" : ""}
             />
-            {fieldErrors.senha && <p className="text-red-500 text-sm">{fieldErrors.senha}</p>}
+            {fieldErrors.senha && (
+              <p className="text-red-500 text-sm">{fieldErrors.senha}</p>
+            )}
           </div>
 
           <div>
@@ -206,7 +231,9 @@ export const Cadastro = () => {
               className={fieldErrors.confirmarSenha ? "border-red-500" : ""}
             />
             {fieldErrors.confirmarSenha && (
-              <p className="text-red-500 text-sm">{fieldErrors.confirmarSenha}</p>
+              <p className="text-red-500 text-sm">
+                {fieldErrors.confirmarSenha}
+              </p>
             )}
           </div>
 
@@ -227,7 +254,7 @@ export const Cadastro = () => {
             to="../login"
           />
 
-          <Logo textColor="purple-950" />
+          <Logo textColor={"purple"} />
         </Forms>
       </div>
     </Layout>
