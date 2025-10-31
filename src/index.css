@@ -104,3 +104,56 @@ Tabela da lista: .fc-list-table */
 .fc-h-event .fc-event-title-container {
   cursor: pointer;
 }
+
+/* Compact day cells for FullCalendar dayGrid (make month squares less tall) */
+.fc .fc-daygrid-day {
+  /* reduce the minimum height of each day cell */
+  min-height: 48px;
+}
+
+.fc .fc-daygrid-day .fc-daygrid-day-frame {
+  padding: 4px 6px;
+}
+
+.fc .fc-daygrid-day-number {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+/* slightly larger cells on wider screens */
+@media (min-width: 768px) {
+  .fc .fc-daygrid-day {
+    min-height: 56px;
+  }
+}
+
+/* Mini calendar: allow it to fill column height so it can match the main calendar */
+.mini-calendar {
+  width: 100%;
+  margin: 0;
+}
+
+.mini-calendar .fc {
+  /* let FullCalendar fill the wrapper height so mini matches the main calendar */
+  height: 100% !important;
+  overflow: auto;
+}
+
+.mini-calendar .fc-daygrid-day {
+  /* keep cells compact */
+  min-height: 44px !important;
+}
+
+.mini-calendar .fc-daygrid-day .fc-daygrid-day-frame {
+  padding: 4px !important;
+  box-sizing: border-box !important;
+}
+
+.mini-calendar .fc-daygrid-day-number {
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+}
+
+.mini-calendar .fc-col-header-cell {
+  padding: 4px 6px !important;
+}

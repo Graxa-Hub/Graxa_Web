@@ -10,6 +10,7 @@ import { Dashboard } from "./pages/Dashboard";
 // import { Shows } from "./pages/Shows";
 import { HomeRedirect } from "./components/HomeRedirect";
 import { ProtectedLayout } from "./components/ProtectedLayout";
+import { MyOrders } from "./pages/MyOrders";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -21,6 +22,7 @@ function App() {
       {/* <Route path="/cadastro" element={<Cadastro />} /> */}
       {/* <Route element={<ProtectedLayout />}> */}
       <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/orders" element={<MyOrders />} />
       {/* <Route path="/local" element={<Local />} /> */}
       {/* <Route path="/grupo" element={<Grupo />} /> */}
       {/* <Route path="/shows" element={<Shows />} /> */}
