@@ -105,56 +105,55 @@ Tabela da lista: .fc-list-table */
   cursor: pointer;
 }
 
-/* ...existing code... */
-.meteors {
-  position: absolute;
-  /* cobre o container pai */
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-  z-index: 0;
-  /* ajustar para ficar atrás ou na frente do conteúdo */
+/* Compact day cells for FullCalendar dayGrid (make month squares less tall) */
+.fc .fc-daygrid-day {
+  /* reduce the minimum height of each day cell */
+  min-height: 48px;
 }
 
-.meteor {
-  position: absolute;
-  left: var(--left, 50%);
-  top: var(--top, 5%);
-  width: var(--size, 120px);
-  height: 2px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0));
-  transform: rotate(var(--angle, -30deg));
-  filter: blur(0.8px);
-  opacity: 0;
-  animation: meteor-shoot var(--duration, 3s) linear var(--delay, 0s) forwards;
+.fc .fc-daygrid-day .fc-daygrid-day-frame {
+  padding: 4px 6px;
 }
 
-@keyframes meteor-shoot {
-  0% {
-    transform: translate(0, 0) rotate(var(--angle, -30deg));
-    opacity: 0;
-  }
+.fc .fc-daygrid-day-number {
+  font-size: 0.78rem;
+  font-weight: 600;
+}
 
-  8% {
-    opacity: 1;
-  }
-
-  100% {
-    transform: translate(-120vw, 120vh) rotate(calc(var(--angle, -30deg) + 25deg));
-    opacity: 0;
+/* slightly larger cells on wider screens */
+@media (min-width: 768px) {
+  .fc .fc-daygrid-day {
+    min-height: 56px;
   }
 }
 
-.meteor.small {
-  height: 1px;
-  filter: blur(0.5px);
-  width: calc(var(--size) * 0.6);
+/* Mini calendar: allow it to fill column height so it can match the main calendar */
+.mini-calendar {
+  width: 100%;
+  margin: 0;
 }
 
-.meteor.long {
-  height: 3px;
-  filter: blur(1.4px);
-  width: calc(var(--size) * 1.4);
+.mini-calendar .fc {
+  /* let FullCalendar fill the wrapper height so mini matches the main calendar */
+  height: 100% !important;
+  overflow: auto;
 }
 
-/* ...existing code... */
+.mini-calendar .fc-daygrid-day {
+  /* keep cells compact */
+  min-height: 44px !important;
+}
+
+.mini-calendar .fc-daygrid-day .fc-daygrid-day-frame {
+  padding: 4px !important;
+  box-sizing: border-box !important;
+}
+
+.mini-calendar .fc-daygrid-day-number {
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+}
+
+.mini-calendar .fc-col-header-cell {
+  padding: 4px 6px !important;
+}
