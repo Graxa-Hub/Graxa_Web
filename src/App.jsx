@@ -5,28 +5,21 @@ import { Route, Routes } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Cadastro } from "./pages/Cadastro";
 import { Dashboard } from "./pages/Dashboard";
-// import { Local } from "./pages/Local";
-// import { Grupo } from "./pages/Grupo";
-// import { Shows } from "./pages/Shows";
 import { HomeRedirect } from "./components/HomeRedirect";
 import { ProtectedLayout } from "./components/ProtectedLayout";
-import { MyOrders } from "./pages/MyOrders";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <Routes>
+      <Route path="/" element={<HomeRedirect />} />
       <Route path="/" element={<Dashboard />} />
-      {/* <Route path="/login" element={<Login />} /> */}
-      {/* <Route path="/cadastro" element={<Cadastro />} /> */}
-      {/* <Route element={<ProtectedLayout />}> */}
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/orders" element={<MyOrders />} />
-      {/* <Route path="/local" element={<Local />} /> */}
-      {/* <Route path="/grupo" element={<Grupo />} /> */}
-      {/* <Route path="/shows" element={<Shows />} /> */}
-      {/* </Route> */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/cadastro" element={<Cadastro />} />
+      <Route element={<ProtectedLayout />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Route>
     </Routes>
   );
 }
