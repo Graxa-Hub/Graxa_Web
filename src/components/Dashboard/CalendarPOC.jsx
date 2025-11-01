@@ -86,6 +86,7 @@ export default function CalendarPOC({ onCalendarApi }) {
           the calendar will scroll internally when needed.
         */}
       <FullCalendar
+        className="graxa-calendar"
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"

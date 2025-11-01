@@ -157,3 +157,68 @@ Tabela da lista: .fc-list-table */
 .mini-calendar .fc-col-header-cell {
   padding: 4px 6px !important;
 }
+
+/* Custom FullCalendar card styling for Figma-like appearance */
+.graxa-calendar {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+  padding: 14px;
+}
+
+.graxa-calendar .fc-toolbar-chunk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.graxa-calendar .fc-toolbar-title {
+  font-weight: 700;
+  font-size: 1.02rem;
+  color: #111827;
+}
+
+.graxa-calendar .fc .fc-button {
+  border-radius: 9999px;
+  background: #f3f4f6;
+  border: 0;
+  color: #111827;
+  padding: 6px 10px;
+  font-weight: 600;
+}
+
+.graxa-calendar .fc .fc-button:hover {
+  background: #e6e7eb;
+}
+
+.graxa-calendar .fc .fc-button.fc-button-active,
+.graxa-calendar .fc .fc-button:active,
+.graxa-calendar .fc .fc-button:focus {
+  background: #ef4444;
+  color: #fff;
+}
+
+.graxa-calendar .fc .fc-col-header-cell {
+  color: #374151;
+  background: transparent;
+  font-weight: 600;
+}
+
+.graxa-calendar .fc .fc-timegrid-axis {
+  color: #9ca3af;
+  font-size: 0.82rem;
+}
+
+.graxa-calendar .fc .fc-daygrid-day {
+  min-height: 48px;
+}
+
+.graxa-calendar .fc {
+  height: 100% !important;
+}
+
+@media (min-width: 768px) {
+  .graxa-calendar {
+    padding: 18px;
+  }
+}
