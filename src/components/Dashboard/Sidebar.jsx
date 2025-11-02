@@ -29,78 +29,55 @@ export const Sidebar = () => {
         </header>
 
         {/* Botões Navbar */}
-        <nav className="flex flex-col flex-1 justify-between mt-4">
-          <ul className="flex flex-col gap-2">
-            <li>
-              <NavLink
-                to="/dashboard"
-                className={({ isActive }) =>
-                  `${
-                    isActive ? "bg-blue-300/50 font-semibold    " : ""
-                  } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
-                }
-              >
-                <ChartLine />
-                Dashboard
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/orders"
-                className={({ isActive }) =>
-                  `${
-                    isActive ? "bg-blue-300/50 font-semibold    " : ""
-                  } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
-                }
-              >
-                <Inbox />
-                MyOrders
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/schedule"
-                className={({ isActive }) =>
-                  `${
-                    isActive ? "bg-blue-300/50 font-semibold    " : ""
-                  } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
-                }
-              >
-                <Calendar />
-                Schedule
-              </NavLink>
-            </li>
-            <li>
-              <NavLink
-                to="/settings"
-                className={({ isActive }) =>
-                  `${
-                    isActive ? "bg-blue-300/50 font-semibold    " : ""
-                  } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
-                }
-              >
-                <Settings />
-                Settings
-              </NavLink>
-            </li>
-          </ul>
+        {(() => {
+          const mainNav = [
+            { to: "/dashboard", label: "Dashboard", icon: ChartLine },
+            { to: "/orders", label: "MyOrders", icon: Inbox },
+            { to: "/schedule", label: "Schedule", icon: Calendar },
+            { to: "/turne", label: "Turne", icon: Calendar },
+            { to: "/settings", label: "Settings", icon: Settings },
+          ];
+          const footerNav = [
+            { to: "/help", label: "Help", icon: HelpCircleIcon, hoverClass: "hover:bg-gray-100" },
+            { to: "/logout", label: "Log Out", icon: LogOut, hoverClass: "hover:bg-red-100 hover:text-red-500" },
+          ];
+          return (
+            <nav className="flex flex-col flex-1 justify-between mt-4">
+              <ul className="flex flex-col gap-2">
+                {mainNav.map(({ to, label, icon: Icon }) => (
+                  <li key={to}>
+                    <NavLink
+                      to={to}
+                      className={({ isActive }) =>
+                        `${isActive ? "bg-blue-300/50 font-semibold    " : ""} flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
+                      }
+                    >
+                      <Icon />
+                      {label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
 
-          {/* Botão no final da Navbar */}
-          <ul className="flex flex-col">
-            <li>
-              <NavLink className="flex px-2 py-3 rounded gap-3 hover:bg-gray-100">
-                <HelpCircleIcon />
-                Help
-              </NavLink>
-            </li>
-            <li>
-              <NavLink className="flex px-2 py-4 rounded gap-3 hover:bg-red-100 hover:text-red-500">
-                <LogOut />
-                Log Out
-              </NavLink>
-            </li>
-          </ul>
-        </nav>
+              {/* Botões no final da Navbar */}
+              <ul className="flex flex-col">
+                {footerNav.map(({ to, label, icon: Icon, hoverClass }) => (
+                  <li key={to}>
+                    <NavLink
+                      to={to}
+                      className={({ isActive }) =>
+                        `${isActive ? "bg-blue-300/50 font-semibold    " : ""} flex px-2 py-3 rounded gap-3 ${hoverClass}`
+                      }
+                    >
+                      <Icon />
+                      {label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          );
+        })()}
       </aside>
     </>
   );
