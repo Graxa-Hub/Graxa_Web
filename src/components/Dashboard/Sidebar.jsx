@@ -35,7 +35,7 @@ export const Sidebar = () => {
             { to: "/orders", label: "MyOrders", icon: Inbox },
             { to: "/schedule", label: "Schedule", icon: Calendar },
             { to: "/turne", label: "Turne", icon: Calendar },
-            { to: "/settings", label: "Settings", icon: Settings },
+            { to: "/adicionando-usuario", label: "Users", icon: Settings },
           ];
           const footerNav = [
             { to: "/help", label: "Help", icon: HelpCircleIcon, hoverClass: "hover:bg-gray-100" },

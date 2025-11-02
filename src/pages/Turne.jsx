@@ -133,12 +133,7 @@ export function Turne() {
             <div className="flex h-screen w-full">
                 <Sidebar />
                 <div className="flex-1 flex flex-col">
-                    <TurneHeader
-                        bands={bands}
-                        selectedBand={selectedBand}
-                        onBandSelect={setSelectedBand}
-                        onCreateTurne={handleCreateTurne}
-                    />
+                    <TurneHeader/>
                     <div className="flex-1 p-6">
                         <TurneList
                             turnes={turnesData}
