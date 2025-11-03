@@ -8,6 +8,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { HomeRedirect } from "./components/HomeRedirect";
 import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
+import { VisaoEvento } from "./pages/VisaoEvento";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -20,6 +21,7 @@ function App() {
       <Route element={<ProtectedLayout />}>
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/turne" element={<Turne />} />
+      <Route path="/visao-evento" element={<VisaoEvento />} />
       </Route>
     </Routes>
   );
