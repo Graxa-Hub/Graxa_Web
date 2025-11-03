@@ -105,7 +105,7 @@ const MapCard = () => (
 );
 
 // ===== Página Principal =====
-export const VisaoEventoComCard = () => {
+export const VisaoEvento = () => {
   const schedule = [
     {
       time: "12:00 AM",

@@ -19,9 +19,9 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<Cadastro />} />
       <Route element={<ProtectedLayout />}>
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/turne" element={<Turne />} />
-      <Route path="/visao-evento" element={<VisaoEvento />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/turne" element={<Turne />} />
+        <Route path="/visao-evento" element={<VisaoEvento />} />
       </Route>
     </Routes>
   );

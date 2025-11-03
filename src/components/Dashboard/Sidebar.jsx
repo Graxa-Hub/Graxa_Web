@@ -33,13 +33,23 @@ export const Sidebar = () => {
           const mainNav = [
             { to: "/dashboard", label: "Dashboard", icon: ChartLine },
             { to: "/orders", label: "MyOrders", icon: Inbox },
-            { to: "/schedule", label: "Schedule", icon: Calendar },
+            { to: "/visao-evento", label: "Evento", icon: Calendar },
             { to: "/turne", label: "Turne", icon: Calendar },
             { to: "/settings", label: "Settings", icon: Settings },
           ];
           const footerNav = [
-            { to: "/help", label: "Help", icon: HelpCircleIcon, hoverClass: "hover:bg-gray-100" },
-            { to: "/logout", label: "Log Out", icon: LogOut, hoverClass: "hover:bg-red-100 hover:text-red-500" },
+            {
+              to: "/help",
+              label: "Help",
+              icon: HelpCircleIcon,
+              hoverClass: "hover:bg-gray-100",
+            },
+            {
+              to: "/logout",
+              label: "Log Out",
+              icon: LogOut,
+              hoverClass: "hover:bg-red-100 hover:text-red-500",
+            },
           ];
           return (
             <nav className="flex flex-col flex-1 justify-between mt-4">
@@ -49,7 +59,9 @@ export const Sidebar = () => {
                     <NavLink
                       to={to}
                       className={({ isActive }) =>
-                        `${isActive ? "bg-blue-300/50 font-semibold    " : ""} flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
+                        `${
+                          isActive ? "bg-blue-300/50 font-semibold    " : ""
+                        } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
                       }
                     >
                       <Icon />
@@ -66,7 +78,9 @@ export const Sidebar = () => {
                     <NavLink
                       to={to}
                       className={({ isActive }) =>
-                        `${isActive ? "bg-blue-300/50 font-semibold    " : ""} flex px-2 py-3 rounded gap-3 ${hoverClass}`
+                        `${
+                          isActive ? "bg-blue-300/50 font-semibold    " : ""
+                        } flex px-2 py-3 rounded gap-3 ${hoverClass}`
                       }
                     >
                       <Icon />
