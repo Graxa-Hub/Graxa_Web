@@ -49,10 +49,16 @@ body {
   border: solid 1px white !important;
 }
 
-.fc-button:disabled {
-  background-color: rgb(255, 255, 255, 30%);
-  border: solid 1px gray !important;
+/* Mini calendar numbers: dark gray for better contrast (override global white) */
+.mini-calendar .fc-daygrid-day-number {
+  color: #374151 !important;
+  /* gray-700 */
+  font-weight: 600 !important;
+}
 
+.fc-button:disabled {
+  background-color: rgb(255, 255, 255, 50%);
+  border: solid 1px gray !important;
   color: #aaa;
 }
 
@@ -109,10 +115,12 @@ Tabela da lista: .fc-list-table */
 .fc .fc-daygrid-day {
   /* reduce the minimum height of each day cell */
   min-height: 48px;
+  min-width: 48px;
 }
 
 .fc .fc-daygrid-day .fc-daygrid-day-frame {
-  padding: 4px 6px;
+  padding: 4px;
+  max-height: 28px;
 }
 
 .fc .fc-daygrid-day-number {
@@ -158,12 +166,127 @@ Tabela da lista: .fc-list-table */
   padding: 4px 6px !important;
 }
 
+/* Dark header / lighter font for mini-calendar */
+.mini-calendar .fc .fc-toolbar {
+  background: #374151 !important;
+  /* gray-700 */
+  color: #f8fafc !important;
+  /* gray-50 */
+  border-radius: 8px 8px 0 0 !important;
+  padding: 6px 10px !important;
+}
+
+/* Add a subtle border around the month title area and make the transition
+   to the calendar grid seamless to avoid visual irregularities. */
+.mini-calendar .fc .fc-toolbar {
+  border: 1px solid #e5e7eb !important;
+  /* light gray to match card border */
+  border-bottom: none !important;
+  /* let the grid draw the separating line */
+  box-shadow: none !important;
+  overflow: hidden !important;
+}
+
+.mini-calendar .fc .fc-scrollgrid {
+  border-top: 1px solid #e5e7eb !important;
+  /* matches toolbar border */
+}
+
+/* Ensure the outer wrapper rounds consistently and clips children */
+.mini-calendar {
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.mini-calendar .fc .fc-toolbar-title {
+  color: #f8fafc !important;
+  font-weight: 700 !important;
+  font-size: 0.95rem !important;
+}
+
+/* Short weekday labels: darker background + lighter font */
+.mini-calendar .fc .fc-col-header-cell {
+  background: #374151 !important;
+  color: #f8fafc !important;
+  font-weight: 600 !important;
+  padding: 6px 4px !important;
+}
+
+/* Keep day cells with normal background and borders so numbers remain readable */
+.mini-calendar .fc .fc-daygrid-day-frame {
+  background: transparent !important;
+}
+
+/* Ensure the header area doesn't collapse and the title stays visible */
+.mini-calendar .fc .fc-toolbar-chunk {
+  align-items: center !important;
+}
+
+/* Remove stray gap between the toolbar and the weekday header/scrollgrid */
+.mini-calendar .fc .fc-toolbar {
+  margin-bottom: 0 !important;
+}
+
+.mini-calendar .fc .fc-scrollgrid {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.mini-calendar .fc .fc-scrollgrid thead,
+.mini-calendar .fc .fc-scrollgrid thead tr {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+/* Slightly reduce vertical padding so the header rows are visually contiguous */
+.mini-calendar .fc .fc-toolbar {
+  padding-bottom: 4px !important;
+}
+
+.mini-calendar .fc .fc-col-header-cell {
+  padding-top: 4px !important;
+}
+
 /* Custom FullCalendar card styling for Figma-like appearance */
+.graxa-calendar-card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+  padding: 14px;
+}
+
 .graxa-calendar {
   background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
   padding: 14px;
+}
+
+/* Make the calendar fill the available flex space and allow internal scrolling
+   so the month view keeps proper row heights while overflowing content scrolls. */
+.graxa-calendar {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* important for flex children to allow proper shrinking */
+}
+
+/* The FullCalendar root element should stretch inside the wrapper */
+.graxa-calendar .fc {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+/* The scroller element inside FullCalendar holds the grid/list content and
+   needs to scroll when the available height is smaller than content. */
+.graxa-calendar .fc .fc-scroller {
+  overflow: auto !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
 }
 
 .graxa-calendar .fc-toolbar-chunk {
@@ -180,7 +303,7 @@ Tabela da lista: .fc-list-table */
 
 .graxa-calendar .fc .fc-button {
   border-radius: 9999px;
-  background: #f3f4f6;
+  background: #F4F4F5;
   border: 0;
   color: #111827;
   padding: 6px 10px;
@@ -221,4 +344,153 @@ Tabela da lista: .fc-list-table */
   .graxa-calendar {
     padding: 18px;
   }
+}
+
+/* Header/title above the calendar when using the graxa wrapper */
+.graxa-calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* center the title */
+  gap: 12px;
+}
+
+.graxa-calendar-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+/* Slight spacing between the header and the calendar toolbar inside FullCalendar */
+.graxa-calendar .fc .fc-toolbar {
+  margin-top: 6px;
+}
+
+/* Stronger, higher-specificity rules to ensure toolbar/button styles apply */
+.graxa-calendar-card .fc .fc-toolbar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 6px 0 !important;
+}
+
+/* Align the three toolbar chunks: left/center/right. Use nth-child because FullCalendar
+   renders three fc-toolbar-chunk elements in order. Center chunk is given flex:1 so
+   the title can center itself while left/right chunks stay at the edges. */
+.graxa-calendar-card .fc .fc-toolbar>.fc-toolbar-chunk:nth-child(1) {
+  display: flex !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.graxa-calendar-card .fc .fc-toolbar>.fc-toolbar-chunk:nth-child(2) {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex: 1 1 auto !important;
+}
+
+.graxa-calendar-card .fc .fc-toolbar>.fc-toolbar-chunk:nth-child(3) {
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.graxa-calendar-card .fc .fc-toolbar-chunk {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.graxa-calendar-card .fc .fc-button {
+  border-radius: 8px !important;
+  background: #F4F4F5 !important;
+  border: 0 !important;
+  color: #111827 !important;
+  padding: 6px 10px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+}
+
+.graxa-calendar-card .fc .fc-button:hover {
+  background: #e6e7eb !important;
+}
+
+.graxa-calendar-card .fc .fc-button.fc-button-active,
+.graxa-calendar-card .fc .fc-button:active,
+.graxa-calendar-card .fc .fc-button:focus {
+  background: #ef4444 !important;
+  color: #fff !important;
+}
+
+.graxa-calendar-card .fc .fc-col-header-cell {
+  color: #374151 !important;
+  background: transparent !important;
+  font-weight: 600 !important;
+}
+
+.graxa-calendar-card .fc .fc-timegrid-axis {
+  color: #9ca3af !important;
+  font-size: 0.82rem !important;
+}
+
+.graxa-calendar-card .fc {
+  height: 100% !important;
+}
+
+/* Ensure spacing between button groups and individual buttons in the toolbar */
+.graxa-calendar-card .fc .fc-button-group {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+.graxa-calendar-card .fc .fc-button-group .fc-button {
+  /* remove any collapsed margins from grouping and rely on gap */
+  margin: 0 !important;
+}
+
+/* Make non-active toolbar buttons transparent (no background) and subtle text color
+   Keep active/selected buttons with red background to match the screenshot */
+.graxa-calendar-card .fc .fc-button:not(.fc-button-active) {
+  background: transparent !important;
+  color: #6b7280 !important;
+  /* gray-500 */
+  border: none !important;
+  box-shadow: none !important;
+  padding: 4px 8px !important;
+  border-radius: 9999px !important;
+  /* keep pill shape for active button consistency */
+}
+
+/* Slight hover feedback but still transparent to match the design */
+.graxa-calendar-card .fc .fc-button:not(.fc-button-active):hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Stronger background for disabled buttons inside calendar toolbars for better contrast */
+.graxa-calendar-card .fc .fc-button:disabled,
+.graxa-calendar .fc .fc-button:disabled {
+  background: #e5e7eb !important;
+  color: #6b7280 !important;
+  border: 1px solid #d1d5db !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+/* Also ensure grouped disabled buttons don't inherit transparent rules */
+.graxa-calendar-card .fc .fc-button-group .fc-button:disabled {
+  background: #e5e7eb !important;
+}
+
+/* Also cover the .graxa-calendar wrapper variant to be safe */
+.graxa-calendar .fc .fc-button:not(.fc-button-active) {
+  background: transparent !important;
+  color: #6b7280 !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 4px 8px !important;
 }

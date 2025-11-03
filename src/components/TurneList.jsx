@@ -94,7 +94,7 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne }) {
             >
               <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
                 <img 
-                  src={`bandas/${turne.image}`}
+                  src={`turnes/${turne.image}`}
                   alt={turne.name}
                   className="w-full h-full object-cover"
                 />

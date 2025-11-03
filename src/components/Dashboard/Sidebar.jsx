@@ -9,8 +9,17 @@ import {
   User,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export const Sidebar = () => {
+  const { usuario, logout } = useAuth()
+
+
+  const handleLogout = () => {
+    logout()
+    window.location.href = '/login'
+  }
+
   return (
     <>
       <aside className="flex flex-col w-65 h-screen shadow-[2px_0_20px_0_rgba(0,0,0,0.25)] p-4">
@@ -23,8 +32,21 @@ export const Sidebar = () => {
 
           {/* Informações do usuário */}
           <div>
-            <h2 className="text-blue-700">Michelle Marcelino</h2>
-            <p className="text-sm uppercase">Produtora</p>
+            {usuario ? (
+              <>
+                <h2 className="text-blue-700">
+                  {usuario.nome || 'Usuário'}
+                </h2>
+                <p className="text-sm uppercase">
+                  {usuario.tipoUsuario || 'Usuário'}
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-gray-500">Não logado</h2>
+                <p className="text-sm text-gray-400">Faça seu login</p>
+              </>
+            )}
           </div>
         </header>
 
@@ -35,12 +57,12 @@ export const Sidebar = () => {
             { to: "/orders", label: "MyOrders", icon: Inbox },
             { to: "/schedule", label: "Schedule", icon: Calendar },
             { to: "/turne", label: "Turne", icon: Calendar },
-            { to: "/settings", label: "Settings", icon: Settings },
+            { to: "/adicionando-usuario", label: "Users", icon: Settings },
           ];
           const footerNav = [
             { to: "/help", label: "Help", icon: HelpCircleIcon, hoverClass: "hover:bg-gray-100" },
-            { to: "/logout", label: "Log Out", icon: LogOut, hoverClass: "hover:bg-red-100 hover:text-red-500" },
           ];
+          
           return (
             <nav className="flex flex-col flex-1 justify-between mt-4">
               <ul className="flex flex-col gap-2">
@@ -59,7 +81,6 @@ export const Sidebar = () => {
                 ))}
               </ul>
 
-              {/* Botões no final da Navbar */}
               <ul className="flex flex-col">
                 {footerNav.map(({ to, label, icon: Icon, hoverClass }) => (
                   <li key={to}>
@@ -74,6 +95,16 @@ export const Sidebar = () => {
                     </NavLink>
                   </li>
                 ))}
+                
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="flex px-2 py-3 rounded gap-3 hover:bg-red-100 hover:text-red-500 w-full text-left"
+                  >
+                    <LogOut />
+                    Log Out
+                  </button>
+                </li>
               </ul>
             </nav>
           );
