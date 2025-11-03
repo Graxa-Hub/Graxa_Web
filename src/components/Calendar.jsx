@@ -8,6 +8,9 @@ export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect, cla
   useEffect(() => {
     if (selectedStartDate) {
       setCurrentDate(new Date(selectedStartDate.getFullYear(), selectedStartDate.getMonth(), 1))
+    } else {
+      // Se não há data selecionada, volta para o mês atual
+      setCurrentDate(new Date())
     }
   }, [selectedStartDate])
 
