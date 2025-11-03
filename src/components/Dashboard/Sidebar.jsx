@@ -7,18 +7,18 @@ import {
   LogOut,
   Settings,
   User,
+  MicVocal,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export const Sidebar = () => {
-  const { usuario, logout } = useAuth()
-
+  const { usuario, logout } = useAuth();
 
   const handleLogout = () => {
-    logout()
-    window.location.href = '/login'
-  }
+    logout();
+    window.location.href = "/login";
+  };
 
   return (
     <>
@@ -34,11 +34,9 @@ export const Sidebar = () => {
           <div>
             {usuario ? (
               <>
-                <h2 className="text-blue-700">
-                  {usuario.nome || 'Usuário'}
-                </h2>
+                <h2 className="text-blue-700">{usuario.nome || "Usuário"}</h2>
                 <p className="text-sm uppercase">
-                  {usuario.tipoUsuario || 'Usuário'}
+                  {usuario.tipoUsuario || "Usuário"}
                 </p>
               </>
             ) : (
@@ -53,16 +51,21 @@ export const Sidebar = () => {
         {/* Botões Navbar */}
         {(() => {
           const mainNav = [
-            { to: "/dashboard", label: "Dashboard", icon: ChartLine },
-            { to: "/orders", label: "MyOrders", icon: Inbox },
-            { to: "/schedule", label: "Schedule", icon: Calendar },
-            { to: "/turne", label: "Turne", icon: Calendar },
+            { to: "/dashboard", label: "Calendário", icon: ChartLine },
+            { to: "/artista", label: "Artista", icon: MicVocal },
+            { to: "/schedule", label: "Agenda", icon: Calendar },
+            { to: "/turne", label: "Turne", icon: Inbox },
             { to: "/adicionando-usuario", label: "Users", icon: Settings },
           ];
           const footerNav = [
-            { to: "/help", label: "Help", icon: HelpCircleIcon, hoverClass: "hover:bg-gray-100" },
+            {
+              to: "/help",
+              label: "Help",
+              icon: HelpCircleIcon,
+              hoverClass: "hover:bg-gray-100",
+            },
           ];
-          
+
           return (
             <nav className="flex flex-col flex-1 justify-between mt-4">
               <ul className="flex flex-col gap-2">
@@ -71,7 +74,9 @@ export const Sidebar = () => {
                     <NavLink
                       to={to}
                       className={({ isActive }) =>
-                        `${isActive ? "bg-blue-300/50 font-semibold    " : ""} flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
+                        `${
+                          isActive ? "bg-blue-300/50 font-semibold    " : ""
+                        } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
                       }
                     >
                       <Icon />
@@ -87,7 +92,9 @@ export const Sidebar = () => {
                     <NavLink
                       to={to}
                       className={({ isActive }) =>
-                        `${isActive ? "bg-blue-300/50 font-semibold    " : ""} flex px-2 py-3 rounded gap-3 ${hoverClass}`
+                        `${
+                          isActive ? "bg-blue-300/50 font-semibold    " : ""
+                        } flex px-2 py-3 rounded gap-3 ${hoverClass}`
                       }
                     >
                       <Icon />
@@ -95,7 +102,7 @@ export const Sidebar = () => {
                     </NavLink>
                   </li>
                 ))}
-                
+
                 <li>
                   <button
                     onClick={handleLogout}

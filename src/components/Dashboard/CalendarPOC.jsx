@@ -3,6 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import ptLocale from "@fullcalendar/core/locales/pt";
 import "@fullcalendar/common/main.css";
 import "../../index.css";
 
@@ -89,6 +90,7 @@ export default function CalendarPOC({ onCalendarApi }) {
         className="graxa-calendar"
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+        locale={ptLocale}
         initialView="timeGridWeek"
         /* make calendar slightly less tall by increasing aspect ratio (width/height) */
         aspectRatio={1.35}
