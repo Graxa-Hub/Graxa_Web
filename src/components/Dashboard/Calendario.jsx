@@ -29,7 +29,7 @@ export const Calendario = () => {
       </header>
 
       {/* Container  */}
-      <div className="flex-1 w-full rounded-lg overflow-auto min-h-0">
+      <div className="flex-1 w-full rounded-lg overflow-auto min-h-0 ">
         {/* Conteúdo do dashboard */}
         <div className="flex h-full justify-between cols cols-2 sm:cols-1 gap-3">
           {/* Calendário */}
@@ -37,8 +37,24 @@ export const Calendario = () => {
             <CalendarPOC onCalendarApi={setMainCalendarApi} />
           </div>
           {/* Preview */}
-          <div className="min-w-[27%] rounded-lg p-2 h-full">
+          <div className="min-w-[27%] rounded-lg p-2 h-full bg-white">
             <CalendarListPOC mainCalendarApi={mainCalendarApi} />
+            {/* Lista embaixo do calendário */}
+            <div className="w-full overflow-auto p-4">
+              <ul className="flex flex-col gap-3">
+                <h1 className="text-center text-blue-600">
+                  Dias de evento registrado:
+                </h1>
+                <li className="flex items-center gap-5">
+                  <div className="h-3 w-3  bg-red-400 rounded-full"></div>
+                  <div className="flex flex-col">
+                    {/* Horário */}
+                    <h2 className="text-neutral-400">8:00 - 8:30 AM</h2>
+                    <p>Monthly catch-up</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

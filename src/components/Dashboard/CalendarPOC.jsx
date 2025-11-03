@@ -4,6 +4,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import "@fullcalendar/common/main.css";
+import "../../index.css";
 
 export default function CalendarPOC({ onCalendarApi }) {
   // helper to ensure a date string includes a time portion (so events appear in timeGrid views)
@@ -45,7 +46,6 @@ export default function CalendarPOC({ onCalendarApi }) {
         ...prev,
         {
           id: String(Date.now()),
-          title,
           start,
           end,
           allDay: selectInfo.allDay,
@@ -78,7 +78,7 @@ export default function CalendarPOC({ onCalendarApi }) {
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 h-full min-h-0 flex flex-col">
+    <div className="graxa-calendar-card bg-white rounded-lg shadow p-4 h-full min-h-0 flex flex-col">
       {/*
           Use slotMinTime/slotMaxTime to limit visible hours (reduces vertical length)
           and set height="100%" so FullCalendar fills the parent container. The
@@ -93,9 +93,9 @@ export default function CalendarPOC({ onCalendarApi }) {
         /* make calendar slightly less tall by increasing aspect ratio (width/height) */
         aspectRatio={1.35}
         headerToolbar={{
-          left: "prev,next today",
+          left: "prev,today,next",
           center: "title",
-          right: "dayGridMonth,timeGridWeek,timeGridDay",
+          right: "timeGridWeek,timeGridDay",
         }}
         selectable={true}
         select={handleDateSelect}
@@ -105,7 +105,10 @@ export default function CalendarPOC({ onCalendarApi }) {
         dayMaxEvents={3}
         /* remove the all-day slot at the top of timeGrid views */
         allDaySlot={false}
-        /* make calendar fill its parent so the parent's overflow handles scrolling */
+        /* Let FullCalendar fill the parent container so the calendar keeps
+        a proportional height relative to the screen. The container is a
+        flex column with min-height:0 so child can shrink; the CSS below
+        ensures the internal scroller handles overflow. */
         height="100%"
       />
     </div>

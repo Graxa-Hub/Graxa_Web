@@ -16,11 +16,14 @@ export default function CalendarListPOC({ mainCalendarApi }) {
   };
 
   return (
-    <div className="p-5 mini-calendar bg-white rounded-lg">
+    <div className="p-5 mini-calendar rounded-lg">
       <FullCalendar
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
-        headerToolbar={false}
+        /* show the month title above the calendar */
+        headerToolbar={{ left: "", center: "title", right: "" }}
+        /* use narrow weekday names (single-letter) */
+        dayHeaderFormat={{ weekday: "narrow" }}
         /* increase aspectRatio so month cells become visually closer to squares (7 cols / ~5 rows -> ~1.6) */
         aspectRatio={1}
         dateClick={handleDateClick}
