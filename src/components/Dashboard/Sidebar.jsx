@@ -64,6 +64,12 @@ export const Sidebar = () => {
               icon: HelpCircleIcon,
               hoverClass: "hover:bg-gray-100",
             },
+            {
+              to: "/logout",
+              label: "Log Out",
+              icon: LogOut,
+              hoverClass: "hover:bg-red-100 hover:text-red-500",
+            },
           ];
 
           return (
