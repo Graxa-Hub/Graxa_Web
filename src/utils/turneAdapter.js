@@ -1,4 +1,4 @@
-import { fetchImage } from '../services/imagemService';
+import { imagemService } from '../services/imagemService';
 
 /**
  * Adapta dados da turnê do backend para o formato do frontend
@@ -10,7 +10,7 @@ export const adaptTurneFromBackend = async (turneBackend) => {
   if (turneBackend.nomeImagem) {
     console.log('Buscando imagem para turnê:'+ turneBackend.nomeImagem);
     try {
-      imageUrl = await fetchImage(turneBackend.nomeImagem);
+      imageUrl = await imagemService(turneBackend.nomeImagem);
       console.log('Imagem adaptada com sucesso:', imageUrl);
     } catch (error) {
       console.error('Erro ao buscar imagem:', error);

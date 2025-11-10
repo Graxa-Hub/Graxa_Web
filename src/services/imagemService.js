@@ -1,6 +1,6 @@
 import { api } from "../services/axios";
 
-export async function fetchImage(nomeImagem) {
+export async function imagemService(nomeImagem) {
     console.log("Buscando imagem:", nomeImagem);
   try {
     const response = await api.get(`/imagens/download/${nomeImagem}`, {
