@@ -4,7 +4,7 @@ import { ButtonPage } from './ButtonPage.Jsx'
 import { DropdownMenu } from './DropdownMenu'
 import { ConfirmModal } from './ConfirmModal'
 
-export function TurneList({ turnes = [], onEditTurne, onDeleteTurne }) {
+export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTurne}) {
   const [openDropdown, setOpenDropdown] = useState(null)
   const [selectedTurne, setSelectedTurne] = useState(null)
   const [confirmModal, setConfirmModal] = useState({
@@ -47,7 +47,7 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne }) {
         <p className="text-gray-600 mb-6 max-w-md">
           Vixi! Ainda não temos nenhuma turnê criada. Que tal adicionar uma agora?
         </p>
-        <ButtonPage text="Criar turne" />
+        <ButtonPage text="Criar turne" click={onCreateTurne} />
       </div>
     )
   }

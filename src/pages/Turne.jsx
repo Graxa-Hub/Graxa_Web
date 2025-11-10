@@ -42,23 +42,22 @@ export function Turne() {
       setLoading(true);
       const turnes = await getTurnes();
       
-      console.log('Dados do backend:', turnes); // 🔍 DEBUG
       
-      // AWAIT aqui porque agora é async!
+      
+      
       const adaptedTurnes = await adaptTurnesFromBackend(turnes);
       
-      console.log('Dados adaptados com imagens:', adaptedTurnes); // 🔍 DEBUG
+       
       
       setTurnesData(adaptedTurnes);
     } catch (error) {
-      console.error("Erro ao buscar turnês:", error);
       setErrors({ geral: "Erro ao carregar turnês" });
     } finally {
       setLoading(false);
     }
   };
 
-  // Validações por step
+
   const validateStep1 = () => {
     const newErrors = {};
 
@@ -135,16 +134,13 @@ export function Turne() {
   };
 
   const handleDeleteTurne = async (turne) => {
-    if (!window.confirm(`Tem certeza que deseja excluir a turnê "${turne.name}"?`)) {
-      return;
-    }
 
     try {
       await deletarTurne(turne.id);
       setTurnesData((prev) => prev.filter((t) => t.id !== turne.id));
     } catch (error) {
       console.error("Erro ao excluir turnê:", error);
-      alert(error.response?.data?.mensagem || "Erro ao excluir turnê");
+      setErrors({ geral: error.response?.data?.mensagem || "Erro ao excluir turnê" });
     }
   };
 
@@ -177,13 +173,7 @@ export function Turne() {
       } else {
         response = await criarTurne(payload, formData.imagem);
       }
-
-      console.log('Resposta do backend:', response); // 🔍 DEBUG
-
-      // AWAIT aqui também!
       const adaptedTurne = await adaptTurneFromBackend(response);
-      
-      console.log('Turnê adaptada:', adaptedTurne); // 🔍 DEBUG
       
       if (isEditMode) {
         setTurnesData((prev) =>
@@ -197,7 +187,6 @@ export function Turne() {
       setIsEditMode(false);
       setEditingTurne(null);
     } catch (error) {
-      console.error("Erro ao salvar turnê:", error);
       
       const errorMsg = error.response?.data?.mensagem || error.response?.data?.message;
       if (errorMsg?.toLowerCase().includes("já existe")) {
@@ -273,6 +262,7 @@ export function Turne() {
               turnes={turnesData}
               onEditTurne={handleEditTurne}
               onDeleteTurne={handleDeleteTurne}
+              onCreateTurne={handleCreateTurne}
             />
           </div>
         </div>
