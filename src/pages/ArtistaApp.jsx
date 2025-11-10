@@ -28,8 +28,14 @@ export function ArtistaApp() {
   }
 
   async function onBandaCreated() {
-    await listarBandas();
+    // fecha imediatamente para não depender do listarBandas()
     closeModal();
+    // atualiza a lista em segundo plano; loga erro sem impedir o fechamento
+    try {
+      await listarBandas();
+    } catch (err) {
+      console.error("Erro ao atualizar lista de bandas após criação:", err);
+    }
   }
 
   if (loading && bandas.length === 0) {

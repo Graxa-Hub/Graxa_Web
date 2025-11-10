@@ -27,12 +27,14 @@ export function useArtistas() {
     try {
       setLoading(true);
       setError(null);
-      const novoArtista = await artistaService.criarArtista(dados);
-      setArtistas((prev) => [...prev, novoArtista]);
-      return novoArtista;
+      console.log("[useArtistas] criando artista payload:", dados);
+      const data = await artistaService.criarArtista(dados);
+      return data;
     } catch (err) {
-      console.error('Erro ao criar artista:', err);
-      setError(err.response?.data?.message || 'Erro ao criar artista');
+      console.error("Erro ao criar artista:", err);
+      // log detalhado da resposta do servidor
+      console.error("Resposta do servidor:", err?.response?.status, err?.response?.data);
+      setError(err.response?.data?.message || "Erro ao criar artista");
       throw err;
     } finally {
       setLoading(false);
