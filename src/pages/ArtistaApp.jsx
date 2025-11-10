@@ -12,7 +12,7 @@ import { useArtistas } from "../hooks/useArtistas";
 
 // ========== Tela Principal ==========
 export function ArtistaApp() {
-  const { bandas, loading, listarBandas, buscarImagem } = useBandas();
+  const { bandas, loading, listarBandas, buscarImagem, criarBanda, adicionarIntegrantes } = useBandas();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -76,7 +76,12 @@ export function ArtistaApp() {
         )}
 
         {isModalOpen && (
-          <AddBandaModal onSuccess={onBandaCreated} onClose={closeModal} />
+          <AddBandaModal
+            onSuccess={onBandaCreated}
+            onClose={closeModal}
+            criarBanda={criarBanda}
+            adicionarIntegrantes={adicionarIntegrantes}
+          />
         )}
       </main>
     </Layout>
@@ -132,7 +137,7 @@ function BandaCard({ banda, buscarImagem }) {
 }
 
 // ========== Modal ==========
-function AddBandaModal({ onSuccess, onClose }) {
+function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes }) {
   const [draft, setDraft] = useState({
     nome: "",
     descricao: "",
@@ -152,9 +157,7 @@ function AddBandaModal({ onSuccess, onClose }) {
     cpf: "",
   });
 
-  const { representantes, listarRepresentantes } = useRepresentantes();
-  const { criarBanda, adicionarIntegrantes } = useBandas();
-  const { criarRepresentante } = useRepresentantes();
+  const { representantes, listarRepresentantes, criarRepresentante } = useRepresentantes();
   const { criarArtista } = useArtistas();
 
   const [loading, setLoading] = useState(false);
