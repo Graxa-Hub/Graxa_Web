@@ -1,5 +1,5 @@
 import React from 'react'
-import { ButtonPage } from './ButtonPage.Jsx'
+import { ButtonPage } from './ButtonPage'
 import { BandaDropdown } from './BandaDropdown'
 
 export const TurneHeader = ({ bands, selectedBand, onBandSelect, onCreateTurne }) => {

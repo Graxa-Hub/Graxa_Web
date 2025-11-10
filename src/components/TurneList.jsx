@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { MoreVertical, Edit, Trash2 } from 'lucide-react'
-import { ButtonPage } from './ButtonPage.Jsx'
+import { ButtonPage } from './ButtonPage'
 import { DropdownMenu } from './DropdownMenu'
 import { ConfirmModal } from './ConfirmModal'
 

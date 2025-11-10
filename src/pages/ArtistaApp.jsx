@@ -203,8 +203,7 @@ function AddBandaModal({ onSuccess, onClose }) {
       if (showNovoRepresentante) {
         if (
           !novoRepresentante.nome ||
-          !novoRepresentante.email ||
-          !novoRepresentante.senha
+          !novoRepresentante.email
         ) {
           setErrors({ representante: "Preencha todos os campos obrigatórios" });
           return;
@@ -377,37 +376,7 @@ function AddBandaModal({ onSuccess, onClose }) {
                         })
                       }
                     />
-                    <Input
-                      label="Senha *"
-                      type="password"
-                      value={novoRepresentante.senha}
-                      onChange={(e) =>
-                        setNovoRepresentante({
-                          ...novoRepresentante,
-                          senha: e.target.value,
-                        })
-                      }
-                    />
-                    <Input
-                      label="Telefone"
-                      value={novoRepresentante.telefone}
-                      onChange={(e) =>
-                        setNovoRepresentante({
-                          ...novoRepresentante,
-                          telefone: e.target.value,
-                        })
-                      }
-                    />
-                    <Input
-                      label="CPF"
-                      value={novoRepresentante.cpf}
-                      onChange={(e) =>
-                        setNovoRepresentante({
-                          ...novoRepresentante,
-                          cpf: e.target.value,
-                        })
-                      }
-                    />
+                    
                     <button
                       type="button"
                       onClick={() => setShowNovoRepresentante(false)}
