@@ -23,7 +23,6 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne }) {
   }
 
   const handleEdit = (turne) => {
-    console.log('Editar turne:', turne)
     setOpenDropdown(null)
     if (onEditTurne) {
       onEditTurne(turne)
@@ -32,36 +31,23 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne }) {
 
   const handleDeleteClick = (turne) => {
     setOpenDropdown(null)
-    setConfirmModal({
-      isOpen: true,
-      turne: turne
-    })
+    setConfirmModal({ isOpen: true, turne: turne })
   }
 
   const handleConfirmDelete = () => {
     if (confirmModal.turne && onDeleteTurne) {
       onDeleteTurne(confirmModal.turne)
     }
-    setConfirmModal({
-      isOpen: false,
-      turne: null
-    })
-  }
-
-  const handleCloseConfirm = () => {
-    setConfirmModal({
-      isOpen: false,
-      turne: null
-    })
+    setConfirmModal({ isOpen: false, turne: null })
   }
 
   if (turnes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-full text-center">
         <p className="text-gray-600 mb-6 max-w-md">
-          Vixi! Ainda não temos nenhuma turnê criada. Que tal adicionar uma agora e colocar a banda na estrada?
+          Vixi! Ainda não temos nenhuma turnê criada. Que tal adicionar uma agora?
         </p>
-        <ButtonPage text="Criar turne" click={() => alert('Criar turne')} />
+        <ButtonPage text="Criar turne" />
       </div>
     )
   }
@@ -72,31 +58,24 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne }) {
         {turnes.map((turne) => {
           const isSelected = selectedTurne === turne.id
           const dropdownItems = [
-            {
-              icon: Edit,
-              label: "Editar turne",
-              onClick: () => handleEdit(turne)
-            },
-            {
-              icon: Trash2,
-              label: "Excluir turne",
-              onClick: () => handleDeleteClick(turne)
-            }
+            { icon: Edit, label: "Editar turne", onClick: () => handleEdit(turne) },
+            { icon: Trash2, label: "Excluir turne", onClick: () => handleDeleteClick(turne) }
           ]
 
           return (
-            <div 
-              key={turne.id} 
+            <div
+              key={turne.id}
               onClick={() => handleTurneClick(turne.id)}
-              className={`flex items-center justify-center gap-4 p-4 bg-white rounded-2xl shadow-2xl w-300 border cursor-pointer ${
+              className={`flex items-center gap-4 p-4 bg-white rounded-2xl shadow-2xl w-300 border cursor-pointer ${
                 isSelected ? 'border-red-500 border-2' : 'border-gray-200'
-              } rounded-xg relative transition-colors hover:border-red-300`}
+              } transition-colors hover:border-red-300`}
             >
               <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                <img 
-                  src={`turnes/${turne.image}`}
+                <img
+                  src={turne.image}
                   alt={turne.name}
                   className="w-full h-full object-cover"
+                  onError={(e) => e.target.src = "/default-turne-image.jpg"}
                 />
               </div>
               <div className="flex-1">
@@ -112,15 +91,11 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne }) {
                     e.stopPropagation()
                     toggleDropdown(turne.id)
                   }}
-                  className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  className="p-1 hover:bg-gray-100 rounded-full"
                 >
                   <MoreVertical className="w-5 h-5 text-gray-500" />
                 </button>
-
-                <DropdownMenu
-                  isOpen={openDropdown === turne.id}
-                  items={dropdownItems}
-                />
+                <DropdownMenu isOpen={openDropdown === turne.id} items={dropdownItems} />
               </div>
             </div>
           )
@@ -129,10 +104,10 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne }) {
 
       <ConfirmModal
         isOpen={confirmModal.isOpen}
-        onClose={handleCloseConfirm}
+        onClose={() => setConfirmModal({ isOpen: false, turne: null })}
         onConfirm={handleConfirmDelete}
         title="Excluir turnê"
-        message={`Tem certeza que deseja excluir a turnê "${confirmModal.turne?.name}"? Esta ação não pode ser desfeita.`}
+        message={`Tem certeza que deseja excluir a turnê "${confirmModal.turne?.name}"?`}
         confirmText="Excluir"
         cancelText="Cancelar"
         type="danger"

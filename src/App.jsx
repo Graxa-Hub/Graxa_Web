@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./index.css";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 
 import { Login } from "./pages/Login";
 import { Cadastro } from "./pages/Cadastro";
@@ -11,15 +11,20 @@ import { Turne } from "./pages/Turne";
 import { ArtistaApp } from "./pages/ArtistaApp";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
 import { VisaoEvento } from "./pages/VisaoEvento";
+
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <Routes>
+      {/* Rota raiz - redireciona baseado na autenticação */}
       <Route path="/" element={<HomeRedirect />} />
-      <Route path="/" element={<Dashboard />} />
+      
+      {/* Rotas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/cadastro" element={<Cadastro />} />
+      
+      {/* Rotas protegidas */}
       <Route element={<ProtectedLayout />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/turne" element={<Turne />} />
@@ -27,6 +32,9 @@ function App() {
         <Route path="/artista" element={<ArtistaApp />} />
         <Route path="/visao-evento" element={<VisaoEvento />} />
       </Route>
+
+      {/* Rota não encontrada - redireciona para login */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

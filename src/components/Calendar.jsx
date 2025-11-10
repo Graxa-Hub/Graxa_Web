@@ -1,123 +1,131 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
-export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect, className = "" }) {
+export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect }) {
   const [currentDate, setCurrentDate] = useState(new Date())
 
-  // Atualiza o mês do calendário quando as datas selecionadas mudam
-  useEffect(() => {
-    if (selectedStartDate) {
-      setCurrentDate(new Date(selectedStartDate.getFullYear(), selectedStartDate.getMonth(), 1))
-    } else {
-      // Se não há data selecionada, volta para o mês atual
-      setCurrentDate(new Date())
-    }
-  }, [selectedStartDate])
-
   const monthNames = [
-    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+    'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
   ]
 
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
-  const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1).getDay()
-  
-  const prevMonth = () => {
+  const getDaysInMonth = (date) => {
+    const year = date.getFullYear()
+    const month = date.getMonth()
+    const firstDay = new Date(year, month, 1)
+    const lastDay = new Date(year, month + 1, 0)
+    const daysInMonth = lastDay.getDate()
+    const startingDayOfWeek = firstDay.getDay()
+
+    return { daysInMonth, startingDayOfWeek }
+  }
+
+  const isSameDay = (date1, date2) => {
+    if (!date1 || !date2) return false
+    return (
+      date1.getDate() === date2.getDate() &&
+      date1.getMonth() === date2.getMonth() &&
+      date1.getFullYear() === date2.getFullYear()
+    )
+  }
+
+  const isInRange = (date) => {
+    if (!selectedStartDate || !selectedEndDate) return false
+    
+    const dateTime = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime()
+    const startTime = new Date(selectedStartDate.getFullYear(), selectedStartDate.getMonth(), selectedStartDate.getDate()).getTime()
+    const endTime = new Date(selectedEndDate.getFullYear(), selectedEndDate.getMonth(), selectedEndDate.getDate()).getTime()
+    
+    // Inclui início e fim também
+    return dateTime >= startTime && dateTime <= endTime
+  }
+
+  const handlePreviousMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))
   }
 
-  const nextMonth = () => {
+  const handleNextMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))
   }
 
-  const isInRange = (day) => {
-    if (!selectedStartDate || !selectedEndDate) return false
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
-    const start = new Date(selectedStartDate.getFullYear(), selectedStartDate.getMonth(), selectedStartDate.getDate())
-    const end = new Date(selectedEndDate.getFullYear(), selectedEndDate.getMonth(), selectedEndDate.getDate())
-    const current = new Date(date.getFullYear(), date.getMonth(), date.getDate())
-    
-    return current >= start && current <= end
-  }
-
-  const isStartDate = (day) => {
-    if (!selectedStartDate) return false
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
-    const start = new Date(selectedStartDate.getFullYear(), selectedStartDate.getMonth(), selectedStartDate.getDate())
-    return date.getTime() === start.getTime()
-  }
-
-  const isEndDate = (day) => {
-    if (!selectedEndDate) return false
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
-    const end = new Date(selectedEndDate.getFullYear(), selectedEndDate.getMonth(), selectedEndDate.getDate())
-    return date.getTime() === end.getTime()
-  }
-
   const handleDateClick = (day) => {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
-    onDateSelect(date)
-  }
-
-  const getDateClasses = (day) => {
-    const inRange = isInRange(day)
-    const isStart = isStartDate(day)
-    const isEnd = isEndDate(day)
-    
-    if (isStart || isEnd) {
-      return 'bg-black text-white hover:bg-gray-800'
-    } else if (inRange) {
-      return 'bg-gray-300 text-gray-800 hover:bg-gray-400'
-    } else {
-      return 'text-gray-700 hover:bg-gray-100'
+    const selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
+    if (onDateSelect) {
+      onDateSelect(selectedDate)
     }
   }
 
+  const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate)
+  const days = []
+
+  // Adiciona dias vazios do mês anterior
+  for (let i = 0; i < startingDayOfWeek; i++) {
+    days.push(<div key={`empty-${i}`} className="h-8" />)
+  }
+
+  // Adiciona os dias do mês
+  for (let day = 1; day <= daysInMonth; day++) {
+    const currentDateForDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), day)
+    const isStart = isSameDay(currentDateForDay, selectedStartDate)
+    const isEnd = isSameDay(currentDateForDay, selectedEndDate)
+    const inRange = isInRange(currentDateForDay)
+
+    let className = 'h-8 w-8 flex items-center justify-center rounded-full cursor-pointer transition-colors'
+
+    if (isStart || isEnd) {
+      className += ' bg-blue-500 text-white font-semibold'
+    } else if (inRange) {
+      className += ' bg-blue-50 text-blue-700 border border-blue-200'
+    } else {
+      className += ' hover:bg-gray-100 text-gray-700'
+    }
+
+    days.push(
+      <button
+        key={day}
+        onClick={() => handleDateClick(day)}
+        className={className}
+      >
+        {day}
+      </button>
+    )
+  }
+
   return (
-    <div className={`bg-white border border-gray-200 rounded-lg shadow-2xl p-4 w-80 ${className}`}>
-      {/* Header */}
+    <div className="bg-white rounded-lg shadow-md p-4 w-80">
+      {/* Header com navegação */}
       <div className="flex items-center justify-between mb-4">
-        <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded">
-          <ChevronLeft className="w-4 h-4" />
+        <button
+          onClick={handlePreviousMonth}
+          className="p-1 hover:bg-gray-100 rounded transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
         </button>
-        <h3 className="font-medium text-gray-900">
+        
+        <h3 className="text-lg font-semibold">
           {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
         </h3>
-        <button onClick={nextMonth} className="p-1 hover:bg-gray-100 rounded">
-          <ChevronRight className="w-4 h-4" />
+        
+        <button
+          onClick={handleNextMonth}
+          className="p-1 hover:bg-gray-100 rounded transition-colors"
+        >
+          <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Days of week */}
+      {/* Dias da semana */}
       <div className="grid grid-cols-7 gap-1 mb-2">
-        {['Do', 'Se', 'Te', 'Qu', 'Qu', 'Se', 'Sá'].map((day, index) => (
-          <div key={`${day}-${index}`} className="text-center text-xs font-medium text-gray-500 py-2">
+        {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((day, index) => (
+          <div key={index} className="h-8 flex items-center justify-center text-sm font-medium text-gray-500">
             {day}
           </div>
         ))}
       </div>
 
-      {/* Calendar Grid */}
+      {/* Grade de dias */}
       <div className="grid grid-cols-7 gap-1">
-        {/* Empty cells for days before month starts */}
-        {Array.from({ length: firstDayOfMonth }, (_, i) => (
-          <div key={`empty-${i}`} className="h-8"></div>
-        ))}
-        
-        {/* Days of the month */}
-        {Array.from({ length: daysInMonth }, (_, i) => {
-          const day = i + 1
-          
-          return (
-            <button
-              key={day}
-              onClick={() => handleDateClick(day)}
-              className={`h-8 w-8 text-sm rounded transition-colors ${getDateClasses(day)}`}
-            >
-              {day}
-            </button>
-          )
-        })}
+        {days}
       </div>
     </div>
   )

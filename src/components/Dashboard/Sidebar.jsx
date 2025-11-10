@@ -109,15 +109,7 @@ export const Sidebar = () => {
                   </li>
                 ))}
 
-                <li>
-                  <button
-                    onClick={handleLogout}
-                    className="flex px-2 py-3 rounded gap-3 hover:bg-red-100 hover:text-red-500 w-full text-left"
-                  >
-                    <LogOut />
-                    Log Out
-                  </button>
-                </li>
+                
               </ul>
             </nav>
           );
