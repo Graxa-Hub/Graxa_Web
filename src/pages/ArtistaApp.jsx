@@ -123,7 +123,7 @@ function BandaCard({ banda, buscarImagem }) {
           <img
             src={imageUrl}
             alt={banda.nome}
-            className="w-full h-full object-cover"
+            className="w-full max-h-80 min-h-80 object-cover object-top"
           />
         ) : (
           <span className="text-gray-400 font-semibold">Sem foto</span>
