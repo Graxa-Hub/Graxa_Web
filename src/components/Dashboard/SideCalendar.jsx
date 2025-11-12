@@ -3,7 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import ptLocale from "@fullcalendar/core/locales/pt";
 
-export default function CalendarListPOC({ mainCalendarApi }) {
+export default function SideCalendar({ mainCalendarApi }) {
   const handleDateClick = (arg) => {
     // when a day is clicked in the mini calendar, navigate main calendar to that date
     if (mainCalendarApi && typeof mainCalendarApi.gotoDate === "function") {
@@ -17,7 +17,7 @@ export default function CalendarListPOC({ mainCalendarApi }) {
   };
 
   return (
-    <div className="p-5 mini-calendar rounded-lg">
+    <div className="mini-calendar rounded-lg">
       <FullCalendar
         locale={ptLocale}
         plugins={[dayGridPlugin]}

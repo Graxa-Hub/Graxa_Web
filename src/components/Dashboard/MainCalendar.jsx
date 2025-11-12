@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -7,7 +8,7 @@ import ptLocale from "@fullcalendar/core/locales/pt";
 import "@fullcalendar/common/main.css";
 import "../../index.css";
 
-export default function CalendarPOC({ onCalendarApi }) {
+export default function MainCalendar({ onCalendarApi }) {
   // helper to ensure a date string includes a time portion (so events appear in timeGrid views)
   const ensureHasTime = (isoStr, defaultTime = "09:00:00") => {
     if (!isoStr) return isoStr;
@@ -55,27 +56,10 @@ export default function CalendarPOC({ onCalendarApi }) {
     }
   };
 
-  const handleEventClick = (clickInfo) => {
-    // Show details first
-    const startStr = clickInfo.event.start
-      ? clickInfo.event.start.toLocaleString()
-      : String(clickInfo.event.start);
-    window.alert(`Evento: ${clickInfo.event.title}\nInício: ${startStr}`);
+  const navigate = useNavigate();
 
-    // Then offer deletion
-    const shouldDelete = window.confirm("Deseja deletar este evento?");
-    if (shouldDelete) {
-      // remove from FullCalendar UI
-      try {
-        clickInfo.event.remove();
-      } catch (e) {
-        /* ignore */
-      }
-      // keep internal state in sync
-      setEvents((prev) =>
-        prev.filter((ev) => String(ev.id) !== String(clickInfo.event.id))
-      );
-    }
+  const handleEventClick = (clickInfo) => {
+    navigate("/visao-evento");
   };
 
   return (
