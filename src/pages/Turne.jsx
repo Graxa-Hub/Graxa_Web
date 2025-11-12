@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Dashboard/Sidebar";
 import { TurneList } from "../components/TurneList";
@@ -10,9 +10,12 @@ import { Textarea } from "../components/Textarea";
 import { InputFile } from "../components/InputFile";
 import { getTurnes, criarTurne, editarTurne, deletarTurne } from "../services/turneService";
 import { adaptTurnesFromBackend, adaptTurneFromBackend, dateToISO } from "../utils/turneAdapter";
+import { useBandas } from "../hooks/useBandas";
+import { imagemService } from "../services/imagemService";
 
 export function Turne() {
-  const [selectedBand, setSelectedBand] = useState("Boogarins");
+  const { bandas, loading: bandasLoading, listarBandas } = useBandas();
+  const [selectedBand, setSelectedBand] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingTurne, setEditingTurne] = useState(null);
@@ -20,7 +23,8 @@ export function Turne() {
   const [formData, setFormData] = useState({
     nome: "",
     descricao: "",
-    imagem: null
+    imagem: null,
+    bandaId: null
   });
   
   const [selectedStartDate, setSelectedStartDate] = useState(null);
@@ -29,34 +33,110 @@ export function Turne() {
   const [turnesData, setTurnesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
+  
+  const [imagemAtual, setImagemAtual] = useState(null);
+  const [imagemCarregada, setImagemCarregada] = useState(false);
 
-  const bands = ["Boogarins", "Banda 2", "Banda 3"];
+  const [bandaSearchText, setBandaSearchText] = useState("");
+  const [showBandaDropdown, setShowBandaDropdown] = useState(false);
 
-  // Busca turnês ao carregar
+  // Reset da imagem quando a banda selecionada muda
   useEffect(() => {
-    fetchTurnes();
-  }, []);
+    if (!isModalOpen) {
+      // Reset apenas quando não estiver no modal (mudança do header dropdown)
+      setImagemAtual(null);
+      setImagemCarregada(false);
+    }
+  }, [selectedBand, isModalOpen]);
+
+  // Busca bandas e turnês ao carregar
+  useEffect(() => {
+    const fetchData = async () => {
+      await listarBandas();
+      await fetchTurnes();
+    };
+    fetchData();
+  }, [listarBandas]);
+
+  // Carrega a imagem da turnê em edição
+  useEffect(() => {
+    const carregarImagem = async () => {
+      if (editingTurne?.raw?.nomeImagem && !imagemCarregada) {
+        const imageUrl = await imagemService(editingTurne.raw.nomeImagem);
+        setImagemAtual(imageUrl);
+        setImagemCarregada(true);
+      }
+    };
+    carregarImagem();
+  }, [editingTurne, imagemCarregada]);
 
   const fetchTurnes = async () => {
     try {
       setLoading(true);
+      console.log('🔄 Buscando turnês...');
       const turnes = await getTurnes();
-      
-      
-      
+      console.log('📥 Turnês do backend:', turnes);
       
       const adaptedTurnes = await adaptTurnesFromBackend(turnes);
-      
-       
+      console.log('🔧 Turnês adaptadas:', adaptedTurnes);
       
       setTurnesData(adaptedTurnes);
     } catch (error) {
+      console.error("❌ Erro ao carregar turnês:", error);
       setErrors({ geral: "Erro ao carregar turnês" });
     } finally {
       setLoading(false);
     }
   };
 
+  // Filtra turnês com base na banda selecionada
+  const filteredTurnes = useMemo(() => {
+    console.log('🔍 Filtrando turnês...');
+    console.log('📊 Total de turnês:', turnesData.length);
+    console.log('🎵 Banda selecionada:', selectedBand);
+    
+    let filtered = turnesData;
+    
+    if (selectedBand && selectedBand.id) {
+      console.log(`🎯 Filtrando por banda ID: ${selectedBand.id} (${selectedBand.nome})`);
+      
+      filtered = turnesData.filter(turne => {
+        const bandaMatch = turne.bandaId === selectedBand.id || 
+                          turne.banda?.id === selectedBand.id ||
+                          turne.raw?.bandaId === selectedBand.id ||
+                          turne.raw?.banda?.id === selectedBand.id;
+        
+        console.log(`   Turnê "${turne.name}": bandaId=${turne.bandaId}, banda.id=${turne.banda?.id}, match=${bandaMatch}`);
+        
+        return bandaMatch;
+      });
+      
+      console.log(`✅ Encontradas ${filtered.length} turnê(s) para a banda ${selectedBand.nome}`);
+    } else {
+      console.log('📋 Mostrando todas as turnês');
+    }
+    
+    // Ordenar alfabeticamente
+    const sorted = filtered.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    console.log('📝 Turnês finais ordenadas:', sorted.map(t => ({ name: t.name, bandaId: t.bandaId })));
+    
+    return sorted;
+  }, [turnesData, selectedBand]);
+
+  const filteredBandas = useMemo(() => {
+    if (!bandaSearchText.trim()) return bandas;
+    return bandas.filter(banda => 
+      banda.nome.toLowerCase().includes(bandaSearchText.toLowerCase())
+    );
+  }, [bandas, bandaSearchText]);
+
+  const handleBandSelect = (banda) => {
+    console.log('🎵 Selecionando banda:', banda);
+    setSelectedBand(banda);
+    // Força reset da imagem quando banda muda
+    setImagemAtual(null);
+    setImagemCarregada(false);
+  };
 
   const validateStep1 = () => {
     const newErrors = {};
@@ -64,7 +144,6 @@ export function Turne() {
     if (!formData.nome.trim()) {
       newErrors.nome = "Nome da turnê é obrigatório";
     } else {
-      // Verifica duplicação
       const existing = turnesData.find(
         (t) => t.name.toLowerCase() === formData.nome.toLowerCase() && 
                (!isEditMode || t.id !== editingTurne.id)
@@ -84,6 +163,10 @@ export function Turne() {
       newErrors.fim = "Data de fim deve ser posterior à data de início";
     }
 
+    if (!formData.bandaId) {
+      newErrors.banda = "Selecione uma banda para a turnê";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -95,7 +178,6 @@ export function Turne() {
       newErrors.descricao = "Descrição é obrigatória";
     }
 
-    // Imagem obrigatória apenas ao criar
     if (!isEditMode && !formData.imagem) {
       newErrors.imagem = "Upload da imagem é obrigatório";
     }
@@ -107,34 +189,47 @@ export function Turne() {
   const handleCreateTurne = () => {
     setIsEditMode(false);
     setEditingTurne(null);
-    setFormData({ nome: "", descricao: "", imagem: null });
+    setImagemAtual(null);
+    setImagemCarregada(false);
+    setFormData({ 
+      nome: "", 
+      descricao: "", 
+      imagem: null,
+      bandaId: selectedBand?.id || null
+    });
     setSelectedStartDate(null);
     setSelectedEndDate(null);
     setErrors({});
+    setBandaSearchText("");
+    setShowBandaDropdown(false);
     setIsModalOpen(true);
   };
 
-  const handleEditTurne = (turne) => {
+  const handleEditTurne = async (turne) => {
     setIsEditMode(true);
     setEditingTurne(turne);
+    setImagemAtual(null);
+    setImagemCarregada(false);
+    
     setFormData({
       nome: turne.name,
       descricao: turne.description,
-      imagem: null
+      imagem: null,
+      bandaId: turne.bandaId || turne.banda?.id || turne.raw?.bandaId || turne.raw?.banda?.id || null
     });
     
-    // Converte datas
     const [startDay, startMonth, startYear] = turne.startDate.split('/');
     const [endDay, endMonth, endYear] = turne.endDate.split('/');
     
     setSelectedStartDate(new Date(startYear, startMonth - 1, startDay));
-    setSelectedEndDate(new Date(endYear, endMonth - 1, endDay));
+    setSelectedEndDate(new Date(endYear, endMonth - 1, endYear));
     setErrors({});
+    setBandaSearchText("");
+    setShowBandaDropdown(false);
     setIsModalOpen(true);
   };
 
   const handleDeleteTurne = async (turne) => {
-
     try {
       await deletarTurne(turne.id);
       setTurnesData((prev) => prev.filter((t) => t.id !== turne.id));
@@ -148,7 +243,11 @@ export function Turne() {
     setIsModalOpen(false);
     setIsEditMode(false);
     setEditingTurne(null);
+    setImagemAtual(null);
+    setImagemCarregada(false);
     setErrors({});
+    setBandaSearchText("");
+    setShowBandaDropdown(false);
   };
 
   const handleFinishTurne = async () => {
@@ -161,11 +260,14 @@ export function Turne() {
 
     try {
       const payload = {
-        nome: formData.nome,
-        dataInicio: dateToISO(selectedStartDate),
-        dataFim: dateToISO(selectedEndDate),
-        descricao: formData.descricao
+        nomeTurne: formData.nome,
+        dataHoraInicioTurne: dateToISO(selectedStartDate),
+        dataHoraFimTurne: dateToISO(selectedEndDate),
+        descricao: formData.descricao,
+        bandaId: formData.bandaId
       };
+
+      console.log('💾 Salvando turnê com payload:', payload);
 
       let response;
       if (isEditMode) {
@@ -173,6 +275,7 @@ export function Turne() {
       } else {
         response = await criarTurne(payload, formData.imagem);
       }
+      
       const adaptedTurne = await adaptTurneFromBackend(response);
       
       if (isEditMode) {
@@ -186,8 +289,9 @@ export function Turne() {
       setIsModalOpen(false);
       setIsEditMode(false);
       setEditingTurne(null);
+      setImagemAtual(null);
+      setImagemCarregada(false);
     } catch (error) {
-      
       const errorMsg = error.response?.data?.mensagem || error.response?.data?.message;
       if (errorMsg?.toLowerCase().includes("já existe")) {
         setErrors({ nome: "Já existe uma turnê com este nome" });
@@ -199,11 +303,29 @@ export function Turne() {
     }
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }));
+  const handleChange = (key, value) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    if (errors[key]) {
+      setErrors((prev) => ({ ...prev, [key]: undefined }));
     }
+    
+    if (key === 'imagem' && value) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagemAtual(reader.result);
+      };
+      reader.readAsDataURL(value);
+    } else if (key === 'imagem' && value === null) {
+      if (editingTurne?.raw?.nomeImagem) {
+        buscarImagem(editingTurne.raw.nomeImagem).then(setImagemAtual);
+      } else {
+        setImagemAtual(null);
+      }
+    }
+  };
+
+  const handleInputChange = (field, value) => {
+    handleChange(field, value);
   };
 
   const handleDateSelect = (date) => {
@@ -221,12 +343,27 @@ export function Turne() {
     }
   };
 
+  const handleBandaSelectInModal = (banda) => {
+    setFormData(prev => ({ ...prev, bandaId: banda?.id || null }));
+    setBandaSearchText(banda?.nome || "");
+    setShowBandaDropdown(false);
+    if (errors.banda) {
+      setErrors(prev => ({ ...prev, banda: undefined }));
+    }
+  };
+
   const formatDate = (date) => {
     if (!date) return "";
     return date.toLocaleDateString("pt-BR");
   };
 
-  if (loading) {
+  const getSelectedBandaName = () => {
+    if (!formData.bandaId) return "";
+    const banda = bandas.find(b => b.id === formData.bandaId);
+    return banda ? banda.nome : "";
+  };
+
+  if (loading || bandasLoading) {
     return (
       <Layout>
         <div className="flex h-screen w-full">
@@ -245,9 +382,8 @@ export function Turne() {
         <Sidebar />
         <div className="flex-1 flex flex-col">
           <TurneHeader
-            bands={bands}
             selectedBand={selectedBand}
-            onBandSelect={setSelectedBand}
+            onBandSelect={handleBandSelect}
             onCreateTurne={handleCreateTurne}
           />
 
@@ -258,8 +394,10 @@ export function Turne() {
           )}
 
           <div className="flex-1 p-6 overflow-y-auto">
+            
+            
             <TurneList
-              turnes={turnesData}
+              turnes={filteredTurnes}
               onEditTurne={handleEditTurne}
               onDeleteTurne={handleDeleteTurne}
               onCreateTurne={handleCreateTurne}
@@ -293,6 +431,53 @@ export function Turne() {
                       />
                       {errors.nome && (
                         <p className="text-red-500 text-sm mt-1">{errors.nome}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Banda: <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          placeholder="Pesquisar banda..."
+                          value={showBandaDropdown ? bandaSearchText : getSelectedBandaName()}
+                          onChange={(e) => {
+                            setBandaSearchText(e.target.value);
+                            setShowBandaDropdown(true);
+                          }}
+                          onFocus={() => {
+                            setBandaSearchText(getSelectedBandaName());
+                            setShowBandaDropdown(true);
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          disabled={submitLoading}
+                        />
+                        
+                        {showBandaDropdown && (
+                          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+                            {filteredBandas.length === 0 ? (
+                              <div className="px-3 py-2 text-gray-500 text-sm">
+                                Nenhuma banda encontrada
+                              </div>
+                            ) : (
+                              filteredBandas.map((banda) => (
+                                <button
+                                  key={banda.id}
+                                  type="button"
+                                  onClick={() => handleBandaSelectInModal(banda)}
+                                  className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                                >
+                                  {banda.nome}
+                                </button>
+                              ))
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {errors.banda && (
+                        <p className="text-red-500 text-sm mt-1">{errors.banda}</p>
                       )}
                     </div>
 
@@ -353,9 +538,9 @@ export function Turne() {
 
                   <div className="w-[50%]">
                     <InputFile
-                      label={`Upload de Imagem${isEditMode ? " (opcional)" : ""}:`}
-                      onFileSelect={(file) => handleInputChange("imagem", file)}
-                      disabled={submitLoading}
+                      label="Foto da Turnê"
+                      onFileSelect={(file) => handleChange("imagem", file)}
+                      currentImage={imagemAtual}
                     />
                     {errors.imagem && (
                       <p className="text-red-500 text-sm mt-1">{errors.imagem}</p>

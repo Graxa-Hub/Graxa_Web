@@ -1,59 +1,56 @@
-import { imagemService } from '../services/imagemService';
+import { imagemService } from "../services/imagemService";
 
-/**
- * Adapta dados da turnê do backend para o formato do frontend
- */
-export const adaptTurneFromBackend = async (turneBackend) => {
-  // Busca a imagem se tiver nomeArquivo
-  let imageUrl = '/default-turne-image.jpg';
-  console.log("linha 9" + turneBackend.nomeImagem);
-  if (turneBackend.nomeImagem) {
-    console.log('Buscando imagem para turnê:'+ turneBackend.nomeImagem);
+export async function adaptTurnesFromBackend(turnes) {
+  if (!Array.isArray(turnes)) {
+    console.error("adaptTurnesFromBackend: turnes não é array:", turnes);
+    return [];
+  }
+
+  return await Promise.all(
+    turnes.map(async (turne) => {
+      return await adaptTurneFromBackend(turne);
+    })
+  );
+}
+
+export async function adaptTurneFromBackend(turne) {
+  console.log("Adaptando turnê do backend:", turne);
+
+  let imageUrl = "/default-turne-image.jpg";
+
+  if (turne.nomeImagem) {
     try {
-      imageUrl = await imagemService(turneBackend.nomeImagem);
-      console.log('Imagem adaptada com sucesso:', imageUrl);
+      imageUrl = await imagemService(turne.nomeImagem);
     } catch (error) {
-      console.error('Erro ao buscar imagem:', error);
-      // Mantém imagem padrão
+      console.error("Erro ao buscar imagem da turnê:", error);
     }
   }
 
-  return {
-    id: turneBackend.id,
-    name: turneBackend.nomeTurne,
-    startDate: formatDateFromISO(turneBackend.dataHoraInicioTurne),
-    endDate: formatDateFromISO(turneBackend.dataHoraFimTurne),
-    description: turneBackend.descricao || '',
-    image: imageUrl
+  // Formatação das datas
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("pt-BR");
   };
-};
 
-/**
- * Adapta array de turnês do backend (ASYNC agora!)
- */
-export const adaptTurnesFromBackend = async (turnesBackend) => {
-  const promises = turnesBackend.map(turne => adaptTurneFromBackend(turne));
-  return Promise.all(promises);
-};
+  const adapted = {
+    id: turne.id,
+    name: turne.nomeTurne,
+    description: turne.descricao || "",
+    image: imageUrl,
+    startDate: formatDate(turne.dataHoraInicioTurne),
+    endDate: formatDate(turne.dataHoraFimTurne),
+    // IMPORTANTE: Preservar informações da banda
+    bandaId: turne.bandaId || turne.banda?.id || null,
+    banda: turne.banda || null,
+    raw: turne, // Manter dados originais para debug
+  };
 
-/**
- * Formata data ISO para formato brasileiro
- */
-const formatDateFromISO = (isoDate) => {
-  if (!isoDate) return '';
-  
-  const date = new Date(isoDate);
-  return date.toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
-};
+  console.log("Turnê adaptada:", adapted);
+  return adapted;
+}
 
-/**
- * Converte Date para ISO string
- */
-export const dateToISO = (date) => {
+export function dateToISO(date) {
   if (!date) return null;
   return date.toISOString();
-};
+}
