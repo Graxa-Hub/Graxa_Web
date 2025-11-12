@@ -18,7 +18,7 @@ export function useBandas() {
       console.error('Erro ao listar bandas:', err);
       setError(err.response?.data?.message || 'Erro ao carregar bandas');
       setBandas([]);
-      throw err;
+      return [];
     } finally {
       setLoading(false);
     }
@@ -55,6 +55,39 @@ export function useBandas() {
     }
   }, []);
 
+  const atualizarBanda = useCallback(async (id, dados, foto) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const bandaAtualizada = await bandaService.atualizarBanda(id, dados, foto);
+      setBandas((prev) =>
+        prev.map((banda) => (banda.id === id ? bandaAtualizada : banda))
+      );
+      return bandaAtualizada;
+    } catch (err) {
+      console.error('Erro ao atualizar banda:', err);
+      setError(err.response?.data?.message || 'Erro ao atualizar banda');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const excluirBanda = useCallback(async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await bandaService.excluirBanda(id);
+      setBandas((prev) => prev.filter((banda) => banda.id !== id));
+    } catch (err) {
+      console.error('Erro ao excluir banda:', err);
+      setError(err.response?.data?.message || 'Erro ao excluir banda');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const adicionarIntegrantes = useCallback(async (bandaId, integrantesIds) => {
     try {
       setLoading(true);
@@ -77,7 +110,7 @@ export function useBandas() {
     try {
       if (!nomeArquivo) return null;
       return await imagemService(nomeArquivo);
-    } catch (err) {
+    } catch (err) {s
       console.error('Erro ao buscar imagem:', err);
       return null;
     }
@@ -90,6 +123,8 @@ export function useBandas() {
     listarBandas,
     buscarBandaPorId,
     criarBanda,
+    atualizarBanda,
+    excluirBanda,
     adicionarIntegrantes,
     buscarImagem,
   };

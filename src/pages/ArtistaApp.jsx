@@ -5,38 +5,84 @@ import { Input } from "../components/Input";
 import { InputFile } from "../components/InputFile";
 import { Modal } from "../components/Modal";
 import { ButtonPage } from "../components/ButtonPage";
-import { Trash2 } from "lucide-react";
+import { Trash2, Edit, MoreVertical } from "lucide-react";
 import { useBandas } from "../hooks/useBandas";
 import { useRepresentantes } from "../hooks/useRepresentantes";
 import { useArtistas } from "../hooks/useArtistas";
+import { DropdownMenu } from "../components/DropdownMenu";
+import { ConfirmModal } from "../components/ConfirmModal";
 
 // ========== Tela Principal ==========
 export function ArtistaApp() {
-  const { bandas, loading, listarBandas, buscarImagem, criarBanda, adicionarIntegrantes } = useBandas();
+  const { 
+    bandas, 
+    loading, 
+    listarBandas, 
+    buscarImagem, 
+    criarBanda, 
+    atualizarBanda, 
+    excluirBanda, 
+    adicionarIntegrantes 
+  } = useBandas();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [bandaParaEditar, setBandaParaEditar] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    banda: null
+  });
 
   useEffect(() => {
     listarBandas();
   }, [listarBandas]);
 
   function openModal() {
+    setBandaParaEditar(null);
     setIsModalOpen(true);
   }
 
   function closeModal() {
     setIsModalOpen(false);
+    setBandaParaEditar(null);
   }
 
   async function onBandaCreated() {
-    // fecha imediatamente para não depender do listarBandas()
     closeModal();
-    // atualiza a lista em segundo plano; loga erro sem impedir o fechamento
     try {
       await listarBandas();
     } catch (err) {
       console.error("Erro ao atualizar lista de bandas após criação:", err);
     }
   }
+
+  const handleEdit = (banda) => {
+    setBandaParaEditar(banda);
+    setIsModalOpen(true);
+    setOpenDropdown(null);
+  };
+
+  const handleDeleteClick = (banda) => {
+    setConfirmModal({ isOpen: true, banda });
+    setOpenDropdown(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (confirmModal.banda) {
+      try {
+        await excluirBanda(confirmModal.banda.id);
+        await listarBandas();
+      } catch (error) {
+        console.error("Erro ao excluir banda:", error);
+        alert("Erro ao excluir banda. Tente novamente.");
+      }
+    }
+    setConfirmModal({ isOpen: false, banda: null });
+  };
+
+  const toggleDropdown = (bandaId) => {
+    setOpenDropdown(openDropdown === bandaId ? null : bandaId);
+  };
 
   if (loading && bandas.length === 0) {
     return (
@@ -76,6 +122,10 @@ export function ArtistaApp() {
                 key={banda.id}
                 banda={banda}
                 buscarImagem={buscarImagem}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+                isDropdownOpen={openDropdown === banda.id}
+                onToggleDropdown={() => toggleDropdown(banda.id)}
               />
             ))}
           </div>
@@ -86,9 +136,22 @@ export function ArtistaApp() {
             onSuccess={onBandaCreated}
             onClose={closeModal}
             criarBanda={criarBanda}
+            atualizarBanda={atualizarBanda}
             adicionarIntegrantes={adicionarIntegrantes}
+            bandaParaEditar={bandaParaEditar}
           />
         )}
+
+        <ConfirmModal
+          isOpen={confirmModal.isOpen}
+          onClose={() => setConfirmModal({ isOpen: false, banda: null })}
+          onConfirm={handleConfirmDelete}
+          title="Excluir banda"
+          message={`Tem certeza que deseja excluir a banda "${confirmModal.banda?.nome}"?`}
+          confirmText="Excluir"
+          cancelText="Cancelar"
+          type="danger"
+        />
       </main>
     </Layout>
   );
@@ -107,28 +170,54 @@ function EmptyState({ onAdd }) {
   );
 }
 
-function BandaCard({ banda, buscarImagem }) {
+function BandaCard({ banda, buscarImagem, onEdit, onDelete, isDropdownOpen, onToggleDropdown }) {
   const [imageUrl, setImageUrl] = useState(null);
 
   useEffect(() => {
+    console.log("Banda completa:", banda); // ← ADICIONE ISSO
+    console.log("nomeFoto:", banda.nomeFoto); // ← E ISSO
+    
     if (banda.nomeFoto) {
-      buscarImagem(banda.nomeFoto).then(setImageUrl);
+      buscarImagem(banda.nomeFoto).then(url => {
+        console.log("URL da imagem carregada:", url); // ← E ISSO
+        setImageUrl(url);
+      });
     }
   }, [banda.nomeFoto, buscarImagem]);
 
+  const dropdownItems = [
+    { icon: Edit, label: "Editar banda", onClick: () => onEdit(banda) },
+    { icon: Trash2, label: "Excluir banda", onClick: () => onDelete(banda) }
+  ];
+
   return (
-    <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all overflow-hidden">
-      <div className="h-min-70 h-fill h-max-100 bg-gray-200 flex items-center justify-center overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all overflow-hidden relative">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleDropdown();
+        }}
+        className="absolute top-4 right-4 z-20 w-8 h-8 flex items-center justify-center bg-white/80 hover:bg-white rounded-full shadow-md transition-all"
+      >
+        <MoreVertical className="w-5 h-5 text-gray-700" />
+      </button>
+
+      <div className="absolute top-14 right-4 z-30">
+        <DropdownMenu isOpen={isDropdownOpen} items={dropdownItems} />
+      </div>
+
+      <div className="max-h-80 min-h-80 bg-gray-200 flex items-center justify-center overflow-hidden">
         {imageUrl ? (
           <img
             src={imageUrl}
             alt={banda.nome}
-            className="w-full max-h-80 min-h-80 object-cover object-top"
+            className="w-full h-full object-cover"
           />
         ) : (
           <span className="text-gray-400 font-semibold">Sem foto</span>
         )}
       </div>
+
       <div className="p-4">
         <h3 className="font-semibold text-gray-900 mb-2">{banda.nome}</h3>
         <p className="text-xs text-gray-500 mb-1">
@@ -143,28 +232,45 @@ function BandaCard({ banda, buscarImagem }) {
 }
 
 // ========== Modal ==========
-function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes }) {
+function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicionarIntegrantes, bandaParaEditar }) {
+  const isEditMode = !!bandaParaEditar;
+  const { buscarImagem } = useBandas();
+  const [imagemAtual, setImagemAtual] = useState(null);
+  const [imagemCarregada, setImagemCarregada] = useState(false);
+
   const [draft, setDraft] = useState({
-    nome: "",
-    descricao: "",
-    genero: "ROCK",
-    representanteId: null,
+    nome: bandaParaEditar?.nome || "",
+    descricao: bandaParaEditar?.descricao || "",
+    genero: bandaParaEditar?.genero || "ROCK",
+    representanteId: bandaParaEditar?.representante?.id || null,
     foto: null,
-    quantidadeIntegrantes: 1,
-    integrantes: [{ nome: "", cpf: "" }],
+    quantidadeIntegrantes: bandaParaEditar?.integrantes?.length || 1,
+    integrantes: bandaParaEditar?.integrantes?.map(int => ({
+      id: int.id,
+      nome: int.nome || "",
+      cpf: int.cpf || ""
+    })) || [{ nome: "", cpf: "" }],
   });
+
+  useEffect(() => {
+    const carregarImagem = async () => {
+      if (bandaParaEditar?.nomeFoto && !imagemCarregada) {
+        const imageUrl = await buscarImagem(bandaParaEditar.nomeFoto);
+        setImagemAtual(imageUrl);
+        setImagemCarregada(true);
+      }
+    };
+    carregarImagem();
+  }, [bandaParaEditar, buscarImagem, imagemCarregada]);
 
   const [showNovoRepresentante, setShowNovoRepresentante] = useState(false);
   const [novoRepresentante, setNovoRepresentante] = useState({
     nome: "",
     email: "",
-    senha: "",
-    telefone: "",
-    cpf: "",
   });
 
   const { representantes, listarRepresentantes, criarRepresentante } = useRepresentantes();
-  const { criarArtista } = useArtistas();
+  const { criarArtista, atualizarArtista, excluirArtista } = useArtistas();
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -176,6 +282,20 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
   const handleChange = (key, value) => {
     setDraft((d) => ({ ...d, [key]: value }));
     setErrors((e) => ({ ...e, [key]: null }));
+    
+    if (key === 'foto' && value) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagemAtual(reader.result);
+      };
+      reader.readAsDataURL(value);
+    } else if (key === 'foto' && value === null) {
+      if (bandaParaEditar?.nomeFoto) {
+        buscarImagem(bandaParaEditar.nomeFoto).then(setImagemAtual);
+      } else {
+        setImagemAtual(null);
+      }
+    }
   };
 
   const handleIntegranteChange = (index, key, value) => {
@@ -183,6 +303,44 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
       i === index ? { ...integrante, [key]: value } : integrante
     );
     setDraft((d) => ({ ...d, integrantes: updated }));
+  };
+
+  const adicionarIntegrante = () => {
+    setDraft((d) => ({
+      ...d,
+      integrantes: [...d.integrantes, { nome: "", cpf: "" }],
+      quantidadeIntegrantes: d.integrantes.length + 1
+    }));
+  };
+
+  const removerIntegrante = async (index) => {
+    const integrante = draft.integrantes[index];
+    
+    // Se é um integrante existente (tem ID), confirmar exclusão
+    if (integrante.id) {
+      const confirmar = window.confirm(
+        `Tem certeza que deseja remover ${integrante.nome} da banda?`
+      );
+      if (!confirmar) return;
+
+      try {
+        // TODO: Implementar endpoint de remover integrante da banda
+        // await removerIntegranteDaBanda(bandaParaEditar.id, integrante.id);
+        console.log("Remover integrante:", integrante.id);
+      } catch (error) {
+        console.error("Erro ao remover integrante:", error);
+        alert("Erro ao remover integrante. Tente novamente.");
+        return;
+      }
+    }
+
+    // Remove da lista
+    const updated = draft.integrantes.filter((_, i) => i !== index);
+    setDraft((d) => ({
+      ...d,
+      integrantes: updated,
+      quantidadeIntegrantes: updated.length
+    }));
   };
 
   const handleQuantidadeChange = (quantidade) => {
@@ -200,20 +358,50 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
       setLoading(true);
       setErrors({});
 
-      // Validações
       if (!draft.nome) {
         setErrors({ nome: "Nome da banda é obrigatório" });
         return;
       }
 
-      // 1. Criar representante se necessário
+      if (isEditMode) {
+        // Modo Edição
+        const dadosAtualizacao = {
+          nome: draft.nome,
+          descricao: draft.descricao,
+          genero: draft.genero,
+          representanteId: draft.representanteId,
+        };
+
+        await atualizarBanda(bandaParaEditar.id, dadosAtualizacao, draft.foto);
+        
+        // Atualizar integrantes existentes e criar novos
+        for (const integrante of draft.integrantes) {
+          if (integrante.id) {
+            // Atualizar integrante existente
+            await atualizarArtista(integrante.id, {
+              nome: integrante.nome,
+              cpf: integrante.cpf
+            });
+          } else if (integrante.nome && integrante.cpf) {
+            // Criar novo integrante
+            const artistaCriado = await criarArtista({
+              nome: integrante.nome,
+              cpf: integrante.cpf,
+              fotoNome: null,
+            });
+            await adicionarIntegrantes(bandaParaEditar.id, [artistaCriado.id]);
+          }
+        }
+        
+        onSuccess();
+        return;
+      }
+
+      // Modo Criação
       let representanteId = draft.representanteId;
 
       if (showNovoRepresentante) {
-        if (
-          !novoRepresentante.nome ||
-          !novoRepresentante.email
-        ) {
+        if (!novoRepresentante.nome || !novoRepresentante.email) {
           setErrors({ representante: "Preencha todos os campos obrigatórios" });
           return;
         }
@@ -222,7 +410,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
         representanteId = representanteCriado.id;
       }
 
-      // 2. Criar banda
       const bandaCriada = await criarBanda(
         {
           nome: draft.nome,
@@ -233,7 +420,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
         draft.foto
       );
 
-      // 3. Criar artistas e coletar IDs
       const integrantesIds = [];
       for (const integrante of draft.integrantes) {
         if (integrante.nome && integrante.cpf) {
@@ -246,15 +432,14 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
         }
       }
 
-      // 4. Adicionar integrantes à banda
       if (integrantesIds.length > 0) {
         await adicionarIntegrantes(bandaCriada.id, integrantesIds);
       }
 
       onSuccess();
     } catch (error) {
-      console.error("Erro ao criar banda:", error);
-      setErrors({ geral: error.message || "Erro ao criar banda" });
+      console.error("Erro ao processar banda:", error);
+      setErrors({ geral: error.response?.data?.message || error.message || "Erro ao processar banda" });
     } finally {
       setLoading(false);
     }
@@ -264,14 +449,13 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
     <Modal
       isOpen={true}
       onClose={onClose}
-      title="Adicionar nova banda"
+      title={isEditMode ? "Editar banda" : "Adicionar nova banda"}
       totalSteps={2}
       onFinish={handleFinish}
       loading={loading}
     >
       {(currentStep) => (
         <>
-          {/* Step 1: Dados da Banda */}
           {currentStep === 1 && (
             <div className="space-y-4">
               {errors.geral && (
@@ -315,6 +499,7 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
                 <InputFile
                   label="Foto da Banda"
                   onFileSelect={(file) => handleChange("foto", file)}
+                  currentImage={imagemAtual}
                 />
               </div>
 
@@ -331,7 +516,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
                 />
               </div>
 
-              {/* Representante */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Representante *
@@ -353,13 +537,15 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
                         </option>
                       ))}
                     </select>
-                    <button
-                      type="button"
-                      onClick={() => setShowNovoRepresentante(true)}
-                      className="text-sm text-blue-600 hover:text-blue-700"
-                    >
-                      + Adicionar novo representante
-                    </button>
+                    {!isEditMode && (
+                      <button
+                        type="button"
+                        onClick={() => setShowNovoRepresentante(true)}
+                        className="text-sm text-blue-600 hover:text-blue-700"
+                      >
+                        + Adicionar novo representante
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <div className="p-4 border border-gray-200 rounded-lg space-y-3">
@@ -409,25 +595,43 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
             </div>
           )}
 
-          {/* Step 2: Integrantes */}
           {currentStep === 2 && (
             <div className="space-y-4">
-              <Input
-                label="Quantidade de Integrantes"
-                type="number"
-                min={1}
-                max={20}
-                value={draft.quantidadeIntegrantes}
-                onChange={(e) => handleQuantidadeChange(e.target.value)}
-              />
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-700">
+                  Integrantes ({draft.integrantes.length})
+                </h3>
+                <button
+                  type="button"
+                  onClick={adicionarIntegrante}
+                  className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                >
+                  + Adicionar Integrante
+                </button>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
                 {draft.integrantes.map((integrante, i) => (
                   <div
                     key={i}
-                    className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-3"
+                    className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-3 relative"
                   >
-                    <h4 className="font-medium text-sm">Integrante {i + 1}</h4>
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-sm">
+                        Integrante {i + 1}
+                        {integrante.id && (
+                          <span className="ml-2 text-xs text-green-600">(Cadastrado)</span>
+                        )}
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => removerIntegrante(i)}
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                        title="Remover integrante"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                     <Input
                       label="Nome"
                       placeholder="Nome completo"
@@ -447,6 +651,13 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, adicionarIntegrantes })
                   </div>
                 ))}
               </div>
+
+              {draft.integrantes.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <p>Nenhum integrante adicionado.</p>
+                  <p className="text-sm">Clique em "Adicionar Integrante" para começar.</p>
+                </div>
+              )}
             </div>
           )}
         </>

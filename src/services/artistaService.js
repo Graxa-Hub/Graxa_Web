@@ -1,4 +1,4 @@
-import {api} from './axios'; // ajuste conforme seu export atual
+import { api } from './axios';
 
 export const artistaService = {
   // Listar todos os artistas
@@ -12,7 +12,7 @@ export const artistaService = {
     try {
       console.log("[artistaService] criarArtista payload:", dados);
 
-      // se houver campo de arquivo (ex: foto) envie como multipart/form-data
+      // Se houver campo de arquivo (ex: foto) envie como multipart/form-data
       const maybeFile = dados?.foto || dados?.file;
       if (maybeFile instanceof File || maybeFile instanceof Blob) {
         const form = new FormData();
@@ -22,7 +22,6 @@ export const artistaService = {
             form.append(k, v);
           }
         });
-        // append file campo com nome 'foto' ou 'file'
         form.append('foto', maybeFile);
 
         const resp = await api.post('/artistas', form, {
@@ -31,7 +30,7 @@ export const artistaService = {
         return resp.data;
       }
 
-      // caso comum: JSON
+      // Caso comum: JSON
       const resp = await api.post('/artistas', dados);
       return resp.data;
     } catch (err) {
@@ -44,5 +43,29 @@ export const artistaService = {
   async buscarPorId(id) {
     const response = await api.get(`/artistas/${id}`);
     return response.data;
+  },
+
+  // Atualizar artista
+  async atualizarArtista(id, dados) {
+    try {
+      console.log("[artistaService] atualizarArtista:", id, dados);
+      const response = await api.put(`/artistas/${id}`, dados);
+      return response.data;
+    } catch (err) {
+      console.error("[artistaService] erro ao atualizar artista:", err?.response?.status, err?.response?.data || err.message);
+      throw err;
+    }
+  },
+
+  // Excluir artista
+  async excluirArtista(id) {
+    try {
+      console.log("[artistaService] excluirArtista:", id);
+      const response = await api.delete(`/artistas/${id}`);
+      return response.data;
+    } catch (err) {
+      console.error("[artistaService] erro ao excluir artista:", err?.response?.status, err?.response?.data || err.message);
+      throw err;
+    }
   }
 };

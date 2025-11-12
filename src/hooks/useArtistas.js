@@ -17,31 +17,13 @@ export function useArtistas() {
       console.error('Erro ao listar artistas:', err);
       setError(err.response?.data?.message || 'Erro ao carregar artistas');
       setArtistas([]);
-      throw err;
+      return [];
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const criarArtista = useCallback(async (dados) => {
-    try {
-      setLoading(true);
-      setError(null);
-      console.log("[useArtistas] criando artista payload:", dados);
-      const data = await artistaService.criarArtista(dados);
-      return data;
-    } catch (err) {
-      console.error("Erro ao criar artista:", err);
-      // log detalhado da resposta do servidor
-      console.error("Resposta do servidor:", err?.response?.status, err?.response?.data);
-      setError(err.response?.data?.message || "Erro ao criar artista");
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const buscarPorId = useCallback(async (id) => {
+  const buscarArtistaPorId = useCallback(async (id) => {
     try {
       setLoading(true);
       setError(null);
@@ -56,12 +38,63 @@ export function useArtistas() {
     }
   }, []);
 
+  const criarArtista = useCallback(async (dados) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const novoArtista = await artistaService.criarArtista(dados);
+      setArtistas((prev) => [...prev, novoArtista]);
+      return novoArtista;
+    } catch (err) {
+      console.error('Erro ao criar artista:', err);
+      setError(err.response?.data?.message || 'Erro ao criar artista');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const atualizarArtista = useCallback(async (id, dados) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const artistaAtualizado = await artistaService.atualizarArtista(id, dados);
+      setArtistas((prev) =>
+        prev.map((artista) => (artista.id === id ? artistaAtualizado : artista))
+      );
+      return artistaAtualizado;
+    } catch (err) {
+      console.error('Erro ao atualizar artista:', err);
+      setError(err.response?.data?.message || 'Erro ao atualizar artista');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const excluirArtista = useCallback(async (id) => {
+    try {
+      setLoading(true);
+      setError(null);
+      await artistaService.excluirArtista(id);
+      setArtistas((prev) => prev.filter((artista) => artista.id !== id));
+    } catch (err) {
+      console.error('Erro ao excluir artista:', err);
+      setError(err.response?.data?.message || 'Erro ao excluir artista');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     artistas,
     loading,
     error,
     listarArtistas,
+    buscarArtistaPorId,
     criarArtista,
-    buscarPorId,
+    atualizarArtista,
+    excluirArtista,
   };
 }
