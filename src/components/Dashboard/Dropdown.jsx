@@ -1,8 +1,7 @@
 import React from "react";
 
-// Menu do dropdown para acionar modais. Sem navegação.
-export const Dropdown = ({ open, onOpenArtist, onOpenTour }) => {
-  if (!open) return null; // não renderiza quando fechado
+export const Dropdown = ({ open, onOpenArtist, onOpenTour, active }) => {
+  if (!open) return null;
 
   const handleArtist = () => {
     if (onOpenArtist) onOpenArtist();
@@ -14,27 +13,34 @@ export const Dropdown = ({ open, onOpenArtist, onOpenTour }) => {
 
   return (
     <div
-      className="absolute top-full mt-2 z-50 translate-x-[-15px]"
+      className="absolute top-full mt-2 z-50 translate-x-[-15px] "
       role="menu"
-      aria-label="Ações de gerenciamento"
     >
-      <div className="w-[280px] bg-white shadow-lg rounded-md px-5 py-3 space-y-4">
+      {/* Area do DropDown */}
+      <div className="w-[280px] bg-white shadow-lg rounded-md px-4 py-2 space-y-4">
+        {/* Opções do Dropdown */}
         <button
           type="button"
           onClick={handleArtist}
-          role="menuitem"
-          className="group flex flex-col text-left focus:outline-none focus:ring-2 focus:ring-neutral-300 rounded-sm"
+          aria-selected={active === "artist"}
+          className={`w-full group flex flex-col text-left focus:outline-none rounded-sm ${
+            active === "artist" ? "ring-1 ring-neutral-300 rounded-md" : ""
+          }`}
         >
           <h2 className="text-xl font-semibold group-hover:text-neutral-900">
             Alterar Artista
           </h2>
           <p className="text-md text-neutral-500">Gerenciar artista</p>
         </button>
+
+        {/* Opção do Dropdown */}
         <button
           type="button"
           onClick={handleTour}
-          role="menuitem"
-          className="group flex flex-col text-left focus:outline-none focus:ring-2 focus:ring-neutral-300 rounded-sm"
+          aria-selected={active === "tour"}
+          className={`w-full group flex flex-col text-left focus:outline-none rounded-sm ${
+            active === "tour" ? "ring-1 ring-neutral-300 rounded-md" : ""
+          }`}
         >
           <h2 className="text-xl font-semibold group-hover:text-neutral-900">
             Alterar Turne

@@ -1,9 +1,14 @@
 import { ChevronDown } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Dropdown from "./Dropdown";
+import { ArtistaModal } from "./ArtistaModal";
+import TourModal from "./TourModal";
 
 export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
   const [isOpen, setOpen] = useState(false);
+  const [artistOpen, setArtistOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+  const [activeOption, setActiveOption] = useState(null);
 
   const abrirDropdown = () => setOpen(true);
   const fecharDropdown = () => setOpen(false);
@@ -16,15 +21,17 @@ export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen]);
 
-  // Handlers simples para abrir modais (substitua pelos modais reais)
+  // Agora os handlers abrem as modais correspondentes e fecham o dropdown
   const handleOpenArtist = () => {
-    setOpen(false);
-    console.log("Abrir modal: Artistas registrados");
+    // mantém o dropdown aberto e destaca a opção selecionada
+    setActiveOption("artist");
+    setArtistOpen(true);
   };
 
   const handleOpenTour = () => {
-    setOpen(false);
-    console.log("Abrir modal: Turnês registradas");
+    // mantém o dropdown aberto e destaca a opção selecionada
+    setActiveOption("tour");
+    setTourOpen(true);
   };
 
   return (
@@ -33,6 +40,7 @@ export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
       <div className="relative flex justify-between items-center h-full max-w-70 w-full sm:w-1/3 px-4 bg-white rounded-lg">
         <Dropdown
           open={isOpen}
+          active={activeOption}
           onOpenArtist={handleOpenArtist}
           onOpenTour={handleOpenTour}
         />
@@ -51,6 +59,10 @@ export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
         <div>
           <ChevronDown className="cursor-pointer" onClick={alternarDropdown} />
         </div>
+
+        {/* Modais lógicas: renderizam somente quando open = true */}
+        <ArtistaModal open={artistOpen} onClose={() => setArtistOpen(false)} />
+        <TourModal open={tourOpen} onClose={() => setTourOpen(false)} />
       </div>
     </header>
   );
