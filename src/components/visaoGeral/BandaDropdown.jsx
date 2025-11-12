@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react'
-import { ChevronDown } from 'lucide-react'
-import { useBandas } from '../hooks/useBandas'
+import React, { useState, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
+import { useBandas } from "../../hooks/useBandas";
 
 export function BandaDropdown({ selectedBand, onBandSelect }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const { bandas, loading, listarBandas, buscarImagem } = useBandas()
-  const [bandasComImagens, setBandasComImagens] = useState([])
-  const [selectedBandImage, setSelectedBandImage] = useState(null)
+  const [isOpen, setIsOpen] = useState(false);
+  const { bandas, loading, listarBandas, buscarImagem } = useBandas();
+  const [bandasComImagens, setBandasComImagens] = useState([]);
+  const [selectedBandImage, setSelectedBandImage] = useState(null);
 
   // Carrega as bandas quando o componente montar
   useEffect(() => {
-    listarBandas()
-  }, [listarBandas])
+    listarBandas();
+  }, [listarBandas]);
 
   // Carrega imagens das bandas
   useEffect(() => {
@@ -19,40 +19,40 @@ export function BandaDropdown({ selectedBand, onBandSelect }) {
       const bandasComImg = await Promise.all(
         bandas.map(async (banda) => {
           if (banda.nomeFoto) {
-            const imageUrl = await buscarImagem(banda.nomeFoto)
-            return { ...banda, imageUrl }
+            const imageUrl = await buscarImagem(banda.nomeFoto);
+            return { ...banda, imageUrl };
           }
-          return { ...banda, imageUrl: null }
+          return { ...banda, imageUrl: null };
         })
-      )
-      setBandasComImagens(bandasComImg)
-    }
+      );
+      setBandasComImagens(bandasComImg);
+    };
 
     if (bandas.length > 0) {
-      carregarImagens()
+      carregarImagens();
     }
-  }, [bandas, buscarImagem])
+  }, [bandas, buscarImagem]);
 
   // Carrega imagem da banda selecionada
   useEffect(() => {
     const carregarImagemSelecionada = async () => {
       if (selectedBand?.nomeFoto) {
-        const imageUrl = await buscarImagem(selectedBand.nomeFoto)
-        setSelectedBandImage(imageUrl)
+        const imageUrl = await buscarImagem(selectedBand.nomeFoto);
+        setSelectedBandImage(imageUrl);
       } else {
-        setSelectedBandImage(null)
+        setSelectedBandImage(null);
       }
-    }
+    };
 
     if (selectedBand) {
-      carregarImagemSelecionada()
+      carregarImagemSelecionada();
     }
-  }, [selectedBand, buscarImagem])
+  }, [selectedBand, buscarImagem]);
 
   const handleBandSelect = (banda) => {
-    onBandSelect(banda)
-    setIsOpen(false)
-  }
+    onBandSelect(banda);
+    setIsOpen(false);
+  };
 
   if (loading) {
     return (
@@ -67,7 +67,7 @@ export function BandaDropdown({ selectedBand, onBandSelect }) {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -86,17 +86,21 @@ export function BandaDropdown({ selectedBand, onBandSelect }) {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <span>{selectedBand?.nome?.charAt(0) || 'B'}</span>
+                <span>{selectedBand?.nome?.charAt(0) || "B"}</span>
               )}
             </div>
             <div>
               <div className="font-semibold text-gray-900">
-                {selectedBand?.nome || 'Selecione uma banda'}
+                {selectedBand?.nome || "Selecione uma banda"}
               </div>
               <div className="text-sm text-gray-500">Banda</div>
             </div>
           </div>
-          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown
+            className={`w-5 h-5 text-gray-400 transition-transform ${
+              isOpen ? "rotate-180" : ""
+            }`}
+          />
         </div>
       </button>
 
@@ -125,7 +129,9 @@ export function BandaDropdown({ selectedBand, onBandSelect }) {
                   )}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">{banda.nome}</div>
+                  <div className="font-semibold text-gray-900">
+                    {banda.nome}
+                  </div>
                   <div className="text-sm text-gray-500">Banda</div>
                 </div>
               </button>
@@ -134,5 +140,5 @@ export function BandaDropdown({ selectedBand, onBandSelect }) {
         </div>
       )}
     </div>
-  )
+  );
 }

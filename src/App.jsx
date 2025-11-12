@@ -2,11 +2,11 @@ import { useState } from "react";
 import "./index.css";
 import { Route, Routes, Navigate } from "react-router-dom";
 
-import { Login } from "./pages/Login";
-import { Cadastro } from "./pages/Cadastro";
+// import { Login } from "./pages/Login";
+// import { Cadastro } from "./pages/Cadastro";
 import { Dashboard } from "./pages/Dashboard";
-import { HomeRedirect } from "./components/HomeRedirect";
-import { ProtectedLayout } from "./components/ProtectedLayout";
+// import { HomeRedirect } from "./components/HomeRedirect";
+// import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
 import { ArtistaApp } from "./pages/ArtistaApp";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
@@ -18,20 +18,20 @@ function App() {
   return (
     <Routes>
       {/* Rota raiz - redireciona baseado na autenticação */}
-      <Route path="/" element={<HomeRedirect />} />
-      
+      {/* <Route path="/" element={<HomeRedirect />} /> */}
+
       {/* Rotas públicas */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/cadastro" element={<Cadastro />} />
-      
+      {/* <Route path="/login" element={<Login />} /> */}
+      {/* <Route path="/cadastro" element={<Cadastro />} /> */}
+
       {/* Rotas protegidas */}
-      <Route element={<ProtectedLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/turne" element={<Turne />} />
-        <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
-        <Route path="/artista" element={<ArtistaApp />} />
-        <Route path="/visao-evento" element={<VisaoEvento />} />
-      </Route>
+      {/* <Route element={<ProtectedLayout />}> */}
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/turne" element={<Turne />} />
+      <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
+      <Route path="/artista" element={<ArtistaApp />} />
+      <Route path="/visao-evento" element={<VisaoEvento />} />
+      {/* </Route> */}
 
       {/* Rota não encontrada - redireciona para login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
