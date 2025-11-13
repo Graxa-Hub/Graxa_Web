@@ -23,9 +23,7 @@ export const Dropdown = ({ open, onOpenArtist, onOpenTour, active }) => {
           type="button"
           onClick={handleArtist}
           aria-selected={active === "artist"}
-          className={`w-full group flex flex-col text-left focus:outline-none rounded-sm ${
-            active === "artist" ? "ring-1 ring-neutral-300 rounded-md" : ""
-          }`}
+          className={`w-full group flex flex-col text-left focus:outline-none rounded-sm p-2`}
         >
           <h2 className="text-xl font-semibold group-hover:text-neutral-900">
             Alterar Artista
@@ -38,9 +36,7 @@ export const Dropdown = ({ open, onOpenArtist, onOpenTour, active }) => {
           type="button"
           onClick={handleTour}
           aria-selected={active === "tour"}
-          className={`w-full group flex flex-col text-left focus:outline-none rounded-sm ${
-            active === "tour" ? "ring-1 ring-neutral-300 rounded-md" : ""
-          }`}
+          className={`w-full group flex flex-col text-left focus:outline-none focus:border-none rounded-sm p-2`}
         >
           <h2 className="text-xl font-semibold group-hover:text-neutral-900">
             Alterar Turne

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 
-const TourModal = ({ open = false, onClose = () => {} }) => {
+export const TurneModal = ({ open = false, onClose = () => {} }) => {
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose();
@@ -59,5 +59,3 @@ const TourModal = ({ open = false, onClose = () => {} }) => {
     </div>
   );
 };
-
-export default TourModal;

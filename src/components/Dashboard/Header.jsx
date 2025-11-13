@@ -1,8 +1,8 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import Dropdown from "./Dropdown";
 import { ArtistaModal } from "./ArtistaModal";
-import TourModal from "./TourModal";
+import { TurneModal } from "./TurneModal";
 
 export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
   const [isOpen, setOpen] = useState(false);
@@ -21,15 +21,12 @@ export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [isOpen]);
 
-  // Agora os handlers abrem as modais correspondentes e fecham o dropdown
   const handleOpenArtist = () => {
-    // mantém o dropdown aberto e destaca a opção selecionada
     setActiveOption("artist");
     setArtistOpen(true);
   };
 
   const handleOpenTour = () => {
-    // mantém o dropdown aberto e destaca a opção selecionada
     setActiveOption("tour");
     setTourOpen(true);
   };
@@ -57,12 +54,19 @@ export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
         </div>
 
         <div>
-          <ChevronDown className="cursor-pointer" onClick={alternarDropdown} />
+          {isOpen ? (
+            <ChevronDown
+              className="cursor-pointer"
+              onClick={alternarDropdown}
+            />
+          ) : (
+            <ChevronUp className="cursor-pointer" onClick={alternarDropdown} />
+          )}
         </div>
 
         {/* Modais lógicas: renderizam somente quando open = true */}
         <ArtistaModal open={artistOpen} onClose={() => setArtistOpen(false)} />
-        <TourModal open={tourOpen} onClose={() => setTourOpen(false)} />
+        <TurneModal open={tourOpen} onClose={() => setTourOpen(false)} />
       </div>
     </header>
   );

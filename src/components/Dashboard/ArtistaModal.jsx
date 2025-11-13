@@ -31,9 +31,27 @@ export const ArtistaModal = ({ open = false, onClose = () => {} }) => {
       nome: "Xamuel",
       imagem: './xamuel.jpg',
     },
+    {
+      id: 5,
+      nome: "Xamuel",
+      imagem: './xamuel.jpg',
+    },
+    {
+      id: 6,
+      nome: "Xamuel",
+      imagem: './xamuel.jpg',
+    },
+    {
+      id: 7,
+      nome: "Xamuel",
+      imagem: './xamuel.jpg',
+    },
+    {
+      id: 8,
+      nome: "Xamuel",
+      imagem: './xamuel.jpg',
+    },
   ];
-
-  const listHasOverflow = turnes.length > 6;
 
   return (
     <div className="fixed inset-0 z-50">
@@ -46,7 +64,7 @@ export const ArtistaModal = ({ open = false, onClose = () => {} }) => {
           <h2 className="text-xl font-semibold">Turnes</h2>
           <p className="text-md text-neutral-500">Serlecione os artista de <br></br>sua preferência:</p>
         </header>
-        <div className={`grid grid-cols-2 gap-4 ${listHasOverflow ? "max-h-80 overflow-y-auto pr-1" : ""}`}>
+        <div className="grid grid-cols-2 gap-4 max-h-80 overflow-y-auto">
           {turnes.map((turne) => (
             <div
               key={turne.id}
