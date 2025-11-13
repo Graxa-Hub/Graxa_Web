@@ -25,9 +25,12 @@ body {
 /* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
 /* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
 
-/* FullCalendar header title branco */
+/* FullCalendar header title: preta e semi-negrito */
 .fc-toolbar-title {
-  color: #fff !important;
+  color: #111827 !important;
+  /* preto (gray-900) */
+  font-weight: 600 !important;
+  /* font-semibold */
 }
 
 
@@ -296,7 +299,8 @@ Tabela da lista: .fc-list-table */
 }
 
 .graxa-calendar .fc-toolbar-title {
-  font-weight: 700;
+  font-weight: 600;
+  /* alinhar com font-semibold pedido */
   font-size: 1.02rem;
   color: #111827;
 }

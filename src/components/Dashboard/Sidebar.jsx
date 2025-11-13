@@ -51,9 +51,9 @@ export const Sidebar = () => {
         {/* Botões Navbar */}
         {(() => {
           const mainNav = [
-            { to: "/dashboard", label: "Calendário", icon: ChartLine },
+            { to: "/calendario", label: "Calendário", icon: ChartLine },
             { to: "/artista", label: "Artista", icon: MicVocal },
-            { to: "/schedule", label: "Agenda", icon: Calendar },
+            { to: "/agenda", label: "Agenda", icon: Calendar },
             { to: "/turne", label: "Turne", icon: Inbox },
             { to: "/adicionando-usuario", label: "Users", icon: Settings },
           ];
@@ -108,8 +108,6 @@ export const Sidebar = () => {
                     </NavLink>
                   </li>
                 ))}
-
-                
               </ul>
             </nav>
           );
