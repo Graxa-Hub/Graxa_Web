@@ -5,6 +5,7 @@ const COLOR_CLASS = {
   black: "text-black",
   orange: "text-orange-500",
   purple: "text-purple-950",
+  green: "text-green-500",
 };
 
 export const Logo = ({ textColor }) => {
