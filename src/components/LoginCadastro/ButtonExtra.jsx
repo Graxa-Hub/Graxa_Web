@@ -3,7 +3,12 @@
 
 import { Link } from "react-router-dom";
 
-export const ButtonExtra = ({ children, className, to }) => {
+// Botão link reutilizável. Se nenhuma rota for passada, cai no fluxo de recuperar senha.
+export const ButtonExtra = ({
+  children,
+  className = "",
+  to = "/recuperar-senha",
+}) => {
   return (
     <Link
       to={to}

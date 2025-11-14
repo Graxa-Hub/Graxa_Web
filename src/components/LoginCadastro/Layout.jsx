@@ -1,12 +1,26 @@
 import React from "react";
 
-export const Layout = ({ children, padding = "" }) => {
+// Layout genérico para telas de autenticação.
+// Agora aceita a prop `columns` para definir se será split (2 colunas) ou single (1 coluna).
+// Uso: <Layout columns={1}> ... </Layout> em RecuperarSenha.
+export const Layout = ({
+  children,
+  padding = "",
+  columns = 2,
+  className = "",
+}) => {
+  const colsClass =
+    columns === 1 ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2";
+  // Ajusta a largura máxima: single fica um pouco mais estreito (max-w-xl) para foco.
+  const maxWidthClass = columns === 1 ? "max-w-xl" : "max-w-4xl";
+
   return (
     <div
-      className={`w-full min-h-screen ${padding} flex justify-center items-center bg-gradient-to-b from-gray-800 to-gray-600 `}
+      className={`w-full min-h-screen ${padding} flex justify-center items-center bg-gradient-to-b from-gray-800 to-gray-600`}
     >
-      {/* parent holds the rounded corners so inner panels don't need per-corner classes */}
-      <div className="w-full max-w-4xl mx-4 sm:mx-20 grid grid-cols-1 sm:grid-cols-2 shadow-md rounded-xl overflow-hidden">
+      <div
+        className={`w-full ${maxWidthClass} mx-4 sm:mx-20 grid ${colsClass} shadow-md rounded-xl overflow-hidden ${className}`}
+      >
         {children}
       </div>
     </div>

@@ -118,7 +118,7 @@ export const Login = () => {
             text="Não tem conta?"
             buttonText="Cadastre-se"
             textColor="orange-500"
-            to="../cadastro"
+            to="/cadastro"
           />
 
           <Logo textColor={"orange"} />
