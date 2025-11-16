@@ -4,7 +4,7 @@ import { Upload, Edit2 } from 'lucide-react'
 export function InputFile({ 
   label, 
   onFileSelect, 
-  accept = "image/*",
+  accept = "image/jpeg, image/jpg", // Somente JPEG
   maxSize = 50 * 1024 * 1024, // 50MB default
   required = false,
   className = "",
@@ -32,12 +32,7 @@ export function InputFile({
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
   }
 
-  const getAcceptedFormats = () => {
-    if (accept === "image/*") {
-      return "JPEG, PNG, GIF, and WebP formats"
-    }
-    return accept.replace(/\./g, '').toUpperCase()
-  }
+  const getAcceptedFormats = () => "JPEG somente"
 
   const handleDragOver = (e) => {
     e.preventDefault()
@@ -60,6 +55,13 @@ export function InputFile({
   }
 
   const handleFileSelection = (file) => {
+
+    // ⛔ Bloquear qualquer coisa que não seja JPEG
+    if (!["image/jpeg", "image/jpg"].includes(file.type)) {
+      alert("Apenas imagens JPEG são permitidas.")
+      return
+    }
+
     if (file.size > maxSize) {
       alert(`Arquivo muito grande. Tamanho máximo: ${formatFileSize(maxSize)}`)
       return
@@ -144,7 +146,7 @@ export function InputFile({
           onDrop={handleDrop}
           onClick={handleBrowseClick}
         >
-          <input
+          <input 
             ref={fileInputRef}
             type="file"
             accept={accept}
