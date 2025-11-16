@@ -365,45 +365,34 @@ export function Turne() {
 
   if (loading || bandasLoading) {
     return (
-      <Layout>
-        <div className="flex h-screen w-full">
-          <Sidebar />
-          <div className="flex-1 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          </div>
-        </div>
-      </Layout>
+      <div className="flex flex-1 items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <div className="flex h-screen w-full">
-        <Sidebar />
-        <div className="flex-1 flex flex-col">
-          <TurneHeader
-            selectedBand={selectedBand}
-            onBandSelect={handleBandSelect}
-            onCreateTurne={handleCreateTurne}
-          />
+    <div className="flex flex-1 flex-col min-h-0">
+      
+      <TurneHeader
+        selectedBand={selectedBand}
+        onBandSelect={handleBandSelect}
+        onCreateTurne={handleCreateTurne}
+      />
 
-          {errors.geral && (
-            <div className="mx-6 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-              {errors.geral}
-            </div>
-          )}
-
-          <div className="flex-1 p-6 overflow-y-auto">
-            
-            
-            <TurneList
-              turnes={filteredTurnes}
-              onEditTurne={handleEditTurne}
-              onDeleteTurne={handleDeleteTurne}
-              onCreateTurne={handleCreateTurne}
-            />
-          </div>
+      {errors.geral && (
+        <div className="mx-6 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {errors.geral}
         </div>
+      )}
+
+      <div className="flex-1 p-6 overflow-y-auto">
+        <TurneList
+          turnes={filteredTurnes}
+          onEditTurne={handleEditTurne}
+          onDeleteTurne={handleDeleteTurne}
+          onCreateTurne={handleCreateTurne}
+        />
       </div>
 
       <Modal
@@ -559,6 +548,7 @@ export function Turne() {
           }
         }}
       </Modal>
-    </Layout>
+
+    </div>
   );
 }

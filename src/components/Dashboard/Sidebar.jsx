@@ -25,6 +25,9 @@ export const Sidebar = () => {
   // ================================
   const tipo = usuario?.tipoUsuario;
 
+  console.log("TIPO:", usuario?.tipoUsuario);
+  console.log("LOWER:", usuario?.tipoUsuario?.toLowerCase());
+
   const mainNavProdutor = [
     { to: "/calendario", label: "Calendário", icon: ChartLine },
     { to: "/artista", label: "Artista", icon: MicVocal },
@@ -39,7 +42,7 @@ export const Sidebar = () => {
   ];
 
   const mainNav =
-    tipo === "Musico" ? mainNavMusico : mainNavProdutor;
+    tipo === "musico" ? mainNavMusico : mainNavProdutor;
 
   const footerNav = [
     { to: "/help", label: "Help", icon: HelpCircleIcon, hoverClass: "hover:bg-gray-100" },

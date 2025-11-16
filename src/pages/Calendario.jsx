@@ -6,7 +6,7 @@ import { Header } from "../components/Dashboard/Header";
 import { Container } from "../components/Dashboard/Container";
 import { TaskList } from "../components/Dashboard/TaskList";
 import { Layout } from "../components/Dashboard/Layout";
-import { Sidebar } from "../components/Dashboard/Sidebar";
+import {   } from "../components/Dashboard/Sidebar";
 import { EventoModal } from "../components/EventoModal.jsx";
 
 export const Calendario = () => {
@@ -19,35 +19,31 @@ export const Calendario = () => {
     };
 
   return (
-    <Layout>
-      <Sidebar />
-      <main className="flex-1 flex flex-col p-5 bg-neutral-300 min-h-0">
-        {/* Cabeçalho da main */}
-        <Header
-          titulo="Boogarins"
-          turne="The Town 2025"
-          circulo="bg-green-500"
+    <div className="flex-1 flex flex-col p-5 bg-neutral-300 min-h-0 overflow-hidden">
+
+      <Header
+        titulo="Boogarins"
+        turne="The Town 2025"
+        circulo="bg-green-500"
+      />
+
+      <Container>
+        <div className="min-w-[72%] h-full">
+          <MainCalendar onCalendarApi={setMainCalendarApi} />
+        </div>
+
+        <div className="min-w-[27%] rounded-lg p-1 h-full bg-white">
+          <SideCalendar mainCalendarApi={mainCalendarApi} />
+          <TaskList />
+        </div>
+
+        <EventoModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onFinish={handleEventFinish}
         />
+      </Container>
 
-        {/* Container  */}
-        <Container>
-          <div className="min-w-[72%] h-full">
-            <MainCalendar onCalendarApi={setMainCalendarApi} />
-          </div>
-          {/* Preview */}
-          <div className="min-w-[27%] rounded-lg p-1 h-full bg-white">
-            <SideCalendar mainCalendarApi={mainCalendarApi} />
-            {/* Lista embaixo do calendário */}
-            <TaskList />
-          </div>
-
-          <EventoModal
-                  isOpen={isModalOpen}
-                  onClose={() => setIsModalOpen(false)}
-                  onFinish={handleEventFinish}
-                />
-        </Container>
-      </main>
-    </Layout>
+    </div>
   );
 };

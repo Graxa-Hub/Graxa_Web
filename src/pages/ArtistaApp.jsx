@@ -86,21 +86,16 @@ export function ArtistaApp() {
 
   if (loading && bandas.length === 0) {
     return (
-      <Layout>
-        <Sidebar />
-        <main className="flex-1 bg-[#f4f5f7] p-8">
-          <div className="flex items-center justify-center min-h-screen">
-            <p className="text-gray-500">Carregando...</p>
-          </div>
-        </main>
-      </Layout>
+      <div className="flex flex-1 items-center justify-center bg-[#f4f5f7]">
+        <p className="text-gray-500">Carregando...</p>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      <Sidebar />
-      <main className="flex-1 bg-[#f4f5f7] p-8">
+    <div className="flex flex-1 min-h-0 bg-[#f4f5f7]">
+      <main className="flex-1 p-8 overflow-y-auto">
+      
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="font-semibold text-lg bg-white inline-block px-4 py-2 rounded shadow">
@@ -133,7 +128,10 @@ export function ArtistaApp() {
 
         {isModalOpen && (
           <AddBandaModal
-            onSuccess={onBandaCreated}
+            onSuccess={() => {
+              closeModal();
+              listarBandas();
+            }}
             onClose={closeModal}
             criarBanda={criarBanda}
             atualizarBanda={atualizarBanda}
@@ -153,7 +151,7 @@ export function ArtistaApp() {
           type="danger"
         />
       </main>
-    </Layout>
+    </div>
   );
 }
 

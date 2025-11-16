@@ -197,7 +197,7 @@ const MainContent = ({ roles, selectedRole, onSelectRole }) => {
 // Layout específico para a página de adicionar usuários
 const EventDashboardLayout = ({ children, sidebar }) => {
   return (
-    <div className="flex h-screen w-screen bg-gray-50">
+    <div className="flex flex-1 min-h-0 bg-gray-50">
       {children}
       {sidebar}
     </div>
@@ -295,24 +295,23 @@ export const AdicionandoUsuarios = () => {
     : [];
 
   return (
-    <Layout>
-          <Sidebar />
-          <EventDashboardLayout
-          sidebar={
-            <AssociatesSidebar
-              associates={filteredAssociates}
-              onAssociate={handleAssociate}
-              selectedRole={selectedRole}
-            />
-          }
-        >
-          <MainContent
-            roles={roles}
+    <div className="flex flex-1 min-h-0">
+      <EventDashboardLayout
+        sidebar={
+          <AssociatesSidebar
+            associates={filteredAssociates}
+            onAssociate={handleAssociate}
             selectedRole={selectedRole}
-            onSelectRole={handleSelectRole}
           />
-        </EventDashboardLayout>
-        </Layout>
+        }
+      >
+        <MainContent
+          roles={roles}
+          selectedRole={selectedRole}
+          onSelectRole={handleSelectRole}
+        />
+      </EventDashboardLayout>
+    </div>
   );
 };
 
