@@ -20,17 +20,42 @@ export const Sidebar = () => {
     window.location.href = "/login";
   };
 
+  // ================================
+  // 🔥 Regras de visibilidade
+  // ================================
+  const tipo = usuario?.tipoUsuario;
+
+  const mainNavProdutor = [
+    { to: "/calendario", label: "Calendário", icon: ChartLine },
+    { to: "/artista", label: "Artista", icon: MicVocal },
+    { to: "/agenda", label: "Agenda", icon: Calendar },
+    { to: "/turne", label: "Turne", icon: Inbox },
+    { to: "/adicionando-usuario", label: "Users", icon: Settings },
+  ];
+
+  const mainNavMusico = [
+    { to: "/calendario", label: "Calendário", icon: ChartLine },
+    { to: "/turne", label: "Turne", icon: Inbox },
+  ];
+
+  const mainNav =
+    tipo === "Musico" ? mainNavMusico : mainNavProdutor;
+
+  const footerNav = [
+    { to: "/help", label: "Help", icon: HelpCircleIcon, hoverClass: "hover:bg-gray-100" },
+    { to: "/logout", label: "Log Out", icon: LogOut, hoverClass: "hover:bg-red-100 hover:text-red-500" },
+  ];
+
   return (
     <>
       <aside className="flex flex-col w-65 h-screen shadow-[2px_0_20px_0_rgba(0,0,0,0.25)] p-4">
+        
         {/* Cabeçalho */}
         <header className="flex gap-3 py-5 border-b border-neutral-300">
-          {/* Foto de perfil */}
           <div className="h-12 w-12 flex items-center justify-center rounded-full bg-blue-200 text-white">
             <User />
           </div>
 
-          {/* Informações do usuário */}
           <div>
             {usuario ? (
               <>
@@ -48,70 +73,43 @@ export const Sidebar = () => {
           </div>
         </header>
 
-        {/* Botões Navbar */}
-        {(() => {
-          const mainNav = [
-            { to: "/calendario", label: "Calendário", icon: ChartLine },
-            { to: "/artista", label: "Artista", icon: MicVocal },
-            { to: "/agenda", label: "Agenda", icon: Calendar },
-            { to: "/turne", label: "Turne", icon: Inbox },
-            { to: "/adicionando-usuario", label: "Users", icon: Settings },
-          ];
-          const footerNav = [
-            {
-              to: "/help",
-              label: "Help",
-              icon: HelpCircleIcon,
-              hoverClass: "hover:bg-gray-100",
-            },
-            {
-              to: "/logout",
-              label: "Log Out",
-              icon: LogOut,
-              hoverClass: "hover:bg-red-100 hover:text-red-500",
-            },
-          ];
+        {/* Navegação */}
+        <nav className="flex flex-col flex-1 justify-between mt-4">
+          <ul className="flex flex-col gap-2">
+            {mainNav.map(({ to, label, icon: Icon }) => (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  className={({ isActive }) =>
+                    `${
+                      isActive ? "bg-blue-300/50 font-semibold" : ""
+                    } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
+                  }
+                >
+                  <Icon />
+                  {label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
 
-          return (
-            <nav className="flex flex-col flex-1 justify-between mt-4">
-              <ul className="flex flex-col gap-2">
-                {mainNav.map(({ to, label, icon: Icon }) => (
-                  <li key={to}>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        `${
-                          isActive ? "bg-blue-300/50 font-semibold    " : ""
-                        } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
-                      }
-                    >
-                      <Icon />
-                      {label}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-
-              <ul className="flex flex-col">
-                {footerNav.map(({ to, label, icon: Icon, hoverClass }) => (
-                  <li key={to}>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        `${
-                          isActive ? "bg-blue-300/50 font-semibold    " : ""
-                        } flex px-2 py-3 rounded gap-3 ${hoverClass}`
-                      }
-                    >
-                      <Icon />
-                      {label}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          );
-        })()}
+          <ul className="flex flex-col">
+            {footerNav.map(({ to, label, icon: Icon, hoverClass }) => (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  className={({ isActive }) =>
+                    `${isActive ? "bg-blue-300/50 font-semibold" : ""} 
+                     flex px-2 py-3 rounded gap-3 ${hoverClass}`
+                  }
+                >
+                  <Icon />
+                  {label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </aside>
     </>
   );
