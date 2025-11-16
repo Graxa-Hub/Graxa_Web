@@ -5,6 +5,7 @@ import { Input } from "../components/Input";
 import { InputFile } from "../components/InputFile";
 import { Modal } from "../components/Modal";
 import { ButtonPage } from "../components/ButtonPage";
+import { GeneroCombobox } from "../components/GeneroCombobox";
 import { Trash2, Edit, MoreVertical } from "lucide-react";
 import { useBandas } from "../hooks/useBandas";
 import { useRepresentantes } from "../hooks/useRepresentantes";
@@ -474,27 +475,11 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Gênero Musical *
-                  </label>
-                  <select
-                    value={draft.genero}
-                    onChange={(e) => handleChange("genero", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="ROCK">Rock</option>
-                    <option value="POP">Pop</option>
-                    <option value="JAZZ">Jazz</option>
-                    <option value="BLUES">Blues</option>
-                    <option value="ELETRONICA">Eletrônica</option>
-                    <option value="HIP_HOP">Hip Hop</option>
-                    <option value="SAMBA">Samba</option>
-                    <option value="FUNK">Funk</option>
-                    <option value="REGGAE">Reggae</option>
-                    <option value="MPB">MPB</option>
-                  </select>
-                </div>
+                <GeneroCombobox
+                  value={draft.genero}
+                  onChange={(value) => handleChange("genero", value)}
+                  error={errors.genero}
+                />
 
                 <InputFile
                   label="Foto da Banda"

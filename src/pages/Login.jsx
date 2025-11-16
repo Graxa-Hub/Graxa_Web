@@ -40,10 +40,13 @@ export const Login = () => {
       identificador: email.trim(),
       senha: senha.trim(),
     });
-
+    console.log("Está chegando aqui fora do IF")
     if (data?.token) {
+      
       loginToContext(data);
-      navigate("/dashboard");
+      
+      navigate("/calendario");
+      
     } else if (Array.isArray(data?.erros)) {
       const errorsByField = data.erros.reduce((acc, err) => {
         acc[err.campo] = err.mensagem;

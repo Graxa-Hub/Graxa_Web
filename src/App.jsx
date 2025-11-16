@@ -5,7 +5,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Cadastro } from "./pages/Cadastro";
 import { HomeRedirect } from "./components/HomeRedirect";
-// import { ProtectedLayout } from "./components/ProtectedLayout";
+import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
 import { ArtistaApp } from "./pages/ArtistaApp";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
@@ -25,13 +25,13 @@ function App() {
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro" element={<Cadastro />} />
       {/* Rotas protegidas */}
-      {/* <Route element={<ProtectedLayout />}> */}
+      <Route element={<ProtectedLayout />}>
       <Route path="/calendario" element={<Calendario />} />
       <Route path="/turne" element={<Turne />} />
       <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
       <Route path="/artista" element={<ArtistaApp />} />
       <Route path="/visao-evento" element={<VisaoEvento />} />
-      {/* </Route> */}
+      </Route>
       {/* Rota não encontrada - redireciona para login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
