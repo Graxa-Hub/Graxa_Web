@@ -285,6 +285,9 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
     setErrors((e) => ({ ...e, [key]: null }));
     
     if (key === 'foto' && value) {
+      // Aviso temporário sobre upload de imagens
+      console.warn('⚠️ Upload de imagens está com problema no backend. A banda será criada sem foto.');
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagemAtual(reader.result);
@@ -440,7 +443,23 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
       onSuccess();
     } catch (error) {
       console.error("Erro ao processar banda:", error);
-      setErrors({ geral: error.response?.data?.message || error.message || "Erro ao processar banda" });
+      
+      // Mensagem de erro mais amigável
+      let errorMessage = "Erro ao processar banda";
+      const serverMessage = error.response?.data?.message || error.response?.data?.mensagem;
+      
+      if (serverMessage) {
+        // Se a mensagem contém um caminho de arquivo, é erro de upload
+        if (serverMessage.includes('uploads\\') || serverMessage.includes('uploads/')) {
+          errorMessage = "Erro ao fazer upload da imagem. Verifique se o servidor tem permissão para salvar arquivos.";
+        } else {
+          errorMessage = serverMessage;
+        }
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setErrors({ geral: errorMessage });
     } finally {
       setLoading(false);
     }

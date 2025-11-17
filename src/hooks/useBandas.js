@@ -12,6 +12,7 @@ export function useBandas() {
       setLoading(true);
       setError(null);
       const data = await bandaService.listarBandas();
+      // Suporta tanto array direto quanto objeto com propriedade content
       const lista = Array.isArray(data)
         ? data
         : Array.isArray(data?.content)
@@ -20,8 +21,16 @@ export function useBandas() {
       setBandas(lista);
       return data;
     } catch (err) {
-      console.error("Erro ao listar bandas:", err);
-      setError(err.response?.data?.message || "Erro ao carregar bandas");
+      console.error('Erro ao listar bandas:', err);
+      const errorMessage = err.response?.data?.message || err.response?.data?.mensagem;
+      
+      // Não mostra erro se for apenas "nenhuma banda encontrada"
+      if (errorMessage && errorMessage.includes('Não há bandas salvas')) {
+        setBandas([]);
+        return [];
+      }
+      
+      setError(errorMessage || 'Erro ao carregar bandas');
       setBandas([]);
       return [];
     } finally {
@@ -52,8 +61,9 @@ export function useBandas() {
       setBandas((prev) => [...prev, novaBanda]);
       return novaBanda;
     } catch (err) {
-      console.error("Erro ao criar banda:", err);
-      setError(err.response?.data?.message || "Erro ao criar banda");
+      console.error('Erro ao criar banda:', err);
+      const errorMessage = err.response?.data?.message || err.response?.data?.mensagem || 'Erro ao criar banda';
+      setError(errorMessage);
       throw err;
     } finally {
       setLoading(false);
@@ -123,7 +133,7 @@ export function useBandas() {
       if (!nomeArquivo) return null;
       return await imagemService(nomeArquivo);
     } catch (err) {
-      console.error("Erro ao buscar imagem:", err);
+      console.error('Erro ao buscar imagem:', err);
       return null;
     }
   }, []);
