@@ -31,3 +31,13 @@ export const getColaborador = async (userId) => {
         throw error;
     }
 };
+
+export async function enviarCodigoRecuperacao(email) {
+    console.log("URL chamada:", `${API_URL}/credenciais/recuperar-senha`);
+  try {
+    const response = await axios.post(`${API_URL}/credenciais/recuperar-senha`, { email });
+    return response.data;
+  } catch (error) {
+    throw error.response || error;
+  }
+}
