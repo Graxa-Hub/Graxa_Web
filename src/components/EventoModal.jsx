@@ -17,11 +17,15 @@ import {
   SHOW_ERROR_MAP,
   VIAGEM_ERROR_MAP,
 } from "../utils/errorMapping";
+import { useAuth } from "../context/AuthContext";
 
 export function EventoModal({ isOpen, onClose, onFinish }) {
   const [activeTab, setActiveTab] = useState("show");
   const [currentStep, setCurrentStep] = useState(1);
   const [fieldErrors, setFieldErrors] = useState({});
+
+  const { usuario } = useAuth();
+  const responsavelId = usuario?.id || 1; // fallback para 1 se não tiver usuário
 
   const { bandas, listarBandas } = useBandas();
   const { locais, listarLocais, criarLocal } = useLocais();
@@ -163,7 +167,7 @@ export function EventoModal({ isOpen, onClose, onFinish }) {
           descricao: showData.descricao || "",
           turneId: turneIdFinal,
           localId: localIdFinal,
-          responsavelId: 1,
+          responsavelId: responsavelId,
         };
 
         const showCriado = await criarShow(showPayload);

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Dropdown from "./Dropdown";
 import { ArtistaModal } from "./ArtistaModal";
 import { TurneModal } from "./TurneModal";
-import { ModalButton } from "./ModalButton";
 
 export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
   const [isOpen, setOpen] = useState(false);
@@ -69,8 +68,6 @@ export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
         <ArtistaModal open={artistOpen} onClose={() => setArtistOpen(false)} />
         <TurneModal open={tourOpen} onClose={() => setTourOpen(false)} />
       </div>
-
-      <ModalButton />
     </header>
   );
 };
