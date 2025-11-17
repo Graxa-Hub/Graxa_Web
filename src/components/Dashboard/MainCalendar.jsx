@@ -21,7 +21,8 @@ export default function MainCalendar({ onCalendarApi }) {
   const navigate = useNavigate();
 
   // Hook para carregar eventos do backend
-  const { eventos, loading, carregarEventos, adicionarEventoLocal } = useEventosCalendario();
+  const { eventos, loading, carregarEventos, adicionarEventoLocal } =
+    useEventosCalendario();
 
   // Estado local adicional
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -92,10 +93,10 @@ export default function MainCalendar({ onCalendarApi }) {
         onFinish={(entidadeCriada) => {
           // Determina tipo (show ou viagem) pela estrutura dos dados
           const tipo = entidadeCriada?.tipoViagem ? "viagem" : "show";
-          
+
           // Adiciona evento localmente para feedback imediato
           adicionarEventoLocal(entidadeCriada, tipo);
-          
+
           setCreateModalOpen(false);
           setLastSelectInfo(null);
         }}
