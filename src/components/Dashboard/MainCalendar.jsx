@@ -10,13 +10,7 @@ import "../../index.css";
 import { EventoModal } from "../EventoModal";
 import { useEventosCalendario } from "../../hooks/useEventosCalendario";
 
-export default function MainCalendar({ onCalendarApi }) {
-  // helper to ensure a date string includes a time portion (so events appear in timeGrid views)
-  const ensureHasTime = (isoStr, defaultTime = "09:00:00") => {
-    if (!isoStr) return isoStr;
-    return isoStr.includes("T") ? isoStr : `${isoStr}T${defaultTime}`;
-  };
-
+export default function MainCalendar({ onCalendarApi, onEventosChange }) {
   const calendarRef = useRef(null);
   const navigate = useNavigate();
 
@@ -26,7 +20,10 @@ export default function MainCalendar({ onCalendarApi }) {
 
   // Estado local adicional
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [lastSelectInfo, setLastSelectInfo] = useState(null);
+  const [dataHoraSelecionada, setDataHoraSelecionada] = useState({
+    inicio: "",
+    fim: "",
+  });
 
   // Carrega eventos ao montar o componente
   useEffect(() => {
@@ -44,11 +41,35 @@ export default function MainCalendar({ onCalendarApi }) {
     }
   }, [onCalendarApi]);
 
+  // Compartilha eventos com SideCalendar
+  useEffect(() => {
+    if (typeof onEventosChange === "function") {
+      onEventosChange(eventos);
+    }
+  }, [eventos, onEventosChange]);
+
   const handleDateSelect = (selectInfo) => {
-    setLastSelectInfo(selectInfo);
+    // Formata data/hora para o formato datetime-local (YYYY-MM-DDTHH:mm)
+    const formatarParaDateTimeLocal = (data) => {
+      const ano = data.getFullYear();
+      const mes = String(data.getMonth() + 1).padStart(2, "0");
+      const dia = String(data.getDate()).padStart(2, "0");
+      const hora = String(data.getHours()).padStart(2, "0");
+      const minuto = String(data.getMinutes()).padStart(2, "0");
+      return `${ano}-${mes}-${dia}T${hora}:${minuto}`;
+    };
+
+    const inicio = formatarParaDateTimeLocal(selectInfo.start);
+    const fim = formatarParaDateTimeLocal(selectInfo.end);
+
+    console.log("[MainCalendar] Data/Hora selecionada:", { inicio, fim });
+
+    setDataHoraSelecionada({ inicio, fim });
+
     try {
       selectInfo.view.calendar.unselect();
     } catch {}
+
     setCreateModalOpen(true);
   };
 
@@ -86,9 +107,10 @@ export default function MainCalendar({ onCalendarApi }) {
       />
       <EventoModal
         isOpen={createModalOpen}
+        dataHoraInicial={dataHoraSelecionada}
         onClose={() => {
           setCreateModalOpen(false);
-          setLastSelectInfo(null);
+          setDataHoraSelecionada({ inicio: "", fim: "" });
         }}
         onFinish={(entidadeCriada) => {
           console.log("[MainCalendar] Evento criado:", entidadeCriada);
@@ -101,7 +123,7 @@ export default function MainCalendar({ onCalendarApi }) {
           adicionarEventoLocal(entidadeCriada, tipo);
 
           setCreateModalOpen(false);
-          setLastSelectInfo(null);
+          setDataHoraSelecionada({ inicio: "", fim: "" });
 
           // Recarrega eventos do backend após 500ms
           setTimeout(() => {

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { showService } from "../services/showService";
 import { viagemService } from "../services/viagemService";
 
@@ -36,40 +36,42 @@ export function useEventosCalendario() {
 
       // Carrega shows e viagens em paralelo
       const [resShows, resViagens] = await Promise.all([
-        showService.listar().catch((e) => {
-          console.error("Erro ao listar shows:", e);
-          return [];
-        }),
-        viagemService.listar().catch((e) => {
-          console.error("Erro ao listar viagens:", e);
-          return [];
-        }),
+        showService.listar().catch(() => []),
+        viagemService.listar().catch(() => []),
       ]);
 
       const shows = Array.isArray(resShows) ? resShows : [];
       const viagens = Array.isArray(resViagens) ? resViagens : [];
 
       // Normaliza shows para eventos do calendário
-      const eventosShows = shows.map((show) => ({
-        id: `show-${show.id}`,
-        title: show.nomeEvento || "Show",
-        start: normalizarData(show.dataInicio),
-        end: normalizarData(show.dataFim),
-        type: "show",
-        originalData: show,
-        classNames: ["evento-show"],
-      }));
+      const eventosShows = shows
+        .filter((s) => s.ativo !== false)
+        .map((show) => ({
+          id: `show-${show.id}`,
+          title: show.nomeEvento,
+          start: normalizarData(show.dataInicio),
+          end: normalizarData(show.dataFim),
+          type: "show",
+          backgroundColor: "#ef4444", // Vermelho
+          borderColor: "#dc2626",
+          textColor: "#ffffff",
+          classNames: ["evento-show"],
+        }));
 
       // Normaliza viagens para eventos do calendário
-      const eventosViagens = viagens.map((viagem) => ({
-        id: `viagem-${viagem.id}`,
-        title: viagem.nomeEvento || "Viagem",
-        start: normalizarData(viagem.dataInicio),
-        end: normalizarData(viagem.dataFim),
-        type: "viagem",
-        originalData: viagem,
-        classNames: ["evento-viagem"],
-      }));
+      const eventosViagens = viagens
+        .filter((v) => v.ativo !== false)
+        .map((viagem) => ({
+          id: `viagem-${viagem.id}`,
+          title: viagem.nomeEvento,
+          start: normalizarData(viagem.dataInicio),
+          end: normalizarData(viagem.dataFim),
+          type: "viagem",
+          backgroundColor: "#3b82f6", // Azul
+          borderColor: "#2563eb",
+          textColor: "#ffffff",
+          classNames: ["evento-viagem"],
+        }));
 
       const todosEventos = [...eventosShows, ...eventosViagens];
       setEventos(todosEventos);
@@ -94,25 +96,19 @@ export function useEventosCalendario() {
    * Adiciona um novo evento localmente (otimismo)
    */
   const adicionarEventoLocal = useCallback((entidade, tipo) => {
-    console.log('[useEventosCalendario] Adicionando evento local:', { entidade, tipo });
-
     const novoEvento = {
       id: `${tipo}-${entidade.id}`,
-      title: entidade.nomeEvento || entidade.titulo,
-      start: normalizarData(entidade.dataInicio || entidade.dataHoraInicio),
-      end: normalizarData(entidade.dataFim || entidade.dataHoraFim),
+      title: entidade.nomeEvento,
+      start: entidade.dataInicio,
+      end: entidade.dataFim,
       type: tipo,
-      originalData: entidade,
+      backgroundColor: tipo === "show" ? "#ef4444" : "#3b82f6", // Vermelho ou Azul
+      borderColor: tipo === "show" ? "#dc2626" : "#2563eb",
+      textColor: "#ffffff",
       classNames: [`evento-${tipo}`],
     };
 
-    console.log('[useEventosCalendario] Evento normalizado:', novoEvento);
-
-    setEventos((prev) => {
-      const novosEventos = [...prev, novoEvento];
-      console.log('[useEventosCalendario] Eventos após adicionar:', novosEventos);
-      return novosEventos;
-    });
+    setEventos((prev) => [...prev, novoEvento]);
   }, []);
 
   return {

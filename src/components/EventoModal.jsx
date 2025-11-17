@@ -7,6 +7,8 @@ import { useLocais } from "../hooks/useLocais";
 import { useTurnes } from "../hooks/useTurnes";
 import { useShows } from "../hooks/useShows";
 import { useViagens } from "../hooks/useViagens";
+import { showService } from "../services/showService";
+import { viagemService } from "../services/viagemService";
 import {
   validateShow,
   validateViagem,
@@ -19,13 +21,13 @@ import {
 } from "../utils/errorMapping";
 import { useAuth } from "../context/AuthContext";
 
-export function EventoModal({ isOpen, onClose, onFinish }) {
+export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { inicio: "", fim: "" } }) {
   const [activeTab, setActiveTab] = useState("show");
   const [currentStep, setCurrentStep] = useState(1);
   const [fieldErrors, setFieldErrors] = useState({});
 
   const { usuario } = useAuth();
-  const responsavelId = usuario?.id || 1; // fallback para 1 se não tiver usuário
+  const responsavelId = usuario?.id || 1;
 
   const { bandas, listarBandas } = useBandas();
   const { locais, listarLocais, criarLocal } = useLocais();
@@ -35,6 +37,7 @@ export function EventoModal({ isOpen, onClose, onFinish }) {
 
   const [showNovoLocal, setShowNovoLocal] = useState(false);
   const [showNovaTurne, setShowNovaTurne] = useState(false);
+  const [eventosExistentes, setEventosExistentes] = useState([]);
 
   const [novoLocal, setNovoLocal] = useState({
     nome: "",
@@ -76,18 +79,143 @@ export function EventoModal({ isOpen, onClose, onFinish }) {
     turneId: "",
   });
 
+  // Atualiza os estados quando recebe data/hora inicial
+  useEffect(() => {
+    if (isOpen && dataHoraInicial.inicio) {
+      setShowData((prev) => ({
+        ...prev,
+        dataHoraInicio: dataHoraInicial.inicio,
+        dataHoraFim: dataHoraInicial.fim,
+      }));
+
+      setViagemData((prev) => ({
+        ...prev,
+        dataInicio: dataHoraInicial.inicio,
+        dataFim: dataHoraInicial.fim,
+      }));
+
+      console.log("[EventoModal] Data/Hora definida:", dataHoraInicial);
+    }
+  }, [isOpen, dataHoraInicial]);
+
   useEffect(() => {
     if (isOpen) {
       listarBandas();
       listarLocais();
       listarTurnes();
+      carregarEventos();
       setFieldErrors({});
     }
-  }, [isOpen, listarBandas, listarLocais, listarTurnes]);
+  }, [isOpen]);
+
+  const carregarEventos = async () => {
+    try {
+      const [shows, viagens] = await Promise.all([
+        showService.listar().catch(() => []),
+        viagemService.listar().catch(() => []),
+      ]);
+
+      const eventos = [
+        ...(shows || [])
+          .filter((s) => s.ativo !== false)
+          .map((s) => ({
+            id: `show-${s.id}`,
+            titulo: s.nomeEvento,
+            dataInicio: s.dataInicio,
+            dataFim: s.dataFim,
+            bandasIds: s.bandas?.map((b) => b.id) || [],
+          })),
+        ...(viagens || [])
+          .filter((v) => v.ativo !== false)
+          .map((v) => ({
+            id: `viagem-${v.id}`,
+            titulo: v.nomeEvento,
+            dataInicio: v.dataInicio,
+            dataFim: v.dataFim,
+            bandasIds: v.turne?.bandaId ? [v.turne.bandaId] : [],
+          })),
+      ];
+
+      setEventosExistentes(eventos);
+    } catch (error) {
+      console.error("Erro ao carregar eventos:", error);
+    }
+  };
+
+  const verificarConflito = (bandasIds, dataInicio, dataFim) => {
+    if (!bandasIds || bandasIds.length === 0 || !dataInicio || !dataFim) {
+      return null;
+    }
+
+    const inicio = new Date(dataInicio);
+    const fim = new Date(dataFim);
+
+    if (isNaN(inicio.getTime()) || isNaN(fim.getTime())) {
+      return null;
+    }
+
+    const conflitos = eventosExistentes.filter((evento) => {
+      const temBandaEmComum = evento.bandasIds.some((bandaId) =>
+        bandasIds.includes(bandaId)
+      );
+
+      if (!temBandaEmComum) return false;
+
+      const eventoInicio = new Date(evento.dataInicio);
+      const eventoFim = new Date(evento.dataFim);
+
+      // Verifica sobreposição de horários
+      const temSobreposicao =
+        (inicio >= eventoInicio && inicio < eventoFim) || // Novo começa durante evento existente
+        (fim > eventoInicio && fim <= eventoFim) || // Novo termina durante evento existente
+        (inicio <= eventoInicio && fim >= eventoFim); // Novo engloba evento existente
+
+      return temSobreposicao;
+    });
+
+    if (conflitos.length > 0) {
+      const nomeBandas = bandas
+        .filter((b) => bandasIds.includes(b.id))
+        .map((b) => b.nome)
+        .join(", ");
+
+      const detalhes = conflitos
+        .map((e) => {
+          const inicioFormatado = new Date(e.dataInicio).toLocaleString(
+            "pt-BR",
+            {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            }
+          );
+          const fimFormatado = new Date(e.dataFim).toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          return `• ${e.titulo}\n  De: ${inicioFormatado}\n  Até: ${fimFormatado}`;
+        })
+        .join("\n\n");
+
+      return {
+        temConflito: true,
+        quantidade: conflitos.length,
+        bandas: nomeBandas,
+        detalhes,
+      };
+    }
+
+    return null;
+  };
 
   const tabs = [
-    { id: "show", label: "Show" },
-    { id: "viagem", label: "Viagem" },
+    { id: "show", label: "🎸 Show" },
+    { id: "viagem", label: "✈️ Viagem" },
   ];
 
   const handleTabChange = (tabId) => {
@@ -109,9 +237,78 @@ export function EventoModal({ isOpen, onClose, onFinish }) {
         const turneErrors = validateTurne(novaTurne, bandas);
         errors = [...errors, ...turneErrors];
       }
+
+      // VALIDAÇÃO DE CONFLITO
+      if (
+        showData.bandasIds.length > 0 &&
+        showData.dataHoraInicio &&
+        showData.dataHoraFim
+      ) {
+        const conflito = verificarConflito(
+          showData.bandasIds,
+          showData.dataHoraInicio,
+          showData.dataHoraFim
+        );
+
+        if (conflito) {
+          setFieldErrors({
+            general: (
+              <div>
+                <p className="font-semibold text-red-700 mb-2">
+                  ⚠️ Conflito de horário detectado!
+                </p>
+                
+                <div className="text-sm whitespace-pre-line bg-red-50 p-3 rounded border border-red-200 font-mono">
+                  {conflito.detalhes}
+                </div>
+                <p className="text-xs text-red-500 mt-2">
+                  Ajuste as datas ou escolha outras bandas para continuar.
+                </p>
+              </div>
+            ),
+          });
+          return false;
+        }
+      }
     } else if (activeTab === "viagem") {
       errors = validateViagem(viagemData);
       fieldMap = VIAGEM_ERROR_MAP;
+
+      // VALIDAÇÃO DE CONFLITO PARA VIAGEM
+      if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
+        const turne = turnes.find((t) => t.id === Number(viagemData.turneId));
+        if (turne && turne.bandaId) {
+          const conflito = verificarConflito(
+            [turne.bandaId],
+            viagemData.dataInicio,
+            viagemData.dataFim
+          );
+
+          if (conflito) {
+            setFieldErrors({
+              general: (
+                <div>
+                  <p className="font-semibold text-red-700 mb-2">
+                    ⚠️ Conflito de horário detectado!
+                  </p>
+                  <p className="text-sm text-red-600 mb-2">
+                    A banda <strong>{conflito.bandas}</strong> já possui{" "}
+                    {conflito.quantidade} evento(s) agendado(s) que conflita(m)
+                    com este horário:
+                  </p>
+                  <div className="text-sm whitespace-pre-line bg-red-50 p-3 rounded border border-red-200 font-mono">
+                    {conflito.detalhes}
+                  </div>
+                  <p className="text-xs text-red-500 mt-2">
+                    Ajuste as datas ou escolha outra turnê para continuar.
+                  </p>
+                </div>
+              ),
+            });
+            return false;
+          }
+        }
+      }
     }
 
     const newFieldErrors = mapErrorsToFields(errors, fieldMap);
@@ -135,8 +332,6 @@ export function EventoModal({ isOpen, onClose, onFinish }) {
           "cidade",
           "estado",
           "cep",
-          "origem",
-          "destino",
         ].includes(key)
       );
       if (hasStep1Error && currentStep === 2) {

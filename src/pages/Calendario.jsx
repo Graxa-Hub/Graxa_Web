@@ -10,6 +10,9 @@ import { Sidebar } from "../components/Dashboard/Sidebar";
 
 export const Calendario = () => {
   const [mainCalendarApi, setMainCalendarApi] = useState(null);
+  const [eventos, setEventos] = useState([]);
+
+  console.log("[Calendario] Eventos no estado:", eventos);
 
   return (
     <Layout>
@@ -25,13 +28,24 @@ export const Calendario = () => {
         {/* Container  */}
         <Container>
           <div className="min-w-[72%] h-full">
-            <MainCalendar onCalendarApi={setMainCalendarApi} />
+            <MainCalendar 
+              onCalendarApi={setMainCalendarApi}
+              onEventosChange={(novosEventos) => {
+                console.log("[Calendario] onEventosChange chamado com:", novosEventos);
+                setEventos(novosEventos);
+              }}
+            />
           </div>
           {/* Preview */}
-          <div className="min-w-[27%] rounded-lg p-1 h-full bg-white">
-            <SideCalendar mainCalendarApi={mainCalendarApi} />
+          <div className="min-w-[27%] rounded-lg p-1 h-full bg-white flex flex-col">
+            <SideCalendar 
+              mainCalendarApi={mainCalendarApi}
+              eventos={eventos}
+            />
             {/* Lista embaixo do calendário */}
-            <TaskList />
+            <div className="flex-1 overflow-auto">
+              <TaskList eventos={eventos} />
+            </div>
           </div>
         </Container>
       </main>
