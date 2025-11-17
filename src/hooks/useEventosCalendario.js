@@ -94,6 +94,8 @@ export function useEventosCalendario() {
    * Adiciona um novo evento localmente (otimismo)
    */
   const adicionarEventoLocal = useCallback((entidade, tipo) => {
+    console.log('[useEventosCalendario] Adicionando evento local:', { entidade, tipo });
+
     const novoEvento = {
       id: `${tipo}-${entidade.id}`,
       title: entidade.nomeEvento || entidade.titulo,
@@ -103,7 +105,14 @@ export function useEventosCalendario() {
       originalData: entidade,
       classNames: [`evento-${tipo}`],
     };
-    setEventos((prev) => [...prev, novoEvento]);
+
+    console.log('[useEventosCalendario] Evento normalizado:', novoEvento);
+
+    setEventos((prev) => {
+      const novosEventos = [...prev, novoEvento];
+      console.log('[useEventosCalendario] Eventos após adicionar:', novosEventos);
+      return novosEventos;
+    });
   }, []);
 
   return {

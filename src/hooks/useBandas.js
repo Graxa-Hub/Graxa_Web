@@ -16,20 +16,20 @@ export function useBandas() {
       const lista = Array.isArray(data)
         ? data
         : Array.isArray(data?.content)
-        ? data.content
-        : [];
+          ? data.content
+          : [];
       setBandas(lista);
       return data;
     } catch (err) {
       console.error('Erro ao listar bandas:', err);
       const errorMessage = err.response?.data?.message || err.response?.data?.mensagem;
-      
+
       // Não mostra erro se for apenas "nenhuma banda encontrada"
       if (errorMessage && errorMessage.includes('Não há bandas salvas')) {
         setBandas([]);
         return [];
       }
-      
+
       setError(errorMessage || 'Erro ao carregar bandas');
       setBandas([]);
       return [];

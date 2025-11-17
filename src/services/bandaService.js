@@ -13,7 +13,7 @@ export const bandaService = {
         console.warn('[bandaService] Nenhuma banda encontrada, retornando lista vazia');
         return [];
       }
-      
+
       console.error('[bandaService] Erro ao listar bandas:', {
         status: error.response?.status,
         message: errorMessage
@@ -49,7 +49,7 @@ export const bandaService = {
         status: error.response?.status,
         message: error.response?.data?.message || error.response?.data?.mensagem
       });
-      
+
       throw error;
     }
   },

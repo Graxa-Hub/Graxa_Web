@@ -7,16 +7,9 @@ import { Container } from "../components/Dashboard/Container";
 import { TaskList } from "../components/Dashboard/TaskList";
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Dashboard/Sidebar";
-import { EventoModal } from "../components/EventoModal.jsx";
 
 export const Calendario = () => {
   const [mainCalendarApi, setMainCalendarApi] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(true);
-  
-    const handleEventFinish = (eventData) => {
-      console.log('Evento criado:', eventData);
-      setIsModalOpen(false);
-    };
 
   return (
     <Layout>
@@ -40,12 +33,6 @@ export const Calendario = () => {
             {/* Lista embaixo do calendário */}
             <TaskList />
           </div>
-
-          <EventoModal
-                  isOpen={isModalOpen}
-                  onClose={() => setIsModalOpen(false)}
-                  onFinish={handleEventFinish}
-                />
         </Container>
       </main>
     </Layout>

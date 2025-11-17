@@ -91,14 +91,23 @@ export default function MainCalendar({ onCalendarApi }) {
           setLastSelectInfo(null);
         }}
         onFinish={(entidadeCriada) => {
+          console.log("[MainCalendar] Evento criado:", entidadeCriada);
+
           // Determina tipo (show ou viagem) pela estrutura dos dados
           const tipo = entidadeCriada?.tipoViagem ? "viagem" : "show";
+          console.log("[MainCalendar] Tipo de evento:", tipo);
 
           // Adiciona evento localmente para feedback imediato
           adicionarEventoLocal(entidadeCriada, tipo);
 
           setCreateModalOpen(false);
           setLastSelectInfo(null);
+
+          // Recarrega eventos do backend após 500ms
+          setTimeout(() => {
+            console.log("[MainCalendar] Recarregando eventos do backend...");
+            carregarEventos();
+          }, 500);
         }}
       />
     </div>
