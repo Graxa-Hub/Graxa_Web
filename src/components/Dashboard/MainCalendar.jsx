@@ -7,6 +7,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import ptLocale from "@fullcalendar/core/locales/pt";
 import "@fullcalendar/common/main.css";
 import "../../index.css";
+import { EventoModal } from "../EventoModal";
 
 export default function MainCalendar({ onCalendarApi }) {
   // helper to ensure a date string includes a time portion (so events appear in timeGrid views)
@@ -56,9 +57,12 @@ export default function MainCalendar({ onCalendarApi }) {
     }
   };
 
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [lastSelectInfo, setLastSelectInfo] = useState(null);
+
   const navigate = useNavigate();
 
-  const handleEventClick = (clickInfo) => {
+  const handleEventClick = () => {
     navigate("/visao-evento");
   };
 
@@ -84,7 +88,14 @@ export default function MainCalendar({ onCalendarApi }) {
           right: "timeGridWeek,timeGridDay",
         }}
         selectable={true}
-        select={handleDateSelect}
+        select={(selectInfo) => {
+          setLastSelectInfo(selectInfo);
+          // remove highlight immediately para evitar confusão visual
+          try {
+            selectInfo.view.calendar.unselect();
+          } catch {}
+          setCreateModalOpen(true);
+        }}
         events={events}
         eventClick={handleEventClick}
         editable={true}
@@ -96,6 +107,40 @@ export default function MainCalendar({ onCalendarApi }) {
         flex column with min-height:0 so child can shrink; the CSS below
         ensures the internal scroller handles overflow. */
         height="100%"
+      />
+      <EventoModal
+        isOpen={createModalOpen}
+        onClose={() => {
+          setCreateModalOpen(false);
+          setLastSelectInfo(null);
+        }}
+        onFinish={(entidadeCriada) => {
+          // Mapeia entidade (show/viagem) para um evento do calendário
+          const title =
+            entidadeCriada?.nomeEvento || entidadeCriada?.titulo || "Evento";
+          const startRaw =
+            entidadeCriada?.dataInicio ||
+            entidadeCriada?.dataHoraInicio ||
+            entidadeCriada?.start;
+          const endRaw =
+            entidadeCriada?.dataFim ||
+            entidadeCriada?.dataHoraFim ||
+            entidadeCriada?.end ||
+            startRaw;
+          const start = ensureHasTime(startRaw);
+          const end = ensureHasTime(endRaw);
+          setEvents((prev) => [
+            ...prev,
+            {
+              id: String(entidadeCriada?.id ?? Date.now()),
+              title,
+              start,
+              end,
+            },
+          ]);
+          setCreateModalOpen(false);
+          setLastSelectInfo(null);
+        }}
       />
     </div>
   );

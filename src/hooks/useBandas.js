@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
-import { bandaService } from '../services/bandaService';
-import { imagemService } from '../services/imagemService';
+import { useState, useCallback } from "react";
+import { bandaService } from "../services/bandaService";
+import { imagemService } from "../services/imagemService";
 
 export function useBandas() {
   const [bandas, setBandas] = useState([]);
@@ -12,11 +12,16 @@ export function useBandas() {
       setLoading(true);
       setError(null);
       const data = await bandaService.listarBandas();
-      setBandas(data);
+      const lista = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.content)
+        ? data.content
+        : [];
+      setBandas(lista);
       return data;
     } catch (err) {
-      console.error('Erro ao listar bandas:', err);
-      setError(err.response?.data?.message || 'Erro ao carregar bandas');
+      console.error("Erro ao listar bandas:", err);
+      setError(err.response?.data?.message || "Erro ao carregar bandas");
       setBandas([]);
       return [];
     } finally {
@@ -31,8 +36,8 @@ export function useBandas() {
       const data = await bandaService.buscarBandaPorId(id);
       return data;
     } catch (err) {
-      console.error('Erro ao buscar banda:', err);
-      setError(err.response?.data?.message || 'Erro ao buscar banda');
+      console.error("Erro ao buscar banda:", err);
+      setError(err.response?.data?.message || "Erro ao buscar banda");
       throw err;
     } finally {
       setLoading(false);
@@ -47,8 +52,8 @@ export function useBandas() {
       setBandas((prev) => [...prev, novaBanda]);
       return novaBanda;
     } catch (err) {
-      console.error('Erro ao criar banda:', err);
-      setError(err.response?.data?.message || 'Erro ao criar banda');
+      console.error("Erro ao criar banda:", err);
+      setError(err.response?.data?.message || "Erro ao criar banda");
       throw err;
     } finally {
       setLoading(false);
@@ -59,14 +64,18 @@ export function useBandas() {
     try {
       setLoading(true);
       setError(null);
-      const bandaAtualizada = await bandaService.atualizarBanda(id, dados, foto);
+      const bandaAtualizada = await bandaService.atualizarBanda(
+        id,
+        dados,
+        foto
+      );
       setBandas((prev) =>
         prev.map((banda) => (banda.id === id ? bandaAtualizada : banda))
       );
       return bandaAtualizada;
     } catch (err) {
-      console.error('Erro ao atualizar banda:', err);
-      setError(err.response?.data?.message || 'Erro ao atualizar banda');
+      console.error("Erro ao atualizar banda:", err);
+      setError(err.response?.data?.message || "Erro ao atualizar banda");
       throw err;
     } finally {
       setLoading(false);
@@ -80,8 +89,8 @@ export function useBandas() {
       await bandaService.excluirBanda(id);
       setBandas((prev) => prev.filter((banda) => banda.id !== id));
     } catch (err) {
-      console.error('Erro ao excluir banda:', err);
-      setError(err.response?.data?.message || 'Erro ao excluir banda');
+      console.error("Erro ao excluir banda:", err);
+      setError(err.response?.data?.message || "Erro ao excluir banda");
       throw err;
     } finally {
       setLoading(false);
@@ -92,14 +101,17 @@ export function useBandas() {
     try {
       setLoading(true);
       setError(null);
-      const bandaAtualizada = await bandaService.adicionarIntegrantes(bandaId, integrantesIds);
+      const bandaAtualizada = await bandaService.adicionarIntegrantes(
+        bandaId,
+        integrantesIds
+      );
       setBandas((prev) =>
         prev.map((banda) => (banda.id === bandaId ? bandaAtualizada : banda))
       );
       return bandaAtualizada;
     } catch (err) {
-      console.error('Erro ao adicionar integrantes:', err);
-      setError(err.response?.data?.message || 'Erro ao adicionar integrantes');
+      console.error("Erro ao adicionar integrantes:", err);
+      setError(err.response?.data?.message || "Erro ao adicionar integrantes");
       throw err;
     } finally {
       setLoading(false);
@@ -110,8 +122,8 @@ export function useBandas() {
     try {
       if (!nomeArquivo) return null;
       return await imagemService(nomeArquivo);
-    } catch (err) {s
-      console.error('Erro ao buscar imagem:', err);
+    } catch (err) {
+      console.error("Erro ao buscar imagem:", err);
       return null;
     }
   }, []);

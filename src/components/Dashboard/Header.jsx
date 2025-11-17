@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Dropdown from "./Dropdown";
 import { ArtistaModal } from "./ArtistaModal";
 import { TurneModal } from "./TurneModal";
+import { ModalButton } from "./ModalButton";
 
 export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
   const [isOpen, setOpen] = useState(false);
@@ -32,7 +33,7 @@ export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
   };
 
   return (
-    <header className="flex h-14 w-full mb-5">
+    <header className="flex h-14 mb-5">
       {/* Area */}
       <div className="relative flex justify-between items-center h-full max-w-70 w-full sm:w-1/3 px-4 bg-white rounded-lg">
         <Dropdown
@@ -68,6 +69,8 @@ export const Header = ({ titulo = "Boogarins", turne = "bacuri", circulo }) => {
         <ArtistaModal open={artistOpen} onClose={() => setArtistOpen(false)} />
         <TurneModal open={tourOpen} onClose={() => setTourOpen(false)} />
       </div>
+
+      <ModalButton />
     </header>
   );
 };
