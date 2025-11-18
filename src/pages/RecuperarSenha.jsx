@@ -91,47 +91,6 @@ export const RecuperarSenha = () => {
     }
   };
 
-  const loginUser = async () => {
-    const errors = {};
-
-    if (!codigo.trim()) errors.codigo = "Preencha o código";
-
-    if (Object.keys(errors).length > 0) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    // Código teste para validar se o código está correto
-    if (codigo.trim() === TEST_CODE) {
-      setFieldErrors({});
-      setSuccessMessage("Verifique o seu email");
-      setTimeout(() => setSuccessMessage(""), 6000);
-      return;
-    }
-
-    const data = await handleLogin({ codigo: codigo.trim() });
-
-    if (data == 12345) {
-      loginToContext(data);
-      setFieldErrors({});
-      setSuccessMessage("Verifique o seu email");
-      setTimeout(() => setSuccessMessage(""), 6000);
-    } else if (Array.isArray(data?.erros)) {
-      const errorsByField = data.erros.reduce((acc, err) => {
-        acc[err.campo] = err.mensagem;
-        return acc;
-      }, {});
-      setFieldErrors(errorsByField);
-      setSuccessMessage("");
-    } else if (data.status === 401) {
-      setFieldErrors({ geral: "Usuário ou senha inválido(s)" });
-      setSuccessMessage("");
-    } else {
-      console.log(data);
-      setFieldErrors({ geral: "Erro ao fazer login" });
-      setSuccessMessage("");
-    }
-  };
 
   return (
     <Layout columns={1}>
