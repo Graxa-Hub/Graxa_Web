@@ -4,75 +4,28 @@ import { useBandas } from '../hooks/useBandas'
 
 export function BandaDropdown({ selectedBand, onBandSelect, showAllOption = true }) {
   const [isOpen, setIsOpen] = useState(false)
-  const { bandas, loading, listarBandas, buscarImagem } = useBandas()
-  const [bandasComImagens, setBandasComImagens] = useState([])
-  const [selectedBandImage, setSelectedBandImage] = useState(null)
+  const { bandas, loading, listarBandas } = useBandas()
 
   // Carrega as bandas quando o componente montar
   useEffect(() => {
     listarBandas()
   }, [listarBandas])
 
-  // Carrega imagens das bandas
-  useEffect(() => {
-    const carregarImagens = async () => {
-      const bandasComImg = await Promise.all(
-        bandas.map(async (banda) => {
-          if (banda.nomeFoto) {
-            try {
-              const imageUrl = await buscarImagem(banda.nomeFoto)
-              return { ...banda, imageUrl }
-            } catch (error) {
-              console.error('Erro ao carregar imagem da banda:', error)
-              return { ...banda, imageUrl: null }
-            }
-          }
-          return { ...banda, imageUrl: null }
-        })
-      )
-      setBandasComImagens(bandasComImg)
-    }
-
-    if (bandas.length > 0) {
-      carregarImagens()
-    }
-  }, [bandas, buscarImagem])
-
-  // Carrega imagem da banda selecionada
-  useEffect(() => {
-    const carregarImagemSelecionada = async () => {
-      if (selectedBand && selectedBand.nomeFoto) {
-        try {
-          const imageUrl = await buscarImagem(selectedBand.nomeFoto)
-          setSelectedBandImage(imageUrl)
-        } catch (error) {
-          console.error('Erro ao carregar imagem da banda selecionada:', error)
-          setSelectedBandImage(null)
-        }
-      } else {
-        setSelectedBandImage(null)
-      }
-    }
-
-    if (selectedBand && selectedBand.nomeFoto) {
-      carregarImagemSelecionada()
-    }
-  }, [selectedBand, buscarImagem])
-
   const handleBandSelect = (banda) => {
     onBandSelect(banda)
     setIsOpen(false)
   }
 
-  // Encontra a banda selecionada ou usa "Todas as bandas" como padrão
+  // Exibe nome e inicial, mas agora também retorna imagem se houver
   const getSelectedDisplay = () => {
     if (!selectedBand) {
-      return { name: 'Todas as bandas', initial: 'T' }
+      return { name: 'Todas as bandas', initial: 'T', imagemUrl: null }
     }
     
     return { 
       name: selectedBand.nome, 
-      initial: selectedBand.nome.charAt(0).toUpperCase() 
+      initial: selectedBand.nome.charAt(0).toUpperCase(),
+      imagemUrl: selectedBand.imagemUrl || null
     }
   }
 
@@ -102,10 +55,10 @@ export function BandaDropdown({ selectedBand, onBandSelect, showAllOption = true
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden">
-              {selectedBandImage ? (
+            <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden border-2 border-green-500">
+              {selectedDisplay.imagemUrl ? (
                 <img
-                  src={selectedBandImage}
+                  src={selectedDisplay.imagemUrl}
                   alt={selectedDisplay.name}
                   className="w-full h-full object-cover"
                 />
@@ -146,37 +99,28 @@ export function BandaDropdown({ selectedBand, onBandSelect, showAllOption = true
             </button>
           )}
 
-          {bandasComImagens.length === 0 ? (
-            <div className="px-4 py-2 text-sm text-gray-500">
-              Nenhuma banda disponível
-            </div>
-          ) : (
-            bandasComImagens.map((banda) => (
-              <button
+          <ul>
+            {bandas.map((banda) => (
+              <li
                 key={banda.id}
                 onClick={() => handleBandSelect(banda)}
-                className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-3 ${
-                  selectedBand?.id === banda.id ? 'bg-gray-50' : ''
-                }`}
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded"
               >
-                <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden">
-                  {banda.imageUrl ? (
+                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-green-500 bg-gray-200 flex items-center justify-center">
+                  {banda.imagemUrl ? (
                     <img
-                      src={banda.imageUrl}
+                      src={banda.imagemUrl}
                       alt={banda.nome}
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <span>{banda.nome.charAt(0).toUpperCase()}</span>
+                    <span className="text-gray-400">{banda.nome.charAt(0).toUpperCase()}</span>
                   )}
                 </div>
-                <div>
-                  <div className="font-semibold text-gray-900">{banda.nome}</div>
-                  <div className="text-sm text-gray-500">Banda</div>
-                </div>
-              </button>
-            ))
-          )}
+                <span>{banda.nome}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
     </div>

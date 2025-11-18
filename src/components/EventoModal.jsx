@@ -12,7 +12,6 @@ import { viagemService } from "../services/viagemService";
 import {
   validateShow,
   validateViagem,
-  validateTurne,
 } from "../utils/validations";
 import {
   mapErrorsToFields,
@@ -31,12 +30,11 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
 
   const { bandas, listarBandas } = useBandas();
   const { locais, listarLocais, criarLocal } = useLocais();
-  const { turnes, listarTurnes, criarTurne } = useTurnes();
+  const { turnes, listarTurnes } = useTurnes();
   const { criarShow, adicionarBandas } = useShows();
   const { criarViagem } = useViagens();
 
   const [showNovoLocal, setShowNovoLocal] = useState(false);
-  const [showNovaTurne, setShowNovaTurne] = useState(false);
   const [eventosExistentes, setEventosExistentes] = useState([]);
 
   const [novoLocal, setNovoLocal] = useState({
@@ -52,12 +50,6 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
       estado: "",
       pais: "Brasil",
     },
-  });
-
-  const [novaTurne, setNovaTurne] = useState({
-    nome: "",
-    descricao: "",
-    bandaId: "",
   });
 
   const [showData, setShowData] = useState({
@@ -79,7 +71,6 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
     turneId: "",
   });
 
-  // Atualiza os estados quando recebe data/hora inicial
   useEffect(() => {
     if (isOpen && dataHoraInicial.inicio) {
       setShowData((prev) => ({
@@ -164,11 +155,10 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
       const eventoInicio = new Date(evento.dataInicio);
       const eventoFim = new Date(evento.dataFim);
 
-      // Verifica sobreposição de horários
       const temSobreposicao =
-        (inicio >= eventoInicio && inicio < eventoFim) || // Novo começa durante evento existente
-        (fim > eventoInicio && fim <= eventoFim) || // Novo termina durante evento existente
-        (inicio <= eventoInicio && fim >= eventoFim); // Novo engloba evento existente
+        (inicio >= eventoInicio && inicio < eventoFim) ||
+        (fim > eventoInicio && fim <= eventoFim) ||
+        (inicio <= eventoInicio && fim >= eventoFim);
 
       return temSobreposicao;
     });
@@ -233,12 +223,6 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
       errors = validateShow(showData, novoLocal, showNovoLocal);
       fieldMap = SHOW_ERROR_MAP;
 
-      if (showNovaTurne) {
-        const turneErrors = validateTurne(novaTurne, bandas);
-        errors = [...errors, ...turneErrors];
-      }
-
-      // VALIDAÇÃO DE CONFLITO
       if (
         showData.bandasIds.length > 0 &&
         showData.dataHoraInicio &&
@@ -274,7 +258,6 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
       errors = validateViagem(viagemData);
       fieldMap = VIAGEM_ERROR_MAP;
 
-      // VALIDAÇÃO DE CONFLITO PARA VIAGEM
       if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
         const turne = turnes.find((t) => t.id === Number(viagemData.turneId));
         if (turne && turne.bandaId) {
@@ -343,16 +326,10 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
     if (activeTab === "show") {
       try {
         let localIdFinal = showData.localId;
-        let turneIdFinal = showData.turneId || null;
 
         if (showNovoLocal) {
           const localCriado = await criarLocal(novoLocal);
           localIdFinal = localCriado.id;
-        }
-
-        if (showNovaTurne) {
-          const turneCriada = await criarTurne(novaTurne);
-          turneIdFinal = turneCriada.id;
         }
 
         const showPayload = {
@@ -360,7 +337,7 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
           dataInicio: showData.dataHoraInicio,
           dataFim: showData.dataHoraFim,
           descricao: showData.descricao || "",
-          turneId: turneIdFinal,
+          turneId: showData.turneId || null,
           localId: localIdFinal,
           responsavelId: responsavelId,
         };
@@ -449,10 +426,6 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
           setShowNovoLocal={setShowNovoLocal}
           novoLocal={novoLocal}
           setNovoLocal={setNovoLocal}
-          showNovaTurne={showNovaTurne}
-          setShowNovaTurne={setShowNovaTurne}
-          novaTurne={novaTurne}
-          setNovaTurne={setNovaTurne}
           fieldErrors={fieldErrors}
           clearFieldError={clearFieldError}
         />
@@ -564,7 +537,6 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
           </div>
         </div>
       </div>
-      ''
     </div>
   );
 }
@@ -880,10 +852,6 @@ function ShowContent({
   setShowNovoLocal,
   novoLocal,
   setNovoLocal,
-  showNovaTurne,
-  setShowNovaTurne,
-  novaTurne,
-  setNovaTurne,
   fieldErrors = {},
   clearFieldError,
 }) {
@@ -906,12 +874,10 @@ function ShowContent({
     if (clearFieldError) clearFieldError(field);
   };
 
+  // ✅ Filtra turnês pelas bandas selecionadas
   const turnesFiltradas = turnes.filter((turne) =>
-    data.bandasIds.includes(turne.bandaId)
+    data.bandasIds.includes(turne.banda?.id || turne.bandaId)
   );
-
-  console.log("Turnês filtradas:", turnesFiltradas);
-  console.log("Primeira turnê:", turnesFiltradas[0]);
 
   if (currentStep === 1) {
     return (
@@ -933,7 +899,9 @@ function ShowContent({
           selectedIds={data.bandasIds}
           onChange={(ids) => {
             setData({ ...data, bandasIds: ids });
-            if (!ids.includes(data.turneId)) {
+            // ✅ Limpa turnê se a banda selecionada mudar
+            const turneAtualValida = turnesFiltradas.find(t => t.id === data.turneId);
+            if (!turneAtualValida) {
               setData((prev) => ({ ...prev, turneId: "" }));
             }
           }}
@@ -1029,6 +997,7 @@ function ShowContent({
     );
   }
 
+  // ========== Step 2 - Apenas descrição e seleção de turnê ==========
   return (
     <div className="space-y-4">
       <div>
@@ -1044,6 +1013,7 @@ function ShowContent({
         />
       </div>
 
+      {/* ✅ Apenas seleção de turnê - SEM cadastro */}
       {data.bandasIds.length > 0 && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -1067,81 +1037,9 @@ function ShowContent({
               </option>
             )}
           </select>
-
-          <button
-            type="button"
-            onClick={() => setShowNovaTurne(!showNovaTurne)}
-            className="mt-2 text-sm text-blue-600 hover:text-blue-800"
-          >
-            {showNovaTurne ? "Cancelar" : "+ Criar nova turnê"}
-          </button>
-        </div>
-      )}
-
-      {showNovaTurne && (
-        <div className="space-y-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
-          <h3 className="text-sm font-semibold text-purple-900">
-            Cadastrar Nova Turnê
-          </h3>
-
-          <Input
-            label="Nome da Turnê"
-            value={novaTurne.nome}
-            onChange={(e) => {
-              setNovaTurne({ ...novaTurne, nome: e.target.value });
-              if (clearFieldError) clearFieldError("nomeTurne");
-            }}
-            placeholder="Ex: Turnê Nacional 2025"
-            required
-            error={fieldErrors.nomeTurne}
-          />
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Banda <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={novaTurne.bandaId}
-              onChange={(e) => {
-                setNovaTurne({ ...novaTurne, bandaId: e.target.value });
-                if (clearFieldError) clearFieldError("bandaTurne");
-              }}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                fieldErrors.bandaTurne
-                  ? "border-red-500 bg-red-50"
-                  : "border-gray-300"
-              }`}
-            >
-              <option value="">Selecione uma banda</option>
-              {bandas
-                .filter((banda) => data.bandasIds.includes(banda.id))
-                .map((banda) => (
-                  <option key={banda.id} value={banda.id}>
-                    {banda.nome}
-                  </option>
-                ))}
-            </select>
-            {fieldErrors.bandaTurne && (
-              <p className="text-red-600 text-sm mt-1">
-                {fieldErrors.bandaTurne}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Descrição
-            </label>
-            <textarea
-              value={novaTurne.descricao}
-              onChange={(e) =>
-                setNovaTurne({ ...novaTurne, descricao: e.target.value })
-              }
-              placeholder="Descreva a turnê..."
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
-            />
-          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            Para cadastrar uma nova turnê, acesse a página de Turnês
+          </p>
         </div>
       )}
     </div>

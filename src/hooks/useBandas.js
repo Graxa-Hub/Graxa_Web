@@ -1,52 +1,76 @@
-import { useState, useCallback } from "react";
-import { bandaService } from "../services/bandaService";
-import { imagemService } from "../services/imagemService";
+import { useState, useCallback, useRef } from 'react';
+import { bandaService } from '../services/bandaService';
+import { imagemService } from '../services/imagemService';
 
 export function useBandas() {
   const [bandas, setBandas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const jaCarregouImagens = useRef(new Set());
 
   const listarBandas = useCallback(async () => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const data = await bandaService.listarBandas();
-      // Suporta tanto array direto quanto objeto com propriedade content
-      const lista = Array.isArray(data)
-        ? data
-        : Array.isArray(data?.content)
-          ? data.content
-          : [];
-      setBandas(lista);
-      return data;
+      console.log('[useBandas] Bandas carregadas do servidor:', data);
+      
+      const bandasArray = data || [];
+      
+      const bandasComImagem = await Promise.all(
+        bandasArray.map(async (banda) => {
+          if (jaCarregouImagens.current.has(banda.id)) {
+            console.log('[useBandas] Banda já processada:', banda.nome);
+            const bandaExistente = bandas.find(b => b.id === banda.id);
+            if (bandaExistente?.imagemUrl) {
+              return bandaExistente;
+            }
+          }
+
+          let imagemUrl = null;
+          
+          if (banda.nomeFoto) {
+            try {
+              console.log('[useBandas] Carregando imagem para:', banda.nome);
+              imagemUrl = await imagemService(banda.nomeFoto);
+              jaCarregouImagens.current.add(banda.id);
+              console.log('[useBandas] Imagem carregada para:', banda.nome);
+            } catch (err) {
+              console.error('[useBandas] Erro ao carregar imagem:', err);
+              jaCarregouImagens.current.add(banda.id);
+            }
+          } else {
+            jaCarregouImagens.current.add(banda.id);
+          }
+          
+          return {
+            ...banda,
+            imagemUrl: imagemUrl || 'https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem'
+          };
+        })
+      );
+      
+      console.log('[useBandas] Total de bandas com imagem:', bandasComImagem.length);
+      setBandas(bandasComImagem);
+      return bandasComImagem;
     } catch (err) {
-      console.error('Erro ao listar bandas:', err);
-      const errorMessage = err.response?.data?.message || err.response?.data?.mensagem;
-
-      // Não mostra erro se for apenas "nenhuma banda encontrada"
-      if (errorMessage && errorMessage.includes('Não há bandas salvas')) {
-        setBandas([]);
-        return [];
-      }
-
-      setError(errorMessage || 'Erro ao carregar bandas');
+      setError(err.message);
+      console.error('[useBandas] Erro ao listar bandas:', err);
       setBandas([]);
-      return [];
     } finally {
       setLoading(false);
     }
   }, []);
 
   const buscarBandaPorId = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const data = await bandaService.buscarBandaPorId(id);
       return data;
     } catch (err) {
-      console.error("Erro ao buscar banda:", err);
-      setError(err.response?.data?.message || "Erro ao buscar banda");
+      setError(err.message);
+      console.error('[useBandas] Erro ao buscar banda:', err);
       throw err;
     } finally {
       setLoading(false);
@@ -54,16 +78,31 @@ export function useBandas() {
   }, []);
 
   const criarBanda = useCallback(async (dados, foto) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       const novaBanda = await bandaService.criarBanda(dados, foto);
-      setBandas((prev) => [...prev, novaBanda]);
-      return novaBanda;
+      
+      let imagemUrl = null;
+      if (novaBanda.imagem) {
+        try {
+          imagemUrl = await imagemService(novaBanda.imagem);
+          jaCarregouImagens.current.add(novaBanda.id);
+        } catch (err) {
+          console.error('[useBandas] Erro ao carregar imagem da nova banda:', err);
+        }
+      }
+      
+      const bandaComImagem = {
+        ...novaBanda,
+        imagemUrl: imagemUrl || 'https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem'
+      };
+      
+      setBandas(prev => [...prev, bandaComImagem]);
+      return bandaComImagem;
     } catch (err) {
-      console.error('Erro ao criar banda:', err);
-      const errorMessage = err.response?.data?.message || err.response?.data?.mensagem || 'Erro ao criar banda';
-      setError(errorMessage);
+      setError(err.message);
+      console.error('[useBandas] Erro ao criar banda:', err);
       throw err;
     } finally {
       setLoading(false);
@@ -71,21 +110,31 @@ export function useBandas() {
   }, []);
 
   const atualizarBanda = useCallback(async (id, dados, foto) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-      const bandaAtualizada = await bandaService.atualizarBanda(
-        id,
-        dados,
-        foto
-      );
-      setBandas((prev) =>
-        prev.map((banda) => (banda.id === id ? bandaAtualizada : banda))
-      );
-      return bandaAtualizada;
+      const bandaAtualizada = await bandaService.atualizarBanda(id, dados, foto);
+      
+      let imagemUrl = null;
+      if (bandaAtualizada.imagem) {
+        try {
+          imagemUrl = await imagemService(bandaAtualizada.imagem);
+          jaCarregouImagens.current.add(id);
+        } catch (err) {
+          console.error('[useBandas] Erro ao carregar imagem da banda atualizada:', err);
+        }
+      }
+      
+      const bandaComImagem = {
+        ...bandaAtualizada,
+        imagemUrl: imagemUrl || 'https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem'
+      };
+      
+      setBandas(prev => prev.map(b => b.id === id ? bandaComImagem : b));
+      return bandaComImagem;
     } catch (err) {
-      console.error("Erro ao atualizar banda:", err);
-      setError(err.response?.data?.message || "Erro ao atualizar banda");
+      setError(err.message);
+      console.error('[useBandas] Erro ao atualizar banda:', err);
       throw err;
     } finally {
       setLoading(false);
@@ -93,48 +142,41 @@ export function useBandas() {
   }, []);
 
   const excluirBanda = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
       await bandaService.excluirBanda(id);
-      setBandas((prev) => prev.filter((banda) => banda.id !== id));
+      jaCarregouImagens.current.delete(id);
+      setBandas(prev => prev.filter(b => b.id !== id));
     } catch (err) {
-      console.error("Erro ao excluir banda:", err);
-      setError(err.response?.data?.message || "Erro ao excluir banda");
+      setError(err.message);
+      console.error('[useBandas] Erro ao excluir banda:', err);
       throw err;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const adicionarIntegrantes = useCallback(async (bandaId, integrantesIds) => {
+  const adicionarIntegrantes = useCallback(async (bandaId, artistasIds) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-      const bandaAtualizada = await bandaService.adicionarIntegrantes(
-        bandaId,
-        integrantesIds
-      );
-      setBandas((prev) =>
-        prev.map((banda) => (banda.id === bandaId ? bandaAtualizada : banda))
-      );
+      console.log('[useBandas] Adicionando integrantes:', { bandaId, artistasIds });
+      const bandaAtualizada = await bandaService.adicionarIntegrantes(bandaId, artistasIds);
+      
+      setBandas(prev => prev.map(b => 
+        b.id === bandaId 
+          ? { ...b, integrantes: bandaAtualizada.integrantes } 
+          : b
+      ));
+      
       return bandaAtualizada;
     } catch (err) {
-      console.error("Erro ao adicionar integrantes:", err);
-      setError(err.response?.data?.message || "Erro ao adicionar integrantes");
+      setError(err.message);
+      console.error('[useBandas] Erro ao adicionar integrantes:', err);
       throw err;
     } finally {
       setLoading(false);
-    }
-  }, []);
-
-  const buscarImagem = useCallback(async (nomeArquivo) => {
-    try {
-      if (!nomeArquivo) return null;
-      return await imagemService(nomeArquivo);
-    } catch (err) {
-      console.error('Erro ao buscar imagem:', err);
-      return null;
     }
   }, []);
 
@@ -148,6 +190,5 @@ export function useBandas() {
     atualizarBanda,
     excluirBanda,
     adicionarIntegrantes,
-    buscarImagem,
   };
 }

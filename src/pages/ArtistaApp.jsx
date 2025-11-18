@@ -19,7 +19,6 @@ export function ArtistaApp() {
     bandas, 
     loading, 
     listarBandas, 
-    buscarImagem, 
     criarBanda, 
     atualizarBanda, 
     excluirBanda, 
@@ -122,7 +121,6 @@ export function ArtistaApp() {
               <BandaCard
                 key={banda.id}
                 banda={banda}
-                buscarImagem={buscarImagem}
                 onEdit={handleEdit}
                 onDelete={handleDeleteClick}
                 isDropdownOpen={openDropdown === banda.id}
@@ -171,21 +169,8 @@ function EmptyState({ onAdd }) {
   );
 }
 
-function BandaCard({ banda, buscarImagem, onEdit, onDelete, isDropdownOpen, onToggleDropdown }) {
-  const [imageUrl, setImageUrl] = useState(null);
-
-  useEffect(() => {
-    console.log("Banda completa:", banda); // ← ADICIONE ISSO
-    console.log("nomeFoto:", banda.nomeFoto); // ← E ISSO
-    
-    if (banda.nomeFoto) {
-      buscarImagem(banda.nomeFoto).then(url => {
-        console.log("URL da imagem carregada:", url); // ← E ISSO
-        setImageUrl(url);
-      });
-    }
-  }, [banda.nomeFoto, buscarImagem]);
-
+// ✅ CORRIGIDO - Removido buscarImagem e useEffect
+function BandaCard({ banda, onEdit, onDelete, isDropdownOpen, onToggleDropdown }) {
   const dropdownItems = [
     { icon: Edit, label: "Editar banda", onClick: () => onEdit(banda) },
     { icon: Trash2, label: "Excluir banda", onClick: () => onDelete(banda) }
@@ -208,11 +193,14 @@ function BandaCard({ banda, buscarImagem, onEdit, onDelete, isDropdownOpen, onTo
       </div>
 
       <div className="max-h-80 min-h-80 bg-gray-200 flex items-center justify-center overflow-hidden">
-        {imageUrl ? (
+        {banda.imagemUrl ? (
           <img
-            src={imageUrl}
+            src={banda.imagemUrl}
             alt={banda.nome}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              e.target.src = 'https://placehold.co/300x300/e2e8f0/64748b?text=Erro';
+            }}
           />
         ) : (
           <span className="text-gray-400 font-semibold">Sem foto</span>
@@ -235,9 +223,8 @@ function BandaCard({ banda, buscarImagem, onEdit, onDelete, isDropdownOpen, onTo
 // ========== Modal ==========
 function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicionarIntegrantes, bandaParaEditar }) {
   const isEditMode = !!bandaParaEditar;
-  const { buscarImagem } = useBandas();
-  const [imagemAtual, setImagemAtual] = useState(null);
-  const [imagemCarregada, setImagemCarregada] = useState(false);
+  
+  const [imagemAtual, setImagemAtual] = useState(bandaParaEditar?.imagemUrl || null);
 
   const [draft, setDraft] = useState({
     nome: bandaParaEditar?.nome || "",
@@ -252,17 +239,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
       cpf: int.cpf || ""
     })) || [{ nome: "", cpf: "" }],
   });
-
-  useEffect(() => {
-    const carregarImagem = async () => {
-      if (bandaParaEditar?.nomeFoto && !imagemCarregada) {
-        const imageUrl = await buscarImagem(bandaParaEditar.nomeFoto);
-        setImagemAtual(imageUrl);
-        setImagemCarregada(true);
-      }
-    };
-    carregarImagem();
-  }, [bandaParaEditar, buscarImagem, imagemCarregada]);
 
   const [showNovoRepresentante, setShowNovoRepresentante] = useState(false);
   const [novoRepresentante, setNovoRepresentante] = useState({
@@ -285,7 +261,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
     setErrors((e) => ({ ...e, [key]: null }));
     
     if (key === 'foto' && value) {
-      // Aviso temporário sobre upload de imagens
       console.warn('⚠️ Upload de imagens está com problema no backend. A banda será criada sem foto.');
       
       const reader = new FileReader();
@@ -294,11 +269,7 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
       };
       reader.readAsDataURL(value);
     } else if (key === 'foto' && value === null) {
-      if (bandaParaEditar?.nomeFoto) {
-        buscarImagem(bandaParaEditar.nomeFoto).then(setImagemAtual);
-      } else {
-        setImagemAtual(null);
-      }
+      setImagemAtual(bandaParaEditar?.imagemUrl || null);
     }
   };
 
@@ -320,7 +291,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
   const removerIntegrante = async (index) => {
     const integrante = draft.integrantes[index];
     
-    // Se é um integrante existente (tem ID), confirmar exclusão
     if (integrante.id) {
       const confirmar = window.confirm(
         `Tem certeza que deseja remover ${integrante.nome} da banda?`
@@ -328,8 +298,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
       if (!confirmar) return;
 
       try {
-        // TODO: Implementar endpoint de remover integrante da banda
-        // await removerIntegranteDaBanda(bandaParaEditar.id, integrante.id);
         console.log("Remover integrante:", integrante.id);
       } catch (error) {
         console.error("Erro ao remover integrante:", error);
@@ -338,7 +306,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
       }
     }
 
-    // Remove da lista
     const updated = draft.integrantes.filter((_, i) => i !== index);
     setDraft((d) => ({
       ...d,
@@ -368,7 +335,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
       }
 
       if (isEditMode) {
-        // Modo Edição
         const dadosAtualizacao = {
           nome: draft.nome,
           descricao: draft.descricao,
@@ -378,16 +344,13 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
 
         await atualizarBanda(bandaParaEditar.id, dadosAtualizacao, draft.foto);
         
-        // Atualizar integrantes existentes e criar novos
         for (const integrante of draft.integrantes) {
           if (integrante.id) {
-            // Atualizar integrante existente
             await atualizarArtista(integrante.id, {
               nome: integrante.nome,
               cpf: integrante.cpf
             });
           } else if (integrante.nome && integrante.cpf) {
-            // Criar novo integrante
             const artistaCriado = await criarArtista({
               nome: integrante.nome,
               cpf: integrante.cpf,
@@ -401,7 +364,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
         return;
       }
 
-      // Modo Criação
       let representanteId = draft.representanteId;
 
       if (showNovoRepresentante) {
@@ -414,6 +376,41 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
         representanteId = representanteCriado.id;
       }
 
+      if (!representanteId) {
+        setErrors({ representanteId: "Selecione um representante" });
+        return;
+      }
+
+      // ✅ Validação de integrantes com CPF único
+      const integrantesValidos = draft.integrantes.filter(
+        int => int.nome?.trim() && int.cpf?.trim()
+      );
+
+      if (integrantesValidos.length === 0) {
+        setErrors({ integrantes: "Adicione pelo menos um integrante com nome e CPF preenchidos" });
+        return;
+      }
+
+      // ✅ Verificar CPFs duplicados na lista
+      const cpfs = integrantesValidos.map(int => int.cpf.replace(/\D/g, ''));
+      const cpfsDuplicados = cpfs.filter((cpf, index) => cpfs.indexOf(cpf) !== index);
+      
+      if (cpfsDuplicados.length > 0) {
+        setErrors({ 
+          integrantes: `CPF duplicado na lista: ${cpfsDuplicados.join(', ')}` 
+        });
+        return;
+      }
+
+      console.log('[AddBandaModal] Criando banda com dados:', {
+        nome: draft.nome,
+        descricao: draft.descricao,
+        genero: draft.genero,
+        representanteId,
+        foto: draft.foto ? 'Sim' : 'Não',
+        integrantesValidos: integrantesValidos.length
+      });
+
       const bandaCriada = await criarBanda(
         {
           nome: draft.nome,
@@ -424,34 +421,65 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
         draft.foto
       );
 
+      console.log('[AddBandaModal] Banda criada:', bandaCriada);
+
       const integrantesIds = [];
-      for (const integrante of draft.integrantes) {
-        if (integrante.nome && integrante.cpf) {
+      for (let i = 0; i < integrantesValidos.length; i++) {
+        const integrante = integrantesValidos[i];
+        
+        console.log(`[AddBandaModal] Criando integrante ${i + 1}/${integrantesValidos.length}:`, {
+          nome: integrante.nome,
+          cpf: integrante.cpf
+        });
+
+        try {
           const artistaCriado = await criarArtista({
-            nome: integrante.nome,
-            cpf: integrante.cpf,
+            nome: integrante.nome.trim(),
+            cpf: integrante.cpf.replace(/\D/g, ''), // ✅ Remove formatação
             fotoNome: null,
           });
+          
+          console.log('[AddBandaModal] Integrante criado:', artistaCriado);
           integrantesIds.push(artistaCriado.id);
+        } catch (error) {
+          console.error('[AddBandaModal] Erro ao criar integrante:', integrante.nome, error);
+          
+          const errorMsg = error.response?.data?.message || 
+                          error.response?.data?.mensagem || 
+                          error.message || 
+                          'Erro desconhecido';
+          
+          // ✅ Mensagem específica para CPF duplicado
+          if (errorMsg.includes('Unique index') || 
+              errorMsg.includes('duplicate') || 
+              errorMsg.includes('CPF')) {
+            throw new Error(`O CPF ${integrante.cpf} já está cadastrado no sistema`);
+          }
+          
+          throw new Error(`Erro ao criar integrante "${integrante.nome}": ${errorMsg}`);
         }
       }
 
+      console.log('[AddBandaModal] Integrantes criados:', integrantesIds);
+
       if (integrantesIds.length > 0) {
+        console.log('[AddBandaModal] Adicionando integrantes à banda:', bandaCriada.id, integrantesIds);
         await adicionarIntegrantes(bandaCriada.id, integrantesIds);
+        console.log('[AddBandaModal] Integrantes adicionados com sucesso');
       }
 
       onSuccess();
     } catch (error) {
-      console.error("Erro ao processar banda:", error);
+      console.error("[AddBandaModal] Erro ao processar banda:", error);
       
-      // Mensagem de erro mais amigável
       let errorMessage = "Erro ao processar banda";
       const serverMessage = error.response?.data?.message || error.response?.data?.mensagem;
       
       if (serverMessage) {
-        // Se a mensagem contém um caminho de arquivo, é erro de upload
         if (serverMessage.includes('uploads\\') || serverMessage.includes('uploads/')) {
           errorMessage = "Erro ao fazer upload da imagem. Verifique se o servidor tem permissão para salvar arquivos.";
+        } else if (serverMessage.includes('Unique index') || serverMessage.includes('duplicate')) {
+          errorMessage = "CPF já cadastrado no sistema. Verifique os dados dos integrantes.";
         } else {
           errorMessage = serverMessage;
         }
@@ -601,6 +629,13 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
 
           {currentStep === 2 && (
             <div className="space-y-4">
+              {/* ✅ Adicionar exibição de erro de integrantes */}
+              {errors.integrantes && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+                  {errors.integrantes}
+                </div>
+              )}
+              
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-medium text-gray-700">
                   Integrantes ({draft.integrantes.length})

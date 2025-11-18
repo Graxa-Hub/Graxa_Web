@@ -10,25 +10,29 @@ import "../../index.css";
 import { EventoModal } from "../EventoModal";
 import { useEventosCalendario } from "../../hooks/useEventosCalendario";
 
-export default function MainCalendar({ onCalendarApi, onEventosChange }) {
+export default function MainCalendar({
+  onCalendarApi,
+  onEventosChange,
+  bandaId, // ✅ Novo prop
+  turneId, // ✅ Novo prop
+}) {
   const calendarRef = useRef(null);
   const navigate = useNavigate();
 
-  // Hook para carregar eventos do backend
   const { eventos, loading, carregarEventos, adicionarEventoLocal } =
     useEventosCalendario();
 
-  // Estado local adicional
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [dataHoraSelecionada, setDataHoraSelecionada] = useState({
     inicio: "",
     fim: "",
   });
 
-  // Carrega eventos ao montar o componente
+  // ✅ Recarrega eventos quando filtros mudarem
   useEffect(() => {
-    carregarEventos();
-  }, [carregarEventos]);
+    console.log("[MainCalendar] Filtros mudaram:", { bandaId, turneId });
+    carregarEventos({ bandaId, turneId });
+  }, [bandaId, turneId, carregarEventos]);
 
   // Expõe API do calendário se necessário
   useEffect(() => {
@@ -108,6 +112,7 @@ export default function MainCalendar({ onCalendarApi, onEventosChange }) {
       <EventoModal
         isOpen={createModalOpen}
         dataHoraInicial={dataHoraSelecionada}
+        turneId={turneId} // ✅ Passa turnê pré-selecionada
         onClose={() => {
           setCreateModalOpen(false);
           setDataHoraSelecionada({ inicio: "", fim: "" });
@@ -128,7 +133,7 @@ export default function MainCalendar({ onCalendarApi, onEventosChange }) {
           // Recarrega eventos do backend após 500ms
           setTimeout(() => {
             console.log("[MainCalendar] Recarregando eventos do backend...");
-            carregarEventos();
+            carregarEventos({ bandaId, turneId });
           }, 500);
         }}
       />
