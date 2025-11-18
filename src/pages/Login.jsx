@@ -103,7 +103,7 @@ export const Login = () => {
             )}
           </div>
 
-          <ButtonExtra>Esqueceu a senha?</ButtonExtra>
+          <ButtonExtra to="/recuperar-senha">Esqueceu a senha?</ButtonExtra>
 
           <ButtonSign
             className="hover:bg-orange-500"

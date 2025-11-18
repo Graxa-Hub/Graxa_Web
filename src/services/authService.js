@@ -41,3 +41,15 @@ export async function enviarCodigoRecuperacao(email) {
     throw error.response || error;
   }
 }
+
+export async function validarCodigo(email, codigo) {
+  const response = await axios.post(`${API_URL}/credenciais/validar-codigo`, {
+    email,
+    codigo
+  });
+  return response.data;
+}
+
+export async function resetarSenha(email, novaSenha) {
+  return axios.post(`${API_URL}/credenciais/resetar-senha`, { email, novaSenha });
+}

@@ -1,18 +1,21 @@
-// BOTÃO PARA O LOGIN EM CASO DE:
-// ESQUECI A SENHA, JÁ ESTÁ CADASTRADO, ETC...
-
 import { Link } from "react-router-dom";
 
-// Botão link reutilizável. Se nenhuma rota for passada, cai no fluxo de recuperar senha.
-export const ButtonExtra = ({ children, className = "", onClick }) => {
+export const ButtonExtra = ({ children, className = "", onClick, to }) => {
+  const base = `cursor-pointer bg-transparent text-gray-900 font-semibold underline ${className}`;
+
+  // Se tiver "to", vira Link
+  if (to) {
+    return (
+      <Link to={to} className={base}>
+        {children}
+      </Link>
+    );
+  }
+
+  // Senão, vira botão normal (usado na recuperação)
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`bg-transparent text-gray-900 font-semibold underline ${className}`}
-    >
+    <button type="button" onClick={onClick} className={base}>
       {children}
     </button>
   );
 };
-
