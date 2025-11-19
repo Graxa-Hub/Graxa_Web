@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout } from "../components/Dashboard/Layout";
-import { Sidebar } from "../components/Dashboard/Sidebar";
+import { Sidebar } from "../components/Sidebar/Sidebar";
 import { MapCard } from "../components/VisaoEvento/MapCard";
 import { Porcentagem } from "../components/VisaoEvento/Porcentagem";
 import { AgendaCard } from "../components/VisaoEvento/AgendaCard";
