@@ -6,12 +6,12 @@ import {
   Inbox,
   LogOut,
   Settings,
-  User,
   MicVocal,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { Header } from "../Sidebar/Header";
+import { Header } from "./Header";
+import { UpperButton } from "./UpperButton";
 
 export const Sidebar = () => {
   const { usuario, logout } = useAuth();
@@ -30,11 +30,16 @@ export const Sidebar = () => {
         {/* Botões Navbar */}
         {(() => {
           const mainNav = [
-            { to: "/calendario", label: "Calendário", icon: ChartLine },
-            { to: "/artista", label: "Artista", icon: MicVocal },
-            { to: "/agenda", label: "Agenda", icon: Calendar },
-            { to: "/turne", label: "Turne", icon: Inbox },
-            { to: "/adicionando-usuario", label: "Users", icon: Settings },
+            { id: 1, to: "/calendario", label: "Calendário", icon: ChartLine },
+            { id: 2, to: "/artista", label: "Artista", icon: MicVocal },
+            { id: 3, to: "/agenda", label: "Agenda", icon: Calendar },
+            { id: 4, to: "/turne", label: "Turne", icon: Inbox },
+            {
+              id: 5,
+              to: "/adicionando-usuario",
+              label: "Users",
+              icon: Settings,
+            },
           ];
           const footerNav = [
             {
@@ -52,26 +57,18 @@ export const Sidebar = () => {
           ];
 
           return (
+            // Englobar toda a nav button
             <nav className="flex flex-col flex-1 justify-between mt-4">
+              {/* Os botões que ficam em cima */}
               <ul className="flex flex-col gap-2">
-                {mainNav.map(({ to, label, icon: Icon }) => (
-                  <li key={to}>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        `${
-                          isActive ? "bg-blue-300/50 font-semibold    " : ""
-                        } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
-                      }
-                    >
-                      <Icon />
-                      {label}
-                    </NavLink>
-                  </li>
+                {mainNav.map(({ id, to, label, icon: Icon }) => (
+                  // Componetizei isso aqui
+                  <UpperButton key={id} to={to} label={label} Icon={Icon} />
                 ))}
               </ul>
 
               <ul className="flex flex-col">
+                {/* Os botões que ficam em baixo */}
                 {footerNav.map(({ to, label, icon: Icon, hoverClass }) => (
                   <li key={to}>
                     <NavLink
