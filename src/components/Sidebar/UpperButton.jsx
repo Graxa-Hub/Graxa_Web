@@ -1,19 +1,37 @@
 import { NavLink } from "react-router-dom";
+import { Calendar, Spotlight, MicVocal, Users } from "lucide-react";
 
-export const UpperButton = ({ to, label, Icon }) => {
+const mainNav = [
+  { id: 1, to: "/calendario", label: "Calendário", icon: Calendar },
+  { id: 2, to: "/artista", label: "Bandas", icon: MicVocal },
+  { id: 3, to: "/turne", label: "Turne", icon: Spotlight },
+  {
+    id: 4,
+    to: "/adicionando-usuario",
+    label: "Users",
+    icon: Users,
+  },
+];
+
+export const UpperButton = () => {
   return (
-    <li key={to}>
-      <NavLink
-        to={to}
-        className={({ isActive }) =>
-          `${
-            isActive ? "bg-blue-300/50 font-semibold    " : ""
-          } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
-        }
-      >
-        <Icon />
-        {label}
-      </NavLink>
-    </li>
+    <ul className="flex flex-col gap-2">
+      {mainNav.map(({ id, to, label, icon: Icon }) => (
+        // Componetizei isso aqui
+        <li key={id}>
+          <NavLink
+            to={to}
+            className={({ isActive }) =>
+              `${
+                isActive ? "bg-blue-300/50 font-semibold" : ""
+              } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
+            }
+          >
+            <Icon />
+            {label}
+          </NavLink>
+        </li>
+      ))}
+    </ul>
   );
 };
