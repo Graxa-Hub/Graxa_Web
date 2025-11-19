@@ -385,6 +385,7 @@ export function Turne() {
             selectedBand={selectedBand}
             onBandSelect={handleBandSelect}
             onCreateTurne={handleCreateTurne}
+            bandas={bandas}
           />
 
           {errors.geral && (

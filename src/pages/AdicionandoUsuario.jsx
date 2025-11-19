@@ -1,27 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Dashboard/Sidebar";
 import { ChevronDown, Settings, Camera, Volume2, Guitar } from 'lucide-react';
+import { DropdownGenerico } from '../components/DropdownGenerico';
+import { useShows } from '../hooks/useShows'
 
-// Componente do seletor de evento
-const EventSelector = ({ eventName, eventType }) => {
-  return (
-    <div className="bg-white rounded-lg shadow-sm p-4 max-w-md">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold">
-            {eventName.charAt(0)}
-          </div>
-          <div>
-            <div className="font-semibold text-gray-900">{eventName}</div>
-            <div className="text-sm text-gray-500">{eventType}</div>
-          </div>
-        </div>
-        <ChevronDown className="w-5 h-5 text-gray-400" />
-      </div>
-    </div>
-  );
-};
 
 // Componente do card de etapa
 const StageCard = ({ number, title, description }) => {
@@ -166,14 +149,24 @@ const AssociatesSidebar = ({ associates, onAssociate, selectedRole }) => {
 
 
 // Componente do conteúdo principal
-const MainContent = ({ roles, selectedRole, onSelectRole }) => {
+const MainContent = ({ roles, selectedRole, onSelectRole, selectedEvent, onSelectEvent, events }) => {
   return (
     <div className="flex-1 bg-gray-50 p-8">
       {/* Header */}
       <div className="mb-8">
-        <EventSelector
-          eventName="Boogarins"
-          eventType="Chuva dos Olhos"
+        <DropdownGenerico
+          options={events}
+          selected={selectedEvent}
+          onSelect={onSelectEvent}
+          getLabel={(e) => e.nome}
+          getSubLabel={(e) => e.tipo}
+          getImage={(e) => e.imagem}
+          placeholder="Selecione o evento..."
+          showAllOption={true}
+          allLabel="Todos os eventos"
+          allSubLabel=""
+          allImage={null}
+          minWidth="min-w-72"
         />
       </div>
 
@@ -207,6 +200,28 @@ const EventDashboardLayout = ({ children, sidebar }) => {
 // Componente principal exportável
 export const AdicionandoUsuarios = () => {
   const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const { listarShows, shows } = useShows();
+
+  useEffect(() => {
+    const loadShows = async () => {
+      try {
+        await listarShows();
+      } catch (err) {
+        console.error('Erro ao listar shows:', err);
+      }
+    };
+
+    loadShows();
+  }, [listarShows]);
+
+  // Mapeia todas as bandas de todos os shows para [{id, nome}]
+  const bandasDropdown = (shows || [])
+    .flatMap(show => show || [])
+    .map(show => ({
+      id: show.id,
+      nome: show.nomeEvento
+    }));
 
   const roles = [
     {
@@ -296,23 +311,26 @@ export const AdicionandoUsuarios = () => {
 
   return (
     <Layout>
-          <Sidebar />
-          <EventDashboardLayout
-          sidebar={
-            <AssociatesSidebar
-              associates={filteredAssociates}
-              onAssociate={handleAssociate}
-              selectedRole={selectedRole}
-            />
-          }
-        >
-          <MainContent
-            roles={roles}
+      <Sidebar />
+      <EventDashboardLayout
+        sidebar={
+          <AssociatesSidebar
+            associates={filteredAssociates}
+            onAssociate={handleAssociate}
             selectedRole={selectedRole}
-            onSelectRole={handleSelectRole}
           />
-        </EventDashboardLayout>
-        </Layout>
+        }
+      >
+        <MainContent
+          roles={roles}
+          selectedRole={selectedRole}
+          onSelectRole={handleSelectRole}
+          selectedEvent={selectedEvent}
+          onSelectEvent={setSelectedEvent}
+          events={bandasDropdown} // <-- Aqui vai o array de bandas!
+        />
+      </EventDashboardLayout>
+    </Layout>
   );
 };
 

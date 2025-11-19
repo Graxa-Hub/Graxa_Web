@@ -256,6 +256,7 @@ Tabela da lista: .fc-list-table */
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
   padding: 14px;
+  /* border: 2px solid #60a5fa !important; azul-400 do Tailwind */
 }
 
 .graxa-calendar {
@@ -497,4 +498,14 @@ Tabela da lista: .fc-list-table */
   border: none !important;
   box-shadow: none !important;
   padding: 4px 8px !important;
+}
+
+.graxa-calendar .fc-event {
+  background: #e0e7ef !important; /* azul bem claro */
+  color: #1e293b !important;      /* cinza escuro */
+  border: none !important;
+  border-radius: 6px !important;
+  font-size: 0.95rem;
+  padding: 2px 6px;
+  box-shadow: none !important;
 }

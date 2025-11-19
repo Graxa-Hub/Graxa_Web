@@ -46,7 +46,7 @@ export function Modal({ isOpen, onClose, title, children, totalSteps = 1, nextBu
             className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
             onClick={handleOverlayClick}
         >
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4 min-h-80 max-h-200 h-fit overflow-hidden relative">
+            <div className="bg-white rounded-2xl shadow-2xl mx-4 min-h-80   h-fit relative overflow-x-hidden min-w-100 w-fit max-w-200">
                 {/* Seta Anterior - Esquerda */}
                 {currentStep > 1 && (
                     <button

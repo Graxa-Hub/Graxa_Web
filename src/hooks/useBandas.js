@@ -2,6 +2,7 @@ import { useState, useCallback, useRef } from 'react';
 import { bandaService } from '../services/bandaService';
 import { imagemService } from '../services/imagemService';
 
+// Observação: o backend já retorna apenas as bandas ativas, portanto não filtramos aqui.
 export function useBandas() {
   const [bandas, setBandas] = useState([]);
   const [loading, setLoading] = useState(false);

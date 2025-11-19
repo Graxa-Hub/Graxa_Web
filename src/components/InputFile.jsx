@@ -161,23 +161,14 @@ export function InputFile({
             
             <div>
               <p className="font-medium text-gray-700 mb-1">
-                Choose a file or drag & drop it here
+                Carregar Imagem
               </p>
               <p className="text-sm text-gray-500 mb-4">
                 {getAcceptedFormats()}, up to {formatFileSize(maxSize)}
               </p>
             </div>
             
-            <button
-              type="button"
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-              onClick={(e) => {
-                e.stopPropagation()
-                handleBrowseClick()
-              }}
-            >
-              Browse File
-            </button>
+            
           </div>
         </div>
       )}

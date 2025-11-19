@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import InputMask from "react-input-mask";
 import { Input } from "../components/LoginCadastro/Input";
-import { Select } from "../components/LoginCadastro/Select";
+import { ComboBox } from "../components/ComboBox";
+import { TIPOS_USUARIO } from "../constants/tipoUsuario";
 import { Label } from "../components/LoginCadastro/Label";
 import { Layout } from "../components/LoginCadastro/Layout";
 import { Grid } from "../components/LoginCadastro/Grid";
@@ -179,14 +180,13 @@ export const Cadastro = () => {
 
           <div>
             <Label>Tipo de Usuário:</Label>
-            <Select
+            <ComboBox
+              label={null}
               value={tipoUsuario}
-              onChange={(e) => setTipoUsuario(e.target.value)}
-              options={[
-                { value: "PRODUTOR", label: "Produtor" },
-                { value: "MUSICO", label: "Músico" },
-              ]}
-              className={fieldErrors.tipoUsuario ? "border-red-500" : ""}
+              onChange={setTipoUsuario}
+              options={TIPOS_USUARIO}
+              error={fieldErrors.tipoUsuario}
+              placeholder="Selecione o tipo de usuário"
             />
             {fieldErrors.tipoUsuario && (
               <p className="text-red-500 text-sm">{fieldErrors.tipoUsuario}</p>

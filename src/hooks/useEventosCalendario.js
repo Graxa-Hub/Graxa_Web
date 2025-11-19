@@ -56,7 +56,7 @@ export function useEventosCalendario() {
         title: show.nomeEvento || show.nome || 'Show sem título',
         start: show.dataInicio,
         end: show.dataFim,
-        backgroundColor: '#ef4444',
+        backgroundColor: '#ef444440',
         borderColor: '#ef4444',
         type: 'show',
         extendedProps: {

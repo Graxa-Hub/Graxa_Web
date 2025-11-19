@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Calendar,
   ChartLine,
@@ -8,17 +8,50 @@ import {
   Settings,
   User,
   MicVocal,
+  MapPin,
+  Users
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export const Sidebar = () => {
   const { usuario, logout } = useAuth();
+  const [avancadoOpen, setAvancadoOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     window.location.href = "/login";
   };
+
+  const mainNav = [
+    { to: "/calendario", label: "Calendário", icon: ChartLine },
+    { to: "/artista", label: "Artista", icon: MicVocal },
+    { to: "/agenda", label: "Agenda", icon: Calendar },
+    { to: "/turne", label: "Turne", icon: Inbox },
+    { to: "/adicionando-usuario", label: "Users", icon: Settings },
+    {
+      label: "Avançado",
+      icon: Settings,
+      children: [
+        { to: "/locais", label: "Locais", icon: MapPin },
+        { to: "/representantes", label: "Representantes", icon: Users },
+      ],
+    },
+  ];
+  const footerNav = [
+    {
+      to: "/help",
+      label: "Help",
+      icon: HelpCircleIcon,
+      hoverClass: "hover:bg-gray-100",
+    },
+    {
+      to: "/logout",
+      label: "Log Out",
+      icon: LogOut,
+      hoverClass: "hover:bg-red-100 hover:text-red-500",
+    },
+  ];
 
   return (
     <>
@@ -48,70 +81,76 @@ export const Sidebar = () => {
           </div>
         </header>
 
-        {/* Botões Navbar */}
-        {(() => {
-          const mainNav = [
-            { to: "/calendario", label: "Calendário", icon: ChartLine },
-            { to: "/artista", label: "Artista", icon: MicVocal },
-            { to: "/agenda", label: "Agenda", icon: Calendar },
-            { to: "/turne", label: "Turne", icon: Inbox },
-            { to: "/adicionando-usuario", label: "Users", icon: Settings },
-          ];
-          const footerNav = [
-            {
-              to: "/help",
-              label: "Help",
-              icon: HelpCircleIcon,
-              hoverClass: "hover:bg-gray-100",
-            },
-            {
-              to: "/logout",
-              label: "Log Out",
-              icon: LogOut,
-              hoverClass: "hover:bg-red-100 hover:text-red-500",
-            },
-          ];
+        <nav className="flex flex-col flex-1 justify-between mt-4">
+          <ul className="flex flex-col gap-2">
+            {mainNav.map((item) =>
+              item.children ? (
+                <li key={item.label}>
+                  <button
+                    className={`flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30 w-full items-center`}
+                    onClick={() => setAvancadoOpen((v) => !v)}
+                    type="button"
+                  >
+                    <item.icon />
+                    {item.label}
+                    <span className="ml-auto">{avancadoOpen ? "▲" : "▼"}</span>
+                  </button>
+                  {avancadoOpen && (
+                    <ul className="ml-6 flex flex-col gap-1 mt-1">
+                      {item.children.map((sub) => (
+                        <li key={sub.to}>
+                          <NavLink
+                            to={sub.to}
+                            className={({ isActive }) =>
+                              `${
+                                isActive ? "bg-blue-300/50 font-semibold" : ""
+                              } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30 items-center`
+                            }
+                          >
+                            <sub.icon />
+                            {sub.label}
+                          </NavLink>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ) : (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      `${
+                        isActive ? "bg-blue-300/50 font-semibold" : ""
+                      } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30 items-center`
+                    }
+                  >
+                    <item.icon />
+                    {item.label}
+                  </NavLink>
+                </li>
+              )
+            )}
+          </ul>
 
-          return (
-            <nav className="flex flex-col flex-1 justify-between mt-4">
-              <ul className="flex flex-col gap-2">
-                {mainNav.map(({ to, label, icon: Icon }) => (
-                  <li key={to}>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        `${
-                          isActive ? "bg-blue-300/50 font-semibold    " : ""
-                        } flex px-2 py-3 rounded gap-3 hover:bg-blue-200/30`
-                      }
-                    >
-                      <Icon />
-                      {label}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-
-              <ul className="flex flex-col">
-                {footerNav.map(({ to, label, icon: Icon, hoverClass }) => (
-                  <li key={to}>
-                    <NavLink
-                      to={to}
-                      className={({ isActive }) =>
-                        `${
-                          isActive ? "bg-blue-300/50 font-semibold    " : ""
-                        } flex px-2 py-3 rounded gap-3 ${hoverClass}`
-                      }
-                    >
-                      <Icon />
-                      {label}
-                    </NavLink>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          );
-        })()}
+          <ul className="flex flex-col">
+            {footerNav.map(({ to, label, icon: Icon, hoverClass }) => (
+              <li key={to}>
+                <NavLink
+                  to={to}
+                  className={({ isActive }) =>
+                    `${
+                      isActive ? "bg-blue-300/50 font-semibold" : ""
+                    } flex px-2 py-3 rounded gap-3 ${hoverClass} items-center`
+                  }
+                >
+                  <Icon />
+                  {label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </aside>
     </>
   );

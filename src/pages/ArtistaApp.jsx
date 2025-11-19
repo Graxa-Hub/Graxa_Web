@@ -12,6 +12,8 @@ import { useRepresentantes } from "../hooks/useRepresentantes";
 import { useArtistas } from "../hooks/useArtistas";
 import { DropdownMenu } from "../components/DropdownMenu";
 import { ConfirmModal } from "../components/ConfirmModal";
+import { ComboBox } from "../components/ComboBox";
+import { GENEROS } from "../constants/generos";
 
 // ========== Tela Principal ==========
 export function ArtistaApp() {
@@ -261,7 +263,6 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
     setErrors((e) => ({ ...e, [key]: null }));
     
     if (key === 'foto' && value) {
-      console.warn('⚠️ Upload de imagens está com problema no backend. A banda será criada sem foto.');
       
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -522,10 +523,13 @@ function AddBandaModal({ onSuccess, onClose, criarBanda, atualizarBanda, adicion
               />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <GeneroCombobox
+                <ComboBox
+                  label="Gênero"
                   value={draft.genero}
                   onChange={(value) => handleChange("genero", value)}
+                  options={GENEROS}
                   error={errors.genero}
+                  placeholder="Selecione um gênero"
                 />
 
                 <InputFile

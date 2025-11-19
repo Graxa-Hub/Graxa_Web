@@ -104,10 +104,12 @@ export default function MainCalendar({
         select={handleDateSelect}
         events={eventos}
         eventClick={handleEventClick}
-        editable={true}
         dayMaxEvents={3}
         allDaySlot={false}
         height="100%"
+        eventResizableFromStart={false} // impede arrastar
+        eventDurationEditable={false} // impede arrastar
+        eventStartEditable={false} // impede arrastar
       />
       <EventoModal
         isOpen={createModalOpen}
