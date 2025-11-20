@@ -1,335 +1,240 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 import { Layout } from "../components/Dashboard/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
-import { ChevronDown, Settings, Camera, Volume2, Guitar } from 'lucide-react';
-import { DropdownGenerico } from '../components/DropdownGenerico';
-import { useShows } from '../hooks/useShows'
+import { Sidebar } from "../components/Dashboard/Sidebar";
+import { BandaDropdown } from "../components/BandaDropdown";
+import { Settings, Camera, Volume2, Guitar } from "lucide-react";
+import { useBandas } from "../hooks/useBandas";
+import { imagemService } from "../services/imagemService";
 
-
-// Componente do card de etapa
-const StageCard = ({ number, title, description }) => {
-  return (
-    <div className="bg-white rounded-lg shadow-sm p-6 mb-8 max-w-md">
-      <div className="flex items-start gap-4">
-        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0">
-          {number}
-        </div>
-        <div>
-          <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
-        </div>
+// ========== COMPONENTE DE FUNÇÃO ==========
+const StageCard = ({ number, title, description }) => (
+  <div className="bg-white rounded-lg shadow-sm p-6 mb-8 max-w-md">
+    <div className="flex items-start gap-4">
+      <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-semibold">
+        {number}
+      </div>
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
+        <p className="text-sm text-gray-600">{description}</p>
       </div>
     </div>
-  );
-};
+  </div>
+);
 
-// Componente de card de função
+// ========== CARD DE ROLE ==========
 const RoleCard = ({ role, isSelected, onClick }) => {
   const Icon = role.icon;
 
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-lg shadow-sm p-6 flex items-center justify-between hover:bg-gray-50 transition-all cursor-pointer ${
-        isSelected ? 'ring-2 ring-red-300' : ''
+      className={`bg-white rounded-lg shadow-sm p-6 flex items-center justify-between hover:bg-gray-50 cursor-pointer ${
+        isSelected ? "ring-2 ring-red-300" : ""
       }`}
     >
       <div className="flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-          isSelected ? 'bg-red-50' : 'bg-gray-100'
-        }`}>
-          <Icon className={`w-6 h-6 ${
-            isSelected ? 'text-red-600' : 'text-gray-600'
-          }`} />
+        <div
+          className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+            isSelected ? "bg-red-50" : "bg-gray-100"
+          }`}
+        >
+          <Icon
+            className={`w-6 h-6 ${
+              isSelected ? "text-red-600" : "text-gray-600"
+            }`}
+          />
         </div>
+
         <div>
           <h3 className="font-semibold text-gray-900">{role.title}</h3>
           <p className="text-sm text-gray-500">{role.description}</p>
         </div>
       </div>
-      <ChevronDown className="w-5 h-5 text-gray-400" />
     </div>
   );
 };
 
-// Componente de lista de funções
-const RolesList = ({ roles, selectedRole, onSelectRole }) => {
-  return (
-    <div className="space-y-4 max-w-2xl">
-      {roles.map((role) => (
-        <RoleCard
-          key={role.id}
-          role={role}
-          isSelected={selectedRole === role.id}
-          onClick={() => onSelectRole(role.id)}
-        />
-      ))}
-    </div>
-  );
-};
-
-// Componente de card de associado
-const AssociateCard = ({ associate, onAssociate }) => {
-  return (
-    <div className="bg-white rounded-lg shadow-sm p-4 flex items-center gap-4">
-      <img
-        src={associate.image}
-        alt={associate.name}
-        className="w-16 h-16 rounded-full object-cover flex-shrink-0"
+const RolesList = ({ roles, selectedRole, onSelectRole }) => (
+  <div className="space-y-4 max-w-2xl">
+    {roles.map((role) => (
+      <RoleCard
+        key={role.id}
+        role={role}
+        isSelected={selectedRole === role.id}
+        onClick={() => onSelectRole(role.id)}
       />
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-gray-900 text-sm">{associate.name}</h3>
-        <p className="text-xs text-gray-500">{associate.role}</p>
-        <p className="text-xs text-gray-400 mt-1">
-          Shows realizados: {associate.shows}
-        </p>
-      </div>
-      <button
-        onClick={() => onAssociate(associate)}
-        className="px-4 py-2 bg-gray-800 text-white text-xs rounded-full hover:bg-gray-700 transition-colors flex-shrink-0"
-      >
-        escolher
-      </button>
-    </div>
-  );
-};
+    ))}
+  </div>
+);
 
-// Componente do sidebar de associados
-const AssociatesSidebar = ({ associates, onAssociate, selectedRole }) => {
-  // Nenhuma função selecionada
+// ========== ASSOCIADO ==========
+const AssociateCard = ({ associate, onSelect, isChosen }) => (
+  <div className="bg-white rounded-lg shadow-sm p-4 flex items-center gap-4">
+    <img
+      src={associate.image}
+      className="w-16 h-16 rounded-full object-cover"
+    />
+
+    <div className="flex-1">
+      <h3 className="font-semibold text-gray-900 text-sm">{associate.name}</h3>
+      <p className="text-xs text-gray-500">{associate.role}</p>
+      <p className="text-xs text-gray-400 mt-1">
+        Shows realizados: {associate.shows}
+      </p>
+    </div>
+
+    <button
+      onClick={onSelect}
+      disabled={isChosen}
+      className={`px-4 py-2 text-xs rounded-full transition-colors ${
+        isChosen
+          ? "bg-green-600 text-white cursor-default"
+          : "bg-gray-800 text-white hover:bg-gray-700"
+      }`}
+    >
+      {isChosen ? "escolhido" : "escolher"}
+    </button>
+  </div>
+);
+
+// SIDEBAR
+const AssociatesSidebar = ({ associates, selectedRole, onSelect, selectedAssociates }) => {
   if (!selectedRole) {
     return (
-      <div className="w-96 bg-gray-50 flex items-center justify-center">
-        <div className="text-center text-gray-500 p-8">
-          <p className="text-sm">Selecione uma função para ver os</p>
-          <p className="text-sm">associados disponíveis</p>
-        </div>
+      <div className="w-96 bg-gray-50 flex items-center justify-center text-gray-500">
+        Selecione uma função
       </div>
     );
   }
 
-  // Nenhum associado para a função
-  if (associates.length === 0) {
-    return (
-      <div className="w-96 bg-gray-50 flex items-center justify-center">
-        <div className="text-center text-gray-500 p-8">
-          <p className="text-sm">Nenhum associado disponível</p>
-          <p className="text-sm">para esta função</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Lista de associados
   return (
-    <div className="w-96 bg-gray-50 flex flex-col h-screen border-l border-gray-200">
-      {/* Header do sidebar */}
-      <div className="px-8 pt-10 pb-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-800">
-          Associados disponíveis
-        </h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Selecione alguém para essa função
+    <div className="w-96 bg-gray-50 flex flex-col h-screen border-l border-gray-200 px-6 py-6 overflow-y-auto">
+      {associates.length === 0 ? (
+        <p className="text-gray-500 text-center">
+          Nenhum associado disponível
         </p>
-      </div>
+      ) : (
+        associates.map((associate, index) => {
+          const isChosen =
+            selectedAssociates[selectedRole]?.name === associate.name;
 
-      {/* Lista com scroll suave */}
-      <div className="flex-1 overflow-y-auto px-8 py-6 space-y-4">
-        {associates.map((associate, index) => (
-          <AssociateCard
-            key={index}
-            associate={associate}
-            onAssociate={onAssociate}
-          />
-        ))}
-      </div>
+          return (
+            <AssociateCard
+              key={index}
+              associate={associate}
+              onSelect={() => onSelect(associate)}
+              isChosen={isChosen}
+            />
+          );
+        })
+      )}
     </div>
   );
 };
 
+// ===================================================================
+// =========================== PRINCIPAL ==============================
+// ===================================================================
 
-// Componente do conteúdo principal
-const MainContent = ({ roles, selectedRole, onSelectRole, selectedEvent, onSelectEvent, events }) => {
-  return (
-    <div className="flex-1 bg-gray-50 p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <DropdownGenerico
-          options={events}
-          selected={selectedEvent}
-          onSelect={onSelectEvent}
-          getLabel={(e) => e.nome}
-          getSubLabel={(e) => e.tipo}
-          getImage={(e) => e.imagem}
-          placeholder="Selecione o evento..."
-          showAllOption={true}
-          allLabel="Todos os eventos"
-          allSubLabel=""
-          allImage={null}
-          minWidth="min-w-72"
-        />
-      </div>
-
-      {/* Event Stage */}
-      <StageCard
-        number="1"
-        title="1ª Etapa"
-        description="Escolha as pessoas que irão contribuir com esse evento"
-      />
-
-      {/* Roles List */}
-      <RolesList
-        roles={roles}
-        selectedRole={selectedRole}
-        onSelectRole={onSelectRole}
-      />
-    </div>
-  );
-};
-
-// Layout específico para a página de adicionar usuários
-const EventDashboardLayout = ({ children, sidebar }) => {
-  return (
-    <div className="flex h-screen w-screen bg-gray-50">
-      {children}
-      {sidebar}
-    </div>
-  );
-};
-
-// Componente principal exportável
 export const AdicionandoUsuarios = () => {
+  const { bandas, listarBandas } = useBandas();
+
+  const [selectedBand, setSelectedBand] = useState(null);
   const [selectedRole, setSelectedRole] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const { listarShows, shows } = useShows();
+  const [fotosBandas, setFotosBandas] = useState({});
+  const [selectedAssociates, setSelectedAssociates] = useState({});
 
-  useEffect(() => {
-    const loadShows = async () => {
-      try {
-        await listarShows();
-      } catch (err) {
-        console.error('Erro ao listar shows:', err);
-      }
-    };
-
-    loadShows();
-  }, [listarShows]);
-
-  // Mapeia todas as bandas de todos os shows para [{id, nome}]
-  const bandasDropdown = (shows || [])
-    .flatMap(show => show || [])
-    .map(show => ({
-      id: show.id,
-      nome: show.nomeEvento
-    }));
+  // ASSOCIADOS (mock)
+  const associates = [
+    { name: "Rafael Monteiro", role: "Produtor de Estrada", roleId: "produtor", shows: 42, image: "https://i.pravatar.cc/150?img=21" },
+    { name: "Lucas Almeida", role: "Produtor de Estrada", roleId: "produtor", shows: 19, image: "https://i.pravatar.cc/150?img=22" },
+    { name: "Felipe Rocha", role: "Produtor de Estrada", roleId: "produtor", shows: 37, image: "https://i.pravatar.cc/150?img=23" },
+    { name: "Eduardo Ramos", role: "Técnico de Luz", roleId: "tecnico-luz", shows: 33, image: "https://i.pravatar.cc/150?img=26" },
+    { name: "Henrique Santos", role: "Técnico de Luz", roleId: "tecnico-luz", shows: 15, image: "https://i.pravatar.cc/150?img=27" },
+    { name: "André Paiva", role: "Técnico de Som", roleId: "tecnico-som", shows: 41, image: "https://i.pravatar.cc/150?img=31" },
+    { name: "William Costa", role: "Técnico de Som", roleId: "tecnico-som", shows: 22, image: "https://i.pravatar.cc/150?img=32" },
+    { name: "João Cardoso", role: "Road", roleId: "road", shows: 14, image: "https://i.pravatar.cc/150?img=38" },
+    { name: "Samuel Torres", role: "Road", roleId: "road", shows: 26, image: "https://i.pravatar.cc/150?img=39" },
+  ];
 
   const roles = [
-    {
-      id: 'produtor',
-      title: 'Produtor de estrada',
-      icon: Settings,
-      description: 'Responsável pela organização da turnê'
-    },
-    {
-      id: 'tecnico-luz',
-      title: 'Técnico de Luz',
-      icon: Camera,
-      description: 'Responsável pela iluminação do show'
-    },
-    {
-      id: 'tecnico-som',
-      title: 'Técnico de som',
-      icon: Volume2,
-      description: 'Responsável pelo áudio e som ao vivo'
-    },
-    {
-      id: 'road',
-      title: 'Road',
-      icon: Guitar,
-      description: 'Auxilia no transporte e montagem dos equipamentos'
-    }
+    { id: "produtor", title: "Produtor de estrada", icon: Settings, description: "Responsável pela organização da turnê" },
+    { id: "tecnico-luz", title: "Técnico de Luz", icon: Camera, description: "Responsável pela iluminação do show" },
+    { id: "tecnico-som", title: "Técnico de som", icon: Volume2, description: "Responsável pelo áudio e som ao vivo" },
+    { id: "road", title: "Road", icon: Guitar, description: "Auxilia no transporte e montagem dos equipamentos" },
   ];
 
-  const associates = [
-    {
-      name: 'Gabriel da Silva',
-      role: 'Produtor de Estrada',
-      roleId: 'produtor',
-      shows: 34,
-      image: 'https://i.pravatar.cc/150?img=12'
-    },
-    {
-      name: 'Daniel Sena',
-      role: 'Técnico de Luz',
-      roleId: 'tecnico-luz',
-      shows: 23,
-      image: 'https://i.pravatar.cc/150?img=13'
-    },
-    {
-      name: 'Leandro Robotino',
-      role: 'Técnico de Som',
-      roleId: 'tecnico-som',
-      shows: 18,
-      image: 'https://i.pravatar.cc/150?img=33'
-    },
-    {
-      name: 'Bruno Araujo',
-      role: 'Road',
-      roleId: 'road',
-      shows: 11,
-      image: 'https://i.pravatar.cc/150?img=14'
-    },
-    {
-      name: 'Carlos Santos',
-      role: 'Produtor de Estrada',
-      roleId: 'produtor',
-      shows: 28,
-      image: 'https://i.pravatar.cc/150?img=15'
-    },
-    {
-      name: 'Maria Oliveira',
-      role: 'Técnico de Luz',
-      roleId: 'tecnico-luz',
-      shows: 31,
-      image: 'https://i.pravatar.cc/150?img=16'
-    }
-  ];
+  useEffect(() => {
+    listarBandas();
+  }, [listarBandas]);
 
-  const handleSelectRole = (roleId) => {
-    setSelectedRole(roleId);
-  };
+  // Carregar imagens das bandas
+  useEffect(() => {
+    const loadImages = async () => {
+      const map = {};
+      for (const b of bandas) {
+        if (b.nomeFoto) {
+          map[b.id] = await imagemService(b.nomeFoto);
+        }
+      }
+      setFotosBandas(map);
+    };
 
-  const handleAssociate = (associate) => {
-    console.log('Associar:', associate);
-    // Aqui você pode adicionar a lógica para associar o profissional à função
-  };
+    loadImages();
+  }, [bandas]);
 
-  // Filtra associados com base na função selecionada
+  // Filtro por função
   const filteredAssociates = selectedRole
-    ? associates.filter(a => a.roleId === selectedRole)
+    ? associates.filter((a) => a.roleId === selectedRole)
     : [];
+
+  // Selecionar associado
+  const handleSelectAssociate = (associate) => {
+    setSelectedAssociates((prev) => ({
+      ...prev,
+      [associate.roleId]: associate,
+    }));
+  };
 
   return (
     <Layout>
       <Sidebar />
-      <EventDashboardLayout
-        sidebar={
-          <AssociatesSidebar
-            associates={filteredAssociates}
-            onAssociate={handleAssociate}
-            selectedRole={selectedRole}
+
+      <div className="flex h-screen w-full bg-gray-50">
+
+        <div className="flex-1 p-10">
+          {/* SELECTOR OFICIAL */}
+          <BandaDropdown
+            selectedBand={selectedBand}
+            onBandSelect={setSelectedBand}
+            showAllOption={true}
           />
-        }
-      >
-        <MainContent
-          roles={roles}
+
+          {/* ETAPA */}
+          <div className="mt-10">
+            <StageCard
+              number="1"
+              title="1ª Etapa"
+              description="Escolha as pessoas que irão contribuir com esse evento"
+            />
+          </div>
+
+          {/* FUNÇÕES */}
+          <RolesList
+            roles={roles}
+            selectedRole={selectedRole}
+            onSelectRole={setSelectedRole}
+          />
+        </div>
+
+        {/* SIDEBAR */}
+        <AssociatesSidebar
+          associates={filteredAssociates}
           selectedRole={selectedRole}
-          onSelectRole={handleSelectRole}
-          selectedEvent={selectedEvent}
-          onSelectEvent={setSelectedEvent}
-          events={bandasDropdown} // <-- Aqui vai o array de bandas!
+          onSelect={handleSelectAssociate}
+          selectedAssociates={selectedAssociates}
         />
-      </EventDashboardLayout>
+      </div>
     </Layout>
   );
 };
