@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Layout } from "../components/Dashboard/Layout";
-import { Sidebar } from "../components/Dashboard/Sidebar";
+import { Sidebar } from "../components/Sidebar/Sidebar";
 import { BandaDropdown } from "../components/BandaDropdown";
 import { Settings, Camera, Volume2, Guitar } from "lucide-react";
 import { useBandas } from "../hooks/useBandas";
