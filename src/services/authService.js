@@ -31,3 +31,25 @@ export const getColaborador = async (userId) => {
         throw error;
     }
 };
+
+export async function enviarCodigoRecuperacao(email) {
+    console.log("URL chamada:", `${API_URL}/credenciais/recuperar-senha`);
+  try {
+    const response = await axios.post(`${API_URL}/credenciais/recuperar-senha`, { email });
+    return response.data;
+  } catch (error) {
+    throw error.response || error;
+  }
+}
+
+export async function validarCodigo(email, codigo) {
+  const response = await axios.post(`${API_URL}/credenciais/validar-codigo`, {
+    email,
+    codigo
+  });
+  return response.data;
+}
+
+export async function resetarSenha(email, novaSenha) {
+  return axios.post(`${API_URL}/credenciais/resetar-senha`, { email, novaSenha });
+}
