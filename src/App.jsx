@@ -5,13 +5,14 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Cadastro } from "./pages/Cadastro";
 import { HomeRedirect } from "./components/HomeRedirect";
-import { ProtectedLayout } from "./components/ProtectedLayout";
+// import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
 import { ArtistaApp } from "./pages/ArtistaApp";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
 import { VisaoEvento } from "./pages/VisaoEvento";
 import { Calendario } from "./pages/Calendario";
 import { RecuperarSenha } from "./pages/RecuperarSenha";
+import { Consulta } from "./pages/Consulta";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -25,16 +26,16 @@ function App() {
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro" element={<Cadastro />} />
       {/* Rotas protegidas */}
-      {/* <Route element={<ProtectedLayout />}> */}
-      <Route path="/calendario" element={<Calendario />} />
-      <Route path="/turne" element={<Turne />} />
-      <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
-      <Route path="/artista" element={<ArtistaApp />} />
-      <Route path="/visao-evento" element={<VisaoEvento />} />
-      {/* <Route path="configuracao" element={<Configuracao/>}/> */}
-      {/* </Route> */}
+      <Route element={<ProtectedLayout />}>
+        <Route path="/calendario" element={<Calendario />} />
+        <Route path="/turne" element={<Turne />} />
+        <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
+        <Route path="/artista" element={<ArtistaApp />} />
+        <Route path="/visao-evento" element={<VisaoEvento />} />
+        <Route path="/consultar-local" element={<Consulta />} />
+      </Route>
       {/* Rota não encontrada - redireciona para login */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
     </Routes>
   );
 }
