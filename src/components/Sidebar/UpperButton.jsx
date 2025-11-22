@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { Calendar, Spotlight, MicVocal, Users } from "lucide-react";
+import { Calendar, Spotlight, MicVocal, Users, Search } from "lucide-react";
 
 const mainNav = [
   { id: 1, to: "/calendario", label: "Calendário", icon: Calendar },
@@ -10,6 +10,12 @@ const mainNav = [
     to: "/adicionando-usuario",
     label: "Users",
     icon: Users,
+  },
+  {
+    id: 5,
+    to: "/consultar-local",
+    label: "Consultar",
+    icon: Search,
   },
 ];
 
