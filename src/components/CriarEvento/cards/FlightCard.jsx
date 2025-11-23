@@ -15,7 +15,7 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
   };
 
   return (
-    <div className="relative bg-white rounded-lg shadow p-6 space-y-5">
+    <div className="relative bg-white rounded-xl shadow-lg p-6 space-y-5 border border-gray-100">
 
       {/* BOTÃO REMOVER */}
       <button
@@ -25,18 +25,18 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
         ×
       </button>
 
-      <h3 className="font-semibold text-gray-900 text-lg">Voo</h3>
+      <h3 className="font-bold text-gray-900 text-xl">Voo</h3>
 
       {/* CAMPOS */}
       <input
-        className="w-full p-2 border rounded"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         placeholder="Companhia aérea"
         value={flight.cia}
         onChange={(e) => updateField("cia", e.target.value)}
       />
 
       <input
-        className="w-full p-2 border rounded"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         placeholder="Número do voo"
         value={flight.numero}
         onChange={(e) => updateField("numero", e.target.value)}
@@ -44,14 +44,14 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
 
       <div className="grid grid-cols-2 gap-4">
         <input
-          className="p-2 border rounded"
+          className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Origem"
           value={flight.origem}
           onChange={(e) => updateField("origem", e.target.value)}
         />
 
         <input
-          className="p-2 border rounded"
+          className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Destino"
           value={flight.destino}
           onChange={(e) => updateField("destino", e.target.value)}
@@ -60,20 +60,20 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm">Saída</label>
+          <label className="text-sm font-medium text-gray-700">Saída</label>
           <input
             type="datetime-local"
-            className="w-full mt-1 p-2 border rounded"
+            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={flight.saida}
             onChange={(e) => updateField("saida", e.target.value)}
           />
         </div>
 
         <div>
-          <label className="text-sm">Chegada</label>
+          <label className="text-sm font-medium text-gray-700">Chegada</label>
           <input
             type="datetime-local"
-            className="w-full mt-1 p-2 border rounded"
+            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={flight.chegada}
             onChange={(e) => updateField("chegada", e.target.value)}
           />
@@ -82,7 +82,7 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
 
       {/* PASSAGEIROS */}
       <div>
-        <label className="text-sm block mb-2">Passageiros</label>
+        <label className="text-sm font-medium text-gray-700 block mb-2">Passageiros</label>
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
@@ -92,8 +92,8 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
               <button
                 key={c.id}
                 onClick={() => togglePassageiro(c.id)}
-                className={`w-full flex justify-between p-2 border rounded ${
-                  selected ? "bg-blue-100 border-blue-500" : "bg-gray-50"
+                className={`w-full flex justify-between p-3 border rounded-lg transition-colors ${
+                  selected ? "bg-blue-50 border-blue-400 hover:bg-blue-100" : "bg-gray-50 border-gray-200 hover:bg-gray-100"
                 }`}
               >
                 <span>{c.nome}</span>

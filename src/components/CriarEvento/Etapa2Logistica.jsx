@@ -68,20 +68,20 @@ const Etapa2Logistica = ({
     ]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
 
       {/* HOSPEDAGEM */}
       <section>
-        <h2 className="text-lg font-semibold mb-3">Hospedagem</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Hospedagem</h2>
 
         <button
-          className="px-4 py-2 bg-green-600 text-white rounded-lg"
+          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
           onClick={addHotel}
         >
           Adicionar Hotel
         </button>
 
-        <div className="mt-4 grid md:grid-cols-2 gap-6">
+        <div className="mt-6 grid md:grid-cols-2 gap-6">
           {hotels.map((hotel, index) => (
             <HotelCard
               key={hotel.id}
@@ -101,16 +101,16 @@ const Etapa2Logistica = ({
 
       {/* VOOS */}
       <section>
-        <h2 className="text-lg font-semibold mb-3">Voos da Equipe</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Voos da Equipe</h2>
 
         <button
-          className="px-4 py-2 bg-green-600 text-white rounded-lg"
+          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
           onClick={addFlight}
         >
           Adicionar Voo
         </button>
 
-        <div className="mt-4 space-y-6">
+        <div className="mt-6 space-y-6">
           {flights.map((flight, index) => (
             <FlightCard
               key={flight.id}
@@ -129,16 +129,16 @@ const Etapa2Logistica = ({
 
       {/* TRANSPORTES */}
       <section>
-        <h2 className="text-lg font-semibold mb-3">Transportes</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-4">Transportes</h2>
 
         <button
-          className="px-4 py-2 bg-green-600 text-white rounded-lg"
+          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
           onClick={addTransporte}
         >
           Adicionar Transporte
         </button>
 
-        <div className="mt-4 space-y-6">
+        <div className="mt-6 space-y-6">
           {transports.map((t, index) => (
             <TransporteCard
               key={t.id}

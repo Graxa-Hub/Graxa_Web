@@ -1,8 +1,8 @@
 import React from "react";
 
 const Section = ({ title, children }) => (
-  <div className="bg-white shadow p-6 rounded-lg space-y-3">
-    <h3 className="font-semibold text-lg text-gray-800">{title}</h3>
+  <div className="bg-white shadow-lg p-6 rounded-xl space-y-4 border border-gray-100">
+    <h3 className="font-bold text-xl text-gray-900 border-b pb-2 mb-3">{title}</h3>
     {children}
   </div>
 );
@@ -17,13 +17,13 @@ const Etapa6Resumo = ({
   extras,
 }) => {
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
 
       {/* LOCAL DO EVENTO */}
       <Section title="Local do Evento">
-        <p><strong>Endereço:</strong> {localShow.endereco}</p>
-        <p><strong>Cidade:</strong> {localShow.cidade}</p>
-        <p><strong>UF:</strong> {localShow.uf}</p>
+        <p className="text-gray-700"><strong>Endereço:</strong> {localShow.endereco}</p>
+        <p className="text-gray-700"><strong>Cidade:</strong> {localShow.cidade}</p>
+        <p className="text-gray-700"><strong>UF:</strong> {localShow.uf}</p>
 
         {localShow.aeroportoProximo && (
           <p>
@@ -35,7 +35,7 @@ const Etapa6Resumo = ({
         {localShow.restaurantesProximos && localShow.restaurantesProximos.length > 0 && (
           <div className="mt-3">
             <strong>Restaurantes próximos:</strong>
-            <ul className="list-disc ml-6 text-sm">
+            <ul className="list-disc ml-6 text-sm text-gray-700">
               {localShow.restaurantesProximos.map((r, i) => (
                 <li key={i}>{r.nome} — {r.distanciaKm} km</li>
               ))}
@@ -47,9 +47,9 @@ const Etapa6Resumo = ({
       {/* FUNÇÕES & EQUIPE */}
       <Section title="Funções e Equipe">
         {selectedRoles.length === 0 ? (
-          <p className="text-gray-500">Nenhuma função selecionada.</p>
+          <p className="text-gray-500 italic">Nenhuma função selecionada.</p>
         ) : (
-          <ul className="list-disc ml-6 text-sm">
+          <ul className="list-disc ml-6 text-sm text-gray-700">
             {selectedRoles.map((r, i) => (
               <li key={i}>{r.nome}: {r.pessoa?.nome || "Sem pessoa atribuída"}</li>
             ))}
@@ -60,19 +60,19 @@ const Etapa6Resumo = ({
       {/* HOSPEDAGEM */}
       <Section title="Hotéis">
         {hotels.length === 0 ? (
-          <p className="text-gray-500">Nenhum hotel adicionado.</p>
+          <p className="text-gray-500 italic">Nenhum hotel adicionado.</p>
         ) : (
           hotels.map((h) => (
-            <div key={h.id} className="border p-3 rounded mb-3">
-              <p><strong>{h.nome}</strong></p>
+            <div key={h.id} className="border border-gray-200 bg-gray-50 p-4 rounded-lg mb-3 text-sm space-y-1">
+              <p className="font-semibold text-gray-800">{h.nome}</p>
               <p>{h.endereco}</p>
-              <p>Check-in: {h.checkin}</p>
-              <p>Check-out: {h.checkout}</p>
-              <p>Aeroporto: {h.distanciaAeroporto} km</p>
-              <p>Palco: {h.distanciaPalco} km</p>
+              <p className="text-gray-700">Check-in: {h.checkin}</p>
+              <p className="text-gray-700">Check-out: {h.checkout}</p>
+              <p className="text-gray-700">Aeroporto: {h.distanciaAeroporto} km</p>
+              <p className="text-gray-700">Palco: {h.distanciaPalco} km</p>
 
               {h.hospedes?.length > 0 && (
-                <p><strong>Hóspedes:</strong> {h.hospedes.join(", ")}</p>
+                <p className="text-sm mt-2 text-gray-700"><strong>Hóspedes:</strong> {h.hospedes.join(", ")}</p>
               )}
             </div>
           ))
@@ -82,15 +82,15 @@ const Etapa6Resumo = ({
       {/* VOOS */}
       <Section title="Voos">
         {flights.length === 0 ? (
-          <p className="text-gray-500">Nenhum voo adicionado.</p>
+          <p className="text-gray-500 italic">Nenhum voo adicionado.</p>
         ) : (
           flights.map((f) => (
-            <div key={f.id} className="border p-3 rounded mb-3">
-              <p><strong>{f.cia}</strong> — {f.numero}</p>
-              <p>{f.origem} → {f.destino}</p>
-              <p>Saída: {f.saida}</p>
-              <p>Chegada: {f.chegada}</p>
-              <p>Passageiros: {f.passageiros.join(", ")}</p>
+            <div key={f.id} className="border border-gray-200 bg-gray-50 p-4 rounded-lg mb-3 text-sm space-y-1">
+              <p className="font-semibold text-gray-800">{f.cia} — {f.numero}</p>
+              <p className="text-gray-700">{f.origem} → {f.destino}</p>
+              <p className="text-gray-700">Saída: {f.saida}</p>
+              <p className="text-gray-700">Chegada: {f.chegada}</p>
+              <p className="text-gray-700">Passageiros: {f.passageiros.join(", ")}</p>
             </div>
           ))
         )}
@@ -99,16 +99,16 @@ const Etapa6Resumo = ({
       {/* TRANSPORTES */}
       <Section title="Transportes">
         {transports.length === 0 ? (
-          <p className="text-gray-500">Nenhum transporte adicionado.</p>
+          <p className="text-gray-500 italic">Nenhum transporte adicionado.</p>
         ) : (
           transports.map((t) => (
-            <div key={t.id} className="border p-3 rounded mb-3">
-              <p><strong>{t.tipo}</strong></p>
-              <p>Saída: {t.saida}</p>
-              <p>Chegada: {t.chegada}</p>
-              <p>Responsável: {t.responsavel}</p>
-              <p>Passageiros: {t.passageiros.join(", ")}</p>
-              {t.observacao && <p><strong>Obs:</strong> {t.observacao}</p>}
+            <div key={t.id} className="border border-gray-200 bg-gray-50 p-4 rounded-lg mb-3 text-sm space-y-1">
+              <p className="font-semibold text-gray-800">{t.tipo}</p>
+              <p className="text-gray-700">Saída: {t.saida}</p>
+              <p className="text-gray-700">Chegada: {t.chegada}</p>
+              <p className="text-gray-700">Responsável: {t.responsavel}</p>
+              <p className="text-gray-700">Passageiros: {t.passageiros.join(", ")}</p>
+              {t.observacao && <p className="text-gray-700"><strong>Obs:</strong> {t.observacao}</p>}
             </div>
           ))
         )}
@@ -117,9 +117,9 @@ const Etapa6Resumo = ({
       {/* AGENDA */}
       <Section title="Agenda do Dia">
         {agenda.length === 0 ? (
-          <p className="text-gray-500">Nenhum item na agenda.</p>
+          <p className="text-gray-500 italic">Nenhum item na agenda.</p>
         ) : (
-          <ul className="list-disc ml-6 text-sm">
+          <ul className="list-disc ml-6 text-sm text-gray-700">
             {agenda.map((a, i) => (
               <li key={i}>
                 <strong>{a.hora}</strong>: {a.titulo} — {a.descricao}
@@ -134,7 +134,7 @@ const Etapa6Resumo = ({
         {Object.keys(extras).length === 0 ? (
           <p className="text-gray-500">Nenhuma informação extra adicionada.</p>
         ) : (
-          <pre className="text-sm bg-gray-100 p-3 rounded">
+          <pre className="text-sm bg-gray-100 p-4 rounded-lg border border-gray-200">
             {JSON.stringify(extras, null, 2)}
           </pre>
         )}

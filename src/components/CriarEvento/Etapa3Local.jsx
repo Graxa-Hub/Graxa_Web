@@ -51,16 +51,16 @@ const Etapa3Local = ({ localShow, setLocalShow }) => {
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Local do Evento</h2>
+    <div className="space-y-8">
+      <h2 className="text-xl font-bold text-gray-800">Local do Evento</h2>
 
-      <div className="bg-white shadow p-6 rounded-lg space-y-4">
+      <div className="bg-white shadow-lg p-6 rounded-xl space-y-4 border border-gray-100">
 
         {/* ENDEREÇO */}
         <div>
-          <label className="text-sm">CEP ou Endereço Completo</label>
+          <label className="text-sm font-medium text-gray-700">CEP ou Endereço Completo</label>
           <input
-            className="w-full mt-1 p-2 border rounded"
+            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="Ex: 09320770 ou Av. Paulista, São Paulo"
             value={localShow.endereco || ""}
             onChange={(e) =>
@@ -76,25 +76,25 @@ const Etapa3Local = ({ localShow, setLocalShow }) => {
         <button
           onClick={handleBuscarLocal}
           disabled={loading}
-          className="px-4 py-2 bg-green-600 text-white rounded-lg"
+          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
         >
           {loading ? "Buscando..." : "Confirmar Local"}
         </button>
 
         {/* RESULTADOS */}
         {localShow.coordsLocal && (
-          <div className="bg-gray-50 p-4 rounded-lg mt-6">
-            <h3 className="font-semibold mb-3">Informações encontradas</h3>
+          <div className="bg-gray-50 p-4 rounded-xl mt-6 border border-gray-200">
+            <h3 className="font-bold mb-3 text-gray-700">Informações encontradas</h3>
 
-            <p><strong>Cidade:</strong> {localShow.cidade}</p>
-            <p><strong>UF:</strong> {localShow.uf}</p>
+            <p className="text-gray-600"><strong>Cidade:</strong> {localShow.cidade}</p>
+            <p className="text-gray-600"><strong>UF:</strong> {localShow.uf}</p>
 
-            <p className="mt-4 font-semibold">Aeroporto mais próximo:</p>
-            <p>{localShow.aeroportoProximo?.nome}</p>
-            <p>{localShow.aeroportoProximo?.distanciaKm} km</p>
+            <p className="mt-4 font-bold text-gray-700">Aeroporto mais próximo:</p>
+            <p className="text-gray-600">{localShow.aeroportoProximo?.nome}</p>
+            <p className="text-gray-600">{localShow.aeroportoProximo?.distanciaKm} km</p>
 
-            <p className="mt-4 font-semibold">Restaurantes próximos:</p>
-            <ul className="list-disc ml-6 text-sm">
+            <p className="mt-4 font-bold text-gray-700">Restaurantes próximos:</p>
+            <ul className="list-disc ml-6 text-sm text-gray-600">
               {localShow.restaurantesProximos?.map((r, i) => (
                 <li key={i}>
                   {r.nome} — {r.distanciaKm} km

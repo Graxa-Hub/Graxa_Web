@@ -20,7 +20,7 @@ const TransporteCard = ({
   };
 
   return (
-    <div className="relative bg-white rounded-lg shadow p-6 space-y-5">
+    <div className="relative bg-white rounded-xl shadow-lg p-6 space-y-5 border border-gray-100">
 
       {/* BOTÃO REMOVER */}
       <button
@@ -30,13 +30,13 @@ const TransporteCard = ({
         ×
       </button>
 
-      <h3 className="font-semibold text-gray-900 text-lg">
+      <h3 className="font-bold text-gray-900 text-xl">
         Transporte
       </h3>
 
       {/* TIPO */}
       <select
-        className="w-full p-2 border rounded"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         value={transporte.tipo}
         onChange={(e) => updateField("tipo", e.target.value)}
       >
@@ -49,31 +49,31 @@ const TransporteCard = ({
 
       {/* INFORMAÇÕES */}
       <input
-        className="w-full p-2 border rounded"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         placeholder="Responsável"
         value={transporte.responsavel}
         onChange={(e) => updateField("responsavel", e.target.value)}
       />
 
-      <label className="text-sm">Horário de Saída</label>
+      <label className="text-sm font-medium text-gray-700">Horário de Saída</label>
       <input
         type="datetime-local"
-        className="w-full p-2 border rounded"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         value={transporte.saida}
         onChange={(e) => updateField("saida", e.target.value)}
       />
 
-      <label className="text-sm">Horário de Chegada</label>
+      <label className="text-sm font-medium text-gray-700">Horário de Chegada</label>
       <input
         type="datetime-local"
-        className="w-full p-2 border rounded"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         value={transporte.chegada}
         onChange={(e) => updateField("chegada", e.target.value)}
       />
 
       {/* PASSAGEIROS */}
       <div>
-        <label className="text-sm block mb-2">Passageiros</label>
+        <label className="text-sm font-medium text-gray-700 block mb-2">Passageiros</label>
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
@@ -83,8 +83,8 @@ const TransporteCard = ({
               <button
                 key={c.id}
                 onClick={() => togglePassageiro(c.id)}
-                className={`w-full flex justify-between p-2 border rounded ${
-                  selected ? "bg-purple-100 border-purple-500" : "bg-gray-50"
+                className={`w-full flex justify-between p-3 border rounded-lg transition-colors ${
+                  selected ? "bg-purple-50 border-purple-400 hover:bg-purple-100" : "bg-gray-50 border-gray-200 hover:bg-gray-100"
                 }`}
               >
                 <span>{c.nome}</span>
@@ -99,7 +99,7 @@ const TransporteCard = ({
 
       {/* OBSERVAÇÃO */}
       <textarea
-        className="w-full p-2 border rounded"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         rows="3"
         placeholder="Observações"
         value={transporte.observacao}

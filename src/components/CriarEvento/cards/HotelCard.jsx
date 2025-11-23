@@ -85,7 +85,7 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
   };
 
   return (
-    <div className="relative bg-white rounded-lg shadow p-6 space-y-5">
+    <div className="relative bg-white rounded-xl shadow-lg p-6 space-y-5 border border-gray-100">
 
       {/* BOTÃO REMOVER */}
       <button
@@ -95,11 +95,11 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
         ×
       </button>
 
-      <h3 className="font-semibold text-gray-900 text-lg">Hotel</h3>
+      <h3 className="font-bold text-gray-900 text-xl">Hotel</h3>
 
       {/* NOME DO HOTEL */}
       <input
-        className="w-full p-2 border rounded"
+        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         placeholder="Nome do hotel"
         value={hotel.nome}
         onChange={(e) => updateField("nome", e.target.value)}
@@ -108,7 +108,7 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
       {/* ENDEREÇO */}
       <div>
         <input
-          className="w-full p-2 border rounded"
+          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Endereço do hotel"
           value={hotel.endereco}
           onChange={(e) => updateField("endereco", e.target.value)}
@@ -116,7 +116,7 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
 
         <button
           onClick={handleBuscarEnderecoHotel}
-          className="mt-2 px-3 py-1 bg-blue-600 text-white rounded text-sm"
+          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors font-medium"
           disabled={loading}
         >
           {loading ? "Buscando..." : "Confirmar Endereço"}
@@ -128,20 +128,20 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
       {/* CHECKIN/CHECKOUT */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm">Check-in</label>
+          <label className="text-sm font-medium text-gray-700">Check-in</label>
           <input
             type="datetime-local"
-            className="w-full mt-1 p-2 border rounded"
+            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={hotel.checkin}
             onChange={(e) => updateField("checkin", e.target.value)}
           />
         </div>
 
         <div>
-          <label className="text-sm">Check-out</label>
+          <label className="text-sm font-medium text-gray-700">Check-out</label>
           <input
             type="datetime-local"
-            className="w-full mt-1 p-2 border rounded"
+            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             value={hotel.checkout}
             onChange={(e) => updateField("checkout", e.target.value)}
           />
@@ -150,20 +150,20 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
 
       {/* DISTÂNCIAS AUTOMÁTICAS */}
       {hotel.distanciaPalcoKm && (
-        <p className="text-gray-700">
+        <p className="text-gray-600">
           🎤 <strong>{hotel.distanciaPalcoKm} km</strong> do local do show
         </p>
       )}
 
       {hotel.distanciaAeroportoKm && (
-        <p className="text-gray-700">
+        <p className="text-gray-600">
           ✈️ <strong>{hotel.distanciaAeroportoKm} km</strong> do aeroporto
         </p>
       )}
 
       {/* HÓSPEDES */}
       <div>
-        <label className="text-sm block mb-2">Hóspedes</label>
+        <label className="text-sm font-medium text-gray-700 block mb-2">Hóspedes</label>
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
@@ -173,8 +173,8 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
               <button
                 key={c.id}
                 onClick={() => toggleHospede(c.id)}
-                className={`w-full flex justify-between p-2 border rounded ${
-                  selected ? "bg-green-100 border-green-500" : "bg-gray-50"
+                className={`w-full flex justify-between p-3 border rounded-lg transition-colors ${
+                  selected ? "bg-green-50 border-green-400 hover:bg-green-100" : "bg-gray-50 border-gray-200 hover:bg-gray-100"
                 }`}
               >
                 <span>{c.nome}</span>

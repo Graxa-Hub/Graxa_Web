@@ -23,26 +23,26 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
   };
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold text-gray-800">Agenda do Evento</h2>
+    <div className="space-y-8">
+      <h2 className="text-xl font-bold text-gray-900">Agenda do Evento</h2>
 
       <button
         onClick={adicionarItem}
-        className="px-4 py-2 bg-green-600 text-white rounded-lg"
+        className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
       >
         Adicionar Item de Agenda
       </button>
 
-      <div className="space-y-4 mt-6">
+      <div className="space-y-4 mt-8">
         {agenda.map((item, index) => (
-          <div key={index} className="bg-white p-4 rounded-lg shadow space-y-4">
+          <div key={index} className="bg-white p-5 rounded-xl shadow-md space-y-4 border border-gray-100">
 
             {/* HORÁRIO */}
             <div>
-              <label className="text-sm font-medium">Horário</label>
+              <label className="text-sm font-medium text-gray-700">Horário</label>
               <input
                 type="time"
-                className="w-full p-2 border rounded mt-1"
+                className="w-full p-3 border border-gray-300 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={item.hora}
                 onChange={(e) => updateItem(index, "hora", e.target.value)}
               />
@@ -50,9 +50,9 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
 
             {/* TÍTULO */}
             <div>
-              <label className="text-sm font-medium">Título</label>
+              <label className="text-sm font-medium text-gray-700">Título</label>
               <input
-                className="w-full p-2 border rounded mt-1"
+                className="w-full p-3 border border-gray-300 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={item.titulo}
                 placeholder="Ex: Passagem de som"
                 onChange={(e) => updateItem(index, "titulo", e.target.value)}
@@ -61,9 +61,9 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
 
             {/* DESCRIÇÃO */}
             <div>
-              <label className="text-sm font-medium">Descrição</label>
+              <label className="text-sm font-medium text-gray-700">Descrição</label>
               <textarea
-                className="w-full p-2 border rounded mt-1"
+                className="w-full p-3 border border-gray-300 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 rows="2"
                 value={item.descricao}
                 onChange={(e) => updateItem(index, "descricao", e.target.value)}
@@ -72,7 +72,7 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
 
             <button
               onClick={() => removerItem(index)}
-              className="px-3 py-1 bg-red-500 text-white rounded text-sm"
+              className="px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors"
             >
               Remover
             </button>

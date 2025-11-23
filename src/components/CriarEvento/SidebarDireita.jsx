@@ -1,9 +1,9 @@
 import React from "react";
 
 const Card = ({ title, children }) => (
-  <div className="bg-white shadow rounded-lg p-4 mb-4">
-    <h3 className="text-sm font-semibold text-gray-700 mb-2">{title}</h3>
-    <div className="text-sm text-gray-600">{children}</div>
+  <div className="bg-white shadow-md rounded-xl p-4 mb-4 border border-gray-100">
+    <h3 className="text-base font-bold text-gray-800 border-b pb-1 mb-2">{title}</h3>
+    <div className="text-sm text-gray-700">{children}</div>
   </div>
 );
 
@@ -25,8 +25,8 @@ const SidebarDireita = ({
   const temExtras = !!(extras.obs || extras.contatos);
 
   return (
-    <aside className="w-80 bg-gray-50 border-l border-gray-200 p-5 overflow-y-auto">
-      <h2 className="text-lg font-semibold mb-4 text-gray-800">
+    <aside className="w-80 bg-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
+      <h2 className="text-xl font-bold mb-6 text-gray-900">
         Resumo Rápido
       </h2>
 
@@ -67,7 +67,7 @@ const SidebarDireita = ({
       {(temEquipe || Object.keys(assignments || {}).length > 0) && (
         <Card title="Equipe Selecionada">
           {selectedRoles.length === 0 && (
-            <p className="text-red-500">Nenhuma função selecionada</p>
+            <p className="text-red-500 italic">Nenhuma função selecionada</p>
           )}
 
           {selectedRoles.map((roleId) => {
@@ -77,7 +77,7 @@ const SidebarDireita = ({
 
             return (
               <p key={roleId} className="mb-1">
-                <strong>{labelFuncao}:</strong>{" "}
+                <strong className="text-gray-900">{labelFuncao}:</strong>{" "}
                 {pessoa ? pessoa.nome : "— falta escolher"}
               </p>
             );
@@ -89,8 +89,8 @@ const SidebarDireita = ({
       {temLogistica && (
         <Card title="Logística">
           {/* Hotéis */}
-          <p className="font-semibold mb-1">Hotéis</p>
-          {hotels.length === 0 && <p>Nenhum hotel cadastrado</p>}
+          <p className="font-bold mb-1 text-gray-800">Hotéis</p>
+          {hotels.length === 0 && <p className="text-gray-500 italic">Nenhum hotel cadastrado</p>}
           {hotels.map((h) => (
             <p key={h.id}>
               🏨 {h.nome || "Sem nome"}{" "}
@@ -101,8 +101,8 @@ const SidebarDireita = ({
           ))}
 
           {/* Voos */}
-          <p className="font-semibold mt-3 mb-1">Voos</p>
-          {flights.length === 0 && <p>Nenhum voo adicionado</p>}
+          <p className="font-bold mt-3 mb-1 text-gray-800">Voos</p>
+          {flights.length === 0 && <p className="text-gray-500 italic">Nenhum voo adicionado</p>}
           {flights.map((f) => (
             <p key={f.id}>
               ✈️ {f.origem || "Origem"} → {f.destino || "Destino"}
@@ -110,8 +110,8 @@ const SidebarDireita = ({
           ))}
 
           {/* Transportes */}
-          <p className="font-semibold mt-3 mb-1">Transportes</p>
-          {transports.length === 0 && <p>Nenhum transporte</p>}
+          <p className="font-bold mt-3 mb-1 text-gray-800">Transportes</p>
+          {transports.length === 0 && <p className="text-gray-500 italic">Nenhum transporte</p>}
           {transports.map((t) => (
             <p key={t.id}>
               🚐 {t.tipo || "Transporte"} — {t.saida || "Horário não definido"}
@@ -130,7 +130,7 @@ const SidebarDireita = ({
             </p>
           ))}
           {agenda.length > 3 && (
-            <p className="text-gray-500 mt-1">
+            <p className="text-gray-500 italic mt-1">
               + {agenda.length - 3} itens adicionais
             </p>
           )}
@@ -155,7 +155,7 @@ const SidebarDireita = ({
 
       {/* fallback caso nada tenha sido preenchido ainda */}
       {!temLocal && !temEquipe && !temLogistica && !temAgenda && !temExtras && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 italic">
           Comece preenchendo as etapas ao lado para ver o resumo aqui. ✨
         </p>
       )}
