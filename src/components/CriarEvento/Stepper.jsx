@@ -2,9 +2,9 @@ import React from "react";
 
 const Stepper = ({ etapaAtual, setEtapaAtual }) => {
   const steps = [
+    "Local do Evento",
     "Funções & Equipe",
     "Logística",
-    "Local do Evento",
     "Agenda",
     "Informações Extras"
   ];

@@ -10,7 +10,8 @@ const Etapa2Logistica = ({
   setHotels,
   setFlights,
   setTransports,
-  colaboradores
+  colaboradores,
+  localShow 
 }) => {
   return (
     <div className="space-y-10">
@@ -46,6 +47,7 @@ const Etapa2Logistica = ({
               key={hotel.id}
               hotel={hotel}
               colaboradores={colaboradores}
+              localShow={localShow}
               onChange={(updated) => {
                 const newList = [...hotels];
                 newList[index] = updated;

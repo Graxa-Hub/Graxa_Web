@@ -7,100 +7,86 @@ import { AgendaCard } from "../components/VisaoEvento/AgendaCard";
 import { ClimaCard } from "../components/VisaoEvento/ClimaCard";
 import { Header } from "../components/Dashboard/Header";
 import { DiaInfoCard } from "../components/VisaoEvento/DiaInfoCard";
-// import { Container } from "../components/Dashboard/Container";
 
-// ===== Página Principal =====
-export const VisaoEvento = () => {
-  const agenda = [
+export const VisaoEvento = ({ evento }) => {
+  // SE o evento vier do backend, você substitui isso.
+  const agenda = evento?.agenda ?? [
     {
-      time: "12:00 AM",
+      time: "12:00",
       title: "Transporte até o evento",
-      description:
-        "Van irá sair do Hotel às 12:00 com previsão de chegada às 12:45",
-      active: true,
+      description: "Van sai do hotel às 12:00. Chegada prevista 12:45.",
+      active: true
     },
     {
-      time: "12:45 AM",
+      time: "12:45",
       title: "Descarregar a Van",
-      description:
-        "Please add your content here. Keep it short and simple. And smile :)",
+      description: "Equipe técnica inicia a descarga."
     },
     {
-      time: "1:00 AM",
+      time: "13:00",
       title: "Montagem do palco",
-      description:
-        "Please add your content here. Keep it short and simple. And smile :)",
+      description: "Montagem completa com equipe técnica."
     },
     {
-      time: "1:30 AM",
+      time: "13:30",
       title: "Passagem de som",
-      description:
-        "Please add your content here. Keep it short and simple. And smile :)",
+      description: "Soundcheck geral com a banda."
     },
     {
-      time: "3:30 PM",
+      time: "15:30",
       title: "Descanso",
-      description:
-        "Please add your content here. Keep it short and simple. And smile :)",
+      description: "Equipe liberada até as 18h."
     },
     {
-      time: "6:00 PM",
-      title: "Entrar no palco",
-      description:
-        "Please add your content here. Keep it short and simple. And smile :)",
-    },
-    {
-      time: "6:00 PM",
-      title: "Entrar no palco",
-      description:
-        "Please add your content here. Keep it short and simple. And smile :)",
-    },
-    {
-      time: "6:00 PM",
-      title: "Entrar no palco",
-      description:
-        "Please add your content here. Keep it short and simple. And smile :)",
-    },
-    {
-      time: "6:00 PM",
-      title: "Entrar no palco",
-      description:
-        "Please add your content here. Keep it short and simple. And smile :)",
-    },
+      time: "18:00",
+      title: "Showtime",
+      description: "Entrada no palco."
+    }
   ];
 
   return (
     <Layout>
       <Sidebar />
+
       <div className="grid grid-rows-[auto_1fr] grid-cols-2 max-h-screen w-full overflow-hidden p-4 bg-green-100 gap-4 flex-1">
+        
+        {/* Header */}
         <div className="col-span-2">
           <div className="flex items-start gap-3">
             <Header
-              titulo="Boogarins"
-              turne="The Town 2025"
+              titulo={evento?.artista ?? "Boogarins"}
+              turne={evento?.turne ?? "The Town 2025"}
               circulo="bg-green-500"
             />
 
-            <DiaInfoCard info={"29-10-2025, São Paulo → São Paulo"} />
+            <DiaInfoCard info={evento?.dataInfo ?? "29-10-2025 — São Paulo → São Paulo"} />
           </div>
         </div>
 
+        {/* AGENDA */}
         <main className="flex flex-col min-h-0 w-full pr-2">
-          <div className="space-y-3 overflow-y-auto max-h-full pr-3 md:pr-4 pb-2">
+          <div className="space-y-3 overflow-y-auto max-h-full pr-3">
             {agenda.map((item, index) => (
               <AgendaCard key={index} {...item} />
             ))}
           </div>
         </main>
 
+        {/* MAP + INDICADORES */}
         <aside className="flex flex-col justify-between gap-5 pl-2 min-h-0">
-          <MapCard />
+          <MapCard 
+            lat={evento?.coords?.lat ?? -23.5} 
+            lon={evento?.coords?.lon ?? -46.6} 
+          />
+
           <div className="flex flex-row justify-between gap-4">
-            <Porcentagem percent={10} />
-            <ClimaCard />
+            <Porcentagem percent={evento?.progresso ?? 60} />
+            <ClimaCard cidade={evento?.cidade ?? "São Paulo"} />
           </div>
         </aside>
       </div>
     </Layout>
   );
 };
+
+export default VisaoEvento;
