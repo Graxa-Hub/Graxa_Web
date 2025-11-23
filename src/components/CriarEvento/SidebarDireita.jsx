@@ -8,33 +8,45 @@ const Card = ({ title, children }) => (
 );
 
 const SidebarDireita = ({
-  etapaAtual,
-  localShow,
-  selectedRoles,
-  assignments,
-  hotels,
-  flights,
-  transports,
-  agenda,
-  extras,
+  etapaAtual, // ainda recebo, se quiser usar depois pra highlight, mas não bloqueio mais nada por etapa
+  localShow = {},
+  selectedRoles = [],
+  assignments = {},
+  hotels = [],
+  flights = [],
+  transports = [],
+  agenda = [],
+  extras = {},
 }) => {
+  const temLocal = !!localShow.coordsLocal;
+  const temEquipe = selectedRoles.length > 0;
+  const temLogistica = hotels.length > 0 || flights.length > 0 || transports.length > 0;
+  const temAgenda = agenda.length > 0;
+  const temExtras = !!(extras.obs || extras.contatos);
+
   return (
     <aside className="w-80 bg-gray-50 border-l border-gray-200 p-5 overflow-y-auto">
       <h2 className="text-lg font-semibold mb-4 text-gray-800">
         Resumo Rápido
       </h2>
 
-      {/* ====================== ETAPA 1 — LOCAL DO EVENTO ====================== */}
-      {etapaAtual >= 1 && localShow && localShow.coordsLocal && (
+      {/* ========== LOCAL DO EVENTO (sempre que já tiver sido resolvido) ========== */}
+      {temLocal && (
         <Card title="Local do Evento">
-          <p><strong>Endereço:</strong> {localShow.endereco}</p>
-          <p><strong>Cidade/UF:</strong> {localShow.cidade} / {localShow.uf}</p>
+          <p>
+            <strong>Endereço:</strong> {localShow.endereco}
+          </p>
+          <p>
+            <strong>Cidade/UF:</strong> {localShow.cidade} / {localShow.uf}
+          </p>
 
           {localShow.aeroportoProximo && (
             <>
               <p className="mt-2 font-semibold">Aeroporto Próximo</p>
-              <p>{localShow.aeroportoProximo.nome}</p>
-              <p>{localShow.aeroportoProximo.distanciaKm} km</p>
+              <p>{localShow.aeroportoProximo.aeroporto?.nome}</p>
+              <p>
+                {localShow.aeroportoProximo.aeroporto?.distanciaKm} km da cidade
+              </p>
             </>
           )}
 
@@ -42,15 +54,17 @@ const SidebarDireita = ({
             <>
               <p className="mt-2 font-semibold">Restaurantes Próximos</p>
               {localShow.restaurantesProximos.map((r, i) => (
-                <p key={i}>{r.nome} — {r.distanciaKm} km</p>
+                <p key={i}>
+                  {r.nome} — {r.distanciaKm} km
+                </p>
               ))}
             </>
           )}
         </Card>
       )}
 
-      {/* ====================== ETAPA 2 — FUNÇÕES & EQUIPE ====================== */}
-      {etapaAtual >= 2 && (
+      {/* ========== FUNÇÕES & EQUIPE (mostra sempre que houver funções selecionadas) ========== */}
+      {(temEquipe || Object.keys(assignments || {}).length > 0) && (
         <Card title="Equipe Selecionada">
           {selectedRoles.length === 0 && (
             <p className="text-red-500">Nenhuma função selecionada</p>
@@ -58,9 +72,12 @@ const SidebarDireita = ({
 
           {selectedRoles.map((roleId) => {
             const pessoa = assignments[roleId];
+            // deixa o id mais legível: "tecnico_som" → "TECNICO SOM"
+            const labelFuncao = roleId.replace(/_/g, " ").toUpperCase();
+
             return (
               <p key={roleId} className="mb-1">
-                <strong>{roleId.replace("_", " ").toUpperCase()}:</strong>{" "}
+                <strong>{labelFuncao}:</strong>{" "}
                 {pessoa ? pessoa.nome : "— falta escolher"}
               </p>
             );
@@ -68,35 +85,49 @@ const SidebarDireita = ({
         </Card>
       )}
 
-      {/* ====================== ETAPA 3 — LOGÍSTICA ====================== */}
-      {etapaAtual >= 3 && (
+      {/* ========== LOGÍSTICA (hotéis, voos, transportes) ========== */}
+      {temLogistica && (
         <Card title="Logística">
+          {/* Hotéis */}
           <p className="font-semibold mb-1">Hotéis</p>
           {hotels.length === 0 && <p>Nenhum hotel cadastrado</p>}
           {hotels.map((h) => (
-            <p key={h.id}>🏨 {h.nome} — {h.distanciaPalcoKm} km do show</p>
+            <p key={h.id}>
+              🏨 {h.nome || "Sem nome"}{" "}
+              {h.distanciaPalcoKm
+                ? `— ${h.distanciaPalcoKm} km do show`
+                : ""}
+            </p>
           ))}
 
+          {/* Voos */}
           <p className="font-semibold mt-3 mb-1">Voos</p>
           {flights.length === 0 && <p>Nenhum voo adicionado</p>}
           {flights.map((f) => (
-            <p key={f.id}>✈️ {f.origem} → {f.destino}</p>
+            <p key={f.id}>
+              ✈️ {f.origem || "Origem"} → {f.destino || "Destino"}
+            </p>
           ))}
 
+          {/* Transportes */}
           <p className="font-semibold mt-3 mb-1">Transportes</p>
           {transports.length === 0 && <p>Nenhum transporte</p>}
           {transports.map((t) => (
-            <p key={t.id}>🚐 {t.tipo} — {t.saida}</p>
+            <p key={t.id}>
+              🚐 {t.tipo || "Transporte"} — {t.saida || "Horário não definido"}
+            </p>
           ))}
         </Card>
       )}
 
-      {/* ====================== ETAPA 4 — AGENDA ====================== */}
-      {etapaAtual >= 4 && (
+      {/* ========== AGENDA ========== */}
+      {temAgenda && (
         <Card title="Agenda">
           {agenda.length === 0 && <p>Nenhum item de agenda</p>}
           {agenda.slice(0, 3).map((a, i) => (
-            <p key={i}>🕒 {a.hora} — {a.titulo}</p>
+            <p key={i}>
+              🕒 {a.horario || a.hora || "—"} — {a.titulo || "Sem título"}
+            </p>
           ))}
           {agenda.length > 3 && (
             <p className="text-gray-500 mt-1">
@@ -106,15 +137,27 @@ const SidebarDireita = ({
         </Card>
       )}
 
-      {/* ====================== ETAPA 5 — EXTRAS ====================== */}
-      {etapaAtual >= 5 && (
+      {/* ========== EXTRAS ========== */}
+      {temExtras && (
         <Card title="Extras">
-          {extras?.observacoes ? (
-            <p>{extras.observacoes}</p>
-          ) : (
-            <p>Nenhuma observação</p>
+          {extras.obs && (
+            <p className="mb-2">
+              <strong>Observações:</strong> {extras.obs}
+            </p>
+          )}
+          {extras.contatos && (
+            <p>
+              <strong>Contatos Importantes:</strong> {extras.contatos}
+            </p>
           )}
         </Card>
+      )}
+
+      {/* fallback caso nada tenha sido preenchido ainda */}
+      {!temLocal && !temEquipe && !temLogistica && !temAgenda && !temExtras && (
+        <p className="text-sm text-gray-500">
+          Comece preenchendo as etapas ao lado para ver o resumo aqui. ✨
+        </p>
       )}
     </aside>
   );

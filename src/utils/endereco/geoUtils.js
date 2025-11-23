@@ -1,14 +1,7 @@
-// src/utils/endereco/geoUtils.js
-
-// 🔑 SEU TOKEN MAPBOX
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoiZ2FicmllbHNvdXNhLXNwdGVjaCIsImEiOiJjbWZ5N2ZzaGwwaHp2MmpwemFtczJib3YzIn0.opNfyOXGWBuKl1R4iJiSOQ";
-
-/**
- * Geocodificação: converte texto (CEP, endereço) em coordenadas reais do Mapbox
- */
+// COLOCAR NO .ENV  "pk.eyJ1IjoiZ2FicmllbHNvdXNhLXNwdGVjaCIsImEiOiJjbWZ5N2ZzaGwwaHp2MmpwemFtczJib3YzIn0.opNfyOXGWBuKl1R4iJiSOQ";
+const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 export async function getCoordinates(endereco) {
-  const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+  
 
   if (!endereco || endereco.trim().length < 3) {
     throw new Error("Endereço inválido.");
@@ -39,7 +32,7 @@ export async function getCoordinates(endereco) {
  * Reverse Geocoding: converte coordenadas → endereço amigável
  */
 export async function getEnderecoPorCoordenadas(lat, lon) {
-  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lon},${lat}.json?access_token=${MAPBOX_TOKEN}&limit=1`;
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lon},${lat}.json?access_token=${accessToken}&limit=1`;
 
   try {
     const res = await fetch(url);

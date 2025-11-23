@@ -1,27 +1,33 @@
 import React from "react";
 
-const FlightCard = ({ flight, colaboradores, onChange }) => {
+const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
   const updateField = (field, value) => {
     onChange({ ...flight, [field]: value });
   };
 
   const togglePassageiro = (id) => {
-    const jaTem = flight.passageiros.includes(id);
-    let novaLista;
-
-    if (jaTem) {
-      novaLista = flight.passageiros.filter((p) => p !== id);
-    } else {
-      novaLista = [...flight.passageiros, id];
-    }
+    const exists = flight.passageiros.includes(id);
+    const novaLista = exists
+      ? flight.passageiros.filter((h) => h !== id)
+      : [...flight.passageiros, id];
 
     updateField("passageiros", novaLista);
   };
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 space-y-4">
-      <h3 className="font-semibold text-gray-900">Informações do Voo</h3>
+    <div className="relative bg-white rounded-lg shadow p-6 space-y-5">
 
+      {/* BOTÃO REMOVER */}
+      <button
+        onClick={onRemove}
+        className="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl"
+      >
+        ×
+      </button>
+
+      <h3 className="font-semibold text-gray-900 text-lg">Voo</h3>
+
+      {/* CAMPOS */}
       <input
         className="w-full p-2 border rounded"
         placeholder="Companhia aérea"
@@ -54,26 +60,27 @@ const FlightCard = ({ flight, colaboradores, onChange }) => {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm">Horário de saída</label>
+          <label className="text-sm">Saída</label>
           <input
             type="datetime-local"
-            className="w-full p-2 border rounded"
+            className="w-full mt-1 p-2 border rounded"
             value={flight.saida}
             onChange={(e) => updateField("saida", e.target.value)}
           />
         </div>
 
         <div>
-          <label className="text-sm">Horário de chegada</label>
+          <label className="text-sm">Chegada</label>
           <input
             type="datetime-local"
-            className="w-full p-2 border rounded"
+            className="w-full mt-1 p-2 border rounded"
             value={flight.chegada}
             onChange={(e) => updateField("chegada", e.target.value)}
           />
         </div>
       </div>
 
+      {/* PASSAGEIROS */}
       <div>
         <label className="text-sm block mb-2">Passageiros</label>
 
@@ -86,11 +93,11 @@ const FlightCard = ({ flight, colaboradores, onChange }) => {
                 key={c.id}
                 onClick={() => togglePassageiro(c.id)}
                 className={`w-full flex justify-between p-2 border rounded ${
-                  selected ? "bg-green-100 border-green-500" : "bg-gray-50"
+                  selected ? "bg-blue-100 border-blue-500" : "bg-gray-50"
                 }`}
               >
                 <span>{c.nome}</span>
-                {selected && <span className="text-green-600 font-bold">✓</span>}
+                {selected && <span className="text-blue-600 font-bold">✓</span>}
               </button>
             );
           })}

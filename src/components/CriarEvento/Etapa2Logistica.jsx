@@ -11,8 +11,62 @@ const Etapa2Logistica = ({
   setFlights,
   setTransports,
   colaboradores,
-  localShow 
+  localShow
 }) => {
+
+  // === REMOVER ===
+  const removeHotel = (id) => setHotels(hotels.filter((h) => h.id !== id));
+  const removeFlight = (id) => setFlights(flights.filter((f) => f.id !== id));
+  const removeTransporte = (id) =>
+    setTransports(transports.filter((t) => t.id !== id));
+
+  // === ADICIONAR HOTEL (ajustado!) ===
+  const addHotel = () =>
+    setHotels([
+      ...hotels,
+      {
+        id: Date.now(),
+        nome: "",
+        endereco: "",
+        checkin: "",
+        checkout: "",
+        distanciaAeroportoKm: null, // 🔥 usado pelo HotelCard
+        distanciaPalcoKm: null,     // 🔥 usado pelo HotelCard
+        hospedes: []
+      }
+    ]);
+
+  // === ADICIONAR VOO ===
+  const addFlight = () =>
+    setFlights([
+      ...flights,
+      {
+        id: Date.now(),
+        cia: "",
+        numero: "",
+        origem: "",
+        destino: "",
+        saida: "",
+        chegada: "",
+        passageiros: []
+      }
+    ]);
+
+  // === ADICIONAR TRANSPORTE ===
+  const addTransporte = () =>
+    setTransports([
+      ...transports,
+      {
+        id: Date.now(),
+        tipo: "",
+        saida: "",
+        chegada: "",
+        responsavel: "",
+        passageiros: [],
+        observacao: ""
+      }
+    ]);
+
   return (
     <div className="space-y-10">
 
@@ -22,21 +76,7 @@ const Etapa2Logistica = ({
 
         <button
           className="px-4 py-2 bg-green-600 text-white rounded-lg"
-          onClick={() =>
-            setHotels([
-              ...hotels,
-              {
-                id: Date.now(),
-                nome: "",
-                endereco: "",
-                checkin: "",
-                checkout: "",
-                distanciaAeroporto: "",
-                distanciaPalco: "",
-                hospedes: []
-              }
-            ])
-          }
+          onClick={addHotel}
         >
           Adicionar Hotel
         </button>
@@ -48,6 +88,7 @@ const Etapa2Logistica = ({
               hotel={hotel}
               colaboradores={colaboradores}
               localShow={localShow}
+              onRemove={() => removeHotel(hotel.id)}
               onChange={(updated) => {
                 const newList = [...hotels];
                 newList[index] = updated;
@@ -64,21 +105,7 @@ const Etapa2Logistica = ({
 
         <button
           className="px-4 py-2 bg-green-600 text-white rounded-lg"
-          onClick={() =>
-            setFlights([
-              ...flights,
-              {
-                id: Date.now(),
-                cia: "",
-                numero: "",
-                origem: "",
-                destino: "",
-                saida: "",
-                chegada: "",
-                passageiros: []
-              }
-            ])
-          }
+          onClick={addFlight}
         >
           Adicionar Voo
         </button>
@@ -89,6 +116,7 @@ const Etapa2Logistica = ({
               key={flight.id}
               flight={flight}
               colaboradores={colaboradores}
+              onRemove={() => removeFlight(flight.id)}
               onChange={(updated) => {
                 const newList = [...flights];
                 newList[index] = updated;
@@ -105,20 +133,7 @@ const Etapa2Logistica = ({
 
         <button
           className="px-4 py-2 bg-green-600 text-white rounded-lg"
-          onClick={() =>
-            setTransports([
-              ...transports,
-              {
-                id: Date.now(),
-                tipo: "",
-                saida: "",
-                chegada: "",
-                responsavel: "",
-                passageiros: [],
-                observacao: ""
-              }
-            ])
-          }
+          onClick={addTransporte}
         >
           Adicionar Transporte
         </button>
@@ -129,6 +144,7 @@ const Etapa2Logistica = ({
               key={t.id}
               transporte={t}
               colaboradores={colaboradores}
+              onRemove={() => removeTransporte(t.id)}
               onChange={(updated) => {
                 const newList = [...transports];
                 newList[index] = updated;

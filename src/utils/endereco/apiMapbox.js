@@ -1,8 +1,7 @@
-// src/utils/endereco/apiMapbox.js
-
-const MAPBOX_TOKEN = "pk.eyJ1IjoiZ2FicmllbHNvdXNhLXNwdGVjaCIsImEiOiJjbWZ5N2ZzaGwwaHp2MmpwemFtczJib3YzIn0.opNfyOXGWBuKl1R4iJiSOQ";
-
+// COLOCAR NO .ENV  "pk.eyJ1IjoiZ2FicmllbHNvdXNhLXNwdGVjaCIsImEiOiJjbWZ5N2ZzaGwwaHp2MmpwemFtczJib3YzIn0.opNfyOXGWBuKl1R4iJiSOQ";
+const accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 export async function buscarEnderecoLivre(endereco) {
+  
   const texto =
     typeof endereco === "string"
       ? endereco.trim()
@@ -15,12 +14,11 @@ export async function buscarEnderecoLivre(endereco) {
     throw new Error("Endereço muito curto.");
   }
 
-  // Força Mapbox a entender que é Brasil
   const query = `${texto}, Brasil`;
 
   const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
     query
-  )}.json?access_token=${MAPBOX_TOKEN}&limit=1&language=pt`;
+  )}.json?access_token=${accessToken}&limit=1&language=pt`;
 
   const response = await fetch(url);
   const data = await response.json();
