@@ -4,20 +4,8 @@ import { Calendar, Spotlight, MicVocal, Users, Search } from "lucide-react";
 const mainNav = [
   { id: 1, to: "/calendario", label: "Calendário", icon: Calendar },
   { id: 2, to: "/artista", label: "Bandas", icon: MicVocal },
-  { id: 3, to: "/turne", label: "Turne", icon: Spotlight },
-  {
-    id: 4,
-    to: "/adicionando-usuario",
-    label: "Users",
-    icon: Users,
-  },
-  {
-    id: 5,
-    to: "/consultar-local",
-    label: "Consultar",
-    icon: Search,
-  },
-];
+  { id: 3, to: "/turne", label: "Turnes", icon: Spotlight },
+  { id: 4, to: "/adicionando-usuario", label: "Users",icon: Users,}];
 
 export const UpperButton = () => {
   return (
