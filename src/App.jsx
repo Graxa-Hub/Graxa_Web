@@ -13,6 +13,7 @@ import { VisaoEvento } from "./pages/VisaoEvento";
 import { Calendario } from "./pages/Calendario";
 import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
+import { CriarLogistica } from "./pages/CriarLogistica"
 
 function App() {
   const [count, setCount] = useState(0);
@@ -33,6 +34,7 @@ function App() {
         <Route path="/artista" element={<ArtistaApp />} />
         <Route path="/visao-evento" element={<VisaoEvento />} />
         <Route path="/criar-evento" element={<CriarEvento />} />
+        <Route path="/criar-logistica" element={<CriarLogistica />} />
         {/* <Route path="configuracao" element={<Configuracao/>}/> */}
       </Route>
       {/* Rota não encontrada - redireciona para login */}
