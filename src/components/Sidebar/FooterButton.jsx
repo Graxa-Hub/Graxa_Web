@@ -1,5 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { Settings, LogOut } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+
 
 const footerNav = [
   {
@@ -16,28 +18,40 @@ const footerNav = [
   },
 ];
 
-const handleLogout = () => {
-  logout();
-  window.location.href = "/login";
-};
-
 export const FooterButton = () => {
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+    window.location.href = "/login";
+  };
+
   return (
     <ul className="flex flex-col">
       {/* Os botões que ficam em baixo */}
       {footerNav.map(({ to, label, icon: Icon, hoverClass }) => (
         <li key={to}>
-          <NavLink
-            to={to}
-            className={({ isActive }) =>
-              `${
-                isActive ? "bg-blue-300/50 font-semibold" : ""
-              } flex px-2 py-3 rounded gap-3 ${hoverClass}`
-            }
-          >
-            <Icon />
-            {label}
-          </NavLink>
+          {label === "Log Out" ? (
+            <button
+              onClick={handleLogout}
+              className={`flex px-2 py-3 rounded gap-3 ${hoverClass}`}
+              type="button"
+            >
+              <Icon />
+              {label}
+            </button>
+          ) : (
+            <NavLink
+              to={to}
+              className={({ isActive }) =>
+                `${
+                  isActive ? "bg-blue-300/50 font-semibold" : ""
+                } flex px-2 py-3 rounded gap-3 ${hoverClass}`
+              }
+            >
+              <Icon />
+              {label}
+            </NavLink>
+          )}
         </li>
       ))}
     </ul>

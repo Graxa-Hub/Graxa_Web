@@ -12,8 +12,10 @@ import { getTurnes, criarTurne, editarTurne, deletarTurne } from "../services/tu
 import { adaptTurnesFromBackend, adaptTurneFromBackend, dateToISO } from "../utils/turneAdapter";
 import { useBandas } from "../hooks/useBandas";
 import { imagemService } from "../services/imagemService";
+import { useParams } from "react-router-dom";
 
 export function Turne() {
+  const { bandaId } = useParams();
   const { bandas, loading: bandasLoading, listarBandas } = useBandas();
   const [selectedBand, setSelectedBand] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,6 +72,18 @@ export function Turne() {
     carregarImagem();
   }, [editingTurne, imagemCarregada]);
 
+  // Seleciona a banda pelo id da URL assim que as bandas são carregadas
+  useEffect(() => {
+    listarBandas();
+  }, [listarBandas]);
+
+  useEffect(() => {
+    if (bandaId && bandas.length > 0) {
+      const banda = bandas.find(b => String(b.id) === String(bandaId));
+      if (banda) setSelectedBand(banda);
+    }
+  }, [bandaId, bandas]);
+
   const fetchTurnes = async () => {
     try {
       setLoading(true);
@@ -91,36 +105,15 @@ export function Turne() {
 
   // Filtra turnês com base na banda selecionada
   const filteredTurnes = useMemo(() => {
-    console.log('🔍 Filtrando turnês...');
-    console.log('📊 Total de turnês:', turnesData.length);
-    console.log('🎵 Banda selecionada:', selectedBand);
-    
-    let filtered = turnesData;
-    
     if (selectedBand && selectedBand.id) {
-      console.log(`🎯 Filtrando por banda ID: ${selectedBand.id} (${selectedBand.nome})`);
-      
-      filtered = turnesData.filter(turne => {
-        const bandaMatch = turne.bandaId === selectedBand.id || 
-                          turne.banda?.id === selectedBand.id ||
-                          turne.raw?.bandaId === selectedBand.id ||
-                          turne.raw?.banda?.id === selectedBand.id;
-        
-        console.log(`   Turnê "${turne.name}": bandaId=${turne.bandaId}, banda.id=${turne.banda?.id}, match=${bandaMatch}`);
-        
-        return bandaMatch;
-      });
-      
-      console.log(`✅ Encontradas ${filtered.length} turnê(s) para a banda ${selectedBand.nome}`);
-    } else {
-      console.log('📋 Mostrando todas as turnês');
+      return turnesData.filter(turne =>
+        turne.bandaId === selectedBand.id ||
+        turne.banda?.id === selectedBand.id ||
+        turne.raw?.bandaId === selectedBand.id ||
+        turne.raw?.banda?.id === selectedBand.id
+      ).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     }
-    
-    // Ordenar alfabeticamente
-    const sorted = filtered.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
-    console.log('📝 Turnês finais ordenadas:', sorted.map(t => ({ name: t.name, bandaId: t.bandaId })));
-    
-    return sorted;
+    return turnesData.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
   }, [turnesData, selectedBand]);
 
   const filteredBandas = useMemo(() => {
@@ -131,9 +124,7 @@ export function Turne() {
   }, [bandas, bandaSearchText]);
 
   const handleBandSelect = (banda) => {
-    console.log('🎵 Selecionando banda:', banda);
     setSelectedBand(banda);
-    // Força reset da imagem quando banda muda
     setImagemAtual(null);
     setImagemCarregada(false);
   };
@@ -210,19 +201,20 @@ export function Turne() {
     setEditingTurne(turne);
     setImagemAtual(null);
     setImagemCarregada(false);
-    
+
     setFormData({
       nome: turne.name,
       descricao: turne.description,
       imagem: null,
       bandaId: turne.bandaId || turne.banda?.id || turne.raw?.bandaId || turne.raw?.banda?.id || null
     });
-    
+
     const [startDay, startMonth, startYear] = turne.startDate.split('/');
     const [endDay, endMonth, endYear] = turne.endDate.split('/');
-    
+
     setSelectedStartDate(new Date(startYear, startMonth - 1, startDay));
-    setSelectedEndDate(new Date(endYear, endMonth - 1, endYear));
+    setSelectedEndDate(new Date(endYear, endMonth - 1, endDay)); // <-- corrigido aqui
+
     setErrors({});
     setBandaSearchText("");
     setShowBandaDropdown(false);

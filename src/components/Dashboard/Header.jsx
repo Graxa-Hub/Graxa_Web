@@ -7,17 +7,43 @@ import { useTurnes } from "../../hooks/useTurnes";
 import { useBandas } from "../../hooks/useBandas";
 import { Notificacao } from "../Notificacao/Notificacao";
 
-export const Header = ({ circulo, onBandaChange, onTurneChange }) => {
+export const Header = ({
+  circulo,
+  onBandaChange,
+  onTurneChange,
+  bandaSelecionada: bandaSelecionadaProp,
+  turneSelecionada: turneSelecionadaProp,
+  bandas = [],
+  turnes = [],
+}) => {
   const [isOpen, setOpen] = useState(false);
   const [artistOpen, setArtistOpen] = useState(false);
   const [tourOpen, setTourOpen] = useState(false);
   const [activeOption, setActiveOption] = useState(null);
 
-  const { turnes, listarTurnes } = useTurnes();
-  const { bandas, listarBandas } = useBandas();
+  const { turnes: turnesApi, listarTurnes } = useTurnes();
+  const { bandas: bandasApi, listarBandas } = useBandas();
 
+  // Estado local
   const [bandaSelecionada, setBandaSelecionada] = useState(null);
   const [turneSelecionada, setTurneSelecionada] = useState(null);
+
+  // Sincroniza estado local com props recebidos
+  useEffect(() => {
+    if (bandaSelecionadaProp && bandaSelecionadaProp.id !== bandaSelecionada?.id) {
+      setBandaSelecionada(bandaSelecionadaProp);
+    }
+  }, [bandaSelecionadaProp]);
+
+  useEffect(() => {
+    if (turneSelecionadaProp && turneSelecionadaProp.id !== turneSelecionada?.id) {
+      setTurneSelecionada(turneSelecionadaProp);
+    }
+    // Se vier null, reseta também
+    if (!turneSelecionadaProp && turneSelecionada) {
+      setTurneSelecionada(null);
+    }
+  }, [turneSelecionadaProp]);
 
   useEffect(() => {
     listarBandas();
@@ -32,14 +58,14 @@ export const Header = ({ circulo, onBandaChange, onTurneChange }) => {
 
   // ✅ Filtra turnês da banda selecionada
   const turnesDaBanda = bandaSelecionada
-    ? turnes.filter((turne) => {
+    ? turnesApi.filter((turne) => {
         const turneIdBanda = turne.banda?.id || turne.bandaId;
         return turneIdBanda === bandaSelecionada.id;
       })
     : [];
 
   console.log("[Header] Banda selecionada:", bandaSelecionada?.nome);
-  console.log("[Header] Total de turnês:", turnes.length);
+  console.log("[Header] Total de turnês:", turnesApi.length);
   console.log("[Header] Turnês filtradas da banda:", turnesDaBanda.length);
 
   // ✅ Quando muda a banda, reseta a turnê para null (mostra todas)

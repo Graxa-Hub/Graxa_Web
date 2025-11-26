@@ -6,48 +6,62 @@ import { Container } from "../components/Dashboard/Container";
 import { TaskList } from "../components/Dashboard/TaskList";
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
+import { useSearchParams } from "react-router-dom";
+import { useBandas } from "../hooks/useBandas";
+import { useTurnes } from "../hooks/useTurnes"; // Supondo que exista esse hook
 
 export const Calendario = () => {
   const [mainCalendarApi, setMainCalendarApi] = useState(null);
   const [eventos, setEventos] = useState([]);
-
-  // ✅ Estados para controlar filtros
   const [bandaSelecionada, setBandaSelecionada] = useState(null);
   const [turneSelecionada, setTurneSelecionada] = useState(null);
 
-  console.log("[Calendario] Eventos no estado:", eventos);
-  console.log("[Calendario] Banda selecionada:", bandaSelecionada);
-  console.log("[Calendario] Turnê selecionada:", turneSelecionada);
+  // Hooks para buscar bandas e turnes
+  const { bandas, listarBandas } = useBandas();
+  const { turnes, listarTurnes } = useTurnes();
+
+  // Pegue os parâmetros da URL
+  const [searchParams] = useSearchParams();
+  const bandaIdParam = searchParams.get("bandaId");
+  const turneIdParam = searchParams.get("turneId");
+
+  // Carregue bandas e turnes ao montar
+  useEffect(() => {
+    listarBandas();
+    listarTurnes();
+  }, [listarBandas, listarTurnes]);
+
+  // Quando os parâmetros mudarem ou bandas/turnes carregarem, selecione os objetos completos
+  useEffect(() => {
+    if (bandaIdParam && bandas.length > 0) {
+      const banda = bandas.find(b => String(b.id) === String(bandaIdParam));
+      setBandaSelecionada(banda || null);
+    }
+    if (turneIdParam && turnes.length > 0) {
+      const turne = turnes.find(t => String(t.id) === String(turneIdParam));
+      setTurneSelecionada(turne || null);
+    }
+  }, [bandaIdParam, turneIdParam, bandas, turnes]);
 
   return (
     <Layout>
       <Sidebar />
       <main className="flex-1 flex flex-col p-5 bg-neutral-300 min-h-0">
-        {/* ✅ Header agora controla os filtros */}
         <Header
           circulo="bg-green-500"
-          onBandaChange={(banda) => {
-            console.log("[Calendario] Banda alterada:", banda);
-            setBandaSelecionada(banda);
-          }}
-          onTurneChange={(turne) => {
-            console.log("[Calendario] Turnê alterada:", turne);
-            setTurneSelecionada(turne);
-          }}
+          bandaSelecionada={bandaSelecionada}
+          turneSelecionada={turneSelecionada}
+          onBandaChange={setBandaSelecionada}
+          onTurneChange={setTurneSelecionada}
+          bandas={bandas}
+          turnes={turnes}
         />
 
         <Container>
           <div className="min-w-[72%] h-full">
-            {/* ✅ Passa filtros para o calendário */}
             <MainCalendar
               onCalendarApi={setMainCalendarApi}
-              onEventosChange={(novosEventos) => {
-                console.log(
-                  "[Calendario] onEventosChange chamado com:",
-                  novosEventos
-                );
-                setEventos(novosEventos);
-              }}
+              onEventosChange={setEventos}
               bandaId={bandaSelecionada?.id}
               turneId={turneSelecionada?.id}
             />

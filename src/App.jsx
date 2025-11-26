@@ -28,7 +28,7 @@ function App() {
       {/* Rotas protegidas */}
       <Route element={<ProtectedLayout />}>
         <Route path="/calendario" element={<Calendario />} />
-        <Route path="/turne" element={<Turne />} />
+        <Route path="/turne/:bandaId?" element={<Turne />} />
         <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
         <Route path="/artista" element={<ArtistaApp />} />
         <Route path="/visao-evento" element={<VisaoEvento />} />
@@ -36,7 +36,7 @@ function App() {
         {/* <Route path="configuracao" element={<Configuracao/>}/> */}
       </Route>
       {/* Rota não encontrada - redireciona para login */}
-      {/* <Route path="*" element={<Navigate to="/login" replace />} /> */}
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }

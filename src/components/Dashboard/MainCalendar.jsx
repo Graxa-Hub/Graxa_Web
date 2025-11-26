@@ -112,7 +112,8 @@ export default function MainCalendar({
       <EventoModal
         isOpen={createModalOpen}
         dataHoraInicial={dataHoraSelecionada}
-        turneId={turneId} // ✅ Passa turnê pré-selecionada
+        turneId={turneId} // ✅ Turnê pré-selecionada
+        bandaId={bandaId} // ✅ Banda pré-selecionada
         onClose={() => {
           setCreateModalOpen(false);
           setDataHoraSelecionada({ inicio: "", fim: "" });

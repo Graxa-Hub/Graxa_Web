@@ -20,7 +20,14 @@ import {
 } from "../utils/errorMapping";
 import { useAuth } from "../context/AuthContext";
 
-export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { inicio: "", fim: "" } }) {
+export function EventoModal({
+  isOpen,
+  onClose,
+  onFinish,
+  dataHoraInicial = { inicio: "", fim: "" },
+  bandaId,      // ✅ Adicione estes dois props
+  turneId,      // ✅
+}) {
   const [activeTab, setActiveTab] = useState("show");
   const [currentStep, setCurrentStep] = useState(1);
   const [fieldErrors, setFieldErrors] = useState({});
@@ -59,7 +66,7 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
     turneId: "",
     dataHoraInicio: "",
     dataHoraFim: "",
-    bandasIds: [],
+    bandaId: "", // apenas um id
   });
 
   const [viagemData, setViagemData] = useState({
@@ -98,6 +105,26 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
       setFieldErrors({});
     }
   }, [isOpen]);
+
+  // Inicializa showData e viagemData com bandaId e turneId quando abrir
+  useEffect(() => {
+    if (isOpen) {
+      setShowData((prev) => ({
+        ...prev,
+        bandaId: bandaId ? String(bandaId) : "",
+        turneId: turneId ? String(turneId) : "",
+        dataHoraInicio: dataHoraInicial.inicio || "",
+        dataHoraFim: dataHoraInicial.fim || "",
+      }));
+
+      setViagemData((prev) => ({
+        ...prev,
+        turneId: turneId ? String(turneId) : "",
+        dataInicio: dataHoraInicial.inicio || "",
+        dataFim: dataHoraInicial.fim || "",
+      }));
+    }
+  }, [isOpen, bandaId, turneId, dataHoraInicial]);
 
   const carregarEventos = async () => {
     try {
@@ -344,8 +371,8 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
 
         const showCriado = await criarShow(showPayload);
 
-        if (showData.bandasIds && showData.bandasIds.length > 0) {
-          await adicionarBandas(showCriado.id, showData.bandasIds);
+        if (showData.bandaId) {
+          await adicionarBandas(showCriado.id, [Number(showData.bandaId)]);
         }
 
         console.log("Show criado com sucesso:", showCriado);
@@ -544,140 +571,34 @@ export function EventoModal({ isOpen, onClose, onFinish, dataHoraInicial = { ini
 // ========== COMPONENTE COMBOBOX DE BANDAS ==========
 function BandaCombobox({
   bandas = [],
-  selectedIds = [],
+  selectedId = "",
   onChange,
   error,
   clearError,
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const normalize = (s) =>
-    (s || "")
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .toLowerCase();
-
-  const safeBandas = Array.isArray(bandas) ? bandas : [];
-  const term = normalize(searchTerm);
-
-  const filteredBandas = safeBandas.filter((banda) =>
-    normalize(banda?.nome).includes(term)
-  );
-
-  const selectedBandas = safeBandas.filter((banda) =>
-    selectedIds.includes(banda.id)
-  );
-
-  const handleToggle = (bandaId) => {
-    if (selectedIds.includes(bandaId)) {
-      onChange(selectedIds.filter((id) => id !== bandaId));
-    } else {
-      onChange([...selectedIds, bandaId]);
-    }
-    if (clearError) clearError("bandas");
-  };
-
-  const handleRemove = (bandaId) => {
-    onChange(selectedIds.filter((id) => id !== bandaId));
-    if (clearError) clearError("bandas");
-  };
-
   return (
-    <div className="relative">
+    <div className="mb-4">
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        Bandas do Show <span className="text-red-500">*</span>
+        Banda do Show <span className="text-red-500">*</span>
       </label>
-
-      {selectedBandas.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2">
-          {selectedBandas.map((banda) => (
-            <span
-              key={banda.id}
-              className="inline-flex items-center gap-1 px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm"
-            >
-              {banda.nome}
-              <button
-                type="button"
-                onClick={() => handleRemove(banda.id)}
-                className="hover:text-red-900"
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
-      )}
-
-      <div className="relative">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => setIsOpen(true)}
-          placeholder="Buscar bandas..."
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 pr-10 ${
-            error ? "border-red-500 bg-red-50" : "border-gray-300"
-          }`}
-        />
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 9l-7 7-7-7"
-            />
-          </svg>
-        </button>
-      </div>
-
+      <select
+        value={selectedId || ""}
+        onChange={(e) => {
+          onChange(e.target.value);
+          if (clearError) clearError("bandaId");
+        }}
+        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
+          error ? "border-red-500 bg-red-50" : "border-gray-300"
+        }`}
+      >
+        <option value="">Selecione uma banda</option>
+        {bandas.map((banda) => (
+          <option key={banda.id} value={String(banda.id)}>
+            {banda.nome}
+          </option>
+        ))}
+      </select>
       {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
-
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-            {filteredBandas.length > 0 ? (
-              filteredBandas.map((banda) => (
-                <label
-                  key={banda.id}
-                  className="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.includes(banda.id)}
-                    onChange={() => handleToggle(banda.id)}
-                    className="w-4 h-4 text-red-500 rounded focus:ring-red-500"
-                  />
-                  <span className="text-sm">{banda.nome}</span>
-                </label>
-              ))
-            ) : (
-              <div className="px-3 py-2 text-sm text-gray-500">
-                {searchTerm
-                  ? "Nenhuma banda encontrada"
-                  : "Nenhuma banda cadastrada"}
-              </div>
-            )}
-          </div>
-        </>
-      )}
     </div>
   );
 }
@@ -876,8 +797,8 @@ function ShowContent({
 
   // ✅ Filtra turnês pelas bandas selecionadas
   const turnesFiltradas = turnes.filter((turne) =>
-    data.bandasIds.includes(turne.banda?.id || turne.bandaId)
-  );
+  String(turne.banda?.id || turne.bandaId) === String(data.bandaId)
+);
 
   if (currentStep === 1) {
     return (
@@ -896,18 +817,42 @@ function ShowContent({
 
         <BandaCombobox
           bandas={bandas}
-          selectedIds={data.bandasIds}
-          onChange={(ids) => {
-            setData({ ...data, bandasIds: ids });
-            // ✅ Limpa turnê se a banda selecionada mudar
-            const turneAtualValida = turnesFiltradas.find(t => t.id === data.turneId);
-            if (!turneAtualValida) {
-              setData((prev) => ({ ...prev, turneId: "" }));
-            }
+          selectedId={data.bandaId}
+          onChange={(id) => {
+            setData({ ...data, bandaId: id, turneId: "" });
+            // Limpa turneId se banda mudar
           }}
-          error={fieldErrors.bandas}
+          error={fieldErrors.bandaId}
           clearError={clearFieldError}
         />
+
+        {/* Seleção de turnê */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Turnê (Opcional)
+          </label>
+          <select
+            value={data.turneId || ""}
+            onChange={(e) => setData({ ...data, turneId: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Selecione uma turnê</option>
+            {turnesFiltradas.length > 0 ? (
+              turnesFiltradas.map((turne) => (
+                <option key={turne.id} value={String(turne.id)}>
+                  {turne.nomeTurne || turne.nome}
+                </option>
+              ))
+            ) : (
+              <option value="" disabled>
+                Nenhuma turnê cadastrada para a banda selecionada
+              </option>
+            )}
+          </select>
+          <p className="text-xs text-gray-500 mt-1">
+            Para cadastrar uma nova turnê, acesse a página de Turnês
+          </p>
+        </div>
 
         {!showNovoLocal ? (
           <LocalCombobox
@@ -970,7 +915,15 @@ function ShowContent({
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
+        
+      </div>
+    );
+  }
+
+  // ========== Step 2 - Apenas descrição e seleção de turnê ==========
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
           <InputDate
             label="Data/Hora de Início"
             value={data.dataHoraInicio}
@@ -993,13 +946,6 @@ function ShowContent({
             error={fieldErrors.dataHoraFim}
           />
         </div>
-      </div>
-    );
-  }
-
-  // ========== Step 2 - Apenas descrição e seleção de turnê ==========
-  return (
-    <div className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Descrição do Show
@@ -1012,36 +958,6 @@ function ShowContent({
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
         />
       </div>
-
-      {/* ✅ Apenas seleção de turnê - SEM cadastro */}
-      {data.bandasIds.length > 0 && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Turnê (Opcional)
-          </label>
-          <select
-            value={data.turneId || ""}
-            onChange={(e) => setData({ ...data, turneId: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Selecione uma turnê</option>
-            {turnesFiltradas.length > 0 ? (
-              turnesFiltradas.map((turne) => (
-                <option key={turne.id} value={turne.id}>
-                  {turne.nomeTurne || turne.nome}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>
-                Nenhuma turnê cadastrada para as bandas selecionadas
-              </option>
-            )}
-          </select>
-          <p className="text-xs text-gray-500 mt-1">
-            Para cadastrar uma nova turnê, acesse a página de Turnês
-          </p>
-        </div>
-      )}
     </div>
   );
 }
