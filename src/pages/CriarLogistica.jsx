@@ -1,29 +1,18 @@
-// src/pages/CriarLogistica.jsx
 import React, { useState } from "react";
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
-
-import HotelCard from "../components/CriarEvento/cards/HotelCard";
 import FlightCard from "../components/CriarEvento/cards/FlightCard";
 import TransporteCard from "../components/CriarEvento/cards/TransporteCard";
-
-import SidebarDireita from "../components/CriarEvento/SidebarDireita";
+import SidebarDireita from "../components/CriarEvento/SidebarLogistica";
 
 export const CriarLogistica = () => {
  
   const [flights, setFlights] = useState([]);
   const [transports, setTransports] = useState([]);
 
-  // fake colaboradores para testar seleção por função
-  const [selectedRoles, setSelectedRoles] = useState([
-    "produtor_estrada",
-    "tecnico_luz",
-    "tecnico_som",
-    "roadie",
-  ]);
 
   const [assignments, setAssignments] = useState({});
-  const colaboradores = [
+  const colab = [
     { id: 101, nome: "Dinho Luz", tipoUsuario: "tecnico_luz" },
     { id: 102, nome: "Tata Som", tipoUsuario: "tecnico_som" },
     { id: 103, nome: "Joana Road", tipoUsuario: "roadie" },
@@ -99,7 +88,7 @@ export const CriarLogistica = () => {
                   <FlightCard
                     key={f.id}
                     flight={f}
-                    colaboradores={colabs}
+                    colaboradores={colab}
                     onChange={(u) => {
                       const l = [...flights];
                       l[i] = u;
@@ -131,7 +120,7 @@ export const CriarLogistica = () => {
                   <TransporteCard
                     key={t.id}
                     transporte={t}
-                    colaboradores={colaboradores}
+                    colaboradores={colab}
                     onChange={(u) => {
                       const l = [...transports];
                       l[i] = u;
@@ -156,7 +145,7 @@ export const CriarLogistica = () => {
             transports={transports}
             agenda={[]}
             extras={{}}
-            colaboradores={colaboradores}
+            colaboradores={colab}
             toggleAssignment={toggleAssignment}
           />
         </aside>
