@@ -9,16 +9,15 @@ import { useShows } from "../hooks/useShows";
 import { useViagens } from "../hooks/useViagens";
 import { showService } from "../services/showService";
 import { viagemService } from "../services/viagemService";
-import {
-  validateShow,
-  validateViagem,
-} from "../utils/validations";
+import { validateShow, validateViagem } from "../utils/validations";
 import {
   mapErrorsToFields,
   SHOW_ERROR_MAP,
   VIAGEM_ERROR_MAP,
 } from "../utils/errorMapping";
 import { useAuth } from "../context/AuthContext";
+
+const TOTAL_STEPS = 2; // Altere para o número de steps que quiser futuramente
 
 export function EventoModal({
   isOpen,
@@ -66,7 +65,7 @@ export function EventoModal({
     turneId: "",
     dataHoraInicio: "",
     dataHoraFim: "",
-    bandaId: "", // apenas um id
+    bandaId: "",
   });
 
   const [viagemData, setViagemData] = useState({
@@ -92,7 +91,7 @@ export function EventoModal({
         dataFim: dataHoraInicial.fim,
       }));
 
-      console.log("[EventoModal] Data/Hora definida:", dataHoraInicial);
+
     }
   }, [isOpen, dataHoraInicial]);
 
@@ -125,6 +124,45 @@ export function EventoModal({
       }));
     }
   }, [isOpen, bandaId, turneId, dataHoraInicial]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setShowData({
+        titulo: "",
+        descricao: "",
+        localId: "",
+        turneId: "",
+        dataHoraInicio: "",
+        dataHoraFim: "",
+        bandaId: "",
+      });
+      setViagemData({
+        nomeEvento: "",
+        descricao: "",
+        tipoViagem: "onibus",
+        dataInicio: "",
+        dataFim: "",
+        turneId: "",
+      });
+      setNovoLocal({
+        nome: "",
+        capacidade: "",
+        endereco: {
+          cep: "",
+          logradouro: "",
+          numero: "",
+          complemento: "",
+          bairro: "",
+          cidade: "",
+          estado: "",
+          pais: "Brasil",
+        },
+      });
+      setShowNovoLocal(false);
+      setCurrentStep(1);
+      setFieldErrors({});
+    }
+  }, [isOpen]);
 
   const carregarEventos = async () => {
     try {
@@ -241,6 +279,21 @@ export function EventoModal({
     setFieldErrors({});
   };
 
+  const errorMessages = {
+    titulo: "Por favor, preencha o título.",
+    bandaId: "Por favor, selecione a banda.",
+    local: "Por favor, escolha um local.",
+    nomeLocal: "Por favor, preencha o nome do local.",
+    capacidade: "Por favor, preencha a capacidade.",
+    logradouro: "Por favor, preencha o logradouro.",
+    numero: "Por favor, preencha o número.",
+    cidade: "Por favor, preencha a cidade.",
+    estado: "Por favor, preencha o estado.",
+    cep: "Por favor, preencha o CEP.",
+    dataHoraInicio: "Por favor, preencha a data e hora de início.",
+    dataHoraFim: "Por favor, preencha a data e hora de fim.",
+  };
+
   const validateAll = () => {
     setFieldErrors({});
     let errors = [];
@@ -250,17 +303,17 @@ export function EventoModal({
       errors = validateShow(showData, novoLocal, showNovoLocal);
       fieldMap = SHOW_ERROR_MAP;
 
+      // Conflito de horário (mantenha como está)
       if (
-        showData.bandasIds.length > 0 &&
+        showData.bandaId.length > 0 &&
         showData.dataHoraInicio &&
         showData.dataHoraFim
       ) {
         const conflito = verificarConflito(
-          showData.bandasIds,
+          showData.bandaId,
           showData.dataHoraInicio,
           showData.dataHoraFim
         );
-
         if (conflito) {
           setFieldErrors({
             general: (
@@ -268,7 +321,6 @@ export function EventoModal({
                 <p className="font-semibold text-red-700 mb-2">
                   ⚠️ Conflito de horário detectado!
                 </p>
-                
                 <div className="text-sm whitespace-pre-line bg-red-50 p-3 rounded border border-red-200 font-mono">
                   {conflito.detalhes}
                 </div>
@@ -328,35 +380,118 @@ export function EventoModal({
   };
 
   const handleFinish = async () => {
-    if (!validateAll()) {
-      const hasStep1Error = Object.keys(fieldErrors).some((key) =>
-        [
-          "nomeEvento",
-          "titulo",
-          "bandas",
-          "local",
-          "nomeLocal",
-          "capacidade",
-          "logradouro",
-          "numero",
-          "cidade",
-          "estado",
-          "cep",
-        ].includes(key)
-      );
-      if (hasStep1Error && currentStep === 2) {
-        setCurrentStep(1);
+    let errors = [];
+    let fieldMap = {};
+
+    if (activeTab === "show") {
+      errors = validateShow(showData, novoLocal, showNovoLocal); // <-- só isso!
+      fieldMap = SHOW_ERROR_MAP;
+
+      // Só verifica conflito se bandaId e datas estão preenchidos
+      if (
+        showData.bandaId.length > 0 &&
+        showData.dataHoraInicio &&
+        showData.dataHoraFim
+      ) {
+        const conflito = verificarConflito(
+          showData.bandaId,
+          showData.dataHoraInicio,
+          showData.dataHoraFim
+        );
+        if (conflito) {
+          setFieldErrors({
+            general: (
+              <div>
+                <p className="font-semibold text-red-700 mb-2">
+                  ⚠️ Conflito de horário detectado!
+                </p>
+                <div className="text-sm whitespace-pre-line bg-red-50 p-3 rounded border border-red-200 font-mono">
+                  {conflito.detalhes}
+                </div>
+                <p className="text-xs text-red-500 mt-2">
+                  Ajuste as datas ou escolha outras bandas para continuar.
+                </p>
+              </div>
+            ),
+          });
+          return false;
+        }
       }
+    } else if (activeTab === "viagem") {
+      errors = validateViagem(viagemData);
+      fieldMap = VIAGEM_ERROR_MAP;
+
+      if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
+        const turne = turnes.find((t) => t.id === Number(viagemData.turneId));
+        if (turne && turne.bandaId) {
+          const conflito = verificarConflito(
+            [turne.bandaId],
+            viagemData.dataInicio,
+            viagemData.dataFim
+          );
+
+          if (conflito) {
+            setFieldErrors({
+              general: (
+                <div>
+                  <p className="font-semibold text-red-700 mb-2">
+                    ⚠️ Conflito de horário detectado!
+                  </p>
+                  <p className="text-sm text-red-600 mb-2">
+                    A banda <strong>{conflito.bandas}</strong> já possui{" "}
+                    {conflito.quantidade} evento(s) agendado(s) que conflita(m)
+                    com este horário:
+                  </p>
+                  <div className="text-sm whitespace-pre-line bg-red-50 p-3 rounded border border-red-200 font-mono">
+                    {conflito.detalhes}
+                  </div>
+                  <p className="text-xs text-red-500 mt-2">
+                    Ajuste as datas ou escolha outra turnê para continuar.
+                  </p>
+                </div>
+              ),
+            });
+            return false;
+          }
+        }
+      }
+    }
+
+    const newFieldErrors = mapErrorsToFields(errors, fieldMap);
+    setFieldErrors(newFieldErrors);
+
+    // Validação dinâmica do step
+    const step1Fields = [
+      "nomeEvento",
+      "titulo",
+      "bandas",
+      "bandaId",
+      "local",
+      "nomeLocal",
+      "capacidade",
+      "logradouro",
+      "numero",
+      "cidade",
+      "estado",
+      "cep",
+    ];
+    const hasStep1Error = errors.some((key) => step1Fields.includes(key));
+    if (hasStep1Error && currentStep === TOTAL_STEPS) {
+      setCurrentStep(1);
       return;
     }
 
+    if (errors.length > 0) return;
+
     if (activeTab === "show") {
+
       try {
         let localIdFinal = showData.localId;
 
         if (showNovoLocal) {
           const localCriado = await criarLocal(novoLocal);
           localIdFinal = localCriado.id;
+          await listarLocais(); // Atualiza a lista para próximos cadastros
         }
 
         const showPayload = {
@@ -365,7 +500,7 @@ export function EventoModal({
           dataFim: showData.dataHoraFim,
           descricao: showData.descricao || "",
           turneId: showData.turneId || null,
-          localId: localIdFinal,
+          localId: localIdFinal, // Deve ser o id do local criado
           responsavelId: responsavelId,
         };
 
@@ -375,7 +510,6 @@ export function EventoModal({
           await adicionarBandas(showCriado.id, [Number(showData.bandaId)]);
         }
 
-        console.log("Show criado com sucesso:", showCriado);
         onFinish?.(showCriado);
         onClose();
       } catch (error) {
@@ -398,9 +532,9 @@ export function EventoModal({
           turneId: viagemData.turneId ? Number(viagemData.turneId) : null,
         };
 
-        console.log("Payload da viagem:", viagemPayload);
+
         const viagemCriada = await criarViagem(viagemPayload);
-        console.log("Viagem criada com sucesso:", viagemCriada);
+
         onFinish?.(viagemCriada);
         onClose();
       } catch (error) {
@@ -416,7 +550,7 @@ export function EventoModal({
   };
 
   const handleNext = () => {
-    if (currentStep < 2) {
+    if (currentStep < TOTAL_STEPS) {
       setCurrentStep(currentStep + 1);
       setFieldErrors({});
     } else {
@@ -455,6 +589,7 @@ export function EventoModal({
           setNovoLocal={setNovoLocal}
           fieldErrors={fieldErrors}
           clearFieldError={clearFieldError}
+          errorMessages={errorMessages} // <-- Passe aqui!
         />
       );
     } else {
@@ -558,7 +693,7 @@ export function EventoModal({
                 onClick={handleNext}
                 className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
               >
-                {currentStep === 2 ? "Finalizar" : "Próxima Etapa"}
+                {currentStep === TOTAL_STEPS ? "Finalizar" : "Próxima Etapa"}
               </button>
             </div>
           </div>
@@ -775,6 +910,7 @@ function ShowContent({
   setNovoLocal,
   fieldErrors = {},
   clearFieldError,
+  errorMessages = {},
 }) {
   const handleNovoLocalChange = (field, value) => {
     setNovoLocal((prev) => ({
@@ -812,19 +948,24 @@ function ShowContent({
           }}
           placeholder="Ex: Festival de Rock 2025"
           required
-          error={fieldErrors.titulo}
+          error={fieldErrors.titulo} // <-- borda vermelha se erro
         />
+        {fieldErrors.titulo && (
+          <p className="text-red-500 text-sm">{errorMessages.titulo}</p>
+        )}
 
         <BandaCombobox
           bandas={bandas}
           selectedId={data.bandaId}
           onChange={(id) => {
             setData({ ...data, bandaId: id, turneId: "" });
-            // Limpa turneId se banda mudar
           }}
-          error={fieldErrors.bandaId}
+          error={fieldErrors.bandaId} // <-- borda vermelha se erro
           clearError={clearFieldError}
         />
+        {fieldErrors.bandaId && (
+          <p className="text-red-500 text-sm">{fieldErrors.bandaId}</p>
+        )}
 
         {/* Seleção de turnê */}
         <div>
@@ -860,7 +1001,7 @@ function ShowContent({
             selectedId={data.localId}
             onChange={(id) => setData({ ...data, localId: id })}
             onNovoLocal={() => setShowNovoLocal(true)}
-            error={fieldErrors.local}
+            error={fieldErrors.local} // <-- borda vermelha se erro
             clearError={clearFieldError}
           />
         ) : (
@@ -884,8 +1025,11 @@ function ShowContent({
               onChange={(e) => handleNovoLocalChange("nome", e.target.value)}
               placeholder="Ex: Arena Graxa"
               required
-              error={fieldErrors.nomeLocal}
+              error={fieldErrors.nomeLocal} // <-- borda vermelha se erro
             />
+            {fieldErrors.nomeLocal && (
+              <p className="text-red-500 text-sm">{fieldErrors.nomeLocal}</p>
+            )}
 
             <Input
               label="Capacidade"
@@ -900,6 +1044,9 @@ function ShowContent({
               required
               error={fieldErrors.capacidade}
             />
+            {fieldErrors.capacidade && (
+              <p className="text-red-500 text-sm">{fieldErrors.capacidade}</p>
+            )}
 
             <EnderecoForm
               endereco={novoLocal.endereco}

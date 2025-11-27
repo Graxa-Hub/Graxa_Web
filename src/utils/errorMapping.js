@@ -14,20 +14,18 @@ export function mapErrorsToFields(errors, fieldMap) {
 }
 
 export const SHOW_ERROR_MAP = {
-  titulo: ['Título'],
-  bandas: ['banda'],
-  local: ['Local', 'local'],
-  logradouro: ['Logradouro'],
-  numero: ['Número'],
-  cidade: ['Cidade'],
-  estado: ['Estado'],
-  cep: ['CEP'],
-  dataHoraInicio: ['início'],
-  dataHoraFim: ['fim'],
-  nomeLocal: ['Nome do local'],
-  capacidade: ['Capacidade'],
-  nomeTurne: ['Nome da turnê'],
-  bandaTurne: ['Banda é obrigatória']
+  titulo: ["titulo", "título"],
+  bandaId: ["banda", "bandaId"],
+  local: ["local", "localId"],
+  nomeLocal: ["nomeLocal"],
+  capacidade: ["capacidade"],
+  logradouro: ["logradouro"],
+  numero: ["numero", "número"],
+  cidade: ["cidade"],
+  estado: ["estado"],
+  cep: ["cep"],
+  dataHoraInicio: ["dataHoraInicio", "início"],
+  dataHoraFim: ["dataHoraFim", "fim"]
 };
 
 export const VIAGEM_ERROR_MAP = {

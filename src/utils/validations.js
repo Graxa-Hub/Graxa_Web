@@ -125,47 +125,30 @@ function validateDateRange(dataInicio, dataFim, labelInicio = 'Data de início',
 export function validateShow(data, novoLocal, showNovoLocal) {
   const errors = [];
 
-  const tituloError = validateRequiredField(data.titulo, 'Título do show');
-  if (tituloError) errors.push(tituloError);
-
-  if (!data.bandasIds || data.bandasIds.length === 0) {
-    errors.push('Selecione pelo menos uma banda');
-  }
+  if (!data.titulo || !data.titulo.trim()) errors.push("titulo");
+  if (!data.bandaId) errors.push("bandaId");
 
   if (!showNovoLocal) {
-    if (!data.localId) {
-      errors.push('Local do show é obrigatório');
-    }
+    if (!data.localId) errors.push("local");
   } else {
-    const nomeLocalError = validateRequiredField(novoLocal.nome, 'Nome do local');
-    if (nomeLocalError) errors.push(nomeLocalError);
-
-    const capacidadeError = validateRequiredField(novoLocal.capacidade, 'Capacidade');
-    if (capacidadeError) errors.push(capacidadeError);
-
-    const cepError = validateRequiredField(novoLocal.endereco?.cep, 'CEP');
-    if (cepError) errors.push(cepError);
-
-    const logradouroError = validateRequiredField(novoLocal.endereco?.logradouro, 'Logradouro');
-    if (logradouroError) errors.push(logradouroError);
-
-    const numeroError = validateRequiredField(novoLocal.endereco?.numero, 'Número');
-    if (numeroError) errors.push(numeroError);
-
-    const cidadeError = validateRequiredField(novoLocal.endereco?.cidade, 'Cidade');
-    if (cidadeError) errors.push(cidadeError);
-
-    const estadoError = validateRequiredField(novoLocal.endereco?.estado, 'Estado');
-    if (estadoError) errors.push(estadoError);
+    if (!novoLocal.nome || !novoLocal.nome.trim()) errors.push("nomeLocal");
+    if (!novoLocal.capacidade) errors.push("capacidade");
+    if (!novoLocal.endereco?.cep || !novoLocal.endereco.cep.trim()) errors.push("cep");
+    if (!novoLocal.endereco?.logradouro || !novoLocal.endereco.logradouro.trim()) errors.push("logradouro");
+    if (!novoLocal.endereco?.numero || !novoLocal.endereco.numero.trim()) errors.push("numero");
+    if (!novoLocal.endereco?.cidade || !novoLocal.endereco.cidade.trim()) errors.push("cidade");
+    if (!novoLocal.endereco?.estado || !novoLocal.endereco.estado.trim()) errors.push("estado");
   }
 
-  const dateErrors = validateDateRange(
-    data.dataHoraInicio, 
-    data.dataHoraFim, 
-    'Data/hora de início', 
-    'Data/hora de fim'
-  );
-  errors.push(...dateErrors);
+  if (!data.dataHoraInicio) errors.push("dataHoraInicio");
+  if (!data.dataHoraFim) errors.push("dataHoraFim");
+  if (
+    data.dataHoraInicio &&
+    data.dataHoraFim &&
+    new Date(data.dataHoraFim) <= new Date(data.dataHoraInicio)
+  ) {
+    errors.push("dataHoraFim");
+  }
 
   return errors;
 }
@@ -173,22 +156,18 @@ export function validateShow(data, novoLocal, showNovoLocal) {
 export function validateViagem(data) {
   const errors = [];
 
-  const nomeEventoError = validateRequiredField(data.nomeEvento, 'Título da viagem');
-  if (nomeEventoError) errors.push(nomeEventoError);
-
-  // Removido validação de origem e destino pois não estão no DTO
-
-  if (!data.tipoViagem) {
-    errors.push('Tipo de transporte é obrigatório');
+  if (!data.nomeEvento || !data.nomeEvento.trim()) errors.push("nomeEvento");
+  if (!data.tipoViagem) errors.push("tipoViagem");
+  if (!data.dataInicio) errors.push("dataInicio");
+  if (!data.dataFim) errors.push("dataFim");
+  if (
+    data.dataInicio &&
+    data.dataFim &&
+    new Date(data.dataFim) <= new Date(data.dataInicio)
+  ) {
+    errors.push("dataFim");
   }
-
-  const dateErrors = validateDateRange(
-    data.dataInicio, 
-    data.dataFim, 
-    'Data/hora de partida', 
-    'Data/hora de chegada'
-  );
-  errors.push(...dateErrors);
+  if (!data.turneId) errors.push("turneId");
 
   return errors;
 }
