@@ -5,7 +5,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Cadastro } from "./pages/Cadastro";
 import { HomeRedirect } from "./components/HomeRedirect";
-import { ProtectedLayout } from "./components/ProtectedLayout";
+// import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
 import { ArtistaApp } from "./pages/ArtistaApp";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
@@ -14,6 +14,8 @@ import { Calendario } from "./pages/Calendario";
 import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
 import { CriarLogistica } from "./pages/CriarLogistica";
+import WeatherExample from "./components/WeatherExample";
+import RainForecastPage from "./pages/RainForecastPage";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -27,15 +29,19 @@ function App() {
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro" element={<Cadastro />} />
       {/* Rotas protegidas */}
-      <Route element={<ProtectedLayout />}>
-        <Route path="/calendario" element={<Calendario />} />
-        <Route path="/turne/:bandaId?" element={<Turne />} />
-        <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
-        <Route path="/artista" element={<ArtistaApp />} />
-        <Route path="/visao-evento" element={<VisaoEvento />} />
-        <Route path="/criar-evento" element={<CriarEvento />} />
-        <Route path="/criar-logistica" element={<CriarLogistica />} />
-      </Route>
+      {/* <Route element={<ProtectedLayout />}> */}
+      <Route path="/calendario" element={<Calendario />} />
+      <Route path="/turne/:bandaId?" element={<Turne />} />
+      <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
+      <Route path="/artista" element={<ArtistaApp />} />
+      <Route path="/visao-evento" element={<VisaoEvento />} />
+      <Route path="/criar-evento" element={<CriarEvento />} />
+      <Route path="/criar-logistica" element={<CriarLogistica />} />
+      {/* Rota de teste para API de Clima */}
+      <Route path="/teste-clima" element={<WeatherExample />} />
+      {/* Rota de teste para Previsão de Chuva */}
+      <Route path="/previsao-chuva" element={<RainForecastPage />} />
+      {/* </Route> */}
       {/* Rota não encontrada - redireciona para login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
