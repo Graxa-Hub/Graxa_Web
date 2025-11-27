@@ -13,7 +13,8 @@ import { VisaoEvento } from "./pages/VisaoEvento";
 import { Calendario } from "./pages/Calendario";
 import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
-import { CriarLogistica } from "./pages/CriarLogistica";
+import { CriarLogistica } from "./pages/CriarLogistica"
+import { ConfiguracaoUsuario} from "./pages/ConfiguracaoUser"
 
 function App() {
   const [count, setCount] = useState(0);
@@ -22,10 +23,14 @@ function App() {
     <Routes>
       {/* Rota raiz - redireciona baseado na autenticação */}
       <Route path="/" element={<HomeRedirect />} />
+
+
       {/* Rotas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro" element={<Cadastro />} />
+
+
       {/* Rotas protegidas */}
       <Route element={<ProtectedLayout />}>
         <Route path="/calendario" element={<Calendario />} />
