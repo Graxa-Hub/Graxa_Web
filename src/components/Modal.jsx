@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { X, ChevronLeft, ChevronRight } from 'lucide-react'
 
-export function Modal({ isOpen, onClose, title, children, totalSteps = 1, nextButtonText = "Próxima Etapa", showNavigation = true, onFinish }) {
+export function Modal({
+    isOpen,
+    onClose,
+    title,
+    children,
+    totalSteps = 1,
+    nextButtonText = "Próxima Etapa",
+    showNavigation = true,
+    showFooter = true, // ✅ nova prop
+    onFinish
+}) {
     const [currentStep, setCurrentStep] = useState(1)
 
     useEffect(() => {
@@ -105,7 +115,7 @@ export function Modal({ isOpen, onClose, title, children, totalSteps = 1, nextBu
                 </div>
 
                 {/* Footer com botão centrado */}
-                {showNavigation && (
+                {showNavigation && showFooter && (
                     <div className="flex justify-center items-center px-16 py-6 border-t border-gray-200">
                         <button
                             onClick={handleNext}

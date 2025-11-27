@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { MoreVertical, Edit, Trash2 } from 'lucide-react'
+import { MoreVertical, Edit, Trash2, Eye } from 'lucide-react'
 import { ButtonPage } from './ButtonPage'
 import { DropdownMenu } from './DropdownMenu'
 import { ConfirmModal } from './ConfirmModal'
+import { useNavigate } from "react-router-dom";
+import { VisualizarTurneModal } from "./VisualizarTurneModal";
 
 export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTurne}) {
   const [openDropdown, setOpenDropdown] = useState(null)
@@ -11,15 +13,16 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
     isOpen: false,
     turne: null
   })
+  const [turneVisualizar, setTurneVisualizar] = useState(null);
+  const navigate = useNavigate();
 
   const toggleDropdown = (turneId) => {
     setOpenDropdown(openDropdown === turneId ? null : turneId)
     setSelectedTurne(turneId)
   }
 
-  const handleTurneClick = (turneId) => {
-    setSelectedTurne(turneId)
-    setOpenDropdown(null)
+  const handleTurneClick = (turne) => {
+    navigate(`/calendario?bandaId=${turne.bandaId}&turneId=${turne.id}`);
   }
 
   const handleEdit = (turne) => {
@@ -41,6 +44,10 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
     setConfirmModal({ isOpen: false, turne: null })
   }
 
+  const handleVisualizarTurne = (turne) => {
+    setTurneVisualizar(turne);
+  }
+
   if (turnes.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-full text-center">
@@ -58,14 +65,36 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
         {turnes.map((turne) => {
           const isSelected = selectedTurne === turne.id
           const dropdownItems = [
-            { icon: Edit, label: "Editar turne", onClick: () => handleEdit(turne) },
-            { icon: Trash2, label: "Excluir turne", onClick: () => handleDeleteClick(turne) }
+            {
+              icon: Eye,
+              label: "Visualizar",
+              onClick: (e) => {
+                e.stopPropagation();
+                setTurneVisualizar(turne);
+              }
+            },
+            {
+              icon: Edit,
+              label: "Editar turne",
+              onClick: (e) => {
+                e.stopPropagation();
+                handleEdit(turne);
+              }
+            },
+            {
+              icon: Trash2,
+              label: "Excluir turne",
+              onClick: (e) => {
+                e.stopPropagation();
+                handleDeleteClick(turne);
+              }
+            }
           ]
 
           return (
             <div
               key={turne.id}
-              onClick={() => handleTurneClick(turne.id)}
+              onClick={() => handleTurneClick(turne)}
               className={`flex items-center gap-4 p-4 bg-white rounded-2xl shadow-2xl w-300 border cursor-pointer ${
                 isSelected ? 'border-red-500 border-2' : 'border-gray-200'
               } transition-colors hover:border-red-300`}
@@ -112,6 +141,13 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
         cancelText="Cancelar"
         type="danger"
       />
+
+      {turneVisualizar && (
+        <VisualizarTurneModal
+          turne={turneVisualizar}
+          onClose={() => setTurneVisualizar(null)}
+        />
+      )}
     </>
   )
 }
