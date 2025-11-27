@@ -129,7 +129,7 @@ export function RelatorioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white py-10">
+    <div className="min-h-screen bg-blue-100/30 py-10">
       {/* Botão para gerar PDF - não aparece no PDF */}
       <div className="fixed top-4 right-4 print:hidden z-50">
         <button
