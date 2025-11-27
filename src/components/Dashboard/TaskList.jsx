@@ -1,15 +1,14 @@
 import React from "react";
 
 export const TaskList = ({ eventos = [] }) => {
-  console.log("[TaskList] Eventos recebidos:", eventos);
-  console.log("[TaskList] Quantidade:", eventos.length);
+
 
   // Ordena eventos por data de início
   const eventosOrdenados = [...eventos].sort((a, b) => {
     return new Date(a.start) - new Date(b.start);
   });
 
-  console.log("[TaskList] Eventos ordenados:", eventosOrdenados);
+
 
   // Formata data e hora
   const formatarDataHora = (dataStr) => {

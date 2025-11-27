@@ -50,7 +50,6 @@ export const useLogin = () => {
       if (data.token && data.usuario) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('userId', data.usuario.id);
-        console.log(data.usuario.id)
         
         // Busca os dados completos do usuário após login
         await fetchUserData();

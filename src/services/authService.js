@@ -8,9 +8,9 @@ export const login = async (credentials) =>{
 }
 
 export const cadastro = async (userData) =>{
-    console.log(userData)
+  
     const response = await axios.post(`${API_URL}/auth/register`, userData);
-    console.log("Resposta do backend:", response.data);
+
     return response;
 }
 
@@ -33,7 +33,7 @@ export const getColaborador = async (userId) => {
 };
 
 export async function enviarCodigoRecuperacao(email) {
-    console.log("URL chamada:", `${API_URL}/credenciais/recuperar-senha`);
+
   try {
     const response = await axios.post(`${API_URL}/credenciais/recuperar-senha`, { email });
     return response.data;

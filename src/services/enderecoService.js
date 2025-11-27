@@ -27,7 +27,7 @@ export const enderecoService = {
   async listar() {
     try {
       const response = await api.get('/enderecos');
-      console.log('Response do backend - endereços:', response.data);
+
       return response.data;
     } catch (error) {
       console.error('Erro ao listar endereços:', error);

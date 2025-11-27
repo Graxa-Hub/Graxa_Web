@@ -10,7 +10,7 @@ export const artistaService = {
   // Criar novo artista
   async criarArtista(dados) {
     try {
-      console.log("[artistaService] criarArtista payload:", dados);
+
 
       // Se houver campo de arquivo (ex: foto) envie como multipart/form-data
       const maybeFile = dados?.foto || dados?.file;
@@ -48,7 +48,7 @@ export const artistaService = {
   // Atualizar artista
   async atualizarArtista(id, dados) {
     try {
-      console.log("[artistaService] atualizarArtista:", id, dados);
+
       const response = await api.put(`/artistas/${id}`, dados);
       return response.data;
     } catch (err) {
@@ -60,7 +60,7 @@ export const artistaService = {
   // Excluir artista
   async excluirArtista(id) {
     try {
-      console.log("[artistaService] excluirArtista:", id);
+
       const response = await api.delete(`/artistas/${id}`);
       return response.data;
     } catch (err) {

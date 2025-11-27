@@ -87,12 +87,11 @@ export function Turne() {
   const fetchTurnes = async () => {
     try {
       setLoading(true);
-      console.log('🔄 Buscando turnês...');
       const turnes = await getTurnes();
-      console.log('📥 Turnês do backend:', turnes);
+
       
       const adaptedTurnes = await adaptTurnesFromBackend(turnes);
-      console.log('🔧 Turnês adaptadas:', adaptedTurnes);
+
       
       setTurnesData(adaptedTurnes);
     } catch (error) {
@@ -259,7 +258,7 @@ export function Turne() {
         bandaId: formData.bandaId
       };
 
-      console.log('💾 Salvando turnê com payload:', payload);
+
 
       let response;
       if (isEditMode) {

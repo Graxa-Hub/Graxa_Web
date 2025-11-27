@@ -13,14 +13,14 @@ export function useBandas() {
     setError(null);
     try {
       const data = await bandaService.listarBandas();
-      console.log('[useBandas] Bandas carregadas do servidor:', data);
+      
       
       const bandasArray = data || [];
       
       const bandasComImagem = await Promise.all(
         bandasArray.map(async (banda) => {
           if (jaCarregouImagens.current.has(banda.id)) {
-            console.log('[useBandas] Banda já processada:', banda.nome);
+            
             const bandaExistente = bandas.find(b => b.id === banda.id);
             if (bandaExistente?.imagemUrl) {
               return bandaExistente;
@@ -31,10 +31,10 @@ export function useBandas() {
           
           if (banda.nomeFoto) {
             try {
-              console.log('[useBandas] Carregando imagem para:', banda.nome);
+              
               imagemUrl = await imagemService(banda.nomeFoto);
               jaCarregouImagens.current.add(banda.id);
-              console.log('[useBandas] Imagem carregada para:', banda.nome);
+              
             } catch (err) {
               console.error('[useBandas] Erro ao carregar imagem:', err);
               jaCarregouImagens.current.add(banda.id);
@@ -50,7 +50,7 @@ export function useBandas() {
         })
       );
       
-      console.log('[useBandas] Total de bandas com imagem:', bandasComImagem.length);
+      
       setBandas(bandasComImagem);
       return bandasComImagem;
     } catch (err) {
@@ -161,7 +161,7 @@ export function useBandas() {
     setLoading(true);
     setError(null);
     try {
-      console.log('[useBandas] Adicionando integrantes:', { bandaId, artistasIds });
+      
       const bandaAtualizada = await bandaService.adicionarIntegrantes(bandaId, artistasIds);
       
       setBandas(prev => prev.map(b => 

@@ -12,7 +12,7 @@ export function useLocais() {
     setError(null);
     try {
       const data = await localService.listar();
-      console.log('Locais carregados:', data);
+
       // Garante que sempre retorna um array
       const locaisArray = Array.isArray(data) ? data : [];
       setLocais(locaisArray);
@@ -48,9 +48,8 @@ export function useLocais() {
         pais: localData.endereco.pais || 'Brasil'
       };
 
-      console.log('Payload do endereço:', enderecoPayload);
+
       const enderecoResponse = await enderecoService.criar(enderecoPayload);
-      console.log('Endereço criado:', enderecoResponse);
 
       // Depois cria o local com o ID do endereço
       const localPayload = {
@@ -59,9 +58,9 @@ export function useLocais() {
         capacidade: parseInt(capacidadeLocal, 10)
       };
 
-      console.log('Payload do local:', localPayload);
+
       const novoLocal = await localService.criar(localPayload);
-      console.log('Local criado:', novoLocal);
+
       
       setLocais(prev => [...prev, novoLocal]);
       return novoLocal;

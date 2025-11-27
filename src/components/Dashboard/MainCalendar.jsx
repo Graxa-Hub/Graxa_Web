@@ -30,7 +30,6 @@ export default function MainCalendar({
 
   // ✅ Recarrega eventos quando filtros mudarem
   useEffect(() => {
-    console.log("[MainCalendar] Filtros mudaram:", { bandaId, turneId });
     carregarEventos({ bandaId, turneId });
   }, [bandaId, turneId, carregarEventos]);
 
@@ -66,7 +65,6 @@ export default function MainCalendar({
     const inicio = formatarParaDateTimeLocal(selectInfo.start);
     const fim = formatarParaDateTimeLocal(selectInfo.end);
 
-    console.log("[MainCalendar] Data/Hora selecionada:", { inicio, fim });
 
     setDataHoraSelecionada({ inicio, fim });
 
@@ -119,11 +117,11 @@ export default function MainCalendar({
           setDataHoraSelecionada({ inicio: "", fim: "" });
         }}
         onFinish={(entidadeCriada) => {
-          console.log("[MainCalendar] Evento criado:", entidadeCriada);
+
 
           // Determina tipo (show ou viagem) pela estrutura dos dados
           const tipo = entidadeCriada?.tipoViagem ? "viagem" : "show";
-          console.log("[MainCalendar] Tipo de evento:", tipo);
+
 
           // Adiciona evento localmente para feedback imediato
           adicionarEventoLocal(entidadeCriada, tipo);
@@ -133,7 +131,7 @@ export default function MainCalendar({
 
           // Recarrega eventos do backend após 500ms
           setTimeout(() => {
-            console.log("[MainCalendar] Recarregando eventos do backend...");
+
             carregarEventos({ bandaId, turneId });
           }, 500);
         }}

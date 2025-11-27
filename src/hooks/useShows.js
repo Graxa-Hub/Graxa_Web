@@ -12,7 +12,6 @@ export function useShows() {
     try {
       const data = await showService.listar();
       setShows(data);
-      console.log('Shows carregados:', data);
       return data;
     } catch (err) {
       setError(err.message);

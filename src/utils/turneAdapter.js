@@ -14,8 +14,6 @@ export async function adaptTurnesFromBackend(turnes) {
 }
 
 export async function adaptTurneFromBackend(turne) {
-  console.log("Adaptando turnê do backend:", turne);
-
   let imageUrl = "/default-turne-image.jpg";
 
   if (turne.nomeImagem) {
@@ -45,8 +43,6 @@ export async function adaptTurneFromBackend(turne) {
     banda: turne.banda || null,
     raw: turne, // Manter dados originais para debug
   };
-
-  console.log("Turnê adaptada:", adapted);
   return adapted;
 }
 

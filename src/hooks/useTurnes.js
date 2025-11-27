@@ -15,7 +15,7 @@ export function useTurnes() {
       
       // Busca turnês
       const data = await getTurnes();
-      console.log('[useTurnes] Turnês carregadas do servidor:', data);
+      
       
       const turnesArray = Array.isArray(data) ? data : [];
       
@@ -24,8 +24,7 @@ export function useTurnes() {
         turnesArray.map(async (turne) => {
           // Se já processou essa turnê, não reprocessa
           if (jaCarregouImagens.current.has(turne.id)) {
-            console.log('[useTurnes] Turnê já processada:', turne.nomeTurne || turne.nome);
-            // Busca da lista atual
+            
             const turneExistente = turnes.find(t => t.id === turne.id);
             if (turneExistente?.imagemUrl) {
               return turneExistente;
@@ -36,10 +35,10 @@ export function useTurnes() {
           
           if (turne.nomeImagem) {
             try {
-              console.log('[useTurnes] Carregando imagem para:', turne.nomeTurne || turne.nome);
+              
               imagemUrl = await imagemService(turne.nomeImagem);
               jaCarregouImagens.current.add(turne.id);
-              console.log('[useTurnes] Imagem carregada para:', turne.nomeTurne || turne.nome);
+            
             } catch (err) {
               console.error('[useTurnes] Erro ao carregar imagem:', err);
               jaCarregouImagens.current.add(turne.id);
@@ -55,7 +54,7 @@ export function useTurnes() {
         })
       );
       
-      console.log('[useTurnes] Total de turnês com imagem:', turnesComImagem.length);
+
       setTurnes(turnesComImagem);
       return turnesComImagem;
     } catch (err) {

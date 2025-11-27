@@ -27,7 +27,7 @@ export const showService = {
   async listar() {
     try {
       const response = await api.get('/shows');
-      console.log('Response do backend - shows:', response.data);
+      
       return response.data;
     } catch (error) {
       console.error('Erro ao listar shows:', error);

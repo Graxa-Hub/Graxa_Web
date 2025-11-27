@@ -14,22 +14,15 @@ export const TurneModal = ({ open = false, onClose = () => {}, onSelect = () => 
 
   // Carrega turnês apenas uma vez quando abre o modal
   useEffect(() => {
-    console.log('[TurneModal] useEffect disparado', {
-      open,
-      jaCarregou: jaCarregou.current,
-      loading,
-      turnesLength: turnes.length
-    });
 
     if (open && !jaCarregou.current) {
-      console.log('[TurneModal] Carregando turnês...');
+
       jaCarregou.current = true;
       listarTurnes();
     }
     
     // Reset quando fecha
     if (!open) {
-      console.log('[TurneModal] Modal fechou, resetando flag');
       jaCarregou.current = false;
     }
   }, [open, listarTurnes]); // ✅ Apenas open e listarTurnes
@@ -69,7 +62,6 @@ export const TurneModal = ({ open = false, onClose = () => {}, onSelect = () => 
         ) : (
           <div className="flex flex-col gap-3">
             {turnes.map((turne) => (
-              console.log('[TurneModal] Renderizando turnê:', turne),
               <div
                 key={turne.id}
                 className="flex gap-4 items-center p-4 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors border border-gray-200 hover:border-blue-300"

@@ -12,7 +12,7 @@ export function useEnderecos() {
     try {
       const data = await enderecoService.listar();
       setEnderecos(data);
-      console.log('Endereços carregados:', data);
+      
       return data;
     } catch (err) {
       setError(err.message);

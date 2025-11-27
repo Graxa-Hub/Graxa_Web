@@ -11,7 +11,7 @@ export function useEventosCalendario() {
   const carregarEventos = useCallback(async (filtros = {}) => {
     const { bandaId, turneId } = filtros;
     
-    console.log('[useEventosCalendario] Carregando eventos com filtros:', { bandaId, turneId });
+    
     
     try {
       setLoading(true);
@@ -23,8 +23,7 @@ export function useEventosCalendario() {
         viagemService.listar()
       ]);
 
-      console.log('[useEventosCalendario] Shows recebidos:', shows);
-      console.log('[useEventosCalendario] Viagens recebidas:', viagens);
+      
 
       // ✅ Aplica filtros nos shows
       let showsFiltrados = shows || [];
@@ -82,7 +81,7 @@ export function useEventosCalendario() {
 
       const todosEventos = [...eventosShows, ...eventosViagens];
       
-      console.log('[useEventosCalendario] Total de eventos após filtros:', todosEventos.length);
+      
       setEventos(todosEventos);
       
       return todosEventos;
@@ -97,7 +96,7 @@ export function useEventosCalendario() {
   }, []);
 
   const adicionarEventoLocal = useCallback((entidade, tipo) => {
-    console.log('[useEventosCalendario] Adicionando evento local:', { entidade, tipo });
+    
     
     const novoEvento = {
       id: `${tipo}-${entidade.id}`,

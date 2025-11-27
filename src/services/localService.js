@@ -27,7 +27,7 @@ export const localService = {
   async listar() {
     try {
       const response = await api.get('/locais');
-      console.log('Response do backend - locais:', response.data);
+ 
       return response.data;
     } catch (error) {
       console.error('Erro ao listar locais:', error);

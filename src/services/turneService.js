@@ -3,7 +3,7 @@ import { api } from './axios';
 export async function getTurnes() {
   try {
     const response = await api.get('/turnes');
-    console.log('Response do backend - turnês:', response.data);
+    
     return response.data;
   } catch (error) {
     console.error('Erro ao buscar turnês:', error);
@@ -36,7 +36,7 @@ export async function criarTurne(dadosTurne, imagem) {
       formData.append('imagem', imagem);
     }
 
-    console.log('Enviando para criar turnê:', dados);
+    
 
     const response = await api.post('/turnes', formData, {
       headers: {
@@ -44,7 +44,7 @@ export async function criarTurne(dadosTurne, imagem) {
       },
     });
     
-    console.log('Turnê criada:', response.data);
+    
     return response.data;
   } catch (error) {
     console.error('Erro ao criar turnê:', error);
@@ -77,7 +77,7 @@ export async function editarTurne(id, dadosTurne, imagem) {
       formData.append('imagem', imagem);
     }
 
-    console.log('Enviando para editar turnê:', dados);
+    
 
     const response = await api.put(`/turnes/${id}`, formData, {
       headers: {
