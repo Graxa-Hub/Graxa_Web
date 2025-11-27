@@ -498,3 +498,56 @@ Tabela da lista: .fc-list-table */
   box-shadow: none !important;
   padding: 4px 8px !important;
 }
+
+/* ========== PRINT STYLES FOR PDF ========== */
+@media print {
+  @page {
+    size: A4;
+    margin: 1cm;
+  }
+
+  body {
+    background: white;
+  }
+
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Evitar quebras de página dentro de elementos */
+  .print\:break-inside-avoid {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Forçar quebra de página antes do elemento */
+  .print\:break-before-page {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  /* Evitar quebras de página indesejadas */
+  h1,
+  h2,
+  h3 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  ul,
+  ol {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  li {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Manter seções juntas */
+  .px-8 {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}

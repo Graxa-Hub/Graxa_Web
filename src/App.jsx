@@ -37,7 +37,6 @@ function App() {
       <Route path="/criar-evento" element={<CriarEvento />} />
       <Route path="/criar-logistica" element={<CriarLogistica />} />
       <Route path="/relatorio" element={<RelatorioPage />} />
-      {/* <Route path="configuracao" element={<Configuracao/>}/> */}
       {/* </Route> */}
       {/* Rota não encontrada - redireciona para login */}
       <Route path="*" element={<Navigate to="/login" replace />} />
