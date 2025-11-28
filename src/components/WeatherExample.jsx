@@ -1,249 +1,298 @@
-import { useState, useEffect } from "react";
-import { getCoordinates } from "../utils/endereco/geoUtils";
-import { useWeather, useCurrentWeather, useWeatherAnalysis } from "../hooks/useWeather";
-import RainForecast, { RainAlert } from "./RainForecast";
+import { useState } from "react";
+import {
+  useCurrentWeather,
+  useRainForecast,
+  useWeatherForecast,
+} from "../hooks/useWeather";
 
 /**
- * Componente de exemplo mostrando como usar a API Open-Meteo
- * integrada com o Mapbox para obter coordenadas
+ * Componente de exemplo que demonstra como usar a API Open-Meteo
+ * Mostra clima atual, previsão de chuva e previsão completa
  */
 export default function WeatherExample() {
-  const [endereco, setEndereco] = useState("");
-  const [coords, setCoords] = useState(null);
-  const [buscando, setBuscando] = useState(false);
+  const [location, setLocation] = useState("São Paulo, Brazil");
+  const [searchInput, setSearchInput] = useState("São Paulo, Brazil");
 
-  // Hook de clima (só busca quando temos coordenadas)
-  const { weather, loading, error, refetch } = useWeather(
-    coords?.lat,
-    coords?.lon,
-    { autoFetch: false, days: 7 }
-  );
+  // Hook para clima atual
+  const {
+    weather: currentWeather,
+    loading: loadingCurrent,
+    error: errorCurrent,
+  } = useCurrentWeather(location);
 
-  const buscarClima = async () => {
-    if (!endereco) return;
+  // Hook para previsão de chuva (7 dias)
+  const {
+    forecast: rainForecast,
+    loading: loadingRain,
+    error: errorRain,
+  } = useRainForecast(location, 7);
 
-    setBuscando(true);
-    try {
-      // 1. Primeiro busca as coordenadas usando Mapbox
-      const coordenadas = await getCoordinates(endereco);
-      setCoords(coordenadas);
+  // Hook para previsão completa (3 dias)
+  const {
+    forecast: fullForecast,
+    loading: loadingFull,
+    error: errorFull,
+  } = useWeatherForecast(location, {
+    forecastDays: 3,
+  });
 
-      // 2. Depois busca o clima usando Open-Meteo
-      console.log("Coordenadas encontradas:", coordenadas);
-    } catch (err) {
-      console.error("Erro ao buscar coordenadas:", err);
-      alert(err.message);
-    } finally {
-      setBuscando(false);
-    }
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setLocation(searchInput);
   };
 
-  // Busca o clima quando as coordenadas mudam
-  useEffect(() => {
-    if (coords) {
-      refetch();
-    }
-  }, [coords, refetch]);
-
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-6">Exemplo: Clima por Endereço</h1>
+    <div className="max-w-7xl mx-auto p-6 space-y-6">
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">
+          Previsão do Tempo - Open-Meteo API
+        </h1>
 
-      {/* Buscar endereço */}
-      <div className="mb-6 space-y-3">
-        <div className="flex gap-2">
+        {/* Formulário de busca */}
+        <form onSubmit={handleSearch} className="flex gap-2 mb-6">
           <input
             type="text"
-            value={endereco}
-            onChange={(e) => setEndereco(e.target.value)}
-            placeholder="Digite um endereço (ex: São Paulo, SP)"
-            className="flex-1 px-4 py-2 border rounded-lg"
-            onKeyDown={(e) => e.key === "Enter" && buscarClima()}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Digite um endereço ou cidade..."
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           <button
-            onClick={buscarClima}
-            disabled={buscando || !endereco}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            type="submit"
+            className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
           >
-            {buscando ? "Buscando..." : "Buscar"}
+            Buscar
           </button>
-        </div>
+        </form>
 
-        {coords && (
-          <div className="text-sm text-gray-600">
-            📍 {coords.display_name}
-            <br />
-            📊 Lat: {coords.lat.toFixed(4)}, Lon: {coords.lon.toFixed(4)}
+        <p className="text-sm text-gray-600">
+          Localização atual: <span className="font-semibold">{location}</span>
+        </p>
+      </div>
+
+      {/* Clima Atual */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          ☀️ Clima Atual
+        </h2>
+
+        {loadingCurrent && (
+          <p className="text-gray-600">Carregando clima atual...</p>
+        )}
+        {errorCurrent && <p className="text-red-500">Erro: {errorCurrent}</p>}
+
+        {currentWeather && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg">
+              <div className="text-4xl mb-2">
+                {currentWeather.description.icon}
+              </div>
+              <div className="text-lg font-semibold text-gray-700">
+                {currentWeather.description.description}
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-lg">
+              <div className="text-sm text-gray-600">Temperatura</div>
+              <div className="text-3xl font-bold text-gray-800">
+                {currentWeather.temperature_2m}°C
+              </div>
+              <div className="text-xs text-gray-500">
+                Sensação: {currentWeather.apparent_temperature}°C
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 p-4 rounded-lg">
+              <div className="text-sm text-gray-600">Umidade</div>
+              <div className="text-3xl font-bold text-gray-800">
+                {currentWeather.relative_humidity_2m}%
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-lg">
+              <div className="text-sm text-gray-600">Vento</div>
+              <div className="text-3xl font-bold text-gray-800">
+                {currentWeather.wind_speed_10m} km/h
+              </div>
+              <div className="text-xs text-gray-500">
+                {currentWeather.windScale.description}
+              </div>
+            </div>
+
+            {currentWeather.precipitation > 0 && (
+              <div className="bg-gradient-to-br from-blue-50 to-blue-200 p-4 rounded-lg col-span-full">
+                <div className="text-sm text-gray-600">💧 Precipitação</div>
+                <div className="text-2xl font-bold text-gray-800">
+                  {currentWeather.precipitation} mm
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Loading */}
-      {loading && (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando clima...</p>
-        </div>
-      )}
+      {/* Previsão de Chuva */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          🌧️ Previsão de Chuva (7 dias)
+        </h2>
 
-      {/* Erro */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-          <p className="text-red-800">❌ Erro: {error}</p>
-        </div>
-      )}
+        {loadingRain && (
+          <p className="text-gray-600">Carregando previsão de chuva...</p>
+        )}
+        {errorRain && <p className="text-red-500">Erro: {errorRain}</p>}
 
-      {/* Resultado */}
-      {weather && (
-        <div className="space-y-6">
-          {/* Clima Atual */}
-          {weather.current && (
-            <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg p-6 shadow-lg">
-              <h2 className="text-xl font-semibold mb-4">Clima Atual</h2>
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-5xl mb-2">
-                    {weather.current.weatherIcon}
-                  </div>
-                  <p className="text-lg">{weather.current.weatherDescription}</p>
-                </div>
-                <div className="text-right">
-                  <div className="text-5xl font-bold">
-                    {weather.current.temperature}°C
-                  </div>
-                  <p className="text-sm opacity-90">
-                    Sensação: {weather.current.feelsLike}°C
+        {rainForecast && (
+          <div className="space-y-4">
+            {rainForecast.rainyDays.length === 0 ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <p className="text-green-800 font-semibold">
+                  ✅ Sem previsão de chuva nos próximos 7 dias!
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                  <p className="text-blue-800 font-semibold">
+                    ⚠️ {rainForecast.rainyDays.length} dia(s) com previsão de
+                    chuva
                   </p>
                 </div>
-              </div>
-              <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/20">
-                <div>
-                  <p className="text-sm opacity-75">Umidade</p>
-                  <p className="text-lg font-semibold">{weather.current.humidity}%</p>
-                </div>
-                <div>
-                  <p className="text-sm opacity-75">Vento</p>
-                  <p className="text-lg font-semibold">{weather.current.windSpeed} km/h</p>
-                </div>
-                <div>
-                  <p className="text-sm opacity-75">Nuvens</p>
-                  <p className="text-lg font-semibold">{weather.current.cloudCover}%</p>
-                </div>
-              </div>
-            </div>
-          )}
 
-          {/* Previsão dos Próximos Dias */}
-          {weather.daily && (
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h2 className="text-xl font-semibold mb-4">Próximos Dias</h2>
-              <div className="grid gap-3">
-                {weather.daily.slice(0, 5).map((day, index) => (
-                  <div
-                    key={day.date}
-                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="text-3xl">{day.weatherIcon}</div>
-                      <div>
-                        <p className="font-medium">
-                          {index === 0
-                            ? "Hoje"
-                            : new Date(day.date).toLocaleDateString("pt-BR", {
-                                weekday: "short",
-                                day: "numeric",
-                                month: "short",
-                              })}
-                        </p>
-                        <p className="text-sm text-gray-600">{day.weatherDescription}</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {rainForecast.rainyDays.map((day, index) => (
+                    <div
+                      key={index}
+                      className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200"
+                    >
+                      <div className="font-semibold text-gray-800">
+                        {new Date(day.date).toLocaleDateString("pt-BR", {
+                          weekday: "short",
+                          day: "2-digit",
+                          month: "short",
+                        })}
                       </div>
+                      <div className="text-2xl font-bold text-blue-600 mt-2">
+                        {day.precipitation} mm
+                      </div>
+                      {day.probability && (
+                        <div className="text-sm text-gray-600 mt-1">
+                          Probabilidade: {day.probability}%
+                        </div>
+                      )}
                     </div>
-                    <div className="text-right">
-                      <p className="font-semibold">
-                        {day.tempMax}° / {day.tempMin}°
-                      </p>
-                      {day.precipitationProbability > 0 && (
-                        <p className="text-sm text-blue-600">
-                          💧 {day.precipitationProbability}%
-                        </p>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Previsão Completa (3 dias) */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">
+          📅 Previsão para os próximos 3 dias
+        </h2>
+
+        {loadingFull && <p className="text-gray-600">Carregando previsão...</p>}
+        {errorFull && <p className="text-red-500">Erro: {errorFull}</p>}
+
+        {fullForecast?.daily && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {fullForecast.daily.time.map((date, index) => {
+              const description = fullForecast.daily.descriptions?.[index];
+              return (
+                <div
+                  key={index}
+                  className={`p-4 rounded-lg border-2 ${
+                    description?.severity === "danger"
+                      ? "bg-red-50 border-red-300"
+                      : description?.severity === "warning"
+                      ? "bg-yellow-50 border-yellow-300"
+                      : "bg-gray-50 border-gray-300"
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="font-bold text-gray-800">
+                      {new Date(date).toLocaleDateString("pt-BR", {
+                        weekday: "short",
+                        day: "2-digit",
+                        month: "short",
+                      })}
+                    </div>
+                    <div className="text-5xl my-3">
+                      {description?.icon || "❓"}
+                    </div>
+                    <div className="text-sm text-gray-700 mb-2">
+                      {description?.description || "Desconhecido"}
+                    </div>
+
+                    <div className="space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Máx:</span>
+                        <span className="font-semibold text-red-600">
+                          {fullForecast.daily.temperature_2m_max[index]}°C
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Mín:</span>
+                        <span className="font-semibold text-blue-600">
+                          {fullForecast.daily.temperature_2m_min[index]}°C
+                        </span>
+                      </div>
+                      {fullForecast.daily.precipitation_sum[index] > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Chuva:</span>
+                          <span className="font-semibold text-blue-600">
+                            {fullForecast.daily.precipitation_sum[index]} mm
+                          </span>
+                        </div>
+                      )}
+                      {fullForecast.daily.precipitation_probability_max?.[
+                        index
+                      ] && (
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Prob.:</span>
+                          <span className="font-semibold">
+                            {
+                              fullForecast.daily.precipitation_probability_max[
+                                index
+                              ]
+                            }
+                            %
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Previsão de Chuva - Apenas horários com chuva */}
-          {coords && (
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <RainForecast 
-                latitude={coords.lat} 
-                longitude={coords.lon} 
-                days={2} 
-              />
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-/**
- * Exemplo 2: Componente simples que só mostra clima atual
- */
-export function SimpleWeatherDisplay({ latitude, longitude }) {
-  const { weather, loading, error } = useCurrentWeather(latitude, longitude);
-
-  if (loading) return <div className="text-gray-500">Carregando clima...</div>;
-  if (error) return <div className="text-red-500">Erro: {error}</div>;
-  if (!weather) return null;
-
-  return (
-    <div className="inline-flex items-center gap-2 bg-blue-50 px-4 py-2 rounded-lg">
-      <span className="text-2xl">{weather.weatherIcon}</span>
-      <div>
-        <p className="font-semibold">{weather.temperature}°C</p>
-        <p className="text-xs text-gray-600">{weather.weatherDescription}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
-    </div>
-  );
-}
 
-/**
- * Exemplo 3: Análise de clima para eventos
- */
-export function EventWeatherAnalysis({ latitude, longitude }) {
-  const { weather, analysis, loading, error } = useWeatherAnalysis(latitude, longitude);
-
-  if (loading) return <div>Analisando clima...</div>;
-  if (error) return <div>Erro: {error}</div>;
-  if (!analysis) return null;
-
-  return (
-    <div
-      className={`p-4 rounded-lg border-2 ${
-        analysis.favorable
-          ? "bg-green-50 border-green-300"
-          : "bg-yellow-50 border-yellow-300"
-      }`}
-    >
-      <div className="flex items-start gap-3">
-        <div className="text-3xl">{analysis.favorable ? "✅" : "⚠️"}</div>
-        <div className="flex-1">
-          <h3 className="font-semibold mb-1">{analysis.recommendation}</h3>
-          <p className="text-sm text-gray-700 mb-2">{analysis.summary}</p>
-          {analysis.warnings.length > 0 && (
-            <ul className="text-sm space-y-1">
-              {analysis.warnings.map((warning, i) => (
-                <li key={i} className="text-gray-600">
-                  • {warning}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+      {/* Informações da API */}
+      <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          📚 Sobre a API Open-Meteo
+        </h3>
+        <ul className="text-sm text-gray-700 space-y-1">
+          <li>✅ API gratuita para uso não comercial</li>
+          <li>✅ Não requer autenticação</li>
+          <li>✅ Previsão de até 16 dias</li>
+          <li>✅ Dados horários e diários</li>
+          <li>✅ Combina múltiplos modelos meteorológicos</li>
+        </ul>
+        <a
+          href="https://open-meteo.com/en/docs"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:text-blue-700 text-sm mt-2 inline-block"
+        >
+          📖 Documentação completa →
+        </a>
       </div>
     </div>
   );

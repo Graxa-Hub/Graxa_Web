@@ -15,7 +15,6 @@ import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
 import { CriarLogistica } from "./pages/CriarLogistica";
 import WeatherExample from "./components/WeatherExample";
-import RainForecastPage from "./pages/RainForecastPage";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -37,10 +36,7 @@ function App() {
       <Route path="/visao-evento" element={<VisaoEvento />} />
       <Route path="/criar-evento" element={<CriarEvento />} />
       <Route path="/criar-logistica" element={<CriarLogistica />} />
-      {/* Rota de teste para API de Clima */}
-      <Route path="/teste-clima" element={<WeatherExample />} />
-      {/* Rota de teste para Previsão de Chuva */}
-      <Route path="/previsao-chuva" element={<RainForecastPage />} />
+      <Route path="/weather-example" element={<WeatherExample />} />
       {/* </Route> */}
       {/* Rota não encontrada - redireciona para login */}
       <Route path="*" element={<Navigate to="/login" replace />} />

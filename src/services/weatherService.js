@@ -1,298 +1,329 @@
-/**
- * Open-Meteo Weather Service
- * API gratuita sem necessidade de chave de API
- * Docs: https://open-meteo.com/en/docs
- */
+// Open-Meteo Weather Service
+// API gratuita para previsão do tempo
+// Documentação: https://open-meteo.com/en/docs
 
 const BASE_URL = "https://api.open-meteo.com/v1/forecast";
 
 /**
- * Códigos de clima da API Open-Meteo
- * https://open-meteo.com/en/docs#weathervariables
- */
-export const WEATHER_CODES = {
-  0: { description: "Céu limpo", icon: "☀️" },
-  1: { description: "Principalmente limpo", icon: "🌤️" },
-  2: { description: "Parcialmente nublado", icon: "⛅" },
-  3: { description: "Nublado", icon: "☁️" },
-  45: { description: "Neblina", icon: "🌫️" },
-  48: { description: "Névoa com geada", icon: "🌫️" },
-  51: { description: "Garoa leve", icon: "🌦️" },
-  53: { description: "Garoa moderada", icon: "🌦️" },
-  55: { description: "Garoa intensa", icon: "🌧️" },
-  56: { description: "Garoa congelante leve", icon: "🌧️" },
-  57: { description: "Garoa congelante intensa", icon: "🌧️" },
-  61: { description: "Chuva leve", icon: "🌧️" },
-  63: { description: "Chuva moderada", icon: "🌧️" },
-  65: { description: "Chuva forte", icon: "⛈️" },
-  66: { description: "Chuva congelante leve", icon: "🌧️" },
-  67: { description: "Chuva congelante forte", icon: "🌧️" },
-  71: { description: "Neve leve", icon: "🌨️" },
-  73: { description: "Neve moderada", icon: "🌨️" },
-  75: { description: "Neve forte", icon: "❄️" },
-  77: { description: "Grãos de neve", icon: "🌨️" },
-  80: { description: "Pancada de chuva leve", icon: "🌦️" },
-  81: { description: "Pancada de chuva moderada", icon: "⛈️" },
-  82: { description: "Pancada de chuva forte", icon: "⛈️" },
-  85: { description: "Pancada de neve leve", icon: "🌨️" },
-  86: { description: "Pancada de neve forte", icon: "🌨️" },
-  95: { description: "Tempestade", icon: "⛈️" },
-  96: { description: "Tempestade com granizo leve", icon: "⛈️" },
-  99: { description: "Tempestade com granizo forte", icon: "⛈️" },
-};
-
-/**
- * Busca clima atual e previsão para uma localização
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
+ * Busca previsão do tempo para uma localização
+ * @param {number} latitude - Latitude da localização
+ * @param {number} longitude - Longitude da localização
  * @param {Object} options - Opções adicionais
- * @returns {Promise<Object>} Dados do clima
+ * @returns {Promise<Object>} Dados da previsão do tempo
  */
-export async function getWeather(lat, lon, options = {}) {
-  if (!lat || !lon) {
-    throw new Error("Latitude e longitude são obrigatórias");
-  }
+export async function getWeatherForecast(latitude, longitude, options = {}) {
+    const {
+        forecastDays = 7,
+        timezone = "auto",
+        hourlyParams = ["temperature_2m", "precipitation", "weather_code", "wind_speed_10m"],
+        dailyParams = ["temperature_2m_max", "temperature_2m_min", "precipitation_sum", "weather_code", "precipitation_probability_max"],
+        currentParams = ["temperature_2m", "relative_humidity_2m", "apparent_temperature", "precipitation", "weather_code", "wind_speed_10m"],
+    } = options;
 
-  const {
-    days = 7, // Dias de previsão (1-16)
-    hourly = false, // Se deve incluir previsão horária
-    current = true, // Se deve incluir clima atual
-  } = options;
+    const params = new URLSearchParams({
+        latitude: latitude.toString(),
+        longitude: longitude.toString(),
+        forecast_days: forecastDays.toString(),
+        timezone,
+    });
 
-  // Parâmetros da API
-  const params = new URLSearchParams({
-    latitude: lat.toString(),
-    longitude: lon.toString(),
-    timezone: "America/Sao_Paulo",
-  });
-
-  // Variáveis atuais
-  if (current) {
-    params.append("current", [
-      "temperature_2m",
-      "relative_humidity_2m",
-      "apparent_temperature",
-      "is_day",
-      "precipitation",
-      "rain",
-      "weather_code",
-      "cloud_cover",
-      "wind_speed_10m",
-      "wind_direction_10m",
-    ].join(","));
-  }
-
-  // Variáveis diárias
-  params.append("daily", [
-    "weather_code",
-    "temperature_2m_max",
-    "temperature_2m_min",
-    "sunrise",
-    "sunset",
-    "precipitation_sum",
-    "rain_sum",
-    "precipitation_probability_max",
-    "wind_speed_10m_max",
-    "wind_gusts_10m_max",
-  ].join(","));
-
-  // Variáveis horárias (opcional)
-  if (hourly) {
-    params.append("hourly", [
-      "temperature_2m",
-      "relative_humidity_2m",
-      "precipitation_probability",
-      "precipitation",
-      "weather_code",
-      "wind_speed_10m",
-    ].join(","));
-  }
-
-  params.append("forecast_days", days.toString());
-
-  const url = `${BASE_URL}?${params.toString()}`;
-
-  try {
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      throw new Error(`Erro ao buscar clima: ${response.status}`);
+    // Adiciona parâmetros hourly
+    if (hourlyParams.length > 0) {
+        params.append("hourly", hourlyParams.join(","));
     }
 
-    const data = await response.json();
+    // Adiciona parâmetros daily
+    if (dailyParams.length > 0) {
+        params.append("daily", dailyParams.join(","));
+    }
 
-    return formatWeatherData(data);
-  } catch (error) {
-    console.error("Erro ao buscar dados do clima:", error);
-    throw error;
-  }
+    // Adiciona parâmetros current
+    if (currentParams.length > 0) {
+        params.append("current", currentParams.join(","));
+    }
+
+    const url = `${BASE_URL}?${params.toString()}`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Erro na API Open-Meteo: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Erro ao buscar previsão do tempo:", error);
+        throw error;
+    }
 }
 
 /**
- * Busca apenas o clima atual (simplificado)
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
- * @returns {Promise<Object>} Clima atual
+ * Busca apenas as condições climáticas atuais
+ * @param {number} latitude - Latitude da localização
+ * @param {number} longitude - Longitude da localização
+ * @returns {Promise<Object>} Condições climáticas atuais
  */
-export async function getCurrentWeather(lat, lon) {
-  const data = await getWeather(lat, lon, { days: 1, hourly: false });
-  return data.current;
-}
+export async function getCurrentWeather(latitude, longitude) {
+    const data = await getWeatherForecast(latitude, longitude, {
+        forecastDays: 1,
+        hourlyParams: [],
+        dailyParams: [],
+        currentParams: [
+            "temperature_2m",
+            "relative_humidity_2m",
+            "apparent_temperature",
+            "is_day",
+            "precipitation",
+            "rain",
+            "showers",
+            "snowfall",
+            "weather_code",
+            "cloud_cover",
+            "pressure_msl",
+            "wind_speed_10m",
+            "wind_direction_10m",
+            "wind_gusts_10m",
+        ],
+    });
 
-/**
- * Busca previsão para os próximos dias
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
- * @param {number} days - Número de dias (1-16)
- * @returns {Promise<Object>} Previsão diária
- */
-export async function getForecast(lat, lon, days = 7) {
-  const data = await getWeather(lat, lon, { days, hourly: false });
-  return data.daily;
-}
-
-/**
- * Busca previsão horária
- * @param {number} lat - Latitude
- * @param {number} lon - Longitude
- * @param {number} days - Número de dias (1-16)
- * @returns {Promise<Object>} Previsão horária
- */
-export async function getHourlyForecast(lat, lon, days = 3) {
-  const data = await getWeather(lat, lon, { days, hourly: true });
-  return data.hourly;
-}
-
-/**
- * Formata os dados da API em um formato mais amigável
- * @param {Object} rawData - Dados brutos da API
- * @returns {Object} Dados formatados
- */
-function formatWeatherData(rawData) {
-  const formatted = {
-    location: {
-      latitude: rawData.latitude,
-      longitude: rawData.longitude,
-      timezone: rawData.timezone,
-      elevation: rawData.elevation,
-    },
-  };
-
-  // Formata clima atual
-  if (rawData.current) {
-    const weatherCode = rawData.current.weather_code;
-    formatted.current = {
-      time: rawData.current.time,
-      temperature: rawData.current.temperature_2m,
-      feelsLike: rawData.current.apparent_temperature,
-      humidity: rawData.current.relative_humidity_2m,
-      precipitation: rawData.current.precipitation,
-      rain: rawData.current.rain,
-      weatherCode: weatherCode,
-      weatherDescription: WEATHER_CODES[weatherCode]?.description || "Desconhecido",
-      weatherIcon: WEATHER_CODES[weatherCode]?.icon || "🌡️",
-      cloudCover: rawData.current.cloud_cover,
-      windSpeed: rawData.current.wind_speed_10m,
-      windDirection: rawData.current.wind_direction_10m,
-      isDay: rawData.current.is_day === 1,
+    return {
+        ...data.current,
+        current_units: data.current_units,
+        location: {
+            latitude: data.latitude,
+            longitude: data.longitude,
+            elevation: data.elevation,
+            timezone: data.timezone,
+        },
     };
-  }
-
-  // Formata previsão diária
-  if (rawData.daily) {
-    formatted.daily = rawData.daily.time.map((time, index) => {
-      const weatherCode = rawData.daily.weather_code[index];
-      return {
-        date: time,
-        weatherCode: weatherCode,
-        weatherDescription: WEATHER_CODES[weatherCode]?.description || "Desconhecido",
-        weatherIcon: WEATHER_CODES[weatherCode]?.icon || "🌡️",
-        tempMax: rawData.daily.temperature_2m_max[index],
-        tempMin: rawData.daily.temperature_2m_min[index],
-        sunrise: rawData.daily.sunrise[index],
-        sunset: rawData.daily.sunset[index],
-        precipitationSum: rawData.daily.precipitation_sum[index],
-        rainSum: rawData.daily.rain_sum[index],
-        precipitationProbability: rawData.daily.precipitation_probability_max[index],
-        windSpeedMax: rawData.daily.wind_speed_10m_max[index],
-        windGustsMax: rawData.daily.wind_gusts_10m_max[index],
-      };
-    });
-  }
-
-  // Formata previsão horária
-  if (rawData.hourly) {
-    formatted.hourly = rawData.hourly.time.map((time, index) => {
-      const weatherCode = rawData.hourly.weather_code[index];
-      return {
-        time: time,
-        temperature: rawData.hourly.temperature_2m[index],
-        humidity: rawData.hourly.relative_humidity_2m[index],
-        precipitationProbability: rawData.hourly.precipitation_probability[index],
-        precipitation: rawData.hourly.precipitation[index],
-        weatherCode: weatherCode,
-        weatherDescription: WEATHER_CODES[weatherCode]?.description || "Desconhecido",
-        weatherIcon: WEATHER_CODES[weatherCode]?.icon || "🌡️",
-        windSpeed: rawData.hourly.wind_speed_10m[index],
-      };
-    });
-  }
-
-  return formatted;
 }
 
 /**
- * Verifica se o clima é favorável para um evento ao ar livre
- * @param {Object} weather - Dados do clima
- * @returns {Object} Análise do clima
+ * Busca previsão de chuva específica
+ * @param {number} latitude - Latitude da localização
+ * @param {number} longitude - Longitude da localização
+ * @param {number} days - Número de dias (padrão: 7)
+ * @returns {Promise<Object>} Previsão de precipitação
  */
-export function analyzeWeatherForEvent(weather) {
-  if (!weather || !weather.current) {
-    return { favorable: null, warnings: ["Dados do clima não disponíveis"] };
-  }
+export async function getRainForecast(latitude, longitude, days = 7) {
+    const data = await getWeatherForecast(latitude, longitude, {
+        forecastDays: days,
+        hourlyParams: ["precipitation", "precipitation_probability", "rain", "showers"],
+        dailyParams: [
+            "precipitation_sum",
+            "rain_sum",
+            "showers_sum",
+            "precipitation_hours",
+            "precipitation_probability_max",
+        ],
+        currentParams: ["precipitation", "rain"],
+    });
 
-  const warnings = [];
-  const { current } = weather;
+    return {
+        current: data.current,
+        hourly: data.hourly,
+        daily: data.daily,
+        location: {
+            latitude: data.latitude,
+            longitude: data.longitude,
+            timezone: data.timezone,
+        },
+    };
+}
 
-  // Verifica chuva
-  if (current.precipitation > 0) {
-    warnings.push(`Chuva prevista: ${current.precipitation}mm`);
-  }
+/**
+ * Interpreta o código WMO do clima
+ * @param {number} code - Código WMO
+ * @returns {Object} Descrição e ícone do clima
+ */
+export function getWeatherDescription(code) {
+    const weatherCodes = {
+        0: { description: "Céu limpo", icon: "☀️", severity: "good" },
+        1: { description: "Principalmente limpo", icon: "🌤️", severity: "good" },
+        2: { description: "Parcialmente nublado", icon: "⛅", severity: "moderate" },
+        3: { description: "Nublado", icon: "☁️", severity: "moderate" },
+        45: { description: "Neblina", icon: "🌫️", severity: "moderate" },
+        48: { description: "Neblina com geada", icon: "🌫️", severity: "moderate" },
+        51: { description: "Garoa leve", icon: "🌦️", severity: "moderate" },
+        53: { description: "Garoa moderada", icon: "🌦️", severity: "moderate" },
+        55: { description: "Garoa intensa", icon: "🌧️", severity: "warning" },
+        56: { description: "Garoa congelante leve", icon: "🌧️", severity: "warning" },
+        57: { description: "Garoa congelante intensa", icon: "🌧️", severity: "warning" },
+        61: { description: "Chuva leve", icon: "🌧️", severity: "moderate" },
+        63: { description: "Chuva moderada", icon: "🌧️", severity: "warning" },
+        65: { description: "Chuva forte", icon: "⛈️", severity: "danger" },
+        66: { description: "Chuva congelante leve", icon: "🌧️", severity: "warning" },
+        67: { description: "Chuva congelante forte", icon: "⛈️", severity: "danger" },
+        71: { description: "Neve fraca", icon: "🌨️", severity: "moderate" },
+        73: { description: "Neve moderada", icon: "🌨️", severity: "warning" },
+        75: { description: "Neve forte", icon: "❄️", severity: "danger" },
+        77: { description: "Granizo", icon: "🌨️", severity: "warning" },
+        80: { description: "Pancada de chuva leve", icon: "🌦️", severity: "moderate" },
+        81: { description: "Pancada de chuva moderada", icon: "🌧️", severity: "warning" },
+        82: { description: "Pancada de chuva violenta", icon: "⛈️", severity: "danger" },
+        85: { description: "Pancada de neve leve", icon: "🌨️", severity: "moderate" },
+        86: { description: "Pancada de neve forte", icon: "❄️", severity: "danger" },
+        95: { description: "Tempestade", icon: "⛈️", severity: "danger" },
+        96: { description: "Tempestade com granizo leve", icon: "⛈️", severity: "danger" },
+        99: { description: "Tempestade com granizo forte", icon: "⛈️", severity: "danger" },
+    };
 
-  // Verifica temperatura extrema
-  if (current.temperature < 10) {
-    warnings.push(`Temperatura baixa: ${current.temperature}°C`);
-  } else if (current.temperature > 35) {
-    warnings.push(`Temperatura alta: ${current.temperature}°C`);
-  }
+    return weatherCodes[code] || { description: "Desconhecido", icon: "❓", severity: "unknown" };
+}
 
-  // Verifica vento forte
-  if (current.windSpeed > 30) {
-    warnings.push(`Vento forte: ${current.windSpeed} km/h`);
-  }
+/**
+ * Converte velocidade do vento para escala Beaufort
+ * @param {number} windSpeed - Velocidade do vento em km/h
+ * @returns {Object} Escala Beaufort com descrição
+ */
+export function getWindScale(windSpeed) {
+    if (windSpeed < 1) return { scale: 0, description: "Calmaria" };
+    if (windSpeed < 6) return { scale: 1, description: "Aragem" };
+    if (windSpeed < 12) return { scale: 2, description: "Brisa leve" };
+    if (windSpeed < 20) return { scale: 3, description: "Brisa fraca" };
+    if (windSpeed < 29) return { scale: 4, description: "Brisa moderada" };
+    if (windSpeed < 39) return { scale: 5, description: "Brisa forte" };
+    if (windSpeed < 50) return { scale: 6, description: "Vento fresco" };
+    if (windSpeed < 62) return { scale: 7, description: "Vento forte" };
+    if (windSpeed < 75) return { scale: 8, description: "Ventania" };
+    if (windSpeed < 89) return { scale: 9, description: "Ventania forte" };
+    if (windSpeed < 103) return { scale: 10, description: "Tempestade" };
+    if (windSpeed < 118) return { scale: 11, description: "Tempestade violenta" };
+    return { scale: 12, description: "Furacão" };
+}
 
-  // Verifica cobertura de nuvens
-  if (current.cloudCover > 80) {
-    warnings.push(`Muito nublado: ${current.cloudCover}%`);
-  }
+/**
+ * Verifica se há risco de chuva em determinado período
+ * @param {Object} dailyData - Dados diários da previsão
+ * @param {number} threshold - Limite de precipitação em mm (padrão: 1mm)
+ * @returns {Array} Dias com risco de chuva
+ */
+export function getRainyDays(dailyData, threshold = 1) {
+    if (!dailyData || !dailyData.time || !dailyData.precipitation_sum) {
+        return [];
+    }
 
-  const favorable = warnings.length === 0;
+    const rainyDays = [];
+    for (let i = 0; i < dailyData.time.length; i++) {
+        if (dailyData.precipitation_sum[i] >= threshold) {
+            rainyDays.push({
+                date: dailyData.time[i],
+                precipitation: dailyData.precipitation_sum[i],
+                probability: dailyData.precipitation_probability_max?.[i] || null,
+                weatherCode: dailyData.weather_code?.[i] || null,
+            });
+        }
+    }
 
-  return {
-    favorable,
-    warnings,
-    recommendation: favorable 
-      ? "Condições favoráveis para evento ao ar livre" 
-      : "Considere precauções ou local coberto",
-    summary: `${current.weatherDescription}, ${current.temperature}°C`,
-  };
+    return rainyDays;
+}
+
+/**
+ * Busca informações climáticas específicas para um evento
+ * Retorna temperatura (max/min) e se vai chover no dia
+ * @param {number} latitude - Latitude do local
+ * @param {number} longitude - Longitude do local
+ * @param {string} eventDate - Data do evento (formato: YYYY-MM-DD)
+ * @returns {Promise<Object>} Informações do clima para o evento
+ */
+export async function getEventWeather(latitude, longitude, eventDate) {
+    try {
+        // Calcula quantos dias faltam até o evento
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const eventDateObj = new Date(eventDate);
+        eventDateObj.setHours(0, 0, 0, 0);
+
+        const diffTime = eventDateObj - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        // Se o evento já passou ou é hoje
+        if (diffDays < 0) {
+            throw new Error("A data do evento já passou");
+        }
+
+        // API só prevê até 16 dias
+        const forecastDays = Math.min(diffDays + 1, 16);
+
+        // Busca previsão do tempo
+        const data = await getWeatherForecast(latitude, longitude, {
+            forecastDays,
+            hourlyParams: [],
+            dailyParams: [
+                "temperature_2m_max",
+                "temperature_2m_min",
+                "precipitation_sum",
+                "precipitation_probability_max",
+                "weather_code",
+            ],
+            currentParams: [],
+        });
+
+        // Encontra o índice do dia do evento
+        const eventDayIndex = data.daily.time.findIndex((date) => date === eventDate);
+
+        if (eventDayIndex === -1) {
+            throw new Error("Data do evento não encontrada na previsão");
+        }
+
+        // Extrai informações do dia específico
+        const tempMax = data.daily.temperature_2m_max[eventDayIndex];
+        const tempMin = data.daily.temperature_2m_min[eventDayIndex];
+        const precipitation = data.daily.precipitation_sum[eventDayIndex];
+        const precipitationProbability = data.daily.precipitation_probability_max?.[eventDayIndex];
+        const weatherCode = data.daily.weather_code[eventDayIndex];
+        const weatherDescription = getWeatherDescription(weatherCode);
+
+        // Define se vai chover (precipitação > 0.5mm ou probabilidade > 50%)
+        const willRain = precipitation > 0.5 || (precipitationProbability && precipitationProbability > 50);
+
+        return {
+            date: eventDate,
+            temperature: {
+                max: tempMax,
+                min: tempMin,
+                unit: "°C",
+            },
+            rain: {
+                willRain,
+                precipitation: precipitation,
+                probability: precipitationProbability,
+                unit: "mm",
+            },
+            weather: {
+                code: weatherCode,
+                description: weatherDescription.description,
+                icon: weatherDescription.icon,
+                severity: weatherDescription.severity,
+            },
+            location: {
+                latitude: data.latitude,
+                longitude: data.longitude,
+            },
+        };
+    } catch (error) {
+        console.error("Erro ao buscar clima do evento:", error);
+        throw error;
+    }
+}
+
+/**
+ * Versão simplificada - busca clima por endereço
+ * @param {string} address - Endereço do evento
+ * @param {string} eventDate - Data do evento (formato: YYYY-MM-DD)
+ * @returns {Promise<Object>} Informações do clima para o evento
+ */
+export async function getEventWeatherByAddress(address, eventDate) {
+    // Esta função precisa do geocode, então será usada via hook
+    throw new Error("Use o hook useEventWeather para buscar por endereço");
 }
 
 export default {
-  getWeather,
-  getCurrentWeather,
-  getForecast,
-  getHourlyForecast,
-  analyzeWeatherForEvent,
-  WEATHER_CODES,
+    getWeatherForecast,
+    getCurrentWeather,
+    getRainForecast,
+    getWeatherDescription,
+    getWindScale,
+    getRainyDays,
+    getEventWeather,
 };
