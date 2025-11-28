@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
+import { useParams } from "react-router-dom";
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 
@@ -8,17 +9,17 @@ import Etapa2Logistica from "../components/CriarEvento/Etapa2Logistica";
 import Etapa3Local from "../components/CriarEvento/Etapa3Local";
 import Etapa4Agenda from "../components/CriarEvento/Etapa4Agenda";
 import Etapa5Extras from "../components/CriarEvento/Etapa5Extras";
-
+import { useShows } from "../hooks/useShows";
+import { useViagens } from "../hooks/useViagens";
 import SidebarDireita from "../components/CriarEvento/SidebarDireita";
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
 
-  // ===== DADOS GLOBAIS DO EVENTO =====
+
   const [localShow, setLocalShow] = useState({});
   const [selectedRoles, setSelectedRoles] = useState([]);
 
-  // cada função -> colaborador escolhido
   const [assignments, setAssignments] = useState({});
 
   const [hotels, setHotels] = useState([]);
@@ -27,6 +28,39 @@ export const CriarEvento = () => {
 
   const [agenda, setAgenda] = useState([]);
   const [extras, setExtras] = useState({});
+const { tipoEvento, eventoId } = useParams();
+  const {buscarShow} = useShows();
+  const {buscarViagem} = useViagens();
+
+const [evento, setEvento] = useState(null);
+
+  useEffect(() => {
+    async function fetchEvento() {
+      if (!eventoId || !tipoEvento) return;
+      if (tipoEvento === "show") {
+        const show = await buscarShow(eventoId);
+        setEvento(show);
+        // ✅ Preenche o local se existir
+        if (show && show.local) {
+          setLocalShow(show.local); // ✅ Agora passa o objeto completo
+          console.log("LOCAL DO SHOW:", show.local.endereco.cep);
+        }
+      } else if (tipoEvento === "viagem") {
+        const viagem = await buscarViagem(eventoId);
+        setEvento(viagem);
+        // Se viagem tiver local, pode preencher aqui também
+        if (viagem && viagem.local) {
+          setLocalShow(viagem.local);
+        }
+      }
+    }
+    fetchEvento();
+  }, [tipoEvento, eventoId, buscarShow, buscarViagem]);
+
+  useEffect(() => {
+    console.log(evento);
+  }, [evento]);
+
 
   // fake colaboradores apenas para testes locais
   const colaboradores = [
@@ -39,7 +73,6 @@ export const CriarEvento = () => {
   // ===== RENDERIZA CADA ETAPA =====
   const renderEtapa = () => {
     switch (etapaAtual) {
-
       // 1 — LOCAL DO EVENTO
       case 1:
         return (
@@ -95,8 +128,8 @@ export const CriarEvento = () => {
         return null;
     }
   };
-
   return (
+    
     <Layout>
       <Sidebar />
 
