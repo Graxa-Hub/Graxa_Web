@@ -3,54 +3,38 @@ import { useLocais } from "../../hooks/useLocais";
 import { resolverEndereco } from "../../utils/endereco/resolverEndereco";
 import { buscarAeroportoMaisProximo } from "../../utils/endereco/apiAeroporto";
 import { buscarRestaurantes } from "../../utils/endereco/apiRestaurantes";
-import { LocalCombobox } from "./LocalCombobox"; // ✅ Importa o componente
+import { LocalCombobox } from "./LocalCombobox";
+import { useLocalSelecionado } from "../../context/LocalSelecionadoContext";
 
 const Etapa3Local = ({ localInicial }) => {
   const { locais, listarLocais } = useLocais();
-  const [localSelecionado, setLocalSelecionado] = useState(null);
+  const { localSelecionado, setLocalSelecionado } = useLocalSelecionado();
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
-  // Carrega locais ao montar
   useEffect(() => {
     listarLocais();
   }, [listarLocais]);
 
-  // Seleciona automaticamente o local do show se vier preenchido
   useEffect(() => {
-    if (localInicial && localInicial.id) {
-      setLocalSelecionado(localInicial);
+    if (!localSelecionado && localInicial && localInicial.id && locais.length > 0) {
+      const localDoShow = locais.find((l) => l.id === localInicial.id);
+      setLocalSelecionado(localDoShow || locais[0]);
     } else if (!localSelecionado && locais.length > 0) {
       setLocalSelecionado(locais[0]);
     }
+
   }, [localInicial, locais]);
 
-  // Atualiza local selecionado ao mudar ComboBox
-  const handleChange = (selectedId) => {
-    const selected = locais.find((l) => l.id === selectedId);
-    setLocalSelecionado(selected || null);
-    setErro("");
-  };
-
-  // Adiciona novo local à lista e seleciona
-  const handleNovoLocal = (novoLocal) => {
-    locais.push(novoLocal);
-    setLocalSelecionado(novoLocal);
-  };
-
-  // Busca aeroporto/restaurantes próximos automaticamente ao mudar localSelecionado
   useEffect(() => {
-    const buscarDadosLocal = async () => {
+    async function buscarDadosLocal() {
       if (!localSelecionado?.endereco?.cep && !localSelecionado?.endereco?.logradouro) {
         setErro("Digite um endereço ou CEP válido.");
         return;
       }
-
       setErro("");
       setLoading(true);
-
       try {
-        // 1) Resolver endereço
         const enderecoBusca = localSelecionado.endereco.cep || localSelecionado.endereco.logradouro;
         const resolved = await resolverEndereco(enderecoBusca);
         if (!resolved.sucesso) {
@@ -58,14 +42,8 @@ const Etapa3Local = ({ localInicial }) => {
           setLoading(false);
           return;
         }
-
-        // 2) Aeroporto mais próximo
         const aeroporto = await buscarAeroportoMaisProximo(resolved.coords);
-
-        // 3) Restaurantes próximos
         const restaurantes = await buscarRestaurantes(resolved.coords);
-
-        // 4) Atualiza local selecionado com infos extras
         setLocalSelecionado((prev) => ({
           ...prev,
           coordsLocal: resolved.coords,
@@ -78,29 +56,34 @@ const Etapa3Local = ({ localInicial }) => {
         console.error(e);
         setErro("Erro ao buscar dados do local.");
       }
-
       setLoading(false);
-    };
-
-    if (localSelecionado) {
+    }
+    if (localSelecionado && localSelecionado.id) {
       buscarDadosLocal();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, [localSelecionado?.id]);
+
+  const handleChange = (selectedId) => {
+    const selected = locais.find((l) => l.id === selectedId);
+    setLocalSelecionado(selected || null);
+    setErro("");
+  };
+
+  const handleNovoLocal = (novoLocal) => {
+    locais.push(novoLocal);
+    setLocalSelecionado(novoLocal);
+  };
 
   return (
     <div className="space-y-8">
       <h2 className="text-xl font-bold text-gray-800">Local do Evento</h2>
-
-      {/* ComboBox para selecionar local */}
       <LocalCombobox
         locais={locais}
         value={localSelecionado?.id || ""}
         onChange={handleChange}
         onNovoLocal={handleNovoLocal}
       />
-
-      {/* Card com dados do local selecionado */}
       {localSelecionado && (
         <div className="bg-white shadow-lg p-6 rounded-xl border border-gray-100 mt-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-2">
@@ -121,15 +104,12 @@ const Etapa3Local = ({ localInicial }) => {
           <div className="text-gray-700 text-sm mb-1">
             <strong>Capacidade:</strong> {localSelecionado.capacidade}
           </div>
-
           {loading && (
             <p className="text-green-600 text-sm mt-2">Buscando informações...</p>
           )}
           {erro && (
             <p className="text-red-500 text-sm mt-2">{erro}</p>
           )}
-
-          {/* RESULTADOS */}
           {localSelecionado.coordsLocal && (
             <div className="bg-gray-50 p-4 rounded-xl mt-6 border border-gray-200">
               <h3 className="font-bold mb-3 text-gray-700">Informações encontradas</h3>
