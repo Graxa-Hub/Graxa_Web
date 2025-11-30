@@ -2,23 +2,23 @@ import { User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 
-export const Header = ({ usuario }) => {
-  const { token } = useAuth();
+export const Header = () => {
+  const { usuario, token } = useAuth();  
   const [fotoUrl, setFotoUrl] = useState(null);
 
   useEffect(() => {
-  if (usuario?.fotoNome) {
-    setFotoUrl(
-      `http://localhost:8080/imagens/download/${usuario.fotoNome}?token=${token}&t=${Date.now()}`
-    );
-  } else {
-    setFotoUrl(null);
-  }
-}, [usuario?.fotoNome, token]);
+    if (usuario?.fotoNome) {
+      setFotoUrl(
+        `http://localhost:8080/imagens/download/${usuario.fotoNome}?token=${token}&t=${Date.now()}`
+      );
+    } else {
+      setFotoUrl(null);
+    }
+  }, [usuario?.fotoNome, token]);
 
   return (
     <header className="flex gap-3 py-5 border-b border-neutral-300">
-      
+
       {/* Foto de perfil */}
       <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
         {fotoUrl ? (
@@ -32,7 +32,7 @@ export const Header = ({ usuario }) => {
         )}
       </div>
 
-      {/* Informações do usuário */}
+      {/* Informações */}
       <div>
         {usuario ? (
           <>

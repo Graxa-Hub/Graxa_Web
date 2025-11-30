@@ -220,8 +220,18 @@ export const ConfiguracaoUsuario = () => {
 
     setUsuario(prev => ({
       ...prev,
+      nome: colaborador.nome,
       fotoNome: novoFotoNome
     }));
+
+    localStorage.setItem(
+      "usuario",
+      JSON.stringify({
+        ...usuarioLogado,
+        nome: colaborador.nome,
+        fotoNome: novoFotoNome
+      })
+    );
 
     // Limpa campos
     setNovaSenha("");
