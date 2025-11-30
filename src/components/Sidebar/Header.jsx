@@ -7,14 +7,14 @@ export const Header = ({ usuario }) => {
   const [fotoUrl, setFotoUrl] = useState(null);
 
   useEffect(() => {
-    if (usuario?.fotoNome) {
-      setFotoUrl(
-        `http://localhost:8080/imagens/download/${usuario.fotoNome}?token=${token}`
-      );
-    } else {
-      setFotoUrl(null);
-    }
-  }, [usuario, token]);
+  if (usuario?.fotoNome) {
+    setFotoUrl(
+      `http://localhost:8080/imagens/download/${usuario.fotoNome}?token=${token}&t=${Date.now()}`
+    );
+  } else {
+    setFotoUrl(null);
+  }
+}, [usuario?.fotoNome, token]);
 
   return (
     <header className="flex gap-3 py-5 border-b border-neutral-300">

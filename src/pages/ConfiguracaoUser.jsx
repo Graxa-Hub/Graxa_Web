@@ -5,7 +5,7 @@ import { Camera, Save, Settings } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export const ConfiguracaoUsuario = () => {
-  const { usuario: usuarioLogado, token } = useAuth();
+  const { usuario: usuarioLogado, token, setUsuario } = useAuth();
 
   const [colaborador, setColaborador] = useState(null);
   const [credencial, setCredencial] = useState(null);
@@ -76,7 +76,7 @@ export const ConfiguracaoUsuario = () => {
     fetchData();
   }, [usuarioLogado, token]);
 
-  // loading
+
   if (!colaborador || !credencial) {
     return (
       <Layout>
@@ -150,16 +150,15 @@ export const ConfiguracaoUsuario = () => {
   };
 
   const handleSave = async () => {
-  let novoFotoNome = colaborador.fotoNome; // sempre começa com o valor atual
+  let novoFotoNome = colaborador.fotoNome; 
 
-  // Validar senha se o usuário quer mudar
   if (novaSenha) {
     const ok = await validarSenhaAtual();
     if (!ok) return;
   }
 
   try {
-    // 1️⃣ Upload da imagem (se houver nova)
+    //Upload da imagem (se houver nova)
     novoFotoNome = await uploadFoto();
 
     const headersJSON = {
@@ -167,7 +166,7 @@ export const ConfiguracaoUsuario = () => {
       "Content-Type": "application/json",
     };
 
-    // 2️⃣ Atualizar Colaborador
+    //Atualizar Colaborador
     const resColab = await fetch(
       `http://localhost:8080/colaboradores/${usuarioLogado.id}`,
       {
@@ -188,7 +187,7 @@ export const ConfiguracaoUsuario = () => {
       return;
     }
 
-    // 3️⃣ Atualizar Credenciais
+    //Atualizar Credenciais
     const resCred = await fetch(
       `http://localhost:8080/credenciais/${usuarioLogado.id}`,
       {
@@ -208,16 +207,21 @@ export const ConfiguracaoUsuario = () => {
       return;
     }
 
-    // 4️⃣ Atualiza estado LOCAL (sem refetch)  
+    // Atualiza estado LOCAL 
     setColaborador((prev) => ({
       ...prev,
       fotoNome: novoFotoNome,
     }));
-
-    // Atualiza preview SEM TOKEN
+    
+    
     setPreviewFoto(
       `http://localhost:8080/imagens/download/${novoFotoNome}`
     );
+
+    setUsuario(prev => ({
+      ...prev,
+      fotoNome: novoFotoNome
+    }));
 
     // Limpa campos
     setNovaSenha("");
