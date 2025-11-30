@@ -10,14 +10,16 @@ export const ConfiguracaoUsuario = () => {
   const [colaborador, setColaborador] = useState(null);
   const [credencial, setCredencial] = useState(null);
 
+  const [arquivoFoto, setArquivoFoto] = useState(null);
   const [previewFoto, setPreviewFoto] = useState(null);
-  const [senha, setSenha] = useState("");
-  const [confirmarSenha, setConfirmarSenha] = useState("");
+
+  const [senhaAtual, setSenhaAtual] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
 
   const [salvo, setSalvo] = useState(false);
   const [erro, setErro] = useState("");
 
-  //GETTERS
+  // GET COLABORADOR / TELEFONE / CREDENCIAL
   useEffect(() => {
     if (!usuarioLogado?.id) return;
 
@@ -28,29 +30,36 @@ export const ConfiguracaoUsuario = () => {
           "Content-Type": "application/json",
         };
 
-        // --- GET Colaborador ---
+        // --- GET COLABORADOR
         const resColab = await fetch(
           `http://localhost:8080/colaboradores/${usuarioLogado.id}`,
           { headers }
         );
         const dataColab = await resColab.json();
+        console.log("FotoNome do backend:", dataColab.fotoNome);
+
         setColaborador(dataColab);
 
-        // --- GET Telefones ---
+        // Se tiver foto no backend → montar URL com token
+        if (dataColab?.fotoNome) {
+          setPreviewFoto(
+            `http://localhost:8080/imagens/download/${dataColab.fotoNome}`
+          );
+        }
+
+        // --- GET TELEFONES
         const resTel = await fetch(
           `http://localhost:8080/telefones/${usuarioLogado.id}`,
           { headers }
         );
         const telefones = await resTel.json();
 
-        if (telefones.length > 0) {
-          setColaborador((prev) => ({
-            ...prev,
-            telefone: telefones[0],
-          }));
-        }
+        setColaborador((prev) => ({
+          ...prev,
+          telefone: telefones.length > 0 ? telefones[0] : null,
+        }));
 
-        // --- GET Credencial ---
+        // --- GET CREDENCIAL
         const resCred = await fetch(
           `http://localhost:8080/credenciais/${usuarioLogado.id}`,
           { headers }
@@ -60,12 +69,14 @@ export const ConfiguracaoUsuario = () => {
 
       } catch (error) {
         console.error("Erro ao carregar usuário:", error);
+        setErro("Erro ao carregar dados do usuário.");
       }
     };
 
     fetchData();
-  }, [usuarioLogado]);
+  }, [usuarioLogado, token]);
 
+  // loading
   if (!colaborador || !credencial) {
     return (
       <Layout>
@@ -77,105 +88,142 @@ export const ConfiguracaoUsuario = () => {
     );
   }
 
-  const handleChangeColab = (field, value) => {
-    setColaborador((prev) => ({ ...prev, [field]: value }));
-    setErro("");
-    setSalvo(false);
-  };
-
-  const handleChangeCred = (field, value) => {
-    setCredencial((prev) => ({ ...prev, [field]: value }));
-    setErro("");
-    setSalvo(false);
-  };
-
+  // HANDLERS
   const handleFotoUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    setColaborador((prev) => ({ ...prev, foto: file }));
+    setArquivoFoto(file);
 
     const reader = new FileReader();
     reader.onload = () => setPreviewFoto(reader.result);
     reader.readAsDataURL(file);
   };
 
+  const uploadFoto = async () => {
+    if (!arquivoFoto) return colaborador.fotoNome || null;
 
- const handleSave = async () => {
-  if (senha !== confirmarSenha) {
-    setErro("As senhas não coincidem.");
-    return;
+    const formData = new FormData();
+    formData.append("arquivo", arquivoFoto);
+
+    const res = await fetch("http://localhost:8080/imagens/upload", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      console.error("Erro ao enviar foto");
+      return colaborador.fotoNome || null;
+    }
+
+    const data = await res.json();
+    return data.nomeArquivo;
+  };
+
+  const validarSenhaAtual = async () => {
+    if (!senhaAtual) {
+      setErro("Informe sua senha atual para alterar a senha.");
+      return false;
+    }
+
+    try {
+      const res = await fetch("http://localhost:8080/credenciais/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          identificador: credencial.email,
+          senha: senhaAtual,
+        }),
+      });
+
+      if (!res.ok) {
+        setErro("Senha atual incorreta.");
+        return false;
+      }
+
+      return true;
+    } catch (err) {
+      console.error("Erro validar senha atual:", err);
+      return false;
+    }
+  };
+
+  const handleSave = async () => {
+  let novoFotoNome = colaborador.fotoNome; // sempre começa com o valor atual
+
+  // Validar senha se o usuário quer mudar
+  if (novaSenha) {
+    const ok = await validarSenhaAtual();
+    if (!ok) return;
   }
 
   try {
+    // 1️⃣ Upload da imagem (se houver nova)
+    novoFotoNome = await uploadFoto();
+
     const headersJSON = {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
     };
 
-    //COLABORADOR
-    const bodyColaborador = {
-      nome: colaborador.nome,
-      dataNascimento: colaborador.dataNascimento ?? null,
-      cpf: colaborador.cpf,
-      tipoUsuario: colaborador.tipoUsuario,
-      nomeUsuario: credencial.nomeUsuario,
-      email: credencial.email,
-      senha: senha || credencial.senha
-    };
-
-    await fetch(
+    // 2️⃣ Atualizar Colaborador
+    const resColab = await fetch(
       `http://localhost:8080/colaboradores/${usuarioLogado.id}`,
       {
         method: "PUT",
         headers: headersJSON,
-        body: JSON.stringify(bodyColaborador),
+        body: JSON.stringify({
+          nome: colaborador.nome,
+          cpf: colaborador.cpf,
+          dataNascimento: colaborador.dataNascimento,
+          tipoUsuario: colaborador.tipoUsuario,
+          fotoNome: novoFotoNome,
+        }),
       }
     );
 
-    // CREDENCIAL
-    const bodyCredenciais = {
-      nomeUsuario: credencial.nomeUsuario,
-      usuarioId: usuarioLogado.id,
-      email: credencial.email,
-      senha: senha || credencial.senha,
-    };
+    if (!resColab.ok) {
+      setErro("Erro ao atualizar colaborador.");
+      return;
+    }
 
-    await fetch(
+    // 3️⃣ Atualizar Credenciais
+    const resCred = await fetch(
       `http://localhost:8080/credenciais/${usuarioLogado.id}`,
       {
         method: "PUT",
         headers: headersJSON,
-        body: JSON.stringify(bodyCredenciais),
+        body: JSON.stringify({
+          nomeUsuario: credencial.nomeUsuario,
+          email: credencial.email,
+          usuarioId: usuarioLogado.id,
+          senha: novaSenha || credencial.senha,
+        }),
       }
     );
 
-    // TELEFONE
-    const telefoneData = {
-      tipoTelefone: colaborador.telefone?.tipoTelefone ?? "CELULAR",
-      numeroTelefone: colaborador.telefone?.numeroTelefone ?? ""
-    };
-    if (colaborador.telefone?.id) {
-      await fetch(
-        `http://localhost:8080/telefones/telefone/${colaborador.telefone.id}`,
-        {
-          method: "PUT",
-          headers: headersJSON,
-          body: JSON.stringify(telefoneData),
-        }
-      );
-    } 
-    else {
-      await fetch(
-        `http://localhost:8080/telefones/${usuarioLogado.id}`,
-        {
-          method: "POST",
-          headers: headersJSON,
-          body: JSON.stringify(telefoneData),
-        }
-      );
+    if (!resCred.ok) {
+      setErro("Erro ao atualizar credenciais.");
+      return;
     }
 
+    // 4️⃣ Atualiza estado LOCAL (sem refetch)  
+    setColaborador((prev) => ({
+      ...prev,
+      fotoNome: novoFotoNome,
+    }));
+
+    // Atualiza preview SEM TOKEN
+    setPreviewFoto(
+      `http://localhost:8080/imagens/download/${novoFotoNome}`
+    );
+
+    // Limpa campos
+    setNovaSenha("");
+    setSenhaAtual("");
+
+    // Toast
     setSalvo(true);
     setTimeout(() => setSalvo(false), 2500);
 
@@ -185,6 +233,7 @@ export const ConfiguracaoUsuario = () => {
   }
 };
 
+
   return (
     <Layout>
       <Sidebar />
@@ -192,22 +241,24 @@ export const ConfiguracaoUsuario = () => {
       <div className="flex w-full h-screen bg-gray-50/50">
         <div className="flex-1 p-10 overflow-y-auto">
           <div className="bg-white shadow rounded-xl p-6 max-w-2xl mx-auto space-y-6 border border-gray-200">
-
+            
             {/* HEADER */}
-            <div className="border-b border-gray-200 pb-3 flex items-center gap-3">
+            <div className="border-b pb-3 flex items-center gap-3">
               <Settings size={24} className="text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">
-                Configurações do Usuário
-              </h1>
+              <h1 className="text-2xl font-bold">Configurações do Usuário</h1>
             </div>
 
             {/* FOTO */}
             <div className="flex flex-col items-center gap-4">
-              <div className="w-28 h-28 rounded-full overflow-hidden border flex items-center justify-center bg-gray-100">
+              <div className="w-28 h-28 rounded-full overflow-hidden border bg-gray-100">
                 {previewFoto ? (
-                  <img src={previewFoto} className="w-full h-full object-cover" />
+                  <img
+                    src={previewFoto}
+                    className="w-full h-full object-cover"
+                    alt="Foto do usuário"
+                  />
                 ) : (
-                  <Camera size={36} className="text-gray-400" />
+                  <Camera size={36} className="text-gray-400 m-auto" />
                 )}
               </div>
 
@@ -219,24 +270,30 @@ export const ConfiguracaoUsuario = () => {
 
             {/* Nome */}
             <div>
-              <label className="text-sm font-semibold text-gray-700">Nome</label>
+              <label className="font-semibold">Nome</label>
               <input
                 className="w-full mt-1 p-2 border rounded-lg"
                 value={colaborador.nome}
-                onChange={(e) => handleChangeColab("nome", e.target.value)}
+                onChange={(e) =>
+                  setColaborador({ ...colaborador, nome: e.target.value })
+                }
               />
             </div>
 
             {/* Telefone */}
             <div>
-              <label className="text-sm font-semibold text-gray-700">Telefone</label>
+              <label className="font-semibold">Telefone</label>
               <input
                 className="w-full mt-1 p-2 border rounded-lg"
                 value={colaborador.telefone?.numeroTelefone ?? ""}
                 onChange={(e) =>
-                  handleChangeColab("telefone", {
-                    ...colaborador.telefone,
-                    numeroTelefone: e.target.value,
+                  setColaborador({
+                    ...colaborador,
+                    telefone: {
+                      ...colaborador.telefone,
+                      numeroTelefone: e.target.value,
+                      tipoTelefone: colaborador.telefone?.tipoTelefone ?? "CELULAR",
+                    },
                   })
                 }
               />
@@ -244,59 +301,55 @@ export const ConfiguracaoUsuario = () => {
 
             {/* Email */}
             <div>
-              <label className="text-sm font-semibold text-gray-700">E-mail</label>
+              <label className="font-semibold">Email</label>
               <input
                 className="w-full mt-1 p-2 border rounded-lg"
                 value={credencial.email}
-                onChange={(e) => handleChangeCred("email", e.target.value)}
+                onChange={(e) =>
+                  setCredencial({ ...credencial, email: e.target.value })
+                }
               />
             </div>
 
-            {/* SENHA */}
+            {/* Senhas */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-semibold text-gray-700">
-                  Nova Senha
-                </label>
+                <label className="font-semibold">Senha atual</label>
                 <input
                   type="password"
                   className="w-full mt-1 p-2 border rounded-lg"
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
+                  value={senhaAtual}
+                  onChange={(e) => setSenhaAtual(e.target.value)}
                 />
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-gray-700">
-                  Confirmar Senha
-                </label>
+                <label className="font-semibold">Nova senha</label>
                 <input
                   type="password"
                   className="w-full mt-1 p-2 border rounded-lg"
-                  value={confirmarSenha}
-                  onChange={(e) => setConfirmarSenha(e.target.value)}
+                  value={novaSenha}
+                  onChange={(e) => setNovaSenha(e.target.value)}
                 />
               </div>
             </div>
 
             {erro && <p className="text-red-500">{erro}</p>}
 
-            {/* Botão salvar */}
+            {/* SAVE */}
             <div className="flex justify-end pt-4 border-t">
               <button
                 onClick={handleSave}
                 className="px-5 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
               >
                 <Save size={16} />
-                Salvar Alterações
+                Salvar alterações
               </button>
             </div>
-
           </div>
         </div>
       </div>
 
-      {/* TOAST */}
       {salvo && (
         <div className="fixed top-5 right-5 bg-green-600 text-white px-4 py-3 rounded-lg shadow">
           ✔ Alterações salvas com sucesso!
