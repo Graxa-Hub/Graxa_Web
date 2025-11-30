@@ -5,7 +5,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Cadastro } from "./pages/Cadastro";
 import { HomeRedirect } from "./components/HomeRedirect";
-import { ProtectedLayout } from "./components/ProtectedLayout";
+// import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
 import { ArtistaApp } from "./pages/ArtistaApp";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
