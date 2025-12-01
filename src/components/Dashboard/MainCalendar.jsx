@@ -80,7 +80,7 @@ export default function MainCalendar({
     const eventoId = selectInfo.event?.extendedProps?.dados?.id || selectInfo.event?.id;
     const tipoEvento = selectInfo.event?.extendedProps?.tipo || "show";
     if (eventoId) {
-      navigate(`/criar-evento/${tipoEvento}/${eventoId}`); // ✅ tipo e id na URL
+      navigate(`/criar-evento/${tipoEvento}/${eventoId}`);
     }
   };
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
-
 import Stepper from "../components/CriarEvento/Stepper";
 import Etapa1Funcoes from "../components/CriarEvento/Etapa1Funcoes";
 import Etapa2Logistica from "../components/CriarEvento/Etapa2Logistica";

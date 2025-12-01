@@ -3,19 +3,19 @@ import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { Camera, Save, Settings } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useColaboradores } from "../hooks/useColaboradores";
+import { colaboradorService } from "../services/colaboradorService";
 
 export const ConfiguracaoUsuario = () => {
-  const { usuario: usuarioLogado, token, setUsuario } = useAuth();
+  const { usuario: usuarioLogado, setUsuario } = useAuth();
+  const { buscarColaboradorPorId, atualizarColaborador, loading, error } = useColaboradores();
 
   const [colaborador, setColaborador] = useState(null);
   const [credencial, setCredencial] = useState(null);
-
   const [arquivoFoto, setArquivoFoto] = useState(null);
   const [previewFoto, setPreviewFoto] = useState(null);
-
   const [senhaAtual, setSenhaAtual] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
-
   const [salvo, setSalvo] = useState(false);
   const [erro, setErro] = useState("");
 
@@ -25,46 +25,20 @@ export const ConfiguracaoUsuario = () => {
 
     const fetchData = async () => {
       try {
-        const headers = {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        };
-
-        // --- GET COLABORADOR
-        const resColab = await fetch(
-          `http://localhost:8080/colaboradores/${usuarioLogado.id}`,
-          { headers }
-        );
-        const dataColab = await resColab.json();
-        console.log("FotoNome do backend:", dataColab.fotoNome);
-
+        // Buscar colaborador com foto
+        const dataColab = await buscarColaboradorPorId(usuarioLogado.id);
         setColaborador(dataColab);
+        setPreviewFoto(dataColab.fotoUrl);
 
-        // Se tiver foto no backend → montar URL com token
-        if (dataColab?.fotoNome) {
-          setPreviewFoto(
-            `http://localhost:8080/imagens/download/${dataColab.fotoNome}`
-          );
-        }
-
-        // --- GET TELEFONES
-        const resTel = await fetch(
-          `http://localhost:8080/telefones/${usuarioLogado.id}`,
-          { headers }
-        );
-        const telefones = await resTel.json();
-
-        setColaborador((prev) => ({
+        // Buscar telefones
+        const telefones = await colaboradorService.buscarTelefonesPorUsuarioId(usuarioLogado.id);
+        setColaborador(prev => ({
           ...prev,
           telefone: telefones.length > 0 ? telefones[0] : null,
         }));
 
-        // --- GET CREDENCIAL
-        const resCred = await fetch(
-          `http://localhost:8080/credenciais/${usuarioLogado.id}`,
-          { headers }
-        );
-        const dataCred = await resCred.json();
+        // Buscar credencial
+        const dataCred = await colaboradorService.buscarCredencialPorUsuarioId(usuarioLogado.id);
         setCredencial(dataCred);
 
       } catch (error) {
@@ -74,10 +48,9 @@ export const ConfiguracaoUsuario = () => {
     };
 
     fetchData();
-  }, [usuarioLogado, token]);
+  }, [usuarioLogado, buscarColaboradorPorId]);
 
-
-  if (!colaborador || !credencial) {
+  if (loading || !colaborador || !credencial) {
     return (
       <Layout>
         <Sidebar />
@@ -100,27 +73,6 @@ export const ConfiguracaoUsuario = () => {
     reader.readAsDataURL(file);
   };
 
-  const uploadFoto = async () => {
-    if (!arquivoFoto) return colaborador.fotoNome || null;
-
-    const formData = new FormData();
-    formData.append("arquivo", arquivoFoto);
-
-    const res = await fetch("http://localhost:8080/imagens/upload", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
-
-    if (!res.ok) {
-      console.error("Erro ao enviar foto");
-      return colaborador.fotoNome || null;
-    }
-
-    const data = await res.json();
-    return data.nomeArquivo;
-  };
-
   const validarSenhaAtual = async () => {
     if (!senhaAtual) {
       setErro("Informe sua senha atual para alterar a senha.");
@@ -128,125 +80,88 @@ export const ConfiguracaoUsuario = () => {
     }
 
     try {
-      const res = await fetch("http://localhost:8080/credenciais/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          identificador: credencial.email,
-          senha: senhaAtual,
-        }),
-      });
-
-      if (!res.ok) {
+      const valido = await colaboradorService.validarSenha(credencial.email, senhaAtual);
+      if (!valido) {
         setErro("Senha atual incorreta.");
         return false;
       }
-
       return true;
     } catch (err) {
       console.error("Erro validar senha atual:", err);
+      setErro("Erro ao validar senha.");
       return false;
     }
   };
 
   const handleSave = async () => {
-  let novoFotoNome = colaborador.fotoNome; 
+    if (novaSenha) {
+      const ok = await validarSenhaAtual();
+      if (!ok) return;
+    }
 
-  if (novaSenha) {
-    const ok = await validarSenhaAtual();
-    if (!ok) return;
-  }
+    try {
+      let novoFotoNome = colaborador.fotoNome;
 
-  try {
-    //Upload da imagem (se houver nova)
-    novoFotoNome = await uploadFoto();
+      // Upload da foto ANTES de atualizar o colaborador
+      if (arquivoFoto) {
+        novoFotoNome = await colaboradorService.uploadFoto(arquivoFoto);
+      }
 
-    const headersJSON = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    };
-
-    //Atualizar Colaborador
-    const resColab = await fetch(
-      `http://localhost:8080/colaboradores/${usuarioLogado.id}`,
-      {
-        method: "PUT",
-        headers: headersJSON,
-        body: JSON.stringify({
+      // Atualizar colaborador com o novo fotoNome
+      const colaboradorAtualizado = await atualizarColaborador(
+        usuarioLogado.id,
+        {
           nome: colaborador.nome,
           cpf: colaborador.cpf,
           dataNascimento: colaborador.dataNascimento,
           tipoUsuario: colaborador.tipoUsuario,
-          fotoNome: novoFotoNome,
-        }),
-      }
-    );
+          fotoNome: novoFotoNome, // Usa o novo nome ou o antigo
+        },
+        null // Não passa a foto aqui, já fizemos upload
+      );
 
-    if (!resColab.ok) {
-      setErro("Erro ao atualizar colaborador.");
-      return;
+      // Atualizar credencial
+      await colaboradorService.atualizarCredencial(usuarioLogado.id, {
+        nomeUsuario: credencial.nomeUsuario,
+        email: credencial.email,
+        usuarioId: usuarioLogado.id,
+        senha: novaSenha || credencial.senha,
+      });
+
+      // Atualiza estado local
+      setColaborador(colaboradorAtualizado);
+      setPreviewFoto(colaboradorAtualizado.fotoUrl);
+
+      // Atualiza contexto e localStorage
+      setUsuario(prev => ({
+        ...prev,
+        nome: colaboradorAtualizado.nome,
+        fotoNome: colaboradorAtualizado.fotoNome,
+      }));
+
+      localStorage.setItem(
+        "usuario",
+        JSON.stringify({
+          ...usuarioLogado,
+          nome: colaboradorAtualizado.nome,
+          fotoNome: colaboradorAtualizado.fotoNome,
+        })
+      );
+
+      // Limpa campos
+      setNovaSenha("");
+      setSenhaAtual("");
+      setArquivoFoto(null);
+
+      // Toast de sucesso
+      setSalvo(true);
+      setTimeout(() => setSalvo(false), 2500);
+
+    } catch (error) {
+      console.error("Erro ao salvar:", error);
+      setErro("Erro ao salvar alterações.");
     }
-
-    //Atualizar Credenciais
-    const resCred = await fetch(
-      `http://localhost:8080/credenciais/${usuarioLogado.id}`,
-      {
-        method: "PUT",
-        headers: headersJSON,
-        body: JSON.stringify({
-          nomeUsuario: credencial.nomeUsuario,
-          email: credencial.email,
-          usuarioId: usuarioLogado.id,
-          senha: novaSenha || credencial.senha,
-        }),
-      }
-    );
-
-    if (!resCred.ok) {
-      setErro("Erro ao atualizar credenciais.");
-      return;
-    }
-
-    // Atualiza estado LOCAL 
-    setColaborador((prev) => ({
-      ...prev,
-      fotoNome: novoFotoNome,
-    }));
-    
-    
-    setPreviewFoto(
-      `http://localhost:8080/imagens/download/${novoFotoNome}`
-    );
-
-    setUsuario(prev => ({
-      ...prev,
-      nome: colaborador.nome,
-      fotoNome: novoFotoNome
-    }));
-
-    localStorage.setItem(
-      "usuario",
-      JSON.stringify({
-        ...usuarioLogado,
-        nome: colaborador.nome,
-        fotoNome: novoFotoNome
-      })
-    );
-
-    // Limpa campos
-    setNovaSenha("");
-    setSenhaAtual("");
-
-    // Toast
-    setSalvo(true);
-    setTimeout(() => setSalvo(false), 2500);
-
-  } catch (error) {
-    console.error("Erro ao salvar:", error);
-    setErro("Erro ao salvar alterações.");
-  }
-};
-
+  };
 
   return (
     <Layout>
@@ -349,15 +264,17 @@ export const ConfiguracaoUsuario = () => {
             </div>
 
             {erro && <p className="text-red-500">{erro}</p>}
+            {error && <p className="text-red-500">{error}</p>}
 
             {/* SAVE */}
             <div className="flex justify-end pt-4 border-t">
               <button
                 onClick={handleSave}
-                className="px-5 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
+                className="px-5 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2 hover:bg-blue-700 disabled:bg-gray-400"
+                disabled={loading}
               >
                 <Save size={16} />
-                Salvar alterações
+                {loading ? "Salvando..." : "Salvar alterações"}
               </button>
             </div>
           </div>

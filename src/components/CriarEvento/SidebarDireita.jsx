@@ -1,4 +1,5 @@
 import React from "react";
+import { TIPOS_USUARIO } from "../../constants/tipoUsuario";
 
 const Card = ({ title, children }) => (
   <div className="bg-white shadow-md rounded-xl p-4 mb-4 border border-gray-100">
@@ -71,14 +72,22 @@ const SidebarDireita = ({
           )}
 
           {selectedRoles.map((roleId) => {
-            const pessoa = assignments[roleId];
-            // deixa o id mais legível: "tecnico_som" → "TECNICO SOM"
-            const labelFuncao = roleId.replace(/_/g, " ").toUpperCase();
+            // Busca label do cargo
+            const tipo = TIPOS_USUARIO.find(t => t.value === roleId);
+            const labelFuncao = tipo ? tipo.label : roleId.replace(/_/g, " ").toUpperCase();
+
+            // Quantidade de colaboradores selecionados para o cargo
+            const selecionados = assignments[roleId] || [];
+            const quantidade = Array.isArray(selecionados) ? selecionados.length : 0;
 
             return (
-              <p key={roleId} className="mb-1">
-                <strong className="text-gray-900">{labelFuncao}:</strong>{" "}
-                {pessoa ? pessoa.nome : "— falta escolher"}
+              <p key={roleId} className="mb-1 flex justify-between items-center">
+                <span>
+                  <strong className="text-gray-900">{labelFuncao}:</strong>
+                </span>
+                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold ml-2">
+                  {quantidade} selecionado{quantidade === 1 ? "" : "s"}
+                </span>
               </p>
             );
           })}
