@@ -1,15 +1,15 @@
-import React from 'react'
+import React from "react";
 
-export function Textarea({ 
-  label, 
-  placeholder, 
-  value, 
-  onChange, 
+export function Textarea({
+  label,
+  placeholder,
+  value,
+  onChange,
   required = false,
   rows = 4,
   maxLength,
   className = "",
-  ...props 
+  ...props
 }) {
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
@@ -26,7 +26,7 @@ export function Textarea({
         required={required}
         rows={rows}
         maxLength={maxLength}
-        className="px-4 py-3 border border-gray-200 rounded-lg shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 bg-white resize-none"
+        className="h-30 px-4 py-3 border border-gray-200 rounded-lg shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 bg-white "
         {...props}
       />
       {maxLength && (
@@ -35,5 +35,5 @@ export function Textarea({
         </div>
       )}
     </div>
-  )
+  );
 }

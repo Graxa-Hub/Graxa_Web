@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input } from "./Input";
+import { Input } from "./ModalEventos/Input";
 import { InputDate } from "./InputDate";
 import { EnderecoForm } from "./EnderecoForm";
 import { useBandas } from "../hooks/useBandas";
@@ -24,8 +24,8 @@ export function EventoModal({
   onClose,
   onFinish,
   dataHoraInicial = { inicio: "", fim: "" },
-  bandaId,      // ✅ Adicione estes dois props
-  turneId,      // ✅
+  bandaId, // ✅ Adicione estes dois props
+  turneId, // ✅
 }) {
   const [activeTab, setActiveTab] = useState("show");
   const [currentStep, setCurrentStep] = useState(1);
@@ -90,8 +90,6 @@ export function EventoModal({
         dataInicio: dataHoraInicial.inicio,
         dataFim: dataHoraInicial.fim,
       }));
-
-
     }
   }, [isOpen, dataHoraInicial]);
 
@@ -484,7 +482,6 @@ export function EventoModal({
     if (errors.length > 0) return;
 
     if (activeTab === "show") {
-
       try {
         let localIdFinal = showData.localId;
 
@@ -531,7 +528,6 @@ export function EventoModal({
           tipoViagem: viagemData.tipoViagem,
           turneId: viagemData.turneId ? Number(viagemData.turneId) : null,
         };
-
 
         const viagemCriada = await criarViagem(viagemPayload);
 
@@ -932,9 +928,9 @@ function ShowContent({
   };
 
   // ✅ Filtra turnês pelas bandas selecionadas
-  const turnesFiltradas = turnes.filter((turne) =>
-  String(turne.banda?.id || turne.bandaId) === String(data.bandaId)
-);
+  const turnesFiltradas = turnes.filter(
+    (turne) => String(turne.banda?.id || turne.bandaId) === String(data.bandaId)
+  );
 
   if (currentStep === 1) {
     return (
@@ -1061,8 +1057,6 @@ function ShowContent({
             />
           </div>
         )}
-
-        
       </div>
     );
   }
@@ -1071,28 +1065,28 @@ function ShowContent({
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
-          <InputDate
-            label="Data/Hora de Início"
-            value={data.dataHoraInicio}
-            onChange={(e) => {
-              setData({ ...data, dataHoraInicio: e.target.value });
-              if (clearFieldError) clearFieldError("dataHoraInicio");
-            }}
-            required
-            error={fieldErrors.dataHoraInicio}
-          />
+        <InputDate
+          label="Data/Hora de Início"
+          value={data.dataHoraInicio}
+          onChange={(e) => {
+            setData({ ...data, dataHoraInicio: e.target.value });
+            if (clearFieldError) clearFieldError("dataHoraInicio");
+          }}
+          required
+          error={fieldErrors.dataHoraInicio}
+        />
 
-          <InputDate
-            label="Data/Hora de Fim"
-            value={data.dataHoraFim}
-            onChange={(e) => {
-              setData({ ...data, dataHoraFim: e.target.value });
-              if (clearFieldError) clearFieldError("dataHoraFim");
-            }}
-            required
-            error={fieldErrors.dataHoraFim}
-          />
-        </div>
+        <InputDate
+          label="Data/Hora de Fim"
+          value={data.dataHoraFim}
+          onChange={(e) => {
+            setData({ ...data, dataHoraFim: e.target.value });
+            if (clearFieldError) clearFieldError("dataHoraFim");
+          }}
+          required
+          error={fieldErrors.dataHoraFim}
+        />
+      </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Descrição do Show
