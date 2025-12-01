@@ -62,7 +62,7 @@ export function Modal({
       onClick={handleOverlayClick}
     >
       {/* Modal Box */}
-      <div className="bg-white rounded-2xl shadow-2xl min-h-80 h-fit relative overflow-x-hidden min-w-100 w-fit max-w-5xl">
+      <div className="bg-white rounded-2xl shadow-2xl min-h-80 h-fit relative overflow-x-hidden w-[700px] max-w-5xl">
         {/* Header */}
         <ModalHeader
           title={title}

@@ -269,21 +269,19 @@ export function AddBandaModal({
                 error={errors.nome}
                 required
               />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ComboBox
-                  label="Gênero"
-                  value={draft.genero}
-                  onChange={(value) => handleChange("genero", value)}
-                  options={GENEROS}
-                  error={errors.genero}
-                  placeholder="Selecione um gênero"
-                />
-                <InputFile
-                  label="Foto da Banda"
-                  onFileSelect={(file) => handleChange("foto", file)}
-                  currentImage={imagemAtual}
-                />
-              </div>
+              <ComboBox
+                label="Gênero"
+                value={draft.genero}
+                onChange={(value) => handleChange("genero", value)}
+                options={GENEROS}
+                error={errors.genero}
+                placeholder="Selecione um gênero"
+              />
+              <InputFile
+                label="Foto da Banda"
+                onFileSelect={(file) => handleChange("foto", file)}
+                currentImage={imagemAtual}
+              />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Descrição
@@ -391,7 +389,7 @@ export function AddBandaModal({
                   + Adicionar Integrante
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {draft.integrantes.map((integrante, i) => (
                   <div
                     key={i}
