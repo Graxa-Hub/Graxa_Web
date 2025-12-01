@@ -25,6 +25,7 @@ export async function getDistance(origemText, destinoText) {
 }
 
 async function geocode(q) {
+  if (!TOKEN) throw new Error("Mapbox token ausente (VITE_MAPBOX_TOKEN)");
   const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q)}.json?access_token=${TOKEN}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error("Falha ao geocodificar endereço");
@@ -34,4 +35,6 @@ async function geocode(q) {
   return { lat, lon };
 }
 
-export default { getDistance };
+export { geocode };
+
+export default { getDistance, geocode };
