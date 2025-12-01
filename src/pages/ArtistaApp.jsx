@@ -13,22 +13,22 @@ import { AddBandaModal } from "../components/ArtistaApp/AddBandaModal";
 
 // ========== Tela Principal ==========
 export function ArtistaApp() {
-  const { 
-    bandas, 
-    loading, 
-    listarBandas, 
-    criarBanda, 
-    atualizarBanda, 
-    excluirBanda, 
-    adicionarIntegrantes 
+  const {
+    bandas,
+    loading,
+    listarBandas,
+    criarBanda,
+    atualizarBanda,
+    excluirBanda,
+    adicionarIntegrantes,
   } = useBandas();
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [bandaParaEditar, setBandaParaEditar] = useState(null);
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
-    banda: null
+    banda: null,
   });
   const [bandaVisualizar, setBandaVisualizar] = useState(null);
 
@@ -99,7 +99,7 @@ export function ArtistaApp() {
   return (
     <Layout>
       <Sidebar />
-      <main className="flex-1 bg-[#f4f5f7] p-8">
+      <main className="flex-1 flex flex-col p-5 bg-neutral-300 min-h-0">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="font-semibold text-lg bg-white inline-block px-4 py-2 rounded shadow">

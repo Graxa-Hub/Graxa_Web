@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Modal } from "./Modal";
+import { Modal } from "./ModalEventos/Modal";
 import { useBandas } from "../hooks/useBandas";
 
 export function VisualizarTurneModal({ turne, onClose }) {
@@ -35,10 +35,18 @@ export function VisualizarTurneModal({ turne, onClose }) {
     >
       <div className="space-y-4 p-4 flex flex-col items-center">
         {turne.image && (
-          <img src={turne.image} alt={turne.name} className="w-48 h-48 object-cover rounded mb-2" />
+          <img
+            src={turne.image}
+            alt={turne.name}
+            className="w-48 h-48 object-cover rounded mb-2"
+          />
         )}
-        <p><strong>Nome:</strong> {turne.name}</p>
-        <p><strong>Descrição:</strong> {turne.description}</p>
+        <p>
+          <strong>Nome:</strong> {turne.name}
+        </p>
+        <p>
+          <strong>Descrição:</strong> {turne.description}
+        </p>
         <p>
           <strong>Banda:</strong> {banda?.nome || "N/A"}
         </p>

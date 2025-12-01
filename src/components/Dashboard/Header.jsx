@@ -1,9 +1,9 @@
 import { ChevronDown, ChevronUp } from "lucide-react";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import Dropdown from "./Dropdown";
 import { ArtistaModal } from "./ArtistaModal";
 import { TurneModal } from "./TurneModal";
 import { Notificacao } from "../Notificacao/Notificacao";
+import { Dropdown } from "../ModalEventos/Dropdown";
 
 export const Header = ({
   circulo,
@@ -129,16 +129,17 @@ export const Header = ({
             </h2>
             <p className="text-neutral-700 text-sm">
               TURNÊ:{" "}
-              {turneSelecionada?.nomeTurne ||
-                turneSelecionada?.nome ||
-                "Todas"}
+              {turneSelecionada?.nomeTurne || turneSelecionada?.nome || "Todas"}
             </p>
           </div>
         </div>
 
         <div>
           {isOpen ? (
-            <ChevronDown className="cursor-pointer" onClick={alternarDropdown} />
+            <ChevronDown
+              className="cursor-pointer"
+              onClick={alternarDropdown}
+            />
           ) : (
             <ChevronUp className="cursor-pointer" onClick={alternarDropdown} />
           )}

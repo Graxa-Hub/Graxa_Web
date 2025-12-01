@@ -3,16 +3,27 @@ import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { TurneList } from "../components/TurneList";
 import { TurneHeader } from "../components/TurneHeader";
-import { Modal } from "../components/Modal";
-import { Input } from "../components/Input";
+import { Modal } from "../components/ModalEventos/Modal";
+import { Input } from "../components/ModalEventos/Input";
+import { BandaInput } from "../components/ModalEventos/BandaInput";
 import { Calendar } from "../components/Calendar";
 import { Textarea } from "../components/Textarea";
 import { InputFile } from "../components/InputFile";
-import { getTurnes, criarTurne, editarTurne, deletarTurne } from "../services/turneService";
-import { adaptTurnesFromBackend, adaptTurneFromBackend, dateToISO } from "../utils/turneAdapter";
+import {
+  getTurnes,
+  criarTurne,
+  editarTurne,
+  deletarTurne,
+} from "../services/turneService";
+import {
+  adaptTurnesFromBackend,
+  adaptTurneFromBackend,
+  dateToISO,
+} from "../utils/turneAdapter";
 import { useBandas } from "../hooks/useBandas";
 import { imagemService } from "../services/imagemService";
 import { useParams } from "react-router-dom";
+import { Header } from "../components/Dashboard/Header";
 
 export function Turne() {
   const { bandaId } = useParams();
@@ -21,21 +32,21 @@ export function Turne() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingTurne, setEditingTurne] = useState(null);
-  
+
   const [formData, setFormData] = useState({
     nome: "",
     descricao: "",
     imagem: null,
-    bandaId: null
+    bandaId: null,
   });
-  
+
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [errors, setErrors] = useState({});
   const [turnesData, setTurnesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
-  
+
   const [imagemAtual, setImagemAtual] = useState(null);
   const [imagemCarregada, setImagemCarregada] = useState(false);
 
@@ -79,7 +90,7 @@ export function Turne() {
 
   useEffect(() => {
     if (bandaId && bandas.length > 0) {
-      const banda = bandas.find(b => String(b.id) === String(bandaId));
+      const banda = bandas.find((b) => String(b.id) === String(bandaId));
       if (banda) setSelectedBand(banda);
     }
   }, [bandaId, bandas]);
@@ -89,10 +100,8 @@ export function Turne() {
       setLoading(true);
       const turnes = await getTurnes();
 
-      
       const adaptedTurnes = await adaptTurnesFromBackend(turnes);
 
-      
       setTurnesData(adaptedTurnes);
     } catch (error) {
       console.error("❌ Erro ao carregar turnês:", error);
@@ -105,19 +114,24 @@ export function Turne() {
   // Filtra turnês com base na banda selecionada
   const filteredTurnes = useMemo(() => {
     if (selectedBand && selectedBand.id) {
-      return turnesData.filter(turne =>
-        turne.bandaId === selectedBand.id ||
-        turne.banda?.id === selectedBand.id ||
-        turne.raw?.bandaId === selectedBand.id ||
-        turne.raw?.banda?.id === selectedBand.id
-      ).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      return turnesData
+        .filter(
+          (turne) =>
+            turne.bandaId === selectedBand.id ||
+            turne.banda?.id === selectedBand.id ||
+            turne.raw?.bandaId === selectedBand.id ||
+            turne.raw?.banda?.id === selectedBand.id
+        )
+        .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     }
-    return turnesData.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    return turnesData.sort((a, b) =>
+      (a.name || "").localeCompare(b.name || "")
+    );
   }, [turnesData, selectedBand]);
 
   const filteredBandas = useMemo(() => {
     if (!bandaSearchText.trim()) return bandas;
-    return bandas.filter(banda => 
+    return bandas.filter((banda) =>
       banda.nome.toLowerCase().includes(bandaSearchText.toLowerCase())
     );
   }, [bandas, bandaSearchText]);
@@ -135,8 +149,9 @@ export function Turne() {
       newErrors.nome = "Nome da turnê é obrigatório";
     } else {
       const existing = turnesData.find(
-        (t) => t.name.toLowerCase() === formData.nome.toLowerCase() && 
-               (!isEditMode || t.id !== editingTurne.id)
+        (t) =>
+          t.name.toLowerCase() === formData.nome.toLowerCase() &&
+          (!isEditMode || t.id !== editingTurne.id)
       );
       if (existing) {
         newErrors.nome = "Já existe uma turnê com este nome";
@@ -149,7 +164,11 @@ export function Turne() {
     if (!selectedEndDate) {
       newErrors.fim = "Data de fim é obrigatória";
     }
-    if (selectedStartDate && selectedEndDate && selectedEndDate < selectedStartDate) {
+    if (
+      selectedStartDate &&
+      selectedEndDate &&
+      selectedEndDate < selectedStartDate
+    ) {
       newErrors.fim = "Data de fim deve ser posterior à data de início";
     }
 
@@ -181,11 +200,11 @@ export function Turne() {
     setEditingTurne(null);
     setImagemAtual(null);
     setImagemCarregada(false);
-    setFormData({ 
-      nome: "", 
-      descricao: "", 
+    setFormData({
+      nome: "",
+      descricao: "",
       imagem: null,
-      bandaId: selectedBand?.id || null
+      bandaId: selectedBand?.id || null,
     });
     setSelectedStartDate(null);
     setSelectedEndDate(null);
@@ -205,11 +224,16 @@ export function Turne() {
       nome: turne.name,
       descricao: turne.description,
       imagem: null,
-      bandaId: turne.bandaId || turne.banda?.id || turne.raw?.bandaId || turne.raw?.banda?.id || null
+      bandaId:
+        turne.bandaId ||
+        turne.banda?.id ||
+        turne.raw?.bandaId ||
+        turne.raw?.banda?.id ||
+        null,
     });
 
-    const [startDay, startMonth, startYear] = turne.startDate.split('/');
-    const [endDay, endMonth, endYear] = turne.endDate.split('/');
+    const [startDay, startMonth, startYear] = turne.startDate.split("/");
+    const [endDay, endMonth, endYear] = turne.endDate.split("/");
 
     setSelectedStartDate(new Date(startYear, startMonth - 1, startDay));
     setSelectedEndDate(new Date(endYear, endMonth - 1, endDay)); // <-- corrigido aqui
@@ -226,7 +250,9 @@ export function Turne() {
       setTurnesData((prev) => prev.filter((t) => t.id !== turne.id));
     } catch (error) {
       console.error("Erro ao excluir turnê:", error);
-      setErrors({ geral: error.response?.data?.mensagem || "Erro ao excluir turnê" });
+      setErrors({
+        geral: error.response?.data?.mensagem || "Erro ao excluir turnê",
+      });
     }
   };
 
@@ -255,10 +281,8 @@ export function Turne() {
         dataHoraInicioTurne: dateToISO(selectedStartDate),
         dataHoraFimTurne: dateToISO(selectedEndDate),
         descricao: formData.descricao,
-        bandaId: formData.bandaId
+        bandaId: formData.bandaId,
       };
-
-
 
       let response;
       if (isEditMode) {
@@ -266,9 +290,9 @@ export function Turne() {
       } else {
         response = await criarTurne(payload, formData.imagem);
       }
-      
+
       const adaptedTurne = await adaptTurneFromBackend(response);
-      
+
       if (isEditMode) {
         setTurnesData((prev) =>
           prev.map((t) => (t.id === editingTurne.id ? adaptedTurne : t))
@@ -283,7 +307,8 @@ export function Turne() {
       setImagemAtual(null);
       setImagemCarregada(false);
     } catch (error) {
-      const errorMsg = error.response?.data?.mensagem || error.response?.data?.message;
+      const errorMsg =
+        error.response?.data?.mensagem || error.response?.data?.message;
       if (errorMsg?.toLowerCase().includes("já existe")) {
         setErrors({ nome: "Já existe uma turnê com este nome" });
       } else {
@@ -299,14 +324,14 @@ export function Turne() {
     if (errors[key]) {
       setErrors((prev) => ({ ...prev, [key]: undefined }));
     }
-    
-    if (key === 'imagem' && value) {
+
+    if (key === "imagem" && value) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagemAtual(reader.result);
       };
       reader.readAsDataURL(value);
-    } else if (key === 'imagem' && value === null) {
+    } else if (key === "imagem" && value === null) {
       if (editingTurne?.raw?.nomeImagem) {
         buscarImagem(editingTurne.raw.nomeImagem).then(setImagemAtual);
       } else {
@@ -335,11 +360,11 @@ export function Turne() {
   };
 
   const handleBandaSelectInModal = (banda) => {
-    setFormData(prev => ({ ...prev, bandaId: banda?.id || null }));
+    setFormData((prev) => ({ ...prev, bandaId: banda?.id || null }));
     setBandaSearchText(banda?.nome || "");
     setShowBandaDropdown(false);
     if (errors.banda) {
-      setErrors(prev => ({ ...prev, banda: undefined }));
+      setErrors((prev) => ({ ...prev, banda: undefined }));
     }
   };
 
@@ -350,7 +375,7 @@ export function Turne() {
 
   const getSelectedBandaName = () => {
     if (!formData.bandaId) return "";
-    const banda = bandas.find(b => b.id === formData.bandaId);
+    const banda = bandas.find((b) => b.id === formData.bandaId);
     return banda ? banda.nome : "";
   };
 
@@ -369,111 +394,76 @@ export function Turne() {
 
   return (
     <Layout>
-      <div className="flex h-screen w-full">
-        <Sidebar />
-        <div className="flex-1 flex flex-col">
-          <TurneHeader
-            selectedBand={selectedBand}
-            onBandSelect={handleBandSelect}
-            onCreateTurne={handleCreateTurne}
-            bandas={bandas}
-          />
+      <Sidebar />
+      <main className="flex-1 flex flex-col p-5 bg-neutral-300 min-h-0">
+        <Header />
 
-          {errors.geral && (
-            <div className="mx-6 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-              {errors.geral}
-            </div>
-          )}
-
-          <div className="flex-1 p-6 overflow-y-auto">
-            
-            
-            <TurneList
-              turnes={filteredTurnes}
-              onEditTurne={handleEditTurne}
-              onDeleteTurne={handleDeleteTurne}
-              onCreateTurne={handleCreateTurne}
-            />
+        {errors.geral && (
+          <div className="mx-6 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            {errors.geral}
           </div>
-        </div>
-      </div>
+        )}
 
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onFinish={handleFinishTurne}
-        title={isEditMode ? "Editar Turnê" : "Criar Turnê"}
-        totalSteps={2}
-        onValidate={(step) => (step === 1 ? validateStep1() : true)}
-      >
-        {(currentStep) => {
-          switch (currentStep) {
-            case 1:
-              return (
-                <div className="flex gap-8">
-                  <div className="flex-1 space-y-6">
-                    <div>
+        <div className="flex-1 p-6 overflow-y-auto">
+          <TurneList
+            turnes={filteredTurnes}
+            onEditTurne={handleEditTurne}
+            onDeleteTurne={handleDeleteTurne}
+            onCreateTurne={handleCreateTurne}
+          />
+        </div>
+
+        <Modal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          onFinish={handleFinishTurne}
+          title={isEditMode ? "Editar Turnê" : "Criar Turnê"}
+          totalSteps={2}
+          onValidate={(step) => (step === 1 ? validateStep1() : true)}
+        >
+          {(currentStep) => {
+            switch (currentStep) {
+              case 1:
+                return (
+                  <div className="flex gap-3">
+                    <div className="flex-1 space-y-6">
                       <Input
                         label="Nome da turnê:"
                         placeholder="Chuva dos olhos"
                         value={formData.nome}
-                        onChange={(e) => handleInputChange("nome", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("nome", e.target.value)
+                        }
                         required
                         disabled={submitLoading}
                       />
                       {errors.nome && (
-                        <p className="text-red-500 text-sm mt-1">{errors.nome}</p>
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.nome}
+                        </p>
                       )}
-                    </div>
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Banda: <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          placeholder="Pesquisar banda..."
-                          value={showBandaDropdown ? bandaSearchText : getSelectedBandaName()}
-                          onChange={(e) => {
-                            setBandaSearchText(e.target.value);
-                            setShowBandaDropdown(true);
-                          }}
-                          onFocus={() => {
-                            setBandaSearchText(getSelectedBandaName());
-                            setShowBandaDropdown(true);
-                          }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          disabled={submitLoading}
-                        />
-                        
-                        {showBandaDropdown && (
-                          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
-                            {filteredBandas.length === 0 ? (
-                              <div className="px-3 py-2 text-gray-500 text-sm">
-                                Nenhuma banda encontrada
-                              </div>
-                            ) : (
-                              filteredBandas.map((banda) => (
-                                <button
-                                  key={banda.id}
-                                  type="button"
-                                  onClick={() => handleBandaSelectInModal(banda)}
-                                  className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
-                                >
-                                  {banda.nome}
-                                </button>
-                              ))
-                            )}
-                          </div>
-                        )}
-                      </div>
-                      {errors.banda && (
-                        <p className="text-red-500 text-sm mt-1">{errors.banda}</p>
-                      )}
-                    </div>
+                      <BandaInput
+                        label="Banda:"
+                        placeholder="Pesquisar banda..."
+                        value={getSelectedBandaName()}
+                        searchText={bandaSearchText}
+                        onSearchChange={(text) => {
+                          setBandaSearchText(text);
+                          setShowBandaDropdown(true);
+                        }}
+                        onFocus={() => {
+                          setBandaSearchText(getSelectedBandaName());
+                          setShowBandaDropdown(true);
+                        }}
+                        showDropdown={showBandaDropdown}
+                        filteredBandas={filteredBandas}
+                        onSelectBanda={handleBandaSelectInModal}
+                        error={errors.banda}
+                        disabled={submitLoading}
+                        required
+                      />
 
-                    <div>
                       <Input
                         label="Início da turnê:"
                         placeholder="13/03/2021"
@@ -482,11 +472,11 @@ export function Turne() {
                         required
                       />
                       {errors.inicio && (
-                        <p className="text-red-500 text-sm mt-1">{errors.inicio}</p>
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.inicio}
+                        </p>
                       )}
-                    </div>
 
-                    <div>
                       <Input
                         label="Fim da turnê:"
                         placeholder="15/03/2021"
@@ -495,62 +485,70 @@ export function Turne() {
                         required
                       />
                       {errors.fim && (
-                        <p className="text-red-500 text-sm mt-1">{errors.fim}</p>
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.fim}
+                        </p>
                       )}
                     </div>
-                  </div>
 
-                  <div className="flex-shrink-0">
-                    <Calendar
-                      selectedStartDate={selectedStartDate}
-                      selectedEndDate={selectedEndDate}
-                      onDateSelect={handleDateSelect}
-                    />
+                    <div className="flex-shrink-0 flex items-center justify-center pt-5">
+                      <Calendar
+                        selectedStartDate={selectedStartDate}
+                        selectedEndDate={selectedEndDate}
+                        onDateSelect={handleDateSelect}
+                      />
+                    </div>
                   </div>
-                </div>
-              );
+                );
 
-            case 2:
-              return (
-                <div className="flex gap-8">
-                  <div className="w-[50%]">
-                    <Textarea
-                      label="Descrição da turnê:"
-                      placeholder="Descreva a turnê, objetivos, público-alvo..."
-                      value={formData.descricao}
-                      onChange={(e) => handleInputChange("descricao", e.target.value)}
-                      rows={10}
-                      maxLength={500}
-                      disabled={submitLoading}
-                    />
-                    {errors.descricao && (
-                      <p className="text-red-500 text-sm mt-1">{errors.descricao}</p>
-                    )}
+              case 2:
+                return (
+                  <div className="flex flex-col gap-6">
+                    <div>
+                      <Textarea
+                        label="Descrição da turnê:"
+                        placeholder="Descreva a turnê, objetivos, público-alvo..."
+                        value={formData.descricao}
+                        onChange={(e) =>
+                          handleInputChange("descricao", e.target.value)
+                        }
+                        rows={8}
+                        maxLength={500}
+                        disabled={submitLoading}
+                      />
+                      {errors.descricao && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.descricao}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <InputFile
+                        label="Foto da Turnê"
+                        onFileSelect={(file) => handleChange("imagem", file)}
+                        currentImage={imagemAtual}
+                      />
+                      {errors.imagem && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.imagem}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500 mt-2">
+                        {isEditMode
+                          ? "Envie apenas se quiser alterar a imagem atual"
+                          : "A imagem é obrigatória para criar uma nova turnê"}
+                      </p>
+                    </div>
                   </div>
+                );
 
-                  <div className="w-[50%]">
-                    <InputFile
-                      label="Foto da Turnê"
-                      onFileSelect={(file) => handleChange("imagem", file)}
-                      currentImage={imagemAtual}
-                    />
-                    {errors.imagem && (
-                      <p className="text-red-500 text-sm mt-1">{errors.imagem}</p>
-                    )}
-                    <p className="text-sm text-gray-500 mt-1">
-                      {isEditMode
-                        ? "Envie apenas se quiser alterar a imagem atual"
-                        : "A imagem é obrigatória para criar uma nova turnê"}
-                    </p>
-                  </div>
-                </div>
-              );
-
-            default:
-              return <div>Etapa não encontrada</div>;
-          }
-        }}
-      </Modal>
+              default:
+                return <div>Etapa não encontrada</div>;
+            }
+          }}
+        </Modal>
+      </main>
     </Layout>
   );
 }

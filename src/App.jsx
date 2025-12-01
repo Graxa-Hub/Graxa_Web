@@ -5,7 +5,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Cadastro } from "./pages/Cadastro";
 import { HomeRedirect } from "./components/HomeRedirect";
-// import { ProtectedLayout } from "./components/ProtectedLayout";
+import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
 import { ArtistaApp } from "./pages/ArtistaApp";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
@@ -13,8 +13,7 @@ import { VisaoEvento } from "./pages/VisaoEvento";
 import { Calendario } from "./pages/Calendario";
 import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
-import { CriarLogistica } from "./pages/CriarLogistica"
-import { ConfiguracaoUsuario} from "./pages/ConfiguracaoUser"
+import { CriarLogistica } from "./pages/CriarLogistica";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -24,12 +23,10 @@ function App() {
       {/* Rota raiz - redireciona baseado na autenticação */}
       <Route path="/" element={<HomeRedirect />} />
 
-
       {/* Rotas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/recuperar-senha" element={<RecuperarSenha />} />
       <Route path="/cadastro" element={<Cadastro />} />
-
 
       {/* Rotas protegidas */}
       <Route element={<ProtectedLayout />}>
