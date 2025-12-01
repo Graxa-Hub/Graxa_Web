@@ -262,7 +262,7 @@ export function AddBandaModal({
                 </div>
               )}
               <Input
-                label="Nome da Banda *"
+                label="Nome da Banda"
                 placeholder="Boogarins"
                 value={draft.nome}
                 onChange={(e) => handleChange("nome", e.target.value)}
@@ -295,7 +295,10 @@ export function AddBandaModal({
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                  required
+                >
                   Representante *
                 </label>
                 {!showNovoRepresentante ? (
@@ -384,7 +387,7 @@ export function AddBandaModal({
                 <button
                   type="button"
                   onClick={adicionarIntegrante}
-                  className="px-3 py-1 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                  className="px-3 py-3 text-md bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                 >
                   + Adicionar Integrante
                 </button>
