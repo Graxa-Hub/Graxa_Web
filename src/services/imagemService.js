@@ -6,7 +6,7 @@ export async function imagemService(nomeImagem) {
     const response = await api.get(`/imagens/download/${nomeImagem}`, {
       responseType: "blob",
     });
-
+    console.log(response)
     return URL.createObjectURL(response.data);
   } catch (err) {
     console.error("Erro ao buscar imagem:", err);
