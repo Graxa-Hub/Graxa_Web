@@ -12,13 +12,12 @@ import { useShows } from "../hooks/useShows";
 import { useViagens } from "../hooks/useViagens";
 import SidebarDireita from "../components/CriarEvento/SidebarDireita";
 import { LocalSelecionadoProvider } from "../context/LocalSelecionadoContext";
+import VisualizarAlocacoes from "../components/CriarEvento/VisualizarAlocacoes";
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
   const [localShow, setLocalShow] = useState({});
-
   const [selectedRoles, setSelectedRoles] = useState([]);
-
   const [assignments, setAssignments] = useState({});
 
   const [hotels, setHotels] = useState([]);
@@ -32,6 +31,9 @@ export const CriarEvento = () => {
   const { buscarViagem } = useViagens();
 
   const [evento, setEvento] = useState(null);
+
+  // ✅ Obtém showId da URL ou do evento carregado
+  const showId = eventoId ? Number(eventoId) : null;
 
   useEffect(() => {
     async function fetchEvento() {
@@ -57,7 +59,6 @@ export const CriarEvento = () => {
     console.log(evento);
   }, [evento]);
 
-  // fake colaboradores apenas para testes locais
   const colaboradores = [
     { id: 1, nome: "Maria Gadú", funcao: "Artista" },
     { id: 2, nome: "Jay", funcao: "Banda" },
@@ -68,7 +69,6 @@ export const CriarEvento = () => {
   // ===== RENDERIZA CADA ETAPA =====
   const renderEtapa = () => {
     if (tipoEvento === "viagem") {
-      // Exemplo: só renderiza etapas a partir da logística
       switch (etapaAtual) {
         case 1:
           return (
@@ -103,12 +103,23 @@ export const CriarEvento = () => {
         );
       case 2:
         return (
-          <Etapa1Funcoes
-            selectedRoles={selectedRoles}
-            setSelectedRoles={setSelectedRoles}
-            assignments={assignments}
-            setAssignments={setAssignments}
-          />
+          <>
+            {/* ✅ Componente de Funções */}
+            <Etapa1Funcoes
+              selectedRoles={selectedRoles}
+              setSelectedRoles={setSelectedRoles}
+              assignments={assignments}
+              setAssignments={setAssignments}
+              showId={showId}
+            />
+
+            {/* ✅ Visualização de Alocações - Aparece ABAIXO */}
+            {showId && (
+              <div className="mt-12 border-t pt-8">
+                <VisualizarAlocacoes showId={showId} />
+              </div>
+            )}
+          </>
         );
       case 3:
         if (!localShow || !localShow.coordsLocal) {
@@ -139,7 +150,6 @@ export const CriarEvento = () => {
     }
   };
 
-  // Stepper adaptado: oculta etapas para viagem
   const etapasViagem = [
     { label: "Logística" },
     { label: "Agenda" },
@@ -160,7 +170,6 @@ export const CriarEvento = () => {
 
         <div className="flex w-full h-screen bg-gray-50/50">
           <div className="flex-1 p-10 overflow-y-auto">
-            {/* Stepper adaptado */}
             <Stepper
               etapaAtual={etapaAtual}
               setEtapaAtual={setEtapaAtual}
@@ -169,7 +178,6 @@ export const CriarEvento = () => {
 
             <div className="mt-8">{renderEtapa()}</div>
 
-            {/* Navegação entre etapas adaptada */}
             <div className="flex justify-end mt-10 gap-4 border-t pt-6 border-gray-200">
               {etapaAtual > 1 && (
                 <button
