@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Settings, Camera, Volume2, Guitar, User, ChevronDown, UserPlus, CheckCircle } from "lucide-react";
 import { TIPOS_USUARIO } from "../../constants/tipoUsuario";
 import { useColaboradores } from "../../hooks/useColaboradores";
-import { useAlocacoes } from "../../hooks/useAlocacoes";
+import { useAlocacoes } from "../../hooks/useAlocacao";
+import { useToast } from "../../hooks/useToast";
 import { Modal } from "../Modal";
+import { ToastContainer } from "../UI/ToastContainer";
+import { ConfirmModal } from "../UI/ConfirmModal";
 
 // Mapeamento de ícones por tipo
 const ICONS_MAP = {
@@ -27,28 +30,96 @@ const Etapa1Funcoes = ({
   setSelectedRoles,
   assignments,
   setAssignments,
-  showId, // ✅ Precisa receber o ID do show
+  showId,
 }) => {
   const [activeRole, setActiveRole] = useState(null);
   const [modalDetalhes, setModalDetalhes] = useState(null);
-  const [sucessoModal, setSucessoModal] = useState(false);
+  const [alocacoesCarregadas, setAlocacoesCarregadas] = useState(false);
+  const [alocacoesSalvas, setAlocacoesSalvas] = useState({});
+  
+  // ✅ NOVO: Estados para modals
+  const [confirmModal, setConfirmModal] = useState(null);
+
+  // ✅ NOVO: Hook de toast
+  const { toasts, showSuccess, showError, showWarning, showInfo, removeToast } = useToast();
 
   const { colaboradores, loading, error, listarColaboradores } = useColaboradores();
-  const { criarAlocacoes, loading: loadingAlocacao, error: errorAlocacao } = useAlocacoes();
+  const { criarAlocacoes, listarPorShow, loading: loadingAlocacao, error: errorAlocacao } = useAlocacoes();
 
   useEffect(() => {
     listarColaboradores();
   }, [listarColaboradores]);
 
-  // ✅ Apenas abre/fecha o accordion
+  useEffect(() => {
+    async function carregarAlocacoes() {
+      if (!showId || alocacoesCarregadas) return;
+
+      try {
+        console.log('[Etapa1Funcoes] Carregando alocações existentes para show:', showId);
+        
+        const alocacoes = await listarPorShow(Number(showId));
+        console.log('[Etapa1Funcoes] Alocações encontradas:', alocacoes);
+
+        const alocacoesPorTipo = {};
+        const rolesComAlocacao = new Set();
+        const colaboradoresJaSalvos = {};
+
+        alocacoes.forEach(alocacao => {
+          const colaborador = alocacao.colaborador;
+          if (colaborador) {
+            const tipoUsuario = colaborador.tipoUsuario;
+            
+            if (!alocacoesPorTipo[tipoUsuario]) {
+              alocacoesPorTipo[tipoUsuario] = [];
+              colaboradoresJaSalvos[tipoUsuario] = [];
+            }
+            
+            alocacoesPorTipo[tipoUsuario].push(colaborador.id);
+            colaboradoresJaSalvos[tipoUsuario].push(colaborador.id);
+            rolesComAlocacao.add(tipoUsuario);
+          }
+        });
+
+        setAssignments(alocacoesPorTipo);
+        setSelectedRoles(Array.from(rolesComAlocacao));
+        setAlocacoesSalvas(colaboradoresJaSalvos);
+        setAlocacoesCarregadas(true);
+
+        console.log('[Etapa1Funcoes] Assignments atualizados:', alocacoesPorTipo);
+        console.log('[Etapa1Funcoes] Alocações salvas:', colaboradoresJaSalvos);
+
+      } catch (error) {
+        console.error('[Etapa1Funcoes] Erro ao carregar alocações:', error);
+        showError('Erro ao carregar alocações existentes. Tente novamente.');
+      }
+    }
+
+    carregarAlocacoes();
+  }, [showId, listarPorShow, alocacoesCarregadas, showError]);
+
   const toggleAccordion = (roleId) => {
     setActiveRole(activeRole === roleId ? null : roleId);
   };
 
-  // ✅ Removida - não precisa mais dessa função
-  // const toggleRole = (roleId) => { ... }
-
   const toggleColaborador = (roleId, colabId) => {
+    const colaboradoresJaSalvos = alocacoesSalvas[roleId] || [];
+    const jaSalvoNoBanco = colaboradoresJaSalvos.includes(colabId);
+
+    if (jaSalvoNoBanco) {
+      const colaborador = colaboradores.find(c => c.id === colabId);
+      
+      // ✅ NOVO: Modal de confirmação em vez de alert
+      setConfirmModal({
+        type: 'warning',
+        title: 'Colaborador já alocado',
+        message: `${colaborador?.nome || 'Este colaborador'} já foi alocado e não pode ser removido pela lista. Use a página de alocações para gerenciar.`,
+        confirmText: 'Entendi',
+        showCancel: false,
+        onConfirm: () => setConfirmModal(null)
+      });
+      return;
+    }
+
     const list = assignments[roleId] || [];
     const newList = list.includes(colabId)
       ? list.filter((x) => x !== colabId)
@@ -59,12 +130,10 @@ const Etapa1Funcoes = ({
       [roleId]: newList,
     });
 
-    // ✅ Adiciona a função à lista de selecionadas se não estiver
     if (!selectedRoles.includes(roleId)) {
       setSelectedRoles([...selectedRoles, roleId]);
     }
 
-    // ✅ Remove da lista se não houver mais colaboradores selecionados
     if (newList.length === 0) {
       setSelectedRoles(selectedRoles.filter((id) => id !== roleId));
     }
@@ -83,7 +152,6 @@ const Etapa1Funcoes = ({
   };
 
   const handleAlocarUsuarios = async () => {
-    // ✅ Converter para número
     const showIdNumber = Number(showId);
     
     console.log('[Etapa1Funcoes] Iniciando alocação:', {
@@ -92,51 +160,72 @@ const Etapa1Funcoes = ({
       isValidNumber: !isNaN(showIdNumber) && showIdNumber > 0
     });
 
+    // ✅ NOVO: Validações com toast
     if (!showId || isNaN(showIdNumber) || showIdNumber <= 0) {
-      alert("❌ ID do show inválido. Salve o evento primeiro.");
+      showError('ID do show inválido. Salve o evento primeiro.');
       return;
     }
 
     if (selectedRoles.length === 0) {
-      alert("⚠️ Selecione pelo menos uma função antes de alocar usuários.");
+      showWarning('Selecione pelo menos uma função antes de alocar usuários.');
       return;
     }
 
-    const totalSelecionados = Object.values(assignments).reduce(
-      (acc, arr) => acc + arr.length,
-      0
-    );
+    const colaboradoresParaAlocar = [];
+    Object.entries(assignments).forEach(([roleId, colabIds]) => {
+      const jaSalvos = alocacoesSalvas[roleId] || [];
+      const novosColaboradores = colabIds.filter(id => !jaSalvos.includes(id));
+      colaboradoresParaAlocar.push(...novosColaboradores);
+    });
 
-    if (totalSelecionados === 0) {
-      alert("⚠️ Selecione pelo menos um colaborador antes de alocar.");
+    if (colaboradoresParaAlocar.length === 0) {
+      showInfo('Todos os colaboradores selecionados já foram alocados.');
       return;
     }
 
+    // ✅ NOVO: Modal de confirmação antes de alocar
+    setConfirmModal({
+      type: 'info',
+      title: 'Confirmar Alocação',
+      message: `Confirma a alocação de ${colaboradoresParaAlocar.length} colaborador(es) para este evento?`,
+      confirmText: 'Sim, alocar',
+      cancelText: 'Cancelar',
+      onConfirm: async () => {
+        setConfirmModal(null);
+        await executarAlocacao(showIdNumber, colaboradoresParaAlocar);
+      },
+      onCancel: () => setConfirmModal(null)
+    });
+  };
+
+  // ✅ NOVA FUNÇÃO: Executa alocação
+  const executarAlocacao = async (showIdNumber, colaboradoresParaAlocar) => {
     try {
-      // Coleta todos os IDs de colaboradores selecionados
-      const colaboradoresIds = Object.values(assignments).flat();
+      console.log('[Etapa1Funcoes] Novos colaboradores a alocar:', colaboradoresParaAlocar);
 
-      console.log('[Etapa1Funcoes] Colaboradores a alocar:', colaboradoresIds);
-
-      // Cria as alocações no backend
-      const resultado = await criarAlocacoes(showIdNumber, colaboradoresIds);
+      const resultado = await criarAlocacoes(showIdNumber, colaboradoresParaAlocar);
 
       console.log('[Etapa1Funcoes] Alocações criadas com sucesso:', resultado);
 
-      // Exibe modal de sucesso
-      setSucessoModal(true);
-      setTimeout(() => setSucessoModal(false), 3000);
+      showSuccess(
+        `${colaboradoresParaAlocar.length} colaborador(es) alocado(s) com sucesso!`,
+        'Alocação Concluída'
+      );
+
+      setAlocacoesCarregadas(false);
 
     } catch (error) {
       console.error('[Etapa1Funcoes] Erro ao alocar usuários:', error);
       
-      // Mensagem de erro mais detalhada
       const errorMsg = error.response?.data?.message 
         || error.response?.data?.mensagem 
         || error.message 
         || 'Erro desconhecido';
       
-      alert(`❌ Erro ao alocar usuários:\n${errorMsg}`);
+      showError(
+        `Erro ao alocar usuários: ${errorMsg}`,
+        'Falha na Alocação'
+      );
     }
   };
 
@@ -165,8 +254,8 @@ const Etapa1Funcoes = ({
       </div>
 
       {loading && <p className="text-gray-500">Carregando colaboradores...</p>}
-      {error && <p className="text-red-500">Erro: {error}</p>}
-      {errorAlocacao && <p className="text-red-500">Erro ao alocar: {errorAlocacao}</p>}
+      {error && showError(error)}
+      {errorAlocacao && showError(errorAlocacao)}
 
       {selectedRoles.length > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -184,7 +273,7 @@ const Etapa1Funcoes = ({
         {ROLES.map((role) => {
           const Icon = role.icon;
           const selecionados = assignments[role.id] || [];
-          const isSelected = selecionados.length > 0; // ✅ Baseado nos colaboradores selecionados
+          const isSelected = selecionados.length > 0;
           const isOpen = activeRole === role.id;
 
           const lista = colaboradores.filter(
@@ -197,7 +286,7 @@ const Etapa1Funcoes = ({
               className="bg-white shadow-sm rounded-xl border border-gray-100 overflow-hidden transition-all hover:shadow-lg"
             >
               <button
-                onClick={() => toggleAccordion(role.id)} // ✅ Mudado para toggleAccordion
+                onClick={() => toggleAccordion(role.id)}
                 className="w-full flex justify-between items-center p-4 text-left"
               >
                 <div className="flex items-center gap-4">
@@ -245,12 +334,16 @@ const Etapa1Funcoes = ({
 
                   {lista.map((c) => {
                     const marcado = selecionados.includes(c.id);
+                    const jaSalvo = (alocacoesSalvas[role.id] || []).includes(c.id);
+                    
                     return (
                       <div
                         key={c.id}
                         className={`w-full p-3 rounded-lg border flex justify-between items-center transition-colors ${
                           marcado
-                            ? "bg-green-50 border-green-400 hover:bg-green-100"
+                            ? jaSalvo 
+                              ? "bg-blue-50 border-blue-400"
+                              : "bg-green-50 border-green-400 hover:bg-green-100"
                             : "bg-gray-50 border-gray-200 hover:bg-gray-100"
                         }`}
                       >
@@ -268,6 +361,11 @@ const Etapa1Funcoes = ({
                             <p className="text-xs text-gray-400 uppercase">
                               {TIPOS_USUARIO.find(t => t.value === c.tipoUsuario)?.label || c.tipoUsuario}
                             </p>
+                            {jaSalvo && (
+                              <p className="text-xs text-blue-600 font-medium">
+                                ✓ Já alocado
+                              </p>
+                            )}
                           </div>
                         </div>
 
@@ -285,13 +383,16 @@ const Etapa1Funcoes = ({
                           
                           <button
                             onClick={() => toggleColaborador(role.id, c.id)}
+                            disabled={jaSalvo}
                             className={`px-3 py-1 rounded transition-colors ${
-                              marcado
+                              jaSalvo
+                                ? "bg-blue-600 text-white cursor-not-allowed opacity-75"
+                                : marcado
                                 ? "bg-green-600 text-white hover:bg-green-700"
                                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                             }`}
                           >
-                            {marcado ? "✓ Selecionado" : "Selecionar"}
+                            {jaSalvo ? "✓ Alocado" : marcado ? "✓ Selecionado" : "Selecionar"}
                           </button>
                         </div>
                       </div>
@@ -304,7 +405,7 @@ const Etapa1Funcoes = ({
         })}
       </div>
 
-      {/* MODAL DE DETALHES usando componente Modal */}
+      {/* MODAL DE DETALHES */}
       <Modal
         isOpen={modalDetalhes !== null}
         onClose={() => setModalDetalhes(null)}
@@ -357,18 +458,27 @@ const Etapa1Funcoes = ({
         )}
       </Modal>
 
-      {/* MODAL DE SUCESSO */}
-      {sucessoModal && (
-        <div className="fixed top-5 right-5 bg-green-600 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 z-50 animate-fade-in">
-          <CheckCircle className="w-6 h-6" />
-          <div>
-            <p className="font-semibold">Alocações criadas com sucesso!</p>
-            <p className="text-sm opacity-90">
-              {Object.values(assignments).reduce((acc, arr) => acc + arr.length, 0)} colaborador(es) alocado(s)
-            </p>
-          </div>
-        </div>
+      {/* ✅ MODAL DE CONFIRMAÇÃO */}
+      {confirmModal && (
+        <ConfirmModal
+          isOpen={true}
+          onClose={() => setConfirmModal(null)}
+          onConfirm={confirmModal.onConfirm}
+          title={confirmModal.title}
+          message={confirmModal.message}
+          confirmText={confirmModal.confirmText}
+          cancelText={confirmModal.cancelText}
+          type={confirmModal.type}
+          loading={loadingAlocacao}
+        />
       )}
+
+      {/* ✅ CONTAINER DE TOASTS */}
+      <ToastContainer 
+        toasts={toasts}
+        onRemoveToast={removeToast}
+        position="top-right"
+      />
     </div>
   );
 };

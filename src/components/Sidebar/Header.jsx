@@ -2,6 +2,7 @@ import { User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import { imagemService } from "../../services/imagemService";
+import { obterFuncao } from "../../utils/tipoUsuarioUtils";
 
 export const Header = () => {
   const { usuario } = useAuth();  
@@ -56,7 +57,7 @@ export const Header = () => {
               {usuario.nome || "Usuário"}
             </h2>
             <p className="text-sm uppercase text-gray-600">
-              {usuario.tipoUsuario || "Usuário"}
+              {obterFuncao(usuario.tipoUsuario) || "Colaborador"}
             </p>
           </>
         ) : (

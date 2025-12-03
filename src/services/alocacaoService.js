@@ -98,4 +98,17 @@ export const alocacaoService = {
       throw error;
     }
   },
+
+  responderAlocacao: async (alocacaoId, status) => {
+    console.log('[alocacaoService] Respondendo alocação:', { id: alocacaoId, status });
+    
+    try {
+      const response = await api.put(`/alocacoes/${alocacaoId}/responder?status=${status}`);
+      console.log('[alocacaoService] ✅ Alocação respondida:', response.data);
+      return response.data;
+    } catch (error) {
+      console.log('[alocacaoService] Erro ao responder alocação:', error.response || error);
+      throw error;
+    }
+  },
 };
