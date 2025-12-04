@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Settings, Camera, Volume2, Guitar, User, ChevronDown, UserPlus, CheckCircle } from "lucide-react";
 import { TIPOS_USUARIO } from "../../constants/tipoUsuario";
 import { useColaboradores } from "../../hooks/useColaboradores";
-import { useAlocacoes } from "../../hooks/useAlocacao";
+import useAlocacao from "../../hooks/useAlocacao";
 import { useToast } from "../../hooks/useToast";
-import { Modal } from "../Modal";
+import { Modal } from "../ModalEventos/Modal";
 import { ToastContainer } from "../UI/ToastContainer";
 import { ConfirmModal } from "../UI/ConfirmModal";
 
@@ -36,15 +36,12 @@ const Etapa1Funcoes = ({
   const [modalDetalhes, setModalDetalhes] = useState(null);
   const [alocacoesCarregadas, setAlocacoesCarregadas] = useState(false);
   const [alocacoesSalvas, setAlocacoesSalvas] = useState({});
-  
-  // ✅ NOVO: Estados para modals
   const [confirmModal, setConfirmModal] = useState(null);
 
-  // ✅ NOVO: Hook de toast
   const { toasts, showSuccess, showError, showWarning, showInfo, removeToast } = useToast();
 
   const { colaboradores, loading, error, listarColaboradores } = useColaboradores();
-  const { criarAlocacoes, listarPorShow, loading: loadingAlocacao, error: errorAlocacao } = useAlocacoes();
+  const { criarAlocacao, listarPorShow, loading: loadingAlocacao, error: errorAlocacao } = useAlocacao();
 
   useEffect(() => {
     listarColaboradores();
@@ -203,9 +200,14 @@ const Etapa1Funcoes = ({
     try {
       console.log('[Etapa1Funcoes] Novos colaboradores a alocar:', colaboradoresParaAlocar);
 
-      const resultado = await criarAlocacoes(showIdNumber, colaboradoresParaAlocar);
+      // ✅ Cria uma alocação por vez para cada colaborador
+      const promessas = colaboradoresParaAlocar.map(colaboradorId => 
+        criarAlocacao(showIdNumber, colaboradorId)
+      );
 
-      console.log('[Etapa1Funcoes] Alocações criadas com sucesso:', resultado);
+      const resultados = await Promise.all(promessas);
+
+      console.log('[Etapa1Funcoes] Alocações criadas com sucesso:', resultados);
 
       showSuccess(
         `${colaboradoresParaAlocar.length} colaborador(es) alocado(s) com sucesso!`,

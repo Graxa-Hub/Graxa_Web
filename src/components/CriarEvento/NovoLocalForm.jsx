@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Input } from "../Input";
+import { Input } from "../ModalEventos/Input";
 import { EnderecoForm } from "../EnderecoForm";
 import { useLocais } from "../../hooks/useLocais";
 

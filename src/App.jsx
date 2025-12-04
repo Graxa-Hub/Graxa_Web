@@ -14,7 +14,7 @@ import { Calendario } from "./pages/Calendario";
 import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
 import { CriarLogistica } from "./pages/CriarLogistica";
-
+import {ConfiguracaoUsuario} from "./pages/ConfiguracaoUser"
 function App() {
   const [count, setCount] = useState(0);
 
