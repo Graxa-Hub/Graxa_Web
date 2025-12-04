@@ -1,36 +1,37 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { IconeNotificao } from "./IconeAlt";
 import { Modal } from "./Modal";
-
-const notificacaoLista = [
-  {
-    id: 1,
-    text: "Nova banda cadastrada: Boogarins",
-    time: "Há 5 minutos",
-    read: false,
-  },
-  {
-    id: 2,
-    text: "Show adicionado ao calendário",
-    time: "Há 1 hora",
-    read: false,
-  },
-  {
-    id: 3,
-    text: "Viagem confirmada para São Paulo",
-    time: "Há 2 horas",
-    read: true,
-  },
-];
+import { useNotificacoes } from "../../hooks/useNotificacoes";
+import { useAuth } from "../../context/AuthContext";
 
 export const Notificacao = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { usuario } = useAuth();
+  
+  const {
+    notificacoes,
+    notificacaoNaoLidas,
+    unreadCount,
+    loading,
+    error,
+    listarNotificacoes,
+    marcarComoLida,
+    marcarTodasComoLidas
+  } = useNotificacoes(usuario?.id);
 
-  // Calcula o número de notificações não lidas
-  const unreadCount = useMemo(
-    () => notificacaoLista.filter((n) => !n.read).length,
-    [notificacaoLista]
-  );
+  // ✅ Carregar notificações quando abrir modal
+  useEffect(() => {
+    if (isOpen && usuario?.id) {
+      listarNotificacoes();
+    }
+  }, [isOpen, usuario?.id, listarNotificacoes]);
+
+  // ✅ Pedir permissão para notificações do browser
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }, []);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -40,16 +41,44 @@ export const Notificacao = () => {
     setIsOpen(false);
   };
 
+  const handleMarkAsRead = async (notificacaoId) => {
+    try {
+      await marcarComoLida(notificacaoId);
+      // ✅ Estado já foi atualizado otimisticamente no hook
+    } catch (error) {
+      console.error('❌ Erro ao marcar notificação como lida:', error);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await marcarTodasComoLidas();
+      // ✅ Estado já foi atualizado otimisticamente no hook
+    } catch (error) {
+      console.error('❌ Erro ao marcar todas as notificações como lidas:', error);
+    }
+  };
+
+  if (!usuario?.id) {
+    return null;
+  }
+
   return (
     <>
-      {/* Botão de notificação */}
-      <IconeNotificao handleOpen={handleOpen} unreadCount={unreadCount} />
+      <IconeNotificao 
+        handleOpen={handleOpen} 
+        unreadCount={unreadCount || 0}
+        loading={loading}
+      />
 
-      {/* Modal de notificações */}
       <Modal
         isOpen={isOpen}
         handleClose={handleClose}
-        notificacaoLista={notificacaoLista}
+        notificacaoLista={notificacoes || []}
+        loading={loading}
+        error={error}
+        onMarkAsRead={handleMarkAsRead}
+        onMarkAllAsRead={handleMarkAllAsRead}
       />
     </>
   );

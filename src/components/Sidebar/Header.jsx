@@ -1,31 +1,48 @@
 import { User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
+import { imagemService } from "../../services/imagemService";
+import { obterFuncao } from "../../utils/tipoUsuarioUtils";
 
 export const Header = () => {
-  const { usuario, token } = useAuth();  
+  const { usuario } = useAuth();  
   const [fotoUrl, setFotoUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (usuario?.fotoNome) {
-      setFotoUrl(
-        `http://localhost:8080/imagens/download/${usuario.fotoNome}?token=${token}&t=${Date.now()}`
-      );
-    } else {
-      setFotoUrl(null);
-    }
-  }, [usuario?.fotoNome, token]);
+    const carregarFoto = async () => {
+      if (usuario?.fotoNome) {
+        setLoading(true);
+        try {
+          const url = await imagemService(usuario.fotoNome);
+          setFotoUrl(url);
+        } catch (error) {
+          console.error("Erro ao carregar foto do usuário:", error);
+          setFotoUrl(null);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setFotoUrl(null);
+      }
+    };
+
+    carregarFoto();
+  }, [usuario?.fotoNome]);
 
   return (
     <header className="flex gap-3 py-5 border-b border-neutral-300">
 
       {/* Foto de perfil */}
       <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-        {fotoUrl ? (
+        {loading ? (
+          <div className="animate-pulse bg-gray-300 w-full h-full" />
+        ) : fotoUrl ? (
           <img
             src={fotoUrl}
             className="w-full h-full object-cover"
             alt="Foto do usuário"
+            onError={() => setFotoUrl(null)}
           />
         ) : (
           <User className="text-blue-600" />
@@ -40,7 +57,7 @@ export const Header = () => {
               {usuario.nome || "Usuário"}
             </h2>
             <p className="text-sm uppercase text-gray-600">
-              {usuario.tipoUsuario || "Usuário"}
+              {obterFuncao(usuario.tipoUsuario) || "Colaborador"}
             </p>
           </>
         ) : (

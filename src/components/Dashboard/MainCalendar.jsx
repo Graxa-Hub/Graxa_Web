@@ -18,7 +18,6 @@ export default function MainCalendar({
 }) {
   const calendarRef = useRef(null);
   const navigate = useNavigate();
-
   const { eventos, loading, carregarEventos, adicionarEventoLocal } =
     useEventosCalendario();
 
@@ -52,6 +51,7 @@ export default function MainCalendar({
   }, [eventos, onEventosChange]);
 
   const handleDateSelect = (selectInfo) => {
+   
     // Formata data/hora para o formato datetime-local (YYYY-MM-DDTHH:mm)
     const formatarParaDateTimeLocal = (data) => {
       const ano = data.getFullYear();
@@ -75,8 +75,13 @@ export default function MainCalendar({
     setCreateModalOpen(true);
   };
 
-  const handleEventClick = () => {
-    navigate("/visao-evento");
+ 
+  const handleEventClick = (selectInfo) => {
+    const eventoId = selectInfo.event?.extendedProps?.dados?.id || selectInfo.event?.id;
+    const tipoEvento = selectInfo.event?.extendedProps?.tipo || "show";
+    if (eventoId) {
+      navigate(`/criar-evento/${tipoEvento}/${eventoId}`);
+    }
   };
 
   return (
@@ -110,26 +115,21 @@ export default function MainCalendar({
       <EventoModal
         isOpen={createModalOpen}
         dataHoraInicial={dataHoraSelecionada}
-        turneId={turneId} // ✅ Turnê pré-selecionada
-        bandaId={bandaId} // ✅ Banda pré-selecionada
+        turneId={turneId}
+        bandaId={bandaId} 
         onClose={() => {
           setCreateModalOpen(false);
           setDataHoraSelecionada({ inicio: "", fim: "" });
         }}
         onFinish={(entidadeCriada) => {
 
-
-          // Determina tipo (show ou viagem) pela estrutura dos dados
           const tipo = entidadeCriada?.tipoViagem ? "viagem" : "show";
 
-
-          // Adiciona evento localmente para feedback imediato
           adicionarEventoLocal(entidadeCriada, tipo);
 
           setCreateModalOpen(false);
           setDataHoraSelecionada({ inicio: "", fim: "" });
 
-          // Recarrega eventos do backend após 500ms
           setTimeout(() => {
 
             carregarEventos({ bandaId, turneId });

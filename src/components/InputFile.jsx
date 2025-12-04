@@ -4,7 +4,7 @@ import { Upload, Edit2 } from "lucide-react";
 export function InputFile({
   label,
   onFileSelect,
-  accept = "image/*",
+  accept = "image/jpeg, image/png, image/webp",
   maxSize = 50 * 1024 * 1024, // 50MB default
   required = false,
   className = "",

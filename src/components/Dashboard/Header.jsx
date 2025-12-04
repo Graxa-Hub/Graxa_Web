@@ -156,7 +156,6 @@ export const Header = ({
           onClose={() => setTourOpen(false)}
         />
       </div>
-      <Notificacao />
     </header>
   );
 };

@@ -85,6 +85,21 @@ export function useShows() {
     }
   }, []);
 
+  const buscarShow = useCallback(async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const show = await showService.buscarPorId(id);
+      return show;
+    } catch (err) {
+      setError(err.message);
+      console.error('Erro ao buscar show por id:', err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     shows,
     loading,
@@ -93,6 +108,7 @@ export function useShows() {
     criarShow,
     atualizarShow,
     deletarShow,
-    adicionarBandas
+    adicionarBandas,
+    buscarShow
   };
 }
