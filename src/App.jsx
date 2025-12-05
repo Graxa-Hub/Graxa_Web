@@ -9,7 +9,7 @@ import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
 import { ArtistaApp } from "./pages/ArtistaApp";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
-import { VisaoEvento } from "./pages/VisaoEvento";
+import { VisaoEvento }  from "./pages/VisaoEvento";
 import { Calendario } from "./pages/Calendario";
 import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
@@ -31,7 +31,7 @@ function App() {
         <Route path="/turne" element={<Turne />} />
         <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
         <Route path="/artista" element={<ArtistaApp />} />
-        <Route path="/visao-evento" element={<VisaoEvento />} />
+        <Route path="/visao-evento/show/${id}" element={<VisaoEvento />} />
         <Route path="/criar-evento" element={<CriarEvento />} />
         {/* <Route path="configuracao" element={<Configuracao/>}/> */}
       </Route>

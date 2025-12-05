@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { MapCard } from "../components/VisaoEvento/MapCard";
@@ -8,42 +10,64 @@ import { ClimaCard } from "../components/VisaoEvento/ClimaCard";
 import { Header } from "../components/Dashboard/Header";
 import { DiaInfoCard } from "../components/VisaoEvento/DiaInfoCard";
 
-export const VisaoEvento = ({ evento }) => {
-  // SE o evento vier do backend, você substitui isso.
-  const agenda = evento?.agenda ?? [
-    {
-      time: "12:00",
-      title: "Transporte até o evento",
-      description: "Van sai do hotel às 12:00. Chegada prevista 12:45.",
-      active: true
-    },
-    {
-      time: "12:45",
-      title: "Descarregar a Van",
-      description: "Equipe técnica inicia a descarga."
-    },
-    {
-      time: "13:00",
-      title: "Montagem do palco",
-      description: "Montagem completa com equipe técnica."
-    },
-    {
-      time: "13:30",
-      title: "Passagem de som",
-      description: "Soundcheck geral com a banda."
-    },
-    {
-      time: "15:30",
-      title: "Descanso",
-      description: "Equipe liberada até as 18h."
-    },
-    {
-      time: "18:00",
-      title: "Showtime",
-      description: "Entrada no palco."
-    }
-  ];
+export default function VisaoEvento() {
+  const { id } = useParams();
 
+  const [evento, setEvento] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState(null);
+
+  // ===========================
+  //   Buscar dados no backend
+  // ===========================
+  useEffect(() => {
+    async function load() {
+      try {
+        const resp = await fetch(
+          `http://localhost:8080/visao-evento/show/${id}`,
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+
+        if (!resp.ok) {
+          throw new Error("Erro ao buscar visão do evento");
+        }
+
+        const data = await resp.json();
+        setEvento(data);
+
+      } catch (err) {
+        console.error(err);
+        setErro(err.message);
+
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, [id]);
+
+  // ===========================
+  //   Estados de carregamento
+  // ===========================
+  if (loading) return <div className="p-6">Carregando evento...</div>;
+
+  if (erro) return <div className="p-6 text-red-600">{erro}</div>;
+
+  if (!evento) return <div className="p-6">Evento não encontrado.</div>;
+
+  // ===========================
+  //   AGENDA REAL OU MOCK
+  // ===========================
+  const agenda = evento.agenda ?? [];
+
+  // ===========================
+  //   Tela montada
+  // ===========================
   return (
     <Layout>
       <Sidebar />
@@ -54,16 +78,15 @@ export const VisaoEvento = ({ evento }) => {
         <div className="col-span-2">
           <div className="flex items-start gap-3">
             <Header
-              titulo={evento?.artista ?? "Boogarins"}
-              turne={evento?.turne ?? "The Town 2025"}
+              titulo={evento.artista}
+              turne={evento.turne}
               circulo="bg-green-500"
             />
-
-            <DiaInfoCard info={evento?.dataInfo ?? "29-10-2025 — São Paulo → São Paulo"} />
+            <DiaInfoCard info={evento.dataInfo} />
           </div>
         </div>
 
-        {/* AGENDA */}
+        {/* Agenda */}
         <main className="flex flex-col min-h-0 w-full pr-2">
           <div className="space-y-3 overflow-y-auto max-h-full pr-3">
             {agenda.map((item, index) => (
@@ -72,21 +95,19 @@ export const VisaoEvento = ({ evento }) => {
           </div>
         </main>
 
-        {/* MAP + INDICADORES */}
+        {/* Mapa + Indicadores */}
         <aside className="flex flex-col justify-between gap-5 pl-2 min-h-0">
           <MapCard 
-            lat={evento?.coords?.lat ?? -23.5} 
-            lon={evento?.coords?.lon ?? -46.6} 
+            lat={evento.coords.lat}
+            lon={evento.coords.lon}
           />
 
           <div className="flex flex-row justify-between gap-4">
-            <Porcentagem percent={evento?.progresso ?? 60} />
-            <ClimaCard cidade={evento?.cidade ?? "São Paulo"} />
+            <Porcentagem percent={evento.progresso} />
+            <ClimaCard cidade={evento.cidade} />
           </div>
         </aside>
       </div>
     </Layout>
   );
-};
-
-export default VisaoEvento;
+}
