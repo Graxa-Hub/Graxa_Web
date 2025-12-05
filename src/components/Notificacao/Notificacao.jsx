@@ -59,6 +59,13 @@ export const Notificacao = () => {
     }
   };
 
+  useEffect(() => {
+    if (usuario?.id) {
+      // ✅ Carregar dados iniciais
+      listarNotificacoes();
+    }
+  }, [usuario?.id, listarNotificacoes]);
+
   if (!usuario?.id) {
     return null;
   }
@@ -79,6 +86,7 @@ export const Notificacao = () => {
         error={error}
         onMarkAsRead={handleMarkAsRead}
         onMarkAllAsRead={handleMarkAllAsRead}
+        onRefreshNotifications={listarNotificacoes}
       />
     </>
   );

@@ -12,7 +12,8 @@ export const Modal = ({
   loading = false,
   error = null,
   onMarkAsRead,
-  onMarkAllAsRead 
+  onMarkAllAsRead,
+  onRefreshNotifications  // ✅ NOVO
 }) => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isAlocacaoModalOpen, setIsAlocacaoModalOpen] = useState(false);
@@ -21,14 +22,26 @@ export const Modal = ({
     setSelectedNotification(notificacao);
     setIsAlocacaoModalOpen(true);
     
-    // ✅ MARCAR COMO LIDA AUTOMATICAMENTE ao clicar
     if (!notificacao.lida && onMarkAsRead) {
       onMarkAsRead(notificacao.id);
     }
   };
 
-  const handleAlocacaoResponse = (aceito) => {
-    console.log(`Alocação ${aceito ? 'aceita' : 'recusada'}`);
+  const handleAlocacaoResponse = (aceito, alocacaoAtualizada) => {
+    // ✅ Atualizar a notificação selecionada com novo status
+    if (selectedNotification && alocacaoAtualizada) {
+      setSelectedNotification({
+        ...selectedNotification,
+        alocacao: alocacaoAtualizada
+      });
+    }
+    
+    // ✅ Recarregar lista após responder
+    if (onRefreshNotifications) {
+      setTimeout(() => {
+        onRefreshNotifications();
+      }, 1000);
+    }
   };
 
   const closeAlocacaoModal = () => {

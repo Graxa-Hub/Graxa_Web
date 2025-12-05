@@ -84,52 +84,58 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
     setConfirmModal({ isOpen: true, tipo: 'recusar' });
   };
 
-  // ✅ CORRIGIDO: Usar status corretos
   const handleConfirm = async () => {
-    const aceitar = confirmModal.tipo === 'aceitar';
+  const aceitar = confirmModal.tipo === 'aceitar';
+  
+  try {
+    const status = aceitar ? 'ACEITO' : 'RECUSADO';
+    await responderAlocacao(alocacao.id, status);
     
-    try {
-      // ✅ CORRETO: Usar status ACEITO ou RECUSADO
-      const status = aceitar ? 'ACEITO' : 'RECUSADO';
-      await responderAlocacao(alocacao.id, status);
-      
-      // Fechar modal e notificar componente pai
-      onResponse(aceitar);
-      setConfirmModal({ isOpen: false, tipo: null });
+    // ✅ NOVO: Atualizar estado local da alocação com novo status
+    const alocacaoAtualizada = {
+      ...alocacao,
+      status: status.toLowerCase(),
+      dataHoraResposta: new Date().toISOString()
+    };
+    
+    setConfirmModal({ isOpen: false, tipo: null });
+    
+    showSuccess(
+      aceitar 
+        ? `Convite aceito com sucesso! Você confirmou participação no show "${show?.nomeEvento || 'show'}".`
+        : `Convite recusado. Obrigado por responder.`,
+      aceitar ? 'Convite Aceito!' : 'Convite Recusado'
+    );
+    
+    // ✅ Chamar callback para recarregar notificações no componente pai
+    // Passar a alocação atualizada
+    setTimeout(() => {
+      onResponse(aceitar, alocacaoAtualizada);
       onClose();
-      
-      // ✅ Toast de sucesso
-      showSuccess(
-        aceitar 
-          ? `Convite aceito com sucesso! Você confirmou participação no show "${show?.nomeEvento || 'show'}".`
-          : `Convite recusado. Obrigado por responder.`,
-        aceitar ? 'Convite Aceito!' : 'Convite Recusado'
-      );
-      
-    } catch (error) {
-      console.error('❌ Erro ao responder alocação:', error);
-      
-      // ✅ Toast de erro com tratamento melhorado
-      let errorMsg = 'Erro desconhecido';
-      
-      if (error.response?.data?.message) {
-        errorMsg = error.response.data.message;
-        // Tratar erros específicos
-        if (errorMsg.includes('Invalid boolean value')) {
-          errorMsg = 'Erro de validação no servidor. Tente novamente.';
-        } else if (errorMsg.includes('Alocação não encontrada')) {
-          errorMsg = 'Esta alocação não foi encontrada. A página será atualizada.';
-        }
-      } else if (error.message) {
-        errorMsg = error.message;
+    }, 500);
+    
+  } catch (error) {
+    console.error('❌ Erro ao responder alocação:', error);
+    
+    let errorMsg = 'Erro desconhecido';
+    
+    if (error.response?.data?.message) {
+      errorMsg = error.response.data.message;
+      if (errorMsg.includes('Invalid boolean value')) {
+        errorMsg = 'Erro de validação no servidor. Tente novamente.';
+      } else if (errorMsg.includes('Alocação não encontrada')) {
+        errorMsg = 'Esta alocação não foi encontrada. A página será atualizada.';
       }
-      
-      showError(
-        `Erro ao responder alocação: ${errorMsg}`,
-        'Falha na Resposta'
-      );
+    } else if (error.message) {
+      errorMsg = error.message;
     }
-  };
+    
+    showError(
+      `Erro ao responder alocação: ${errorMsg}`,
+      'Falha na Resposta'
+    );
+  }
+};
 
   if (!isOpen) return null;
 

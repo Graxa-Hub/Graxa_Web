@@ -52,16 +52,43 @@ const Etapa1Funcoes = ({
       if (!showId || alocacoesCarregadas) return;
 
       try {
-        console.log('[Etapa1Funcoes] Carregando alocações existentes para show:', showId);
-        
         const alocacoes = await listarPorShow(Number(showId));
-        console.log('[Etapa1Funcoes] Alocações encontradas:', alocacoes);
 
         const alocacoesPorTipo = {};
         const rolesComAlocacao = new Set();
         const colaboradoresJaSalvos = {};
-
+        
+        // Agrupar por colaborador e pegar apenas a mais recente
+        const alocsMapPorColaborador = {};
+        
         alocacoes.forEach(alocacao => {
+          const colabId = alocacao.colaborador?.id;
+          
+          if (!colabId) return;
+          
+          if (!alocsMapPorColaborador[colabId]) {
+            alocsMapPorColaborador[colabId] = alocacao;
+          } else {
+            // Comparar datas e manter a mais recente
+            const dataAtual = new Date(alocacao.dataHoraCriacao);
+            const dataSalva = new Date(alocsMapPorColaborador[colabId].dataHoraCriacao);
+            
+            if (dataAtual > dataSalva) {
+              alocsMapPorColaborador[colabId] = alocacao;
+            }
+          }
+        });
+        
+        // Processar apenas as alocações mais recentes
+        Object.values(alocsMapPorColaborador).forEach(alocacao => {
+          // Converter status para maiúsculo para comparar
+          const statusUpper = alocacao.status?.toUpperCase();
+
+          // Ignorar alocações canceladas ou recusadas
+          if (statusUpper === 'CANCELADO' || statusUpper === 'RECUSADO') {
+            return;
+          }
+
           const colaborador = alocacao.colaborador;
           if (colaborador) {
             const tipoUsuario = colaborador.tipoUsuario;
@@ -71,19 +98,19 @@ const Etapa1Funcoes = ({
               colaboradoresJaSalvos[tipoUsuario] = [];
             }
             
-            alocacoesPorTipo[tipoUsuario].push(colaborador.id);
-            colaboradoresJaSalvos[tipoUsuario].push(colaborador.id);
-            rolesComAlocacao.add(tipoUsuario);
+            // Só salvar se ainda está PENDENTE ou ACEITO
+            if (statusUpper === 'PENDENTE' || statusUpper === 'ACEITO') {
+              alocacoesPorTipo[tipoUsuario].push(colaborador.id);
+              colaboradoresJaSalvos[tipoUsuario].push(colaborador.id);
+              rolesComAlocacao.add(tipoUsuario);
+            }
           }
         });
-
+        
         setAssignments(alocacoesPorTipo);
         setSelectedRoles(Array.from(rolesComAlocacao));
         setAlocacoesSalvas(colaboradoresJaSalvos);
         setAlocacoesCarregadas(true);
-
-        console.log('[Etapa1Funcoes] Assignments atualizados:', alocacoesPorTipo);
-        console.log('[Etapa1Funcoes] Alocações salvas:', colaboradoresJaSalvos);
 
       } catch (error) {
         console.error('[Etapa1Funcoes] Erro ao carregar alocações:', error);
@@ -209,12 +236,40 @@ const Etapa1Funcoes = ({
 
       console.log('[Etapa1Funcoes] Alocações criadas com sucesso:', resultados);
 
+      // 🎯 NOVO: Atualizar alocacoesSalvas com os colaboradores que acabaram de ser alocados
+      const novasAlocacoesSalvas = { ...alocacoesSalvas };
+      
+      resultados.forEach(alocacao => {
+        const tipoUsuario = alocacao.colaborador?.tipoUsuario;
+        const colabId = alocacao.colaborador?.id;
+        
+        if (tipoUsuario && colabId) {
+          if (!novasAlocacoesSalvas[tipoUsuario]) {
+            novasAlocacoesSalvas[tipoUsuario] = [];
+          }
+          
+          // ✅ Adicionar se não existe
+          if (!novasAlocacoesSalvas[tipoUsuario].includes(colabId)) {
+            novasAlocacoesSalvas[tipoUsuario].push(colabId);
+          }
+        }
+      });
+      
+      setAlocacoesSalvas(novasAlocacoesSalvas);
+      
+      // ✅ Remover dos assignments (para limpar a seleção visual)
+      const novasAssignments = { ...assignments };
+      Object.keys(novasAssignments).forEach(roleId => {
+        novasAssignments[roleId] = novasAssignments[roleId].filter(
+          colabId => !colaboradoresParaAlocar.includes(colabId)
+        );
+      });
+      setAssignments(novasAssignments);
+
       showSuccess(
         `${colaboradoresParaAlocar.length} colaborador(es) alocado(s) com sucesso!`,
         'Alocação Concluída'
       );
-
-      setAlocacoesCarregadas(false);
 
     } catch (error) {
       console.error('[Etapa1Funcoes] Erro ao alocar usuários:', error);
