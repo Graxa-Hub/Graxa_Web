@@ -12,10 +12,10 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
 
-  // Carrega lista de locais
+  // Carrega lista de locais (uma vez)
   useEffect(() => {
     listarLocais();
-  }, [listarLocais]);
+  }, []); // ❌ REMOVEU listarLocais da dependency
 
   // Sempre que o localSelecionado mudar → Atualiza CriarEvento
   useEffect(() => {
@@ -26,26 +26,27 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
 
   // Inicializa local baseado no que veio do backend
   useEffect(() => {
-    if (!localSelecionado && localInicial && locais.length > 0) {
+    if (locais.length === 0) return;
 
+    // ✅ VERIFICAÇÃO CORRIGIDA: se localInicial tem ID (não é vazio)
+    if (localInicial?.id && !localSelecionado) {
       const localDoShow = locais.find((l) => l.id === localInicial.id);
 
       if (localDoShow) {
         setLocalSelecionado(localDoShow);
       } else {
-        // Normaliza formato do backend → usado no combobox
         setLocalSelecionado({
           ...localInicial,
           endereco: localInicial.endereco || {},
         });
       }
-
     } else if (!localSelecionado && locais.length > 0) {
+      // Se nenhum localInicial válido, seleciona o primeiro
       setLocalSelecionado(locais[0]);
     }
-  }, [localInicial, locais, localSelecionado, setLocalSelecionado]);
+  }, [localInicial, locais, localSelecionado, setLocalSelecionado]); // ✅ ADICIONOU localSelecionado aqui
 
-  // Busca informações para o local (CEP, aeroporto, restaurantes)
+  // Busca informações para o local
   useEffect(() => {
     async function buscarDadosLocal() {
       if (!localSelecionado?.endereco?.cep &&
