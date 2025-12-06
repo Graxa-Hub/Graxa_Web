@@ -64,7 +64,7 @@ const VisualizarAlocacoes = ({ showId }) => {
   const { toasts, showSuccess, showError, removeToast } = useToast();
   const { listarPorShow, responderAlocacao, loading, error } = useAlocacao();
   
-  // ✅ USAR HOOK DE NOTIFICAÇÕES (sem colaboradorId específico para criar notificações)
+  // ✅ USAR HOOK - criarNotificacao agora está disponível
   const { criarNotificacao } = useNotificacoes();
 
   const carregarAlocacoes = useCallback(async () => {
@@ -72,7 +72,7 @@ const VisualizarAlocacoes = ({ showId }) => {
     
     try {
       const dados = await listarPorShow(showId);
-      console.log('📊 Alocações carregadas com fotos:', dados);
+      console.log('📊 Alocações carregadas:', dados.length);
       setAlocacoes(dados || []);
     } catch (err) {
       console.error('Erro ao carregar alocações:', err);
@@ -108,21 +108,19 @@ const VisualizarAlocacoes = ({ showId }) => {
       const nomeShow = alocacao.show?.nomeEvento || 'evento';
       const mensagem = `Sua participação no show "${nomeShow}" foi cancelada pela produção. Entre em contato caso tenha dúvidas sobre este cancelamento.`;
       
-      console.log('📧 Criando notificação de cancelamento para:', alocacao.colaborador?.nome);
-      console.log('📧 Colaborador ID:', alocacao.colaborador?.id);
-      console.log('📧 Mensagem:', mensagem);
+      console.log('📧 Enviando notificação de cancelamento para:', alocacao.colaborador?.nome);
       
-      // ✅ CRIAR notificação usando o hook
+      // ✅ USAR criarNotificacao do hook
       await criarNotificacao(
         alocacao.colaborador.id,
         mensagem,
         'ALOCACAO_CANCELADA'
       );
       
-      console.log('✅ Notificação de cancelamento criada com sucesso!');
+      console.log('✅ Notificação enviada com sucesso!');
       
     } catch (error) {
-      console.error('❌ Erro ao criar notificação de cancelamento:', error);
+      console.error('❌ Erro ao criar notificação:', error);
       // Não falha o cancelamento por causa da notificação
     }
   }, [criarNotificacao]);
@@ -136,7 +134,7 @@ const VisualizarAlocacoes = ({ showId }) => {
       await responderAlocacao(alocacao.id, 'CANCELADO');
       console.log('✅ Alocação cancelada:', alocacao.id);
       
-      // ✅ 2. CRIAR notificação para o colaborador
+      // ✅ 2. ENVIAR NOTIFICAÇÃO para o colaborador
       if (alocacao.colaborador?.id) {
         await criarNotificacaoCancelamento(alocacao);
       }
@@ -145,7 +143,7 @@ const VisualizarAlocacoes = ({ showId }) => {
       await carregarAlocacoes();
       
       showSuccess(
-        `Alocação de ${alocacao.colaborador?.nome || 'colaborador'} foi cancelada! Uma notificação foi enviada automaticamente para informar sobre o cancelamento.`,
+        `Alocação de ${alocacao.colaborador?.nome || 'colaborador'} foi cancelada! Uma notificação foi enviada automaticamente.`,
         'Alocação Cancelada ✅'
       );
     } catch (err) {
@@ -155,9 +153,6 @@ const VisualizarAlocacoes = ({ showId }) => {
       
       if (err.response?.data?.message) {
         errorMsg = err.response.data.message;
-        if (errorMsg.includes('Value not permitted') || errorMsg.includes('Invalid boolean value')) {
-          errorMsg = 'Status inválido. Use ACEITO, RECUSADO, CANCELADO ou PENDENTE.';
-        }
       } else if (err.message) {
         errorMsg = err.message;
       }

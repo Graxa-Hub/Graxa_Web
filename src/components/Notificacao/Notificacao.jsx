@@ -1,70 +1,33 @@
-import { useState, useEffect } from "react";
-import { IconeNotificao } from "./IconeAlt";
-import { Modal } from "./Modal";
-import { useNotificacoes } from "../../hooks/useNotificacoes";
-import { useAuth } from "../../context/AuthContext";
+import { useState, useEffect } from 'react';
+import { IconeNotificao } from './IconeAlt';
+import { Modal } from './Modal';
+import { useNotificacoes } from '../../hooks/useNotificacoes';
+import { useAuth } from '../../context/AuthContext';
 
 export const Notificacao = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { usuario } = useAuth();
-  
+  const [contagemNotificacoes, setContagemNotificacoes] = useState(0);
   const {
     notificacoes,
-    notificacaoNaoLidas,
-    unreadCount,
+    notificacaoNaoLidas, // ✅ ADICIONE
     loading,
     error,
+    isConnected,
     listarNotificacoes,
     marcarComoLida,
     marcarTodasComoLidas
   } = useNotificacoes(usuario?.id);
 
-  // ✅ Carregar notificações quando abrir modal
+  
+
+  // ✅ Carregar notificações ao abrir modal
   useEffect(() => {
     if (isOpen && usuario?.id) {
       listarNotificacoes();
     }
+    setContagemNotificacoes(notificacaoNaoLidas?.length || 0);
   }, [isOpen, usuario?.id, listarNotificacoes]);
-
-  // ✅ Pedir permissão para notificações do browser
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  const handleOpen = () => {
-    setIsOpen(true);
-  };
-
-  const handleClose = () => {
-    setIsOpen(false);
-  };
-
-  const handleMarkAsRead = async (notificacaoId) => {
-    try {
-      await marcarComoLida(notificacaoId);
-      // ✅ Estado já foi atualizado otimisticamente no hook
-    } catch (error) {
-      console.error('❌ Erro ao marcar notificação como lida:', error);
-    }
-  };
-
-  const handleMarkAllAsRead = async () => {
-    try {
-      await marcarTodasComoLidas();
-      // ✅ Estado já foi atualizado otimisticamente no hook
-    } catch (error) {
-      console.error('❌ Erro ao marcar todas as notificações como lidas:', error);
-    }
-  };
-
-  useEffect(() => {
-    if (usuario?.id) {
-      // ✅ Carregar dados iniciais
-      listarNotificacoes();
-    }
-  }, [usuario?.id, listarNotificacoes]);
 
   if (!usuario?.id) {
     return null;
@@ -72,20 +35,21 @@ export const Notificacao = () => {
 
   return (
     <>
-      <IconeNotificao 
-        handleOpen={handleOpen} 
-        unreadCount={unreadCount || 0}
+      <IconeNotificao
+        handleOpen={() => setIsOpen(true)}
+        unreadCount={contagemNotificacoes}
         loading={loading}
       />
 
       <Modal
         isOpen={isOpen}
-        handleClose={handleClose}
+        handleClose={() => setIsOpen(false)}
         notificacaoLista={notificacoes || []}
         loading={loading}
         error={error}
-        onMarkAsRead={handleMarkAsRead}
-        onMarkAllAsRead={handleMarkAllAsRead}
+        isConnected={isConnected}
+        onMarkAsRead={marcarComoLida}
+        onMarkAllAsRead={marcarTodasComoLidas}
         onRefreshNotifications={listarNotificacoes}
       />
     </>

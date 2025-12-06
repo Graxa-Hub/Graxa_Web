@@ -1,187 +1,140 @@
-import { useState, useCallback, useEffect } from 'react';
-import * as notificacaoService from '../services/notificacaoService'; // ✅ CORRETO
+import { useState, useCallback, useEffect, useRef } from 'react';
+import * as notificacaoService from '../services/notificacaoService';
 import { webSocketService } from '../services/webSocketService';
+
+// ✅ Helper para mostrar notificação do browser
+const showBrowserNotification = (notification) => {
+  if (Notification.permission !== 'granted') return;
+
+  const notificationConfig = {
+    'ALOCACAO_CANCELADA': {
+      title: '🚫 Alocação Cancelada',
+      requireInteraction: true
+    },
+    'CONVITE_ALOCACAO': {
+      title: '🎭 Novo Convite para Show',
+      requireInteraction: false
+    }
+  };
+
+  const config = notificationConfig[notification.tipo] || {
+    title: 'Nova notificação Graxa',
+    requireInteraction: false
+  };
+
+  new Notification(config.title, {
+    body: notification.mensagem,
+    icon: '/favicon.ico',
+    tag: `notificacao-${notification.id}`,
+    requireInteraction: config.requireInteraction
+  });
+};
 
 export function useNotificacoes(colaboradorId) {
   const [notificacoes, setNotificacoes] = useState([]);
   const [notificacaoNaoLidas, setNotificacaoNaoLidas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
 
-  const unreadCount = notificacaoNaoLidas.length;
+  // ✅ Ref para evitar múltiplas subscriptions
+  const wsSubscribedRef = useRef(false);
 
-  const connectWebSocket = useCallback(async () => {
-    const token = localStorage.getItem('token');
-    if (!token || !colaboradorId) return;
-
-    try {
-      await webSocketService.connect(token);
-
-      webSocketService.subscribeToNotifications((novaNotificacao) => {
-        setNotificacoes(prev => [novaNotificacao, ...prev]);
-        
-        if (!novaNotificacao.lida) {
-          setNotificacaoNaoLidas(prev => [novaNotificacao, ...prev]);
-        }
-        
-        if (Notification.permission === 'granted') {
-          // ✅ PERSONALIZAR notificação baseada no tipo
-          let title = 'Nova notificação Graxa';
-          let icon = '/favicon.ico';
-          
-          if (novaNotificacao.tipo === 'ALOCACAO_CANCELADA') {
-            title = '🚫 Alocação Cancelada';
-            icon = '🚫';
-          } else if (novaNotificacao.tipo === 'CONVITE_ALOCACAO') {
-            title = '🎭 Novo Convite para Show';
-            icon = '🎭';
-          }
-          
-          new Notification(title, {
-            body: novaNotificacao.mensagem,
-            icon: icon,
-            tag: `notificacao-${novaNotificacao.id}`,
-            requireInteraction: novaNotificacao.tipo === 'ALOCACAO_CANCELADA'
-          });
-        }
-      });
-
-      webSocketService.subscribeToCounter((novoContador) => {
-        listarNaoLidas();
-      });
-
-    } catch (error) {
-      console.error('❌ Erro ao conectar WebSocket:', error);
-    }
-  }, [colaboradorId]);
-
-  const disconnectWebSocket = useCallback(() => {
-    webSocketService.disconnect();
-  }, []);
-
-  const criarNotificacao = useCallback(async (colaboradorIdTarget = null, mensagem, tipo) => {
-    const targetId = colaboradorIdTarget || colaboradorId;
-    
-    if (!targetId) {
-      console.warn('❌ [useNotificacoes] Nenhum colaboradorId fornecido para criar notificação');
-      return null;
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      console.log('📧 [useNotificacoes] Criando notificação:', {
-        colaboradorId: targetId,
-        mensagem,
-        tipo
-      });
-      
-      const novaNotificacao = await notificacaoService.criarNotificacao(targetId, mensagem, tipo);
-      
-      console.log('✅ [useNotificacoes] Notificação criada:', novaNotificacao);
-      
-      if (targetId === colaboradorId) {
-        setNotificacoes(prev => [novaNotificacao, ...prev]);
-        if (!novaNotificacao.lida) {
-          setNotificacaoNaoLidas(prev => [novaNotificacao, ...prev]);
-        }
-      }
-      
-      return novaNotificacao;
-    } catch (err) {
-      console.error('❌ [useNotificacoes] Erro ao criar notificação:', err);
-      setError(err.message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [colaboradorId]);
-
-  const listarNotificacoes = useCallback(async () => {
-    if (!colaboradorId) {
-      return [];
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await notificacaoService.listarPorColaborador(colaboradorId);
-      const notificacoesArray = data || [];
-      
-      // ✅ LOG SIMPLIFICADO: Apenas resumo das notificações
-      console.log('📦 [useNotificacoes] Notificações carregadas:', notificacoesArray.length);
-      console.log('🔍 [useNotificacoes] Resumo:', notificacoesArray.map(n => ({
-        id: n.id,
-        tipo: n.tipo,
-        temAlocacao: !!n.alocacao,
-        temShow: !!n.alocacao?.show,
-        nomeShow: n.alocacao?.show?.nomeEvento,
-        colaborador: n.alocacao?.colaborador?.nome,
-        funcao: n.alocacao?.colaborador?.tipoUsuario
-      })));
-      
-      setNotificacoes(notificacoesArray);
-      return notificacoesArray;
-    } catch (err) {
-      setError(err.message);
-      setNotificacoes([]);
-      return [];
-    } finally {
-      setLoading(false);
-    }
-  }, [colaboradorId]);
-
+  // ✅ Carregar lista inicial de notificações não lidas
   const listarNaoLidas = useCallback(async () => {
-    if (!colaboradorId) {
-      return [];
-    }
+    if (!colaboradorId) return [];
 
     try {
       const data = await notificacaoService.listarNaoLidas(colaboradorId);
       const notificacoesArray = data || [];
-      
+      console.log('📋 Notificações não lidas carregadas:', notificacoesArray.length);
       setNotificacaoNaoLidas(notificacoesArray);
+      setError(null);
       return notificacoesArray;
     } catch (err) {
+      console.error('❌ Erro ao listar notificações não lidas:', err);
       setError(err.message);
-      setNotificacaoNaoLidas([]);
       return [];
     }
   }, [colaboradorId]);
 
-  const marcarComoLida = useCallback(async (notificacaoId) => {
+  // ✅ Carregar todas as notificações
+  const listarNotificacoes = useCallback(async () => {
+    if (!colaboradorId) return [];
+
+    setLoading(true);
     try {
+      const data = await notificacaoService.listarPorColaborador(colaboradorId);
+      const notificacoesArray = data || [];
+      console.log('📦 Todas as notificações carregadas:', notificacoesArray.length);
+      setNotificacoes(notificacoesArray);
+      setError(null);
+      return notificacoesArray;
+    } catch (err) {
+      console.error('❌ Erro ao listar notificações:', err);
+      setError(err.message);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, [colaboradorId]);
+
+  // ✅ NOVO: Criar notificação para qualquer colaborador
+  const criarNotificacao = useCallback(async (colaboradorIdTarget, mensagem, tipo) => {
+    try {
+      console.log('📧 Criando notificação:', { colaboradorIdTarget, tipo });
+      const novaNotificacao = await notificacaoService.criarNotificacao(
+        colaboradorIdTarget,
+        mensagem,
+        tipo
+      );
+      console.log('✅ Notificação criada:', novaNotificacao.id);
+      return novaNotificacao;
+    } catch (err) {
+      console.error('❌ Erro ao criar notificação:', err);
+      throw err;
+    }
+  }, []);
+
+  // ✅ Marcar notificação como lida (otimista)
+  const marcarComoLida = useCallback(async (notificacaoId) => {
+    const notificacaoAnterior = notificacaoNaoLidas.find(n => n.id === notificacaoId);
+
+    try {
+      // Atualização otimista
       setNotificacaoNaoLidas(prev => prev.filter(n => n.id !== notificacaoId));
       setNotificacoes(prev => prev.map(n => 
         n.id === notificacaoId ? { ...n, lida: true } : n
       ));
 
-      const notificacaoAtualizada = await notificacaoService.marcarComoLida(notificacaoId);
-      
-      setNotificacoes(prev => prev.map(n => 
-        n.id === notificacaoId ? notificacaoAtualizada : n
-      ));
-      
-      return notificacaoAtualizada;
+      // Chamada à API
+      await notificacaoService.marcarComoLida(notificacaoId);
+      setError(null);
     } catch (err) {
-      console.error('❌ Erro ao marcar como lida, revertendo estado:', err);
+      console.error('❌ Erro ao marcar como lida:', err);
+      // Reverter estado em caso de erro
+      if (notificacaoAnterior) {
+        setNotificacaoNaoLidas(prev => [notificacaoAnterior, ...prev]);
+      }
       setError(err.message);
-      
-      await listarNotificacoes();
-      await listarNaoLidas();
-      
       throw err;
     }
-  }, [listarNotificacoes, listarNaoLidas]);
+  }, [notificacaoNaoLidas]);
 
+  // ✅ Marcar todas como lidas
   const marcarTodasComoLidas = useCallback(async () => {
     if (!colaboradorId) return;
 
+    const backup = notificacaoNaoLidas;
+
     try {
+      // Atualização otimista
       setNotificacaoNaoLidas([]);
       setNotificacoes(prev => prev.map(n => ({ ...n, lida: true })));
 
-      const response = await fetch(`${import.meta.env.VITE_API_SPRING || 'http://localhost:8080'}/notificacoes/colaborador/${colaboradorId}/marcar-todas-lidas`, {
+      // Chamada à API
+      const apiUrl = `${import.meta.env.VITE_API_SPRING || 'http://localhost:8080'}/notificacoes/colaborador/${colaboradorId}/marcar-todas-lidas`;
+      const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -189,42 +142,117 @@ export function useNotificacoes(colaboradorId) {
         }
       });
 
-      if (!response.ok) {
-        throw new Error('Erro ao marcar todas como lidas');
-      }
-      
+      if (!response.ok) throw new Error('Erro ao marcar todas como lidas');
+      setError(null);
     } catch (err) {
-      console.error('[useNotificacoes] Erro ao marcar todas como lidas:', err);
-      await listarNotificacoes();
-      await listarNaoLidas();
+      console.error('❌ Erro ao marcar todas como lidas:', err);
+      // Reverter estado
+      setNotificacaoNaoLidas(backup);
+      setError(err.message);
       throw err;
     }
-  }, [colaboradorId, listarNotificacoes, listarNaoLidas]);
+  }, [colaboradorId, notificacaoNaoLidas]);
 
-  const requestNotificationPermission = useCallback(() => {
+  // ✅ Conectar WebSocket (apenas uma vez por colaborador)
+  useEffect(() => {
+    if (!colaboradorId) return;
+
+    let isMounted = true;
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      console.warn('⚠️ Token não encontrado');
+      return;
+    }
+
+    const initializeWebSocket = async () => {
+      try {
+        console.log('🔌 Conectando WebSocket...');
+        await webSocketService.connect(token);
+
+        if (!isMounted) return;
+        setIsConnected(true);
+        console.log('✅ WebSocket conectado');
+
+        // ✅ Subscrever apenas uma vez
+        if (!wsSubscribedRef.current) {
+          wsSubscribedRef.current = true;
+
+          webSocketService.subscribeToNotifications((novaNotificacao) => {
+            if (!isMounted) return;
+
+            console.log('🔔 Nova notificação via WebSocket:', novaNotificacao.id, 'lida:', novaNotificacao.lida);
+
+            // Adicionar à lista geral (verificar duplicatas)
+            setNotificacoes(prev => {
+              const jaExiste = prev.some(n => n.id === novaNotificacao.id);
+              if (jaExiste) return prev;
+              return [novaNotificacao, ...prev];
+            });
+
+            // ✅ CRUCIAL: Adicionar ao contador se não lida
+            if (!novaNotificacao.lida) {
+              setNotificacaoNaoLidas(prev => {
+                const jaExiste = prev.some(n => n.id === novaNotificacao.id);
+                if (jaExiste) return prev;
+                
+                const novo = [novaNotificacao, ...prev];
+                console.log('📊 Contador atualizado:', prev.length, '→', novo.length);
+                return novo;
+              });
+            }
+
+            // Notificação do browser
+            showBrowserNotification(novaNotificacao);
+          });
+
+          webSocketService.subscribeToCounter(() => {
+            if (!isMounted) return;
+            console.log('📊 Evento de contador recebido via WebSocket');
+          });
+        }
+
+      } catch (err) {
+        if (isMounted) {
+          console.error('❌ Erro ao conectar WebSocket:', err);
+          setIsConnected(false);
+          setError(err.message);
+        }
+      }
+    };
+
+    initializeWebSocket();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [colaboradorId]);
+
+  // ✅ Carregar dados iniciais e pedir permissão
+  useEffect(() => {
+    if (!colaboradorId) return;
+
+    listarNaoLidas();
+
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
-  }, []);
+  }, [colaboradorId, listarNaoLidas]);
 
+  // ✅ Desconectar ao desmontar
   useEffect(() => {
-    if (colaboradorId) {
-      listarNaoLidas();
-      connectWebSocket();
-      requestNotificationPermission();
-    }
-
     return () => {
-      disconnectWebSocket();
+      webSocketService.disconnect();
+      wsSubscribedRef.current = false;
     };
-  }, [colaboradorId, listarNaoLidas, connectWebSocket, disconnectWebSocket, requestNotificationPermission]);
+  }, []);
 
   return {
     notificacoes,
     notificacaoNaoLidas,
-    unreadCount,
     loading,
     error,
+    isConnected,
     criarNotificacao,
     listarNotificacoes,
     listarNaoLidas,

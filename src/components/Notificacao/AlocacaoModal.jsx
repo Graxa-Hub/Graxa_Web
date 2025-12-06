@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Calendar, 
   Clock, 
@@ -20,11 +20,19 @@ import { obterFuncao, obterIcone, obterCategoria } from '../../utils/tipoUsuario
 export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
   const { responderAlocacao, loading: loadingResponse } = useAlocacao();
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, tipo: null });
+  const [alocacaoAtualizada, setAlocacaoAtualizada] = useState(null);
   
   // ✅ Hook de toast
   const { toasts, showSuccess, showError, removeToast } = useToast();
 
-  const alocacao = notificacao?.alocacao;
+  // ✅ Resetar estado ao abrir o modal novamente
+  useEffect(() => {
+    if (isOpen) {
+      setAlocacaoAtualizada(null);
+    }
+  }, [isOpen, notificacao?.id]);
+
+  const alocacao = alocacaoAtualizada || notificacao?.alocacao;
   const show = alocacao?.show;
   const colaborador = alocacao?.colaborador;
   const local = show?.local;
@@ -91,13 +99,14 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
     const status = aceitar ? 'ACEITO' : 'RECUSADO';
     await responderAlocacao(alocacao.id, status);
     
-    // ✅ NOVO: Atualizar estado local da alocação com novo status
-    const alocacaoAtualizada = {
+    // ✅ Atualizar estado local com novo status
+    const novaAlocacao = {
       ...alocacao,
       status: status.toLowerCase(),
       dataHoraResposta: new Date().toISOString()
     };
     
+    setAlocacaoAtualizada(novaAlocacao);
     setConfirmModal({ isOpen: false, tipo: null });
     
     showSuccess(
@@ -107,12 +116,10 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
       aceitar ? 'Convite Aceito!' : 'Convite Recusado'
     );
     
-    // ✅ Chamar callback para recarregar notificações no componente pai
-    // Passar a alocação atualizada
-    setTimeout(() => {
-      onResponse(aceitar, alocacaoAtualizada);
-      onClose();
-    }, 500);
+    // ✅ Notificar o componente pai sobre a resposta (mas não fechar)
+    if (onResponse) {
+      onResponse(aceitar, novaAlocacao);
+    }
     
   } catch (error) {
     console.error('❌ Erro ao responder alocação:', error);
@@ -283,7 +290,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                           <p className="font-medium text-gray-900">Status</p>
                           <div className="mt-2">
                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${obterCorStatus(alocacao.status)}`}>
-                              {alocacao.status.toUpperCase()}
+                              {alocacao.status.charAt(0).toUpperCase() + alocacao.status.slice(1).toLowerCase()}
                             </span>
                           </div>
                           {alocacao.dataHoraCriacao && (

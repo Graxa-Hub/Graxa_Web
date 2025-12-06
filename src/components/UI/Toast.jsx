@@ -7,8 +7,7 @@ export const Toast = ({
   type = 'info', 
   title, 
   message, 
-  duration = 5000,
-  position = 'top-right' 
+  duration = 5000
 }) => {
   const [visible, setVisible] = useState(false);
 
@@ -64,29 +63,10 @@ export const Toast = ({
     }
   };
 
-  const getPositionClasses = () => {
-    switch (position) {
-      case 'top-left':
-        return 'top-5 left-5';
-      case 'top-center':
-        return 'top-5 left-1/2 transform -translate-x-1/2';
-      case 'top-right':
-        return 'top-5 right-5';
-      case 'bottom-left':
-        return 'bottom-5 left-5';
-      case 'bottom-center':
-        return 'bottom-5 left-1/2 transform -translate-x-1/2';
-      case 'bottom-right':
-        return 'bottom-5 right-5';
-      default:
-        return 'top-5 right-5';
-    }
-  };
-
   return (
     <>
       <div 
-        className={`fixed z-50 max-w-sm w-full ${getPositionClasses()} transition-all duration-300 transform ${
+        className={`max-w-sm w-full transition-all duration-300 transform ${
           visible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
         }`}
       >
@@ -130,7 +110,6 @@ export const Toast = ({
         </div>
       </div>
       
-      {/* ✅ CORRIGIDO: CSS sem jsx attribute */}
       <style dangerouslySetInnerHTML={{
         __html: `
           @keyframes toast-progress {
