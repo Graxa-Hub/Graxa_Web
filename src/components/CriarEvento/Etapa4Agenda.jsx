@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 
 const Etapa4Agenda = ({ agenda, setAgenda }) => {
-  const emptyItem = { hora: "", titulo: "", descricao: "" };
+
+  const emptyItem = {
+    dataHora: "",   // datetime-local
+    titulo: "",
+    descricao: ""
+  };
 
   const adicionarItem = () => {
     setAgenda([...agenda, emptyItem]);
@@ -11,8 +16,10 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
     const newAgenda = [...agenda];
     newAgenda[index] = { ...newAgenda[index], [field]: value };
 
-    // Ordenação automática por horário
-    const sorted = newAgenda.sort((a, b) => a.hora.localeCompare(b.hora));
+    // Ordena por data real (ISO ordena corretamente por string também)
+    const sorted = newAgenda.sort((a, b) =>
+      (a.dataHora || "").localeCompare(b.dataHora || "")
+    );
 
     setAgenda(sorted);
   };
@@ -35,16 +42,22 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
 
       <div className="space-y-4 mt-8">
         {agenda.map((item, index) => (
-          <div key={index} className="bg-white p-5 rounded-xl shadow-md space-y-4 border border-gray-100">
+          <div
+            key={index}
+            className="bg-white p-5 rounded-xl shadow-md space-y-4 border border-gray-100"
+          >
 
-            {/* HORÁRIO */}
+            {/* DATA E HORA */}
             <div>
-              <label className="text-sm font-medium text-gray-700">Horário</label>
+              <label className="text-sm font-medium text-gray-700">
+                Data e Horário
+              </label>
               <input
-                type="time"
-                className="w-full p-3 border border-gray-300 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={item.hora}
-                onChange={(e) => updateItem(index, "hora", e.target.value)}
+                type="datetime-local"
+                className="w-full p-3 border border-gray-300 rounded-lg mt-1
+                focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={item.dataHora || ""}
+                onChange={(e) => updateItem(index, "dataHora", e.target.value)}
               />
             </div>
 
@@ -52,7 +65,8 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
             <div>
               <label className="text-sm font-medium text-gray-700">Título</label>
               <input
-                className="w-full p-3 border border-gray-300 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg mt-1
+                focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 value={item.titulo}
                 placeholder="Ex: Passagem de som"
                 onChange={(e) => updateItem(index, "titulo", e.target.value)}
@@ -61,9 +75,12 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
 
             {/* DESCRIÇÃO */}
             <div>
-              <label className="text-sm font-medium text-gray-700">Descrição</label>
+              <label className="text-sm font-medium text-gray-700">
+                Descrição
+              </label>
               <textarea
-                className="w-full p-3 border border-gray-300 rounded-lg mt-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg mt-1
+                focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 rows="2"
                 value={item.descricao}
                 onChange={(e) => updateItem(index, "descricao", e.target.value)}

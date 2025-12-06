@@ -81,123 +81,137 @@ export const CriarEvento = () => {
     colaboradoresSelecionadosIds.includes(c.id)
 );
   const salvarEventoCompleto = async () => {
-    if (!showId) {
-      showError("Show inválido. Salve/abra o show antes de finalizar.");
-      return;
-    }
+  if (!showId) {
+    showError("Show inválido. Salve/abra o show antes de finalizar.");
+    return;
+  }
 
-    // set de IDs que foram selecionados na etapa de funções (assignments)
-    const alocadosSet = new Set();
-    Object.values(assignments || {}).forEach((arr) => {
-      if (Array.isArray(arr)) arr.forEach((id) => alocadosSet.add(id));
-    });
+  // set de IDs que foram selecionados na etapa de funções (assignments)
+  const alocadosSet = new Set();
+  Object.values(assignments || {}).forEach((arr) => {
+    if (Array.isArray(arr)) arr.forEach((id) => alocadosSet.add(id));
+  });
 
-    // se não houver alocados, avisa
-    if (alocadosSet.size === 0) {
-      showWarning("Nenhum colaborador selecionado na etapa de funções. Nada será salvo.");
-      return;
-    }
+  if (alocadosSet.size === 0) {
+    showWarning("Nenhum colaborador selecionado na etapa de funções. Nada será salvo.");
+    return;
+  }
 
-    try {
-      showInfo("Iniciando salvamento da logística e agenda...");
+  try {
+    showInfo("Iniciando salvamento da logística e agenda...");
 
-      const promessas = [];
+    const promessas = [];
 
-      // ===== HOTÉIS =====
-      hotels.forEach((hotel) => {
-        // hotel.hospedes é array de ids
-        (hotel.hospedes || []).forEach((colabId) => {
-          if (!alocadosSet.has(colabId)) return; // só salva os alocados
-
-          const dto = {
-            showId: Number(showId),
-            colaboradorId: Number(colabId),
-            nomeHotel: hotel.nome || null,
-            endereco: hotel.endereco || null,
-            latitude: hotel.coordsHotel?.lat ?? null,
-            longitude: hotel.coordsHotel?.lon ?? null,
-            distanciaPalcoKm: hotel.distanciaPalcoKm ? Number(hotel.distanciaPalcoKm) : null,
-            distanciaAeroportoKm: hotel.distanciaAeroportoKm ? Number(hotel.distanciaAeroportoKm) : null,
-            // converte datetime-local para ISO (se necessário seu backend aceita string ISO)
-            checkin: hotel.checkin || null,
-            checkout: hotel.checkout || null
-          };
-
-          promessas.push(logisticaService.criarHotelEvento(dto));
-        });
-      });
-
-      // ===== VOOS =====
-      flights.forEach((flight) => {
-        (flight.passageiros || []).forEach((colabId) => {
-          if (!alocadosSet.has(colabId)) return;
-
-          const dto = {
-            showId: Number(showId),
-            colaboradorId: Number(colabId),
-            ciaAerea: flight.cia || null,
-            codigoVoo: flight.numero || null,
-            origem: flight.origem || null,
-            destino: flight.destino || null,
-            partida: flight.saida ? new Date(flight.saida).toISOString() : null,
-            chegada: flight.chegada ? new Date(flight.chegada).toISOString() : null
-          };
-
-          promessas.push(logisticaService.criarVooEvento(dto));
-        });
-      });
-
-      // ===== TRANSPORTES =====
-      transports.forEach((t) => {
-        (t.passageiros || []).forEach((colabId) => {
-          if (!alocadosSet.has(colabId)) return;
-
-          const dto = {
-            showId: Number(showId),
-            colaboradorId: Number(colabId),
-            tipo: t.tipo || null,
-            saida: t.saida ? new Date(t.saida).toISOString() : null,
-            destino: t.destino || null,
-            motorista: t.responsavel || null,
-            observacao: t.observacao || null
-          };
-
-          promessas.push(logisticaService.criarTransporteEvento(dto));
-        });
-      });
-
-      // ===== AGENDA =====
-      // Agenda pode ter items sem colaborador; aqui vamos criar todos os items, cada item com colaboradorId se existir e se for alocado.
-      agenda.forEach((item) => {
-        const colabId = item.colaboradorId;
-        // se existe colaborador e ele NÃO está alocado -> ignora
-        if (colabId && !alocadosSet.has(colabId)) return;
+    // =======================
+    //       HOTÉIS
+    // =======================
+    hotels.forEach((hotel) => {
+      (hotel.hospedes || []).forEach((colabId) => {
+        if (!alocadosSet.has(colabId)) return;
 
         const dto = {
           showId: Number(showId),
-          colaboradorId: colabId ? Number(colabId) : null,
-          titulo: item.titulo || item.titulo || "Evento",
-          descricao: item.descricao || null,
-          dataHora: item.dataHora ? new Date(item.dataHora).toISOString() : null,
-          duracaoMinutos: item.duracaoMinutos ?? null,
-          ordem: item.ordem ?? null
+          colaboradorId: Number(colabId),
+          nomeHotel: hotel.nome || null,
+          endereco: hotel.endereco || null,
+          latitude: hotel.coordsHotel?.lat ?? null,
+          longitude: hotel.coordsHotel?.lon ?? null,
+          distanciaPalcoKm: hotel.distanciaPalcoKm ? Number(hotel.distanciaPalcoKm) : null,
+          distanciaAeroportoKm: hotel.distanciaAeroportoKm ? Number(hotel.distanciaAeroportoKm) : null,
+          checkin: hotel.checkin || null,
+          checkout: hotel.checkout || null
         };
 
-        promessas.push(logisticaService.criarAgendaEvento(dto));
+        promessas.push(logisticaService.criarHotelEvento(dto));
       });
+    });
 
-      // executa todas as requisições
-      const resultados = await Promise.all(promessas);
+    // =======================
+    //         VOOS
+    // =======================
+    flights.forEach((flight) => {
+      (flight.passageiros || []).forEach((colabId) => {
+        if (!alocadosSet.has(colabId)) return;
 
-      showSuccess("Logística e agenda salvas com sucesso!");
-      console.log("Resultados do salvamento completo:", resultados);
+        const dto = {
+          showId: Number(showId),
+          colaboradorId: Number(colabId),
+          ciaAerea: flight.cia || null,
+          codigoVoo: flight.numero || null,
+          origem: flight.origem || null,
+          destino: flight.destino || null,
+          partida: flight.saida ? new Date(flight.saida).toISOString() : null,
+          chegada: flight.chegada ? new Date(flight.chegada).toISOString() : null
+        };
 
-      // opcional: executar algo após salvar (ex: redirecionar, limpar estados, indicar via toast)
-    } catch (err) {
-      console.error("Erro ao salvar logística/agenda:", err);
-      showError("Erro ao salvar. Veja console para detalhes.");
-    }
-  };
+        promessas.push(logisticaService.criarVooEvento(dto));
+      });
+    });
+
+    // =======================
+    //      TRANSPORTES
+    // =======================
+    transports.forEach((t) => {
+      (t.passageiros || []).forEach((colabId) => {
+        if (!alocadosSet.has(colabId)) return;
+
+        const dto = {
+          showId: Number(showId),
+          colaboradorId: Number(colabId),
+          tipo: t.tipo || null,
+          saida: t.saida ? new Date(t.saida).toISOString() : null,
+          destino: t.destino || null,
+          motorista: t.responsavel || null,
+          observacao: t.observacao || null
+        };
+
+        promessas.push(logisticaService.criarTransporteEvento(dto));
+      });
+    });
+
+    // ===== AGENDA =====
+
+    // Normaliza: se vier item.hora (modelo antigo), converte para dataHora
+    const agendaNormalizada = agenda.map(item => ({
+      ...item,
+      dataHora: item.dataHora || item.hora || null
+    }));
+
+    agendaNormalizada.forEach((item, index) => {
+      const colabId = item.colaboradorId;
+
+      if (colabId && !alocadosSet.has(colabId)) return;
+
+      const dto = {
+        showId: Number(showId),
+        colaboradorId: colabId ? Number(colabId) : null,
+        titulo: item.titulo || "Evento",
+        descricao: item.descricao || null,
+        dataHora: item.dataHora
+          ? new Date(item.dataHora).toISOString()
+          : null,
+        duracaoMinutos: item.duracaoMinutos ?? null,
+        ordem: index
+      };
+
+      promessas.push(logisticaService.criarAgendaEvento(dto));
+    });
+
+
+    // =======================
+    // EXECUÇÃO FINAL
+    // =======================
+    const resultados = await Promise.all(promessas);
+
+    showSuccess("Logística e agenda salvas com sucesso!");
+    console.log("Resultados:", resultados);
+
+  } catch (err) {
+    console.error("Erro ao salvar logística/agenda:", err);
+    showError("Erro ao salvar. Veja o console para detalhes.");
+  }
+};
+
 
   // ===== RENDERIZAÇÃO =====
   const renderEtapa = () => {
