@@ -35,7 +35,9 @@ const SidebarDireita = ({
       {temLocal && (
         <Card title="Local do Evento">
           <p>
-            <strong>Endereço:</strong> {localShow.endereco}
+            <strong>Endereço:</strong>{" "}
+            {localShow.endereco?.logradouro}, {localShow.endereco?.numero} -{" "}
+            {localShow.endereco?.bairro}
           </p>
           <p>
             <strong>Cidade/UF:</strong> {localShow.cidade} / {localShow.uf}

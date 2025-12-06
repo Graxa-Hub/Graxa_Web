@@ -14,13 +14,13 @@ const Etapa2Logistica = ({
   localShow
 }) => {
 
-  // === REMOVER ===
+  //REMOVER 
   const removeHotel = (id) => setHotels(hotels.filter((h) => h.id !== id));
   const removeFlight = (id) => setFlights(flights.filter((f) => f.id !== id));
   const removeTransporte = (id) =>
     setTransports(transports.filter((t) => t.id !== id));
 
-  // === ADICIONAR HOTEL (ajustado!) ===
+  //ADICIONAR HOTEL 
   const addHotel = () =>
     setHotels([
       ...hotels,
@@ -30,13 +30,13 @@ const Etapa2Logistica = ({
         endereco: "",
         checkin: "",
         checkout: "",
-        distanciaAeroportoKm: null, // 🔥 usado pelo HotelCard
-        distanciaPalcoKm: null,     // 🔥 usado pelo HotelCard
+        distanciaAeroportoKm: null,
+        distanciaPalcoKm: null,    
         hospedes: []
       }
     ]);
 
-  // === ADICIONAR VOO ===
+  //ADICIONAR VOO 
   const addFlight = () =>
     setFlights([
       ...flights,
@@ -52,7 +52,7 @@ const Etapa2Logistica = ({
       }
     ]);
 
-  // === ADICIONAR TRANSPORTE ===
+  //ADICIONAR TRANSPORTE
   const addTransporte = () =>
     setTransports([
       ...transports,

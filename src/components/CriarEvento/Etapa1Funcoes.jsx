@@ -42,6 +42,11 @@ const Etapa1Funcoes = ({
 
   const { colaboradores, loading, error, listarColaboradores } = useColaboradores();
   const { criarAlocacao, listarPorShow, loading: loadingAlocacao, error: errorAlocacao } = useAlocacao();
+  const [showDropdown, setShowDropdown] = useState(false);
+
+
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   useEffect(() => {
     listarColaboradores();
@@ -121,6 +126,17 @@ const Etapa1Funcoes = ({
     carregarAlocacoes();
   }, [showId, listarPorShow, alocacoesCarregadas, showError]);
 
+  const FUNCOES_PRINCIPAIS = ["preProdutor", "produtorEstrada", "produtor", "tecnicoSom"];
+
+  
+  const rolesFiltradas = ROLES.filter(role => {
+    if (!searchTerm) {
+      return FUNCOES_PRINCIPAIS.includes(role.id);
+    }
+
+    return role.title.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
   const toggleAccordion = (roleId) => {
     setActiveRole(activeRole === roleId ? null : roleId);
   };
@@ -184,7 +200,7 @@ const Etapa1Funcoes = ({
       isValidNumber: !isNaN(showIdNumber) && showIdNumber > 0
     });
 
-    // ✅ NOVO: Validações com toast
+    // Validações com toast
     if (!showId || isNaN(showIdNumber) || showIdNumber <= 0) {
       showError('ID do show inválido. Salve o evento primeiro.');
       return;
@@ -207,7 +223,7 @@ const Etapa1Funcoes = ({
       return;
     }
 
-    // ✅ NOVO: Modal de confirmação antes de alocar
+    //  Modal de confirmação antes de alocar
     setConfirmModal({
       type: 'info',
       title: 'Confirmar Alocação',
@@ -222,12 +238,12 @@ const Etapa1Funcoes = ({
     });
   };
 
-  // ✅ NOVA FUNÇÃO: Executa alocação
+  // Executa alocação
   const executarAlocacao = async (showIdNumber, colaboradoresParaAlocar) => {
     try {
       console.log('[Etapa1Funcoes] Novos colaboradores a alocar:', colaboradoresParaAlocar);
 
-      // ✅ Cria uma alocação por vez para cada colaborador
+      // Cria uma alocação por vez para cada colaborador
       const promessas = colaboradoresParaAlocar.map(colaboradorId => 
         criarAlocacao(showIdNumber, colaboradorId)
       );
@@ -236,7 +252,7 @@ const Etapa1Funcoes = ({
 
       console.log('[Etapa1Funcoes] Alocações criadas com sucesso:', resultados);
 
-      // 🎯 NOVO: Atualizar alocacoesSalvas com os colaboradores que acabaram de ser alocados
+      // Atualizar alocacoesSalvas com os colaboradores que acabaram de ser alocados
       const novasAlocacoesSalvas = { ...alocacoesSalvas };
       
       resultados.forEach(alocacao => {
@@ -248,7 +264,7 @@ const Etapa1Funcoes = ({
             novasAlocacoesSalvas[tipoUsuario] = [];
           }
           
-          // ✅ Adicionar se não existe
+          //  Adicionar se não existe
           if (!novasAlocacoesSalvas[tipoUsuario].includes(colabId)) {
             novasAlocacoesSalvas[tipoUsuario].push(colabId);
           }
@@ -257,7 +273,7 @@ const Etapa1Funcoes = ({
       
       setAlocacoesSalvas(novasAlocacoesSalvas);
       
-      // ✅ Remover dos assignments (para limpar a seleção visual)
+      // Remover dos assignments (para limpar a seleção visual)
       const novasAssignments = { ...assignments };
       Object.keys(novasAssignments).forEach(roleId => {
         novasAssignments[roleId] = novasAssignments[roleId].filter(
@@ -326,8 +342,51 @@ const Etapa1Funcoes = ({
         </div>
       )}
 
+      <div className="w-full mb-4">
+        <input
+          type="text"
+          placeholder="Buscar função..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400"
+        />
+        {searchTerm.length > 0 && (
+          <div className="border rounded-lg bg-white shadow-lg max-h-60 overflow-y-auto z-50">
+            {rolesFiltradas.length === 0 ? (
+              <p className="p-3 text-gray-500 text-sm">Nenhuma função encontrada.</p>
+            ) : (
+              rolesFiltradas.map((role) => {
+                const jaSelecionado = selectedRoles.includes(role.id);
+
+                return (
+                  <button
+                    key={role.id}
+                    className="w-full flex justify-between items-center p-3 hover:bg-gray-100 transition text-left"
+                    disabled={jaSelecionado}
+                    onClick={() => {
+                      if (!jaSelecionado) {
+                        setSelectedRoles([...selectedRoles, role.id]);
+                      }
+                      setSearchTerm(""); // limpa busca
+                    }}
+                  >
+                    <span className="font-medium text-gray-700">{role.title}</span>
+
+                    {jaSelecionado && (
+                      <span className="text-blue-600 font-semibold text-sm">
+                        Selecionado
+                      </span>
+                    )}
+                  </button>
+                );
+              })
+            )}
+          </div>
+        )}
+    </div>
+
       <div className="flex flex-col space-y-4">
-        {ROLES.map((role) => {
+        {ROLES.filter(role => selectedRoles.includes(role.id)).map((role) => {
           const Icon = role.icon;
           const selecionados = assignments[role.id] || [];
           const isSelected = selecionados.length > 0;
@@ -515,7 +574,7 @@ const Etapa1Funcoes = ({
         )}
       </Modal>
 
-      {/* ✅ MODAL DE CONFIRMAÇÃO */}
+      {/* MODAL DE CONFIRMAÇÃO */}
       {confirmModal && (
         <ConfirmModal
           isOpen={true}
@@ -530,7 +589,7 @@ const Etapa1Funcoes = ({
         />
       )}
 
-      {/* ✅ CONTAINER DE TOASTS */}
+      {/* CONTAINER DE TOASTS */}
       <ToastContainer 
         toasts={toasts}
         onRemoveToast={removeToast}
