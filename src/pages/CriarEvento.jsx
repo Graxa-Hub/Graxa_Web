@@ -20,6 +20,7 @@ import { useColaboradores } from "../hooks/useColaboradores";
 import { useToast } from "../hooks/useToast";
 
 import { logisticaService } from "../services/logisticaService";
+import { agruparHoteis, agruparVoos, agruparTransportes } from "../utils/logistica/logisticaUtils";
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
@@ -37,8 +38,20 @@ export const CriarEvento = () => {
   const [evento, setEvento] = useState(null);
   const showId = eventoId ? Number(eventoId) : null;
 
+  // RAW arrays vindos do backend (mantemos para decisões de update/create)
+  const [hoteisRaw, setHoteisRaw] = useState([]);
+  const [voosRaw, setVoosRaw] = useState([]);
+  const [transportesRaw, setTransportesRaw] = useState([]);
+
   const { colaboradores: todosColaboradores, listarColaboradores } = useColaboradores();
   const { toasts, showSuccess, showError, showWarning, showInfo } = useToast();
+
+  // Helper para normalizar/formatar datas para envio (ISO)
+  const padDateForApi = (val) => {
+    if (!val) return null;
+    // se já contém segundos (ex: 2025-12-07T12:00:00) deixa
+    return val.length === 16 ? `${val}:00` : val;
+  };
 
   // Carrega agenda existente do backend (para tipoEvento === "show")
   useEffect(() => {
@@ -71,6 +84,43 @@ export const CriarEvento = () => {
     loadAgenda();
   }, [eventoId, tipoEvento, showError]);
 
+  // Carrega logística (hotéis / voos / transportes)
+  useEffect(() => {
+    const loadLogistica = async () => {
+      try {
+        if (!showId) return;
+
+        const hoteis = await logisticaService.listarHoteis(showId);
+        const voos = await logisticaService.listarVoos(showId);
+        const transportes = await logisticaService.listarTransportes(showId);
+
+        console.log("RAW LOGÍSTICA:", { hoteisRaw: hoteis, voosRaw: voos, transportesRaw: transportes });
+
+        // Guardar raw para decidir updates depois
+        setHoteisRaw(hoteis || []);
+        setVoosRaw(voos || []);
+        setTransportesRaw(transportes || []);
+
+        // Agrupar (as funções de agrupar esperam o formato do backend DTO)
+        const hoteisAgrupados = agruparHoteis(hoteis || []);
+        const voosAgrupados = agruparVoos(voos || []);
+        const transportesAgrupados = agruparTransportes(transportes || []);
+
+        console.log("AGRUPADOS:", { hoteisAgrupados, voosAgrupados, transportesAgrupados });
+
+        // Atualiza states usados na UI
+        setHotels(hoteisAgrupados);
+        setFlights(voosAgrupados);
+        setTransports(transportesAgrupados);
+      } catch (err) {
+        console.error("❌ Erro carregando logística:", err);
+        showError("Erro ao carregar logística. Veja o console para detalhes.");
+      }
+    };
+
+    loadLogistica();
+  }, [eventoId, tipoEvento, showId, showError]);
+
   useEffect(() => {
     listarColaboradores();
   }, [listarColaboradores]);
@@ -96,7 +146,7 @@ export const CriarEvento = () => {
   }, [tipoEvento, eventoId, buscarShow, buscarViagem]);
 
   const colaboradoresSelecionadosIds = [
-    ...new Set(Object.values(assignments).flat().map(Number))
+    ...new Set(Object.values(assignments).flat().map(Number || (() => [])))
   ];
 
   // Lista real de colaboradores retornados pelo backend no evento
@@ -107,6 +157,7 @@ export const CriarEvento = () => {
     colaboradoresSelecionadosIds.includes(c.id)
   );
 
+  // ===== salvarEventoCompleto (atualizado com lógica de update/create para logística) =====
   const salvarEventoCompleto = async () => {
     if (!showId) {
       showError("Show inválido. Salve/abra o show antes de finalizar.");
@@ -146,32 +197,54 @@ export const CriarEvento = () => {
 
       const promessas = [];
 
-      // HOTÉIS
+      // ------ HOTÉIS: para cada hotel agrupado, tratamos cada hóspede individualmente
       hotels.forEach((hotel) => {
         (hotel.hospedes || []).forEach((colabId) => {
           if (!alocadosSet.has(colabId)) return;
+
+          // procurar raw correspondente (mesmo colaborador e mesmo nome/endereco) para decidir update/create
+          const rawMatch = (hoteisRaw || []).find(hr =>
+            hr.colaboradorId === colabId &&
+            // comparamos nome + endereco para ter mais certeza do match
+            String(hr.nomeHotel || "").trim() === String(hotel.nome || "").trim() &&
+            String(hr.endereco || "").trim() === String(hotel.endereco || "").trim()
+          );
 
           const dto = {
             showId: Number(showId),
             colaboradorId: Number(colabId),
             nomeHotel: hotel.nome || null,
             endereco: hotel.endereco || null,
-            latitude: hotel.coordsHotel?.lat ?? null,
-            longitude: hotel.coordsHotel?.lon ?? null,
+            latitude: hotel.latitude ?? null,
+            longitude: hotel.longitude ?? null,
             distanciaPalcoKm: hotel.distanciaPalcoKm ? Number(hotel.distanciaPalcoKm) : null,
             distanciaAeroportoKm: hotel.distanciaAeroportoKm ? Number(hotel.distanciaAeroportoKm) : null,
-            checkin: hotel.checkin || null,
-            checkout: hotel.checkout || null
+            checkin: hotel.checkin ? padDateForApi(hotel.checkin) : null,
+            checkout: hotel.checkout ? padDateForApi(hotel.checkout) : null
           };
 
-          promessas.push(logisticaService.criarHotelEvento(dto));
+          if (rawMatch && rawMatch.id) {
+            // atualizar item existente
+            promessas.push(logisticaService.atualizarHotelEvento(rawMatch.id, dto));
+          } else {
+            // criar novo registro para esse colaborador
+            promessas.push(logisticaService.criarHotelEvento(dto));
+          }
         });
       });
 
-      // VOOS
+      // ------ VOOS
       flights.forEach((flight) => {
         (flight.passageiros || []).forEach((colabId) => {
           if (!alocadosSet.has(colabId)) return;
+
+          // match por colaborador + cia + codigo + partida
+          const rawMatch = (voosRaw || []).find(vr =>
+            vr.colaboradorId === colabId &&
+            String(vr.ciaAerea || "").trim() === String(flight.cia || "").trim() &&
+            String(vr.codigoVoo || "").trim() === String(flight.numero || "").trim() &&
+            (vr.partida ? vr.partida.substring(0,16) : "") === (flight.saida ? flight.saida.substring(0,16) : "")
+          );
 
           const dto = {
             showId: Number(showId),
@@ -180,40 +253,51 @@ export const CriarEvento = () => {
             codigoVoo: flight.numero || null,
             origem: flight.origem || null,
             destino: flight.destino || null,
-            partida: flight.saida ? new Date(flight.saida).toISOString() : null,
-            chegada: flight.chegada ? new Date(flight.chegada).toISOString() : null
+            partida: flight.saida ? new Date(padDateForApi(flight.saida)).toISOString() : null,
+            chegada: flight.chegada ? new Date(padDateForApi(flight.chegada)).toISOString() : null
           };
 
-          promessas.push(logisticaService.criarVooEvento(dto));
+          if (rawMatch && rawMatch.id) {
+            promessas.push(logisticaService.atualizarVooEvento(rawMatch.id, dto));
+          } else {
+            promessas.push(logisticaService.criarVooEvento(dto));
+          }
         });
       });
 
-      // TRANSPORTES
+      // ------ TRANSPORTES
       transports.forEach((t) => {
         (t.passageiros || []).forEach((colabId) => {
           if (!alocadosSet.has(colabId)) return;
+
+          const rawMatch = (transportesRaw || []).find(tr =>
+            tr.colaboradorId === colabId &&
+            String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
+            (tr.saida ? tr.saida.substring(0,16) : "") === (t.saida ? t.saida.substring(0,16) : "")
+          );
 
           const dto = {
             showId: Number(showId),
             colaboradorId: Number(colabId),
             tipo: t.tipo || null,
-            saida: t.saida ? new Date(t.saida).toISOString() : null,
+            saida: t.saida ? new Date(padDateForApi(t.saida)).toISOString() : null,
             destino: t.destino || null,
             motorista: t.responsavel || null,
             observacao: t.observacao || null
           };
 
-          promessas.push(logisticaService.criarTransporteEvento(dto));
+          if (rawMatch && rawMatch.id) {
+            promessas.push(logisticaService.atualizarTransporteEvento(rawMatch.id, dto));
+          } else {
+            promessas.push(logisticaService.criarTransporteEvento(dto));
+          }
         });
       });
 
-      // AGENDA
-      // Nota: se item tiver id => atualizar, senão criar
+      // ===== AGENDA (mantive seu comportamento: atualiza se tiver id, cria se não)
       agenda.forEach((item, index) => {
-        // opcional: bloquear itens sem título/datas? por enquanto permitimos nulls
         const padDate = (val) => {
           if (!val) return null;
-          // se já tem segundos, mantém; se só "YYYY-MM-DDTHH:mm" adiciona :00
           return val.length === 16 ? `${val}:00` : val;
         };
 
@@ -230,27 +314,50 @@ export const CriarEvento = () => {
         };
 
         if (item.id) {
-          // se tiver id (vindo do backend), atualiza
           promessas.push(agendaEventoService.atualizar(item.id, dto));
         } else {
           promessas.push(agendaEventoService.criar(dto));
         }
       });
 
-      // EXECUÇÃO
+      // EXECUTAR promessas
       if (promessas.length > 0) {
         await Promise.all(promessas);
+
+        // Recarregar logística e agenda para sincronizar IDs e estado
+        const hoteis = await logisticaService.listarHoteis(showId);
+        const voos = await logisticaService.listarVoos(showId);
+        const transportes = await logisticaService.listarTransportes(showId);
+
+        setHoteisRaw(hoteis || []);
+        setVoosRaw(voos || []);
+        setTransportesRaw(transportes || []);
+
+        setHotels(agruparHoteis(hoteis || []));
+        setFlights(agruparVoos(voos || []));
+        setTransports(agruparTransportes(transportes || []));
+
+        // recarregar agenda (para pegar novos ids)
+        const itensAtualizados = await agendaEventoService.listarPorShow(showId);
+        const normalizados = itensAtualizados.map(item => ({
+          ...item,
+          tipo: item.tipo?.toUpperCase(),
+          dataHoraInicio: item.dataHoraInicio?.substring(0, 16),
+          dataHoraFim: item.dataHoraFim?.substring(0, 16),
+          origem: item.origem || "",
+          destino: item.destino || ""
+        }));
+        setAgenda(normalizados);
+
         showSuccess("Logística e agenda salvas com sucesso!");
       } else {
         showInfo("Nenhuma logística ou agenda para salvar.");
       }
-
     } catch (err) {
       console.error("Erro ao salvar:", err);
       showError("Erro ao salvar. Veja o console para detalhes.");
     }
   };
-
 
   // ===== RENDERIZAÇÃO =====
   const renderEtapa = () => {

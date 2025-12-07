@@ -3,9 +3,16 @@ import React, { useState } from "react";
 import { resolverEndereco } from "../../../utils/endereco/resolverEndereco";
 import { calculateDistance } from "../../../utils/endereco/distance";
 
-const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
+const HotelCard = ({ hotel = {}, colaboradores = [], localShow = {}, onChange, onRemove }) => {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
+
+  // Helpers para compatibilidade: backend usa nomeHotel/endereco/checkin/checkout
+  const get = (field, alt) => {
+    if (hotel[field] !== undefined && hotel[field] !== null) return hotel[field];
+    if (alt && hotel[alt] !== undefined && hotel[alt] !== null) return hotel[alt];
+    return "";
+  };
 
   const updateField = (field, value) => {
     onChange({ ...hotel, [field]: value });
@@ -15,7 +22,8 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
   // 🚀 BUSCAR COORDENADAS DO HOTEL + CALCULAR DISTÂNCIAS
   // ======================================================
   const handleBuscarEnderecoHotel = async () => {
-    if (!hotel.endereco || hotel.endereco.trim().length < 3) {
+    const enderecoAtual = get("endereco", "endereco");
+    if (!enderecoAtual || enderecoAtual.trim().length < 3) {
       setErro("Digite um endereço válido.");
       return;
     }
@@ -30,7 +38,7 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
 
     try {
       // 1) Resolver endereço
-      const resolved = await resolverEndereco(hotel.endereco);
+      const resolved = await resolverEndereco(enderecoAtual);
 
       if (!resolved.sucesso) {
         setErro(resolved.erro);
@@ -61,8 +69,8 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
         ...hotel,
         endereco: resolved.enderecoCompleto,
         coordsHotel,
-        distanciaPalcoKm: distPalco.toFixed(1),
-        distanciaAeroportoKm: distAeroporto.toFixed(1),
+        distanciaPalcoKm: Number(distPalco.toFixed(1)),
+        distanciaAeroportoKm: Number(distAeroporto.toFixed(1)),
       });
     } catch (e) {
       console.error(e);
@@ -76,11 +84,9 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
   // SELEÇÃO DE HÓSPEDES
   // ======================================================
   const toggleHospede = (id) => {
-    const exists = hotel.hospedes.includes(id);
-    const novaLista = exists
-      ? hotel.hospedes.filter((h) => h !== id)
-      : [...hotel.hospedes, id];
-
+    const hospedes = Array.isArray(hotel.hospedes) ? hotel.hospedes : [];
+    const exists = hospedes.includes(id);
+    const novaLista = exists ? hospedes.filter((h) => h !== id) : [...hospedes, id];
     updateField("hospedes", novaLista);
   };
 
@@ -101,7 +107,7 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
       <input
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         placeholder="Nome do hotel"
-        value={hotel.nome}
+        value={get("nome", "nomeHotel")}
         onChange={(e) => updateField("nome", e.target.value)}
       />
 
@@ -110,7 +116,7 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
         <input
           className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Endereço do hotel"
-          value={hotel.endereco}
+          value={get("endereco", "endereco")}
           onChange={(e) => updateField("endereco", e.target.value)}
         />
 
@@ -132,7 +138,7 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
           <input
             type="datetime-local"
             className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            value={hotel.checkin}
+            value={get("checkin", "checkin")}
             onChange={(e) => updateField("checkin", e.target.value)}
           />
         </div>
@@ -142,7 +148,7 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
           <input
             type="datetime-local"
             className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            value={hotel.checkout}
+            value={get("checkout", "checkout")}
             onChange={(e) => updateField("checkout", e.target.value)}
           />
         </div>
@@ -167,7 +173,8 @@ const HotelCard = ({ hotel, colaboradores, localShow, onChange, onRemove }) => {
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
-            const selected = hotel.hospedes.includes(c.id);
+            const hospedes = Array.isArray(hotel.hospedes) ? hotel.hospedes : [];
+            const selected = hospedes.includes(c.id);
 
             return (
               <button

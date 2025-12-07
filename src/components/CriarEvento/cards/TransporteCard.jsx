@@ -1,21 +1,20 @@
 import React from "react";
 
-const TransporteCard = ({
-  transporte,
-  colaboradores,
-  onChange,
-  onRemove
-}) => {
+const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemove }) => {
+  const get = (field, alt) => {
+    if (transporte[field] !== undefined && transporte[field] !== null) return transporte[field];
+    if (alt && transporte[alt] !== undefined && transporte[alt] !== null) return transporte[alt];
+    return "";
+  };
+
   const updateField = (field, value) => {
     onChange({ ...transporte, [field]: value });
   };
 
   const togglePassageiro = (id) => {
-    const exists = transporte.passageiros.includes(id);
-    const novaLista = exists
-      ? transporte.passageiros.filter((h) => h !== id)
-      : [...transporte.passageiros, id];
-
+    const passageiros = Array.isArray(transporte.passageiros) ? transporte.passageiros : [];
+    const exists = passageiros.includes(id);
+    const novaLista = exists ? passageiros.filter((h) => h !== id) : [...passageiros, id];
     updateField("passageiros", novaLista);
   };
 
@@ -37,7 +36,7 @@ const TransporteCard = ({
       {/* TIPO */}
       <select
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        value={transporte.tipo}
+        value={get("tipo", "tipo")}
         onChange={(e) => updateField("tipo", e.target.value)}
       >
         <option value="">Selecione o tipo</option>
@@ -51,7 +50,7 @@ const TransporteCard = ({
       <input
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         placeholder="Responsável"
-        value={transporte.responsavel}
+        value={get("responsavel", "motorista")}
         onChange={(e) => updateField("responsavel", e.target.value)}
       />
 
@@ -59,7 +58,7 @@ const TransporteCard = ({
       <input
         type="datetime-local"
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        value={transporte.saida}
+        value={get("saida", "saida")}
         onChange={(e) => updateField("saida", e.target.value)}
       />
 
@@ -67,7 +66,7 @@ const TransporteCard = ({
       <input
         type="datetime-local"
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        value={transporte.chegada}
+        value={get("chegada", "chegada") || ""}
         onChange={(e) => updateField("chegada", e.target.value)}
       />
 
@@ -77,7 +76,8 @@ const TransporteCard = ({
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
-            const selected = transporte.passageiros.includes(c.id);
+            const passageiros = Array.isArray(transporte.passageiros) ? transporte.passageiros : [];
+            const selected = passageiros.includes(c.id);
 
             return (
               <button
@@ -102,7 +102,7 @@ const TransporteCard = ({
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         rows="3"
         placeholder="Observações"
-        value={transporte.observacao}
+        value={get("observacao", "observacao")}
         onChange={(e) => updateField("observacao", e.target.value)}
       />
     </div>

@@ -1,16 +1,21 @@
 import React from "react";
 
-const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
+const FlightCard = ({ flight = {}, colaboradores = [], onChange, onRemove }) => {
+  // suporte a campos vindos do backend (ciaAerea/codigoVoo/partida/chegada)
+  const get = (field, alt) => {
+    if (flight[field] !== undefined && flight[field] !== null) return flight[field];
+    if (alt && flight[alt] !== undefined && flight[alt] !== null) return flight[alt];
+    return "";
+  };
+
   const updateField = (field, value) => {
     onChange({ ...flight, [field]: value });
   };
 
   const togglePassageiro = (id) => {
-    const exists = flight.passageiros.includes(id);
-    const novaLista = exists
-      ? flight.passageiros.filter((h) => h !== id)
-      : [...flight.passageiros, id];
-
+    const passageiros = Array.isArray(flight.passageiros) ? flight.passageiros : (flight.passageiros = []);
+    const exists = passageiros.includes(id);
+    const novaLista = exists ? passageiros.filter((h) => h !== id) : [...passageiros, id];
     updateField("passageiros", novaLista);
   };
 
@@ -31,14 +36,14 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
       <input
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         placeholder="Companhia aérea"
-        value={flight.cia}
+        value={get("cia", "ciaAerea")}
         onChange={(e) => updateField("cia", e.target.value)}
       />
 
       <input
         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         placeholder="Número do voo"
-        value={flight.numero}
+        value={get("numero", "codigoVoo")}
         onChange={(e) => updateField("numero", e.target.value)}
       />
 
@@ -46,14 +51,14 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
         <input
           className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Origem"
-          value={flight.origem}
+          value={get("origem", "origem")}
           onChange={(e) => updateField("origem", e.target.value)}
         />
 
         <input
           className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Destino"
-          value={flight.destino}
+          value={get("destino", "destino")}
           onChange={(e) => updateField("destino", e.target.value)}
         />
       </div>
@@ -64,7 +69,8 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
           <input
             type="datetime-local"
             className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            value={flight.saida}
+            // backend pode enviar partida (LocalDateTime) ou frontend usa saida
+            value={get("saida", "partida")}
             onChange={(e) => updateField("saida", e.target.value)}
           />
         </div>
@@ -74,7 +80,7 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
           <input
             type="datetime-local"
             className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            value={flight.chegada}
+            value={get("chegada", "chegada")}
             onChange={(e) => updateField("chegada", e.target.value)}
           />
         </div>
@@ -86,7 +92,8 @@ const FlightCard = ({ flight, colaboradores, onChange, onRemove }) => {
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
-            const selected = flight.passageiros.includes(c.id);
+            const passageiros = Array.isArray(flight.passageiros) ? flight.passageiros : [];
+            const selected = passageiros.includes(c.id);
 
             return (
               <button

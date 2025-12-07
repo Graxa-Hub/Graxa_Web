@@ -1,32 +1,68 @@
-// src/services/logisticaService.js
-import { api } from "../services/axios"; // ajuste caminho se precisar
+import { api } from "./axios";
 
 export const logisticaService = {
+
   // HOTEL
+  listarHoteis: async (showId) => {
+    const res = await api.get(`/hotel-evento/show/${showId}`);
+    return res.data;
+  },
+
   criarHotelEvento: async (dto) => {
-    // dto = { showId, colaboradorId, nomeHotel, endereco, latitude, longitude, distanciaPalcoKm, distanciaAeroportoKm, checkin, checkout }
     const res = await api.post("/hotel-evento", dto);
     return res.data;
   },
 
-  // VOO
+  atualizarHotelEvento: async (id, dto) => {
+    const res = await api.put(`/hotel-evento/${id}`, dto);
+    return res.data;
+  },
+
+  removerHotelEvento: async (id) => {
+    await api.delete(`/hotel-evento/${id}`);
+  },
+
+
+  // VOOS
+
+  listarVoos: async (showId) => {
+    const res = await api.get(`/voo-evento/show/${showId}`);
+    return res.data;
+  },
+
   criarVooEvento: async (dto) => {
-    // dto = { showId, colaboradorId, ciaAerea, codigoVoo, origem, destino, partida, chegada }
     const res = await api.post("/voo-evento", dto);
     return res.data;
   },
 
+  atualizarVooEvento: async (id, dto) => {
+    const res = await api.put(`/voo-evento/${id}`, dto);
+    return res.data;
+  },
+
+  removerVooEvento: async (id) => {
+    await api.delete(`/voo-evento/${id}`);
+  },
+
+
   // TRANSPORTE
+
+  listarTransportes: async (showId) => {
+    const res = await api.get(`/transporte-evento/show/${showId}`);
+    return res.data;
+  },
+
   criarTransporteEvento: async (dto) => {
-    // dto = { showId, colaboradorId, tipo, saida, destino, motorista, observacao }
     const res = await api.post("/transporte-evento", dto);
     return res.data;
   },
 
-  // AGENDA
-  criarAgendaEvento: async (dto) => {
-    // dto = { showId, colaboradorId (opt), titulo, descricao, dataHora, duracaoMinutos, ordem }
-    const res = await api.post("/agenda-evento", dto);
+  atualizarTransporteEvento: async (id, dto) => {
+    const res = await api.put(`/transporte-evento/${id}`, dto);
     return res.data;
+  },
+
+  removerTransporteEvento: async (id) => {
+    await api.delete(`/transporte-evento/${id}`);
   }
 };
