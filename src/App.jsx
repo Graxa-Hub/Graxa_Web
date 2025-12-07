@@ -5,7 +5,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import { Login } from "./pages/Login";
 import { Cadastro } from "./pages/Cadastro";
 import { HomeRedirect } from "./components/HomeRedirect";
-import { ProtectedLayout } from "./components/ProtectedLayout";
+// import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
 import { ArtistaApp } from "./pages/ArtistaApp";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
@@ -14,7 +14,7 @@ import { Calendario } from "./pages/Calendario";
 import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
 import { CriarLogistica } from "./pages/CriarLogistica";
-import {ConfiguracaoUsuario} from "./pages/ConfiguracaoUser"
+import { ConfiguracaoUsuario } from "./pages/ConfiguracaoUser";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -35,7 +35,10 @@ function App() {
         <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
         <Route path="/artista" element={<ArtistaApp />} />
         <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
-        <Route path="/criar-evento/:tipoEvento/:eventoId?" element={<CriarEvento />} />
+        <Route
+          path="/criar-evento/:tipoEvento/:eventoId?"
+          element={<CriarEvento />}
+        />
         <Route path="/criar-logistica" element={<CriarLogistica />} />
         <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
       </Route>

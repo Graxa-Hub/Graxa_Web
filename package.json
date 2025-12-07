@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:pdf": "node test-pdf-real-tailwind.js"
   },
   "dependencies": {
     "@fullcalendar/common": "^5.11.5",
@@ -25,6 +26,7 @@
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.544.0",
     "postcss": "^8.5.6",
+    "puppeteer": "^24.31.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.5.0",
