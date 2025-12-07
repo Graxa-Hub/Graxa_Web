@@ -1,22 +1,52 @@
 import React, { useEffect, useState } from "react";
 import { MapPin, Plane, UtensilsCrossed, Building2, Info } from "lucide-react";
+import { useParams } from "react-router-dom";
 import { useLocais } from "../../hooks/useLocais";
+import { useShows } from "../../hooks/useShows";
+import { useViagens } from "../../hooks/useViagens";
 import { resolverEndereco } from "../../utils/endereco/resolverEndereco";
 import { buscarAeroportoMaisProximo } from "../../utils/endereco/apiAeroporto";
 import { buscarRestaurantes } from "../../utils/endereco/apiRestaurantes";
 import { LocalCombobox } from "./LocalCombobox";
 import { useLocalSelecionado } from "../../context/LocalSelecionadoContext";
+import { useToast } from "../../hooks/useToast";
 
 const Etapa3Local = ({ localInicial, setLocalShow }) => {
   const { locais, listarLocais } = useLocais();
   const { localSelecionado, setLocalSelecionado } = useLocalSelecionado();
+  const { buscarShow, atualizarShow } = useShows();
+  const { buscarViagem, atualizarViagem } = useViagens();
+  const { tipoEvento, eventoId } = useParams();
+  const { showSuccess, showError } = useToast();
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
+  const [eventoAtual, setEventoAtual] = useState(null);
 
   // Carrega lista de locais (uma vez)
   useEffect(() => {
     listarLocais();
-  }, []); // ❌ REMOVEU listarLocais da dependency
+  }, [listarLocais]);
+
+  // Carrega dados do evento
+  useEffect(() => {
+    const carregarEvento = async () => {
+      if (!eventoId || !tipoEvento) return;
+
+      try {
+        if (tipoEvento === "show") {
+          const show = await buscarShow(eventoId);
+          setEventoAtual(show);
+        } else if (tipoEvento === "viagem") {
+          const viagem = await buscarViagem(eventoId);
+          setEventoAtual(viagem);
+        }
+      } catch (error) {
+        console.error("Erro ao carregar evento:", error);
+      }
+    };
+
+    carregarEvento();
+  }, [eventoId, tipoEvento, buscarShow, buscarViagem]);
 
   // Sempre que o localSelecionado mudar → Atualiza CriarEvento
   useEffect(() => {
@@ -29,7 +59,6 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
   useEffect(() => {
     if (locais.length === 0) return;
 
-    // ✅ VERIFICAÇÃO CORRIGIDA: se localInicial tem ID (não é vazio)
     if (localInicial?.id && !localSelecionado) {
       const localDoShow = locais.find((l) => l.id === localInicial.id);
 
@@ -42,10 +71,9 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
         });
       }
     } else if (!localSelecionado && locais.length > 0) {
-      // Se nenhum localInicial válido, seleciona o primeiro
       setLocalSelecionado(locais[0]);
     }
-  }, [localInicial, locais, localSelecionado, setLocalSelecionado]); // ✅ ADICIONOU localSelecionado aqui
+  }, [localInicial, locais, localSelecionado, setLocalSelecionado]);
 
   // Busca informações para o local
   useEffect(() => {
@@ -93,17 +121,86 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
     if (localSelecionado?.id) {
       buscarDadosLocal();
     }
-  }, [localSelecionado?.id]);
+  }, [localSelecionado?.id, setLocalSelecionado]);
 
-  const handleChange = (selectedId) => {
-    const local = locais.find((l) => l.id === selectedId);
-    setLocalSelecionado(local || null);
+  const handleChange = async (selectedId) => {
+    const local = locais.find((l) => l.id === Number(selectedId));
+    
+    if (!local) {
+      setErro("Local não encontrado");
+      return;
+    }
+
+    setLocalSelecionado(local);
     setErro("");
+
+    // Atualizar no banco imediatamente
+    if (eventoId && eventoAtual) {
+      try {
+        setLoading(true);
+
+        const payload = {
+          nomeEvento: eventoAtual.nomeEvento,
+          dataInicio: eventoAtual.dataInicio,
+          dataFim: eventoAtual.dataFim,
+          descricao: eventoAtual.descricao || "",
+          localId: Number(local.id),
+        };
+
+        if (tipoEvento === "show") {
+          payload.turneId = eventoAtual.turne?.id || null;
+          payload.responsavelId = eventoAtual.responsavelEvento?.id;
+          await atualizarShow(eventoId, payload);
+        } else if (tipoEvento === "viagem") {
+          await atualizarViagem(eventoId, payload);
+        }
+
+        showSuccess("Local atualizado com sucesso!");
+        setEventoAtual(prev => ({ ...prev, local }));
+      } catch (error) {
+        console.error("Erro ao atualizar local:", error);
+        showError("Erro ao atualizar o local do evento");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
-  const handleNovoLocal = (novoLocal) => {
-    locais.push(novoLocal);
+  const handleNovoLocal = async (novoLocal) => {
+    // Recarrega a lista atualizada
+    await listarLocais();
     setLocalSelecionado(novoLocal);
+
+    // Atualiza no banco se já existe um evento
+    if (eventoId && eventoAtual) {
+      try {
+        setLoading(true);
+
+        const payload = {
+          nomeEvento: eventoAtual.nomeEvento,
+          dataInicio: eventoAtual.dataInicio,
+          dataFim: eventoAtual.dataFim,
+          descricao: eventoAtual.descricao || "",
+          localId: Number(novoLocal.id),
+        };
+
+        if (tipoEvento === "show") {
+          payload.turneId = eventoAtual.turne?.id || null;
+          payload.responsavelId = eventoAtual.responsavelEvento?.id;
+          await atualizarShow(eventoId, payload);
+        } else if (tipoEvento === "viagem") {
+          await atualizarViagem(eventoId, payload);
+        }
+
+        showSuccess("Novo local criado e vinculado ao evento!");
+        setEventoAtual(prev => ({ ...prev, local: novoLocal }));
+      } catch (error) {
+        console.error("Erro ao vincular novo local:", error);
+        showError("Local criado, mas erro ao vincular ao evento");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   return (
@@ -169,7 +266,7 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
             {loading && (
               <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
                 <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                <p className="text-sm font-medium">Buscando informações adicionais...</p>
+                <p className="text-sm font-medium">Processando...</p>
               </div>
             )}
 
