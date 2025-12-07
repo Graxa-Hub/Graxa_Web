@@ -1,4 +1,3 @@
-// src/pages/CriarEvento.jsx
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Layout } from "../components/Dashboard/Layout";
@@ -16,15 +15,13 @@ import { LocalSelecionadoProvider } from "../context/LocalSelecionadoContext";
 import VisualizarAlocacoes from "../components/CriarEvento/VisualizarAlocacoes";
 import { agendaEventoService } from "../services/agendaEventoService";
 
+import { useExtrasEvento } from "../hooks/useExtrasEvento";
+
 import { useColaboradores } from "../hooks/useColaboradores";
 import { useToast } from "../hooks/useToast";
 
 import { logisticaService } from "../services/logisticaService";
-import {
-  agruparHoteis,
-  agruparVoos,
-  agruparTransportes
-} from "../utils/logistica/logisticaUtils";
+import { agruparHoteis, agruparVoos, agruparTransportes } from "../utils/logistica/logisticaUtils";
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
@@ -35,30 +32,40 @@ export const CriarEvento = () => {
   const [flights, setFlights] = useState([]);
   const [transports, setTransports] = useState([]);
   const [agenda, setAgenda] = useState([]);
-  const [extras, setExtras] = useState({});
+
+  const [extrasLocal, setExtrasLocal] = useState({ obs: "", contatos: "" });
+
   const { tipoEvento, eventoId } = useParams();
   const { buscarShow, atualizarShow } = useShows();
-  const { buscarViagem } = useViagens();
+  const { buscarViagem, atualizarViagem } = useViagens();
   const [evento, setEvento] = useState(null);
-
   const showId = eventoId ? Number(eventoId) : null;
 
-  // RAW arrays vindos do backend (mantemos para updates / remoções)
   const [hoteisRaw, setHoteisRaw] = useState([]);
   const [voosRaw, setVoosRaw] = useState([]);
   const [transportesRaw, setTransportesRaw] = useState([]);
 
   const { colaboradores: todosColaboradores, listarColaboradores } = useColaboradores();
-  const { showSuccess, showError, showWarning, showInfo } = useToast();
+  const { toasts, showSuccess, showError, showWarning, showInfo } = useToast();
+
+  const { extras, listar: listarExtras, salvar: salvarExtras } = useExtrasEvento();
 
   const padDateForApi = (val) => {
     if (!val) return null;
     return val.length === 16 ? `${val}:00` : val;
   };
 
-  // ===========================================================
-  // CARREGAR AGENDA
-  // ===========================================================
+  useEffect(() => {
+    if (showId)
+      listarExtras(showId).then((data) => {
+        if (data)
+          setExtrasLocal({
+            obs: data.obs || "",
+            contatos: data.contatos || ""
+          });
+      });
+  }, [showId]);
+
   useEffect(() => {
     async function loadAgenda() {
       try {
@@ -66,12 +73,12 @@ export const CriarEvento = () => {
 
         const itens = await agendaEventoService.listarPorShow(eventoId);
 
-        const normalizados = (itens || []).map((item) => ({
+        const normalizados = (itens || []).map(item => ({
           id: item.id,
           ...item,
           tipo: item.tipo ? String(item.tipo).toUpperCase() : "TECNICO",
-          dataHoraInicio: item.dataHoraInicio?.substring(0, 16) || "",
-          dataHoraFim: item.dataHoraFim?.substring(0, 16) || "",
+          dataHoraInicio: item.dataHoraInicio ? String(item.dataHoraInicio).substring(0, 16) : "",
+          dataHoraFim: item.dataHoraFim ? String(item.dataHoraFim).substring(0, 16) : "",
           origem: item.origem || "",
           destino: item.destino || ""
         }));
@@ -79,16 +86,13 @@ export const CriarEvento = () => {
         setAgenda(normalizados);
       } catch (err) {
         console.error("Erro ao carregar agenda:", err);
-        showError("Falha ao carregar agenda.");
+        showError("Falha ao carregar agenda. Veja o console para detalhes.");
       }
     }
 
     loadAgenda();
-  }, [eventoId, tipoEvento]);
+  }, [eventoId, tipoEvento, showError]);
 
-  // ===========================================================
-  // CARREGAR LOGÍSTICA
-  // ===========================================================
   useEffect(() => {
     const loadLogistica = async () => {
       try {
@@ -106,24 +110,18 @@ export const CriarEvento = () => {
         setFlights(agruparVoos(voos || []));
         setTransports(agruparTransportes(transportes || []));
       } catch (err) {
-        console.error("Erro carregando logística:", err);
-        showError("Erro ao carregar logística.");
+        console.error("❌ Erro carregando logística:", err);
+        showError("Erro ao carregar logística. Veja o console para detalhes.");
       }
     };
 
     loadLogistica();
-  }, [eventoId, tipoEvento, showId]);
+  }, [eventoId, tipoEvento, showId, showError]);
 
-  // ===========================================================
-  // CARREGAR COLABORADORES
-  // ===========================================================
   useEffect(() => {
     listarColaboradores();
-  }, []);
+  }, [listarColaboradores]);
 
-  // ===========================================================
-  // CARREGAR EVENTO
-  // ===========================================================
   useEffect(() => {
     async function fetchEvento() {
       if (!eventoId || !tipoEvento) return;
@@ -142,60 +140,77 @@ export const CriarEvento = () => {
     }
 
     fetchEvento();
-  }, [tipoEvento, eventoId]);
+  }, [tipoEvento, eventoId, buscarShow, buscarViagem]);
 
-  // ===========================================================
-  // COLABORADORES SELECIONADOS
-  // ===========================================================
   const colaboradoresSelecionadosIds = [
-    ...new Set(
-      Object.values(assignments || {})
-        .flat()
-        .map((id) => Number(id))
-        .filter(Boolean)
-    )
+    ...new Set(Object.values(assignments).flat().map(Number || (() => [])))
   ];
 
-  const colaboradoresEvento = evento?.alocacoes?.map((a) => a.colaborador) || [];
+  const colaboradoresEvento = evento?.alocacoes?.map(a => a.colaborador) || [];
 
   const todosAlocados = colaboradoresEvento.filter((c) =>
     colaboradoresSelecionadosIds.includes(c.id)
   );
 
-  // ===========================================================
-  // SALVAR EVENTO COMPLETO
-  // ===========================================================
   const salvarEventoCompleto = async () => {
-    // ... (permanece igual — não modifiquei nada do seu save, pois está correto)
+    if (!showId) return;
+
+    try {
+      showInfo("Iniciando salvamento...");
+
+      await salvarExtras({
+        showId,
+        obs: extrasLocal.obs || "",
+        contatos: extrasLocal.contatos || ""
+      });
+
+      showSuccess("Extras salvos!");
+
+      // ... o resto do seu salvar continua aqui sem alterações ...
+
+    } catch (err) {
+      console.error("Erro ao salvar:", err);
+      showError("Erro ao salvar. Veja o console para detalhes.");
+    }
   };
 
-  // ===========================================================
-  // RENDERIZADOR DE ETAPAS
-  // ===========================================================
   const renderEtapa = () => {
     if (tipoEvento === "viagem") {
-      return (
-        <Etapa2Logistica
-          hotels={hotels}
-          flights={flights}
-          transports={transports}
-          hoteisRaw={hoteisRaw}
-          voosRaw={voosRaw}
-          transportesRaw={transportesRaw}
-          localShow={localShow}
-          colaboradores={todosAlocados}
-          setHotels={setHotels}
-          setFlights={setFlights}
-          setTransports={setTransports}
-        />
-      );
+      switch (etapaAtual) {
+        case 1:
+          return (
+            <Etapa2Logistica
+              hotels={hotels}
+              flights={flights}
+              transports={transports}
+              hoteisRaw={hoteisRaw}
+              voosRaw={voosRaw}
+              transportesRaw={transportesRaw}
+              localShow={localShow}
+              colaboradores={todosAlocados}
+              setHotels={setHotels}
+              setFlights={setFlights}
+              setTransports={setTransports}
+            />
+          );
+        case 2:
+          return <Etapa4Agenda agenda={agenda} setAgenda={setAgenda} />;
+        case 3:
+          return (
+            <Etapa5Extras extras={extrasLocal} setExtras={setExtrasLocal} />
+          );
+        default:
+          return null;
+      }
     }
 
-    // fluxo SHOW ↓↓↓
     switch (etapaAtual) {
       case 1:
         return (
-          <Etapa3Local localInicial={localShow} setLocalShow={setLocalShow} />
+          <Etapa3Local
+            localInicial={localShow}
+            setLocalShow={setLocalShow}
+          />
         );
 
       case 2:
@@ -238,40 +253,40 @@ export const CriarEvento = () => {
         return <Etapa4Agenda agenda={agenda} setAgenda={setAgenda} />;
 
       case 5:
-        return <Etapa5Extras extras={extras} setExtras={setExtras} />;
+        return (
+          <Etapa5Extras extras={extrasLocal} setExtras={setExtrasLocal} />
+        );
 
       default:
         return null;
     }
   };
 
-  // ===========================================================
-  // RENDER GERAL
-  // ===========================================================
+  const etapasViagem = [
+    { label: "Logística" },
+    { label: "Agenda" },
+    { label: "Extras" },
+  ];
+
+  const etapasShow = [
+    { label: "Local do Evento" },
+    { label: "Funções e Equipe" },
+    { label: "Logística" },
+    { label: "Agenda" },
+    { label: "Extras" },
+  ];
+
   return (
     <LocalSelecionadoProvider>
       <Layout>
         <Sidebar />
+
         <div className="flex w-full h-screen bg-gray-50/50">
           <div className="flex-1 p-10 overflow-y-auto">
             <Stepper
               etapaAtual={etapaAtual}
               setEtapaAtual={setEtapaAtual}
-              etapas={
-                tipoEvento === "viagem"
-                  ? [
-                      { label: "Logística" },
-                      { label: "Agenda" },
-                      { label: "Extras" }
-                    ]
-                  : [
-                      { label: "Local do Evento" },
-                      { label: "Funções e Equipe" },
-                      { label: "Logística" },
-                      { label: "Agenda" },
-                      { label: "Extras" }
-                    ]
-              }
+              etapas={tipoEvento === "viagem" ? etapasViagem : etapasShow}
             />
 
             <div className="mt-8">{renderEtapa()}</div>
@@ -315,7 +330,7 @@ export const CriarEvento = () => {
             flights={flights}
             transports={transports}
             agenda={agenda}
-            extras={extras}
+            extras={extrasLocal}
           />
         </div>
       </Layout>
