@@ -39,6 +39,11 @@ export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect }) {
     );
   };
 
+  const isToday = (date) => {
+    const today = new Date();
+    return isSameDay(date, today);
+  };
+
   const isInRange = (date) => {
     if (!selectedStartDate || !selectedEndDate) return false;
 
@@ -103,6 +108,7 @@ export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect }) {
     const isStart = isSameDay(currentDateForDay, selectedStartDate);
     const isEnd = isSameDay(currentDateForDay, selectedEndDate);
     const inRange = isInRange(currentDateForDay);
+    const isCurrentDay = isToday(currentDateForDay);
 
     let className =
       "h-8 w-8 flex items-center justify-center rounded-full cursor-pointer transition-colors";
@@ -111,6 +117,8 @@ export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect }) {
       className += " bg-blue-500 text-white font-semibold";
     } else if (inRange) {
       className += " bg-blue-50 text-blue-700 border border-blue-200";
+    } else if (isCurrentDay) {
+      className += " bg-yellow-300 text-gray-900 font-semibold";
     } else {
       className += " hover:bg-gray-100 text-gray-700";
     }

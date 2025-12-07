@@ -79,6 +79,21 @@ export default function MainCalendar({
     navigate("/visao-evento");
   };
 
+  const handleDayCellDidMount = (info) => {
+    const today = new Date();
+    const cellDate = info.date;
+    
+    // Verifica se é o dia atual
+    if (
+      cellDate.getFullYear() === today.getFullYear() &&
+      cellDate.getMonth() === today.getMonth() &&
+      cellDate.getDate() === today.getDate()
+    ) {
+      info.el.style.backgroundColor = "#00ff00";
+      info.el.style.color = "#000";
+    }
+  };
+
   return (
     <div className="graxa-calendar-card bg-white rounded-lg shadow p-4 h-full min-h-0 flex flex-col">
       {loading && (
@@ -106,6 +121,7 @@ export default function MainCalendar({
         dayMaxEvents={3}
         allDaySlot={false}
         height="100%"
+        dayCellDidMount={handleDayCellDidMount}
       />
       <EventoModal
         isOpen={createModalOpen}

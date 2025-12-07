@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 * {
   box-sizing: border-box;
 }
@@ -8,15 +7,14 @@
 body {
   /* remove default browser margin so full-viewport backgrounds fill the screen */
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   /* ensure body is at least full height and show a dark fallback behind backgrounds */
   min-height: 100vh;
   /* background-color: #000; */
 }
 
 .grid-background {
-  background-image:
-    linear-gradient(to right, #ffffff44 1px, transparent 1px),
+  background-image: linear-gradient(to right, #ffffff44 1px, transparent 1px),
     linear-gradient(to bottom, #ffffff44 1px, transparent 1px);
   background-size: 50px 50px;
 }
@@ -25,14 +23,41 @@ body {
 /* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
 /* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
 
+/* Destaca o dia atual com faixa amarela */
+.fc-daygrid-day.fc-day-today {
+  background-color: #fef08a !important;
+}
+
+.fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
+  background-color: transparent !important;
+  color: #111827 !important;
+  font-weight: 600 !important;
+}
+
+/* Destaca o dia atual na view de semana (timeGridWeek) */
+.fc-col-header-cell.fc-day-today {
+  background-color: #00ff00 !important;
+  color: #000 !important;
+}
+
+.fc-timegrid-col.fc-day-today {
+  background-color: #00ff00 !important;
+}
+
+.fc .fc-timegrid-col.fc-day-today {
+  background-color: #00ff00 !important;
+}
+
+.graxa-calendar .fc-col-header-cell.fc-day-today {
+  background-color: #00ff00 !important;
+  color: #000 !important;
+}
+
 /* FullCalendar header title: preta e semi-negrito */
 .fc-toolbar-title {
   color: #111827 !important;
-  /* preto (gray-900) */
   font-weight: 600 !important;
-  /* font-semibold */
 }
-
 
 /* Modificando os dias do calendário */
 .fc-daygrid-day-number {
@@ -48,8 +73,14 @@ body {
 
 /* Modificando os botões em cima do calendário */
 .fc-button {
-  background-color: rgb(217, 217, 217, );
+  background-color: rgb(217, 217, 217);
   border: solid 1px white !important;
+}
+
+.fc-button:disabled {
+  background-color: rgb(255, 255, 255, 50%);
+  border: solid 1px gray !important;
+  color: #aaa;
 }
 
 /* Mini calendar numbers: dark gray for better contrast (override global white) */
@@ -59,22 +90,9 @@ body {
   font-weight: 600 !important;
 }
 
-.fc-button:disabled {
-  background-color: rgb(255, 255, 255, 50%);
-  border: solid 1px gray !important;
-  color: #aaa;
-}
-
 /* LISTA LISTA LISTA LISTA LISTA */
 /* LISTA LISTA LISTA LISTA LISTA */
 /* LISTA LISTA LISTA LISTA LISTA */
-
-/* Cabeçalho do dia/mês: .fc-list-day-cushion, .fc-list-day-text, .fc-list-day-side-text
-Linha do evento: .fc-list-event
-Hora do evento: .fc-list-event-time
-Título do evento: .fc-list-event-title a
-Bolinha do evento: .fc-list-event-dot (fica dentro de .fc-list-event-graphic)
-Tabela da lista: .fc-list-table */
 
 /* Se quiser esconder a bolinha completamente: */
 .fc .fc-list-event-graphic {
@@ -102,8 +120,8 @@ Tabela da lista: .fc-list-table */
 }
 
 /* Espaçamento geral da tabela para criar “respiro” entre blocos */
-.fc .fc-list-table>tbody>tr>td,
-.fc .fc-list-table>thead>tr>td {
+.fc .fc-list-table > tbody > tr > td,
+.fc .fc-list-table > thead > tr > td {
   padding-top: 6px;
   padding-bottom: 6px;
   background: rgb(255, 255, 255, 50%);
@@ -259,20 +277,14 @@ Tabela da lista: .fc-list-table */
 }
 
 .graxa-calendar {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
-  padding: 14px;
-}
-
-/* Make the calendar fill the available flex space and allow internal scrolling
-   so the month view keeps proper row heights while overflowing content scrolls. */
-.graxa-calendar {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
   min-height: 0;
-  /* important for flex children to allow proper shrinking */
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.08);
+  padding: 14px;
 }
 
 /* The FullCalendar root element should stretch inside the wrapper */
@@ -295,7 +307,6 @@ Tabela da lista: .fc-list-table */
 .graxa-calendar .fc-toolbar-chunk {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
 .graxa-calendar .fc-toolbar-title {
@@ -303,19 +314,6 @@ Tabela da lista: .fc-list-table */
   /* alinhar com font-semibold pedido */
   font-size: 1.02rem;
   color: #111827;
-}
-
-.graxa-calendar .fc .fc-button {
-  border-radius: 9999px;
-  background: #F4F4F5;
-  border: 0;
-  color: #111827;
-  padding: 6px 10px;
-  font-weight: 600;
-}
-
-.graxa-calendar .fc .fc-button:hover {
-  background: #e6e7eb;
 }
 
 .graxa-calendar .fc .fc-button.fc-button-active,
@@ -382,21 +380,21 @@ Tabela da lista: .fc-list-table */
 /* Align the three toolbar chunks: left/center/right. Use nth-child because FullCalendar
    renders three fc-toolbar-chunk elements in order. Center chunk is given flex:1 so
    the title can center itself while left/right chunks stay at the edges. */
-.graxa-calendar-card .fc .fc-toolbar>.fc-toolbar-chunk:nth-child(1) {
+.graxa-calendar-card .fc .fc-toolbar > .fc-toolbar-chunk:nth-child(1) {
   display: flex !important;
   justify-content: flex-start !important;
   gap: 8px !important;
   align-items: center !important;
 }
 
-.graxa-calendar-card .fc .fc-toolbar>.fc-toolbar-chunk:nth-child(2) {
+.graxa-calendar-card .fc .fc-toolbar > .fc-toolbar-chunk:nth-child(2) {
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
   flex: 1 1 auto !important;
 }
 
-.graxa-calendar-card .fc .fc-toolbar>.fc-toolbar-chunk:nth-child(3) {
+.graxa-calendar-card .fc .fc-toolbar > .fc-toolbar-chunk:nth-child(3) {
   display: flex !important;
   justify-content: flex-end !important;
   gap: 8px !important;
@@ -411,16 +409,17 @@ Tabela da lista: .fc-list-table */
 
 .graxa-calendar-card .fc .fc-button {
   border-radius: 8px !important;
-  background: #F4F4F5 !important;
+  background: #f4f4f5 !important;
   border: 0 !important;
   color: #111827 !important;
   padding: 6px 10px !important;
   font-weight: 600 !important;
   box-shadow: none !important;
+  margin: 0 !important;
 }
 
-.graxa-calendar-card .fc .fc-button:hover {
-  background: #e6e7eb !important;
+.fc-today-button .fc-button .fc-button-primary {
+  background: #3b3b3b !important;
 }
 
 .graxa-calendar-card .fc .fc-button.fc-button-active,
@@ -452,11 +451,6 @@ Tabela da lista: .fc-list-table */
   align-items: center !important;
 }
 
-.graxa-calendar-card .fc .fc-button-group .fc-button {
-  /* remove any collapsed margins from grouping and rely on gap */
-  margin: 0 !important;
-}
-
 /* Make non-active toolbar buttons transparent (no background) and subtle text color
    Keep active/selected buttons with red background to match the screenshot */
 .graxa-calendar-card .fc .fc-button:not(.fc-button-active) {
@@ -465,14 +459,7 @@ Tabela da lista: .fc-list-table */
   /* gray-500 */
   border: none !important;
   box-shadow: none !important;
-  padding: 4px 8px !important;
-  border-radius: 9999px !important;
-  /* keep pill shape for active button consistency */
-}
-
-/* Slight hover feedback but still transparent to match the design */
-.graxa-calendar-card .fc .fc-button:not(.fc-button-active):hover {
-  background: rgba(0, 0, 0, 0.04) !important;
+  padding: 6px 10px !important;
 }
 
 /* Stronger background for disabled buttons inside calendar toolbars for better contrast */

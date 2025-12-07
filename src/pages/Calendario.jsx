@@ -22,7 +22,6 @@ export const Calendario = () => {
   const [searchParams] = useSearchParams();
   const bandaIdParam = searchParams.get("bandaId");
   const turneIdParam = searchParams.get("turneId");
-  
 
   useEffect(() => {
     listarBandas();
@@ -32,7 +31,7 @@ export const Calendario = () => {
   // Sincroniza banda e turne selecionadas com os parâmetros da URL
   useEffect(() => {
     if (bandaIdParam && bandas.length > 0) {
-      const banda = bandas.find(b => String(b.id) === String(bandaIdParam));
+      const banda = bandas.find((b) => String(b.id) === String(bandaIdParam));
       setBandaSelecionada(banda || null);
     }
   }, [bandaIdParam, bandas]);
@@ -40,12 +39,14 @@ export const Calendario = () => {
   useEffect(() => {
     // Seleciona a turnê pelo parâmetro assim que turnes estiver disponível
     if (turneIdParam && turnes.length > 0) {
-      const turne = turnes.find(t => String(t.id) === String(turneIdParam));
+      const turne = turnes.find((t) => String(t.id) === String(turneIdParam));
       setTurneSelecionada(turne || null);
 
       // Se banda não estiver selecionada, selecione a banda da turnê
       if (turne && !bandaSelecionada) {
-        const banda = bandas.find(b => String(b.id) === String(turne.bandaId));
+        const banda = bandas.find(
+          (b) => String(b.id) === String(turne.bandaId)
+        );
         setBandaSelecionada(banda || null);
       }
     }
