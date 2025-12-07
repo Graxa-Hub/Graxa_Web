@@ -12,6 +12,7 @@ export const PainelDireito = memo(({
   lat, 
   lon 
 }) => {
+
   const renderConteudoDinamico = () => {
     if (!agendaSelecionada) {
       return (
@@ -52,11 +53,11 @@ export const PainelDireito = memo(({
       {renderConteudoDinamico()}
 
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex gap-4">
-          <div className="flex-1">
+        <div className="flex flex-row gap-6">
+          <div className="w-full">
             <Porcentagem percent={progresso} />
           </div>
-          <div className="flex-1">
+          <div className="w-full">
             <ClimaCard cidade={cidade} />
           </div>
         </div>
