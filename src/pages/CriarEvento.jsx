@@ -14,6 +14,7 @@ import { useViagens } from "../hooks/useViagens";
 import SidebarDireita from "../components/CriarEvento/SidebarDireita";
 import { LocalSelecionadoProvider } from "../context/LocalSelecionadoContext";
 import VisualizarAlocacoes from "../components/CriarEvento/VisualizarAlocacoes";
+import { agendaEventoService } from "../services/agendaEventoService";
 
 import { useColaboradores } from "../hooks/useColaboradores";
 import { useToast } from "../hooks/useToast";
@@ -24,7 +25,7 @@ export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
   const [localShow, setLocalShow] = useState({});
   const [selectedRoles, setSelectedRoles] = useState([]);
-  const [assignments, setAssignments] = useState({}); 
+  const [assignments, setAssignments] = useState({});
   const [hotels, setHotels] = useState([]);
   const [flights, setFlights] = useState([]);
   const [transports, setTransports] = useState([]);
@@ -36,10 +37,39 @@ export const CriarEvento = () => {
   const [evento, setEvento] = useState(null);
   const showId = eventoId ? Number(eventoId) : null;
 
-  
-  // hooks
   const { colaboradores: todosColaboradores, listarColaboradores } = useColaboradores();
   const { toasts, showSuccess, showError, showWarning, showInfo } = useToast();
+
+  // Carrega agenda existente do backend (para tipoEvento === "show")
+  useEffect(() => {
+    async function loadAgenda() {
+      try {
+        if (!eventoId || tipoEvento !== "show") return;
+
+        const itens = await agendaEventoService.listarPorShow(eventoId);
+
+        const normalizados = (itens || []).map(item => ({
+          // Mantém id (se houver) para update/remover posteriores
+          id: item.id,
+          ...item,
+          // Garante enum em MAIÚSCULAS
+          tipo: item.tipo ? String(item.tipo).toUpperCase() : "TECNICO",
+          // Normaliza para format accepted pelo input datetime-local (YYYY-MM-DDTHH:mm)
+          dataHoraInicio: item.dataHoraInicio ? String(item.dataHoraInicio).substring(0, 16) : "",
+          dataHoraFim: item.dataHoraFim ? String(item.dataHoraFim).substring(0, 16) : "",
+          origem: item.origem || "",
+          destino: item.destino || ""
+        }));
+
+        setAgenda(normalizados);
+      } catch (err) {
+        console.error("Erro ao carregar agenda:", err);
+        showError("Falha ao carregar agenda. Veja o console para detalhes.");
+      }
+    }
+
+    loadAgenda();
+  }, [eventoId, tipoEvento, showError]);
 
   useEffect(() => {
     listarColaboradores();
@@ -178,29 +208,33 @@ export const CriarEvento = () => {
       });
 
       // AGENDA
-      const agendaNormalizada = agenda.map(item => ({
-        ...item,
-        dataHora: item.dataHora || item.hora || null
-      }));
-
-      agendaNormalizada.forEach((item, index) => {
-        const colabId = item.colaboradorId;
-
-        if (colabId && !alocadosSet.has(colabId)) return;
+      // Nota: se item tiver id => atualizar, senão criar
+      agenda.forEach((item, index) => {
+        // opcional: bloquear itens sem título/datas? por enquanto permitimos nulls
+        const padDate = (val) => {
+          if (!val) return null;
+          // se já tem segundos, mantém; se só "YYYY-MM-DDTHH:mm" adiciona :00
+          return val.length === 16 ? `${val}:00` : val;
+        };
 
         const dto = {
           showId: Number(showId),
-          colaboradorId: colabId ? Number(colabId) : null,
           titulo: item.titulo || "Evento",
           descricao: item.descricao || null,
-          dataHora: item.dataHora
-            ? new Date(item.dataHora).toISOString()
-            : null,
-          duracaoMinutos: item.duracaoMinutos ?? null,
-          ordem: index
+          tipo: item.tipo ? String(item.tipo).toUpperCase() : "TECNICO",
+          origem: item.origem || null,
+          destino: item.destino || null,
+          dataHoraInicio: padDate(item.dataHoraInicio),
+          dataHoraFim: padDate(item.dataHoraFim),
+          ordem: index + 1
         };
 
-        promessas.push(logisticaService.criarAgendaEvento(dto));
+        if (item.id) {
+          // se tiver id (vindo do backend), atualiza
+          promessas.push(agendaEventoService.atualizar(item.id, dto));
+        } else {
+          promessas.push(agendaEventoService.criar(dto));
+        }
       });
 
       // EXECUÇÃO

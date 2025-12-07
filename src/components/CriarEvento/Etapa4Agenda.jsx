@@ -1,12 +1,12 @@
 import React from "react";
 
 const TIPOS_ENUM = {
-  DESLOCAMENTO: "deslocamento",
-  TECNICO: "tecnico",
+  DESLOCAMENTO: "DESLOCAMENTO",
+  TECNICO: "TECNICO",
 };
 
 const makeEmptyItem = (tipo = TIPOS_ENUM.TECNICO) => ({
-  id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+  id: null,
   tipo,
   titulo: "",
   origem: "",
@@ -48,29 +48,6 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
       const ai = a.dataHoraInicio || "";
       const bi = b.dataHoraInicio || "";
       return ai.localeCompare(bi);
-    });
-  };
-
-  const prepararParaBackend = (lista) => {
-    const padSeconds = (dtLocal) => {
-      if (!dtLocal) return null;
-      return dtLocal.length === 16 ? `${dtLocal}:00` : dtLocal;
-    };
-
-    return lista.map((item, idx) => {
-      const obj = {
-        titulo: item.titulo || null,
-        descricao: item.descricao || null,
-        dataHoraInicio: padSeconds(item.dataHoraInicio),
-        dataHoraFim: padSeconds(item.dataHoraFim),
-        tipo: item.tipo || TIPOS_ENUM.TECNICO, 
-        ordem: idx + 1,
-      };
-      if (item.tipo === TIPOS_ENUM.DESLOCAMENTO) {
-        obj.origem = item.origem || null;
-        obj.destino = item.destino || null;
-      }
-      return obj;
     });
   };
 
@@ -181,7 +158,7 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
               />
             </div>
 
-            {/* DESCRICAO */}
+            {/* DESCRIÇÃO */}
             <div>
               <label className="text-sm font-medium text-gray-700">Descrição</label>
               <textarea
@@ -201,7 +178,7 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
                 Remover
               </button>
 
-              {/* Botão pra copiar / duplicar item (útil) */}
+              {/* Botão pra copiar / duplicar item */}
               <button
                 onClick={() =>
                   setAgenda((prev) => {
