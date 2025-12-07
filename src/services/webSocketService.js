@@ -16,6 +16,11 @@ class WebSocketService {
 
     return new Promise((resolve, reject) => {
       try {
+        // 🔍 DECODIFICAR O TOKEN PARA VER O SUB
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        console.log('🔍 Token decodificado:', payload);
+        console.log('👤 Username no token (sub):', payload.sub);
+        
         // Criar socket com token
         const socket = new SockJS(`http://localhost:8080/ws/notificacoes?token=${token}`);
         
@@ -27,12 +32,15 @@ class WebSocketService {
           
           onConnect: (frame) => {
             console.log('✅ WebSocket conectado:', frame);
+            console.log('🎯 Frame headers:', frame.headers);
+            console.log('🎯 User destination:', frame.headers?.user);
             this.isConnected = true;
             resolve();
           },
           
           onStompError: (frame) => {
             console.error('❌ Erro STOMP:', frame);
+            console.error('📋 Frame completo:', JSON.stringify(frame, null, 2));
             this.isConnected = false;
             reject(new Error('Erro de conexão WebSocket'));
           },
@@ -74,8 +82,15 @@ class WebSocketService {
       return;
     }
 
+    // 🔍 LOG DO DESTINO
+    console.log('📡 Subscrevendo em: /user/queue/notificacoes');
+    
     const subscription = this.client.subscribe('/user/queue/notificacoes', (message) => {
       try {
+        console.log('📨 Mensagem RAW recebida:', message);
+        console.log('📨 Headers da mensagem:', message.headers);
+        console.log('📨 Destination:', message.headers?.destination);
+        
         const notificacao = JSON.parse(message.body);
         console.log('🔔 Nova notificação recebida:', notificacao);
         callback(notificacao);
@@ -84,6 +99,7 @@ class WebSocketService {
       }
     });
 
+    console.log('✅ Subscription criada:', subscription.id);
     this.subscribers.set('notifications', subscription);
     return subscription;
   }

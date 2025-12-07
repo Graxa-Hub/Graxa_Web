@@ -7,10 +7,9 @@ import { useAuth } from '../../context/AuthContext';
 export const Notificacao = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { usuario } = useAuth();
-  const [contagemNotificacoes, setContagemNotificacoes] = useState(0);
   const {
     notificacoes,
-    notificacaoNaoLidas, // ✅ ADICIONE
+    notificacaoNaoLidas,
     loading,
     error,
     isConnected,
@@ -19,14 +18,21 @@ export const Notificacao = () => {
     marcarTodasComoLidas
   } = useNotificacoes(usuario?.id);
 
-  
+  // Atualiza a contagem em tempo real sempre que notificacaoNaoLidas mudar
+  const contagemNotificacoes = notificacaoNaoLidas?.length || 0;
 
-  // ✅ Carregar notificações ao abrir modal
+  // Carrega notificações inicialmente
+  useEffect(() => {
+    if (usuario?.id) {
+      listarNotificacoes();
+    }
+  }, [usuario?.id, listarNotificacoes]);
+
+  // Recarrega quando abrir o modal
   useEffect(() => {
     if (isOpen && usuario?.id) {
       listarNotificacoes();
     }
-    setContagemNotificacoes(notificacaoNaoLidas?.length || 0);
   }, [isOpen, usuario?.id, listarNotificacoes]);
 
   if (!usuario?.id) {
