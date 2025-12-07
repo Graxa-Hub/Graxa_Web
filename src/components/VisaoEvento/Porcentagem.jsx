@@ -4,7 +4,7 @@ export const Porcentagem = ({ percent = 0 }) => {
   const clamped = Math.max(0, Math.min(100, Number(percent)));
   const circumference = 2 * Math.PI * 36; // 2πr with r=36
   return (
-    <div className="w-70 h-50 flex flex-col items-center justify-between bg-white rounded-xl shadow-lg p-4">
+    <div className="w-40 h-50 flex flex-col items-center justify-between bg-white rounded-xl shadow-lg p-4">
       <p className="text-lg text-gray-600 mb-2 text-center leading-tight">
         Progresso do cronograma:
       </p>

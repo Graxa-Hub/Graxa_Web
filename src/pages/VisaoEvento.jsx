@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
-import { Edit2 } from "lucide-react";
+import { Edit2, MapPin } from "lucide-react";
 import { useShows } from "../hooks/useShows";
 import { useViagens } from "../hooks/useViagens";
 import { useAgendaEvento } from "../hooks/useAgendaEvento";
@@ -110,7 +110,6 @@ export const VisaoEvento = () => {
     });
   }, [agendasProcessadas]);
 
-  // ✅ Seleciona automaticamente o primeiro agendamento quando as agendas carregarem
   useEffect(() => {
     if (agendasProcessadas.length > 0 && !agendaSelecionada) {
       setAgendaSelecionada(agendasProcessadas[0]);
@@ -121,11 +120,14 @@ export const VisaoEvento = () => {
     if (!evento) return null;
 
     const dataInicioEvento = evento.dataInicio ? new Date(evento.dataInicio) : null;
+    const cidadeExtraida = evento.local?.endereco?.cidade || "São Paulo";
+    const nomeLocal = evento.local?.nome || "Local não informado";
     
     return {
       nomeEvento: evento.nomeEvento || "Evento",
+      nomeLocal: nomeLocal,
       dataInfo: dataInicioEvento ? formatarData(dataInicioEvento) : "",
-      cidade: evento.local?.endereco?.cidade || "São Paulo",
+      cidade: cidadeExtraida,
       lat: -23.5,
       lon: -46.6
     };
@@ -141,9 +143,15 @@ export const VisaoEvento = () => {
 
       <div className="flex-1 flex flex-col h-screen w-full overflow-hidden p-6 bg-green-100">
         <div className="flex items-center justify-between mb-6 gap-4">
-          <h1 className="text-2xl font-bold text-gray-800">
-            {dadosEvento.nomeEvento}
-          </h1>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-800">
+              {dadosEvento.nomeEvento}
+            </h1>
+            <div className="flex items-center gap-1.5 mt-1">
+              <MapPin className="w-4 h-4 text-gray-500" />
+              <p className="text-sm text-gray-600">{dadosEvento.nomeLocal}</p>
+            </div>
+          </div>
 
           <div className="flex items-center gap-4 mr-10">
             <button
