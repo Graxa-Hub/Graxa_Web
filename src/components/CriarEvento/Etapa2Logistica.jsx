@@ -51,6 +51,9 @@ const Etapa2Logistica = ({
 
   const [confirmModal, setConfirmModal] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [hotelColabErrors, setHotelColabErrors] = useState([]);
+  const [flightColabErrors, setFlightColabErrors] = useState([]);
+  const [transpColabErrors, setTranspColabErrors] = useState([]);
 
   // Carrega listas do backend ao montar
   useEffect(() => {
@@ -71,9 +74,27 @@ const Etapa2Logistica = ({
         console.log("[LOG][Etapa2Logistica] Resultado listarHotel:", h);
         console.log("[LOG][Etapa2Logistica] Resultado listarVoo:", v);
         console.log("[LOG][Etapa2Logistica] Resultado listarTransporte:", t);
-        if (Array.isArray(h) && h.length > 0) setHotels(h);
-        if (Array.isArray(v) && v.length > 0) setFlights(v);
-        if (Array.isArray(t) && t.length > 0) setTransports(t);
+        // Exemplo para hotéis (faça igual para voos e transportes)
+        if (Array.isArray(h) && h.length > 0) {
+          setHotels(h.map(hotel => ({
+            ...hotel,
+            hospedes: hotel.hospedes && hotel.hospedes.length > 0
+              ? hotel.hospedes
+              : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
+          })));
+        }
+        if (Array.isArray(v) && v.length > 0) {
+          setFlights(v.map(voo => ({
+            ...voo,
+            passageiros: voo.passageiros || (voo.colaboradorId ? [voo.colaboradorId] : [])
+          })));
+        }
+        if (Array.isArray(t) && t.length > 0) {
+          setTransports(t.map(transporte => ({
+            ...transporte,
+            passageiros: transporte.passageiros || (transporte.colaboradorId ? [transporte.colaboradorId] : [])
+          })));
+        }
       } catch (err) {
         console.error("[LOG][Etapa2Logistica] Erro ao carregar logística:", err);
         showError("Erro ao carregar logística do banco.");
@@ -240,20 +261,20 @@ const Etapa2Logistica = ({
   // ===========================================================
   const addHotel = () =>
     setHotels((prev) => [
-      ...prev,
       { ...LOGISTICA_TEMPLATES[LOGISTICA_TYPES.HOTEL], tempId: makeTempId() },
+      ...prev,
     ]);
 
   const addFlight = () =>
     setFlights((prev) => [
-      ...prev,
       { ...LOGISTICA_TEMPLATES[LOGISTICA_TYPES.FLIGHT], tempId: makeTempId() },
+      ...prev,
     ]);
 
   const addTransporte = () =>
     setTransports((prev) => [
-      ...prev,
       { ...LOGISTICA_TEMPLATES[LOGISTICA_TYPES.TRANSPORTE], tempId: makeTempId() },
+      ...prev,
     ]);
 
   // ===========================================================
@@ -280,6 +301,13 @@ const Etapa2Logistica = ({
     return result;
   };
 
+  function isChanged(original, updated) {
+    // Compara todos os campos relevantes
+    return Object.keys(updated).some(
+      key => updated[key] !== original[key]
+    );
+  }
+
   const handleSalvarHotel = async (hotel, index) => {
     try {
       const colaboradorId = typeof hotel.colaboradorId === "number" && hotel.colaboradorId > 0
@@ -297,17 +325,30 @@ const Etapa2Logistica = ({
       Object.keys(payload).forEach((k) => {
         if (payload[k] === undefined) delete payload[k];
       });
-      console.debug("[Hotel][Salvar] Payload:", payload);
+
+      if (!payload.colaboradorId) {
+        showError("Selecione um hóspede para o hotel.");
+        return;
+      }
+
       if (hotel.id) {
+        // Só atualiza se mudou algo
+        if (!isChanged(hotel, payload)) return;
         const updated = await atualizarHotel(hotel.id, payload);
-        // Atualiza localmente o item, preservando campos do original se o backend não retornar
         updateHotelAtIndex(index, mergeUpdate(hotel, updated));
       } else {
         const { id, tempId, ...payloadSemId } = payload;
         await criarHotel(payloadSemId);
-        // Após criar, busca lista do backend e atualiza estado
         const listaAtual = await listarHotel(showId);
-        setHotels(Array.isArray(listaAtual) ? listaAtual : []);
+        setHotels(Array.isArray(listaAtual)
+          ? listaAtual.map(hotel => ({
+              ...hotel,
+              hospedes: hotel.hospedes && hotel.hospedes.length > 0
+                ? hotel.hospedes
+                : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
+            }))
+          : []
+        );
       }
     } catch (err) {
       showError("Erro ao salvar hotel.");
@@ -334,16 +375,16 @@ const Etapa2Logistica = ({
       Object.keys(payload).forEach((k) => {
         if (payload[k] === undefined || payload[k] === null) delete payload[k];
       });
-      console.debug("[Voo][Salvar][UPDATE] Payload:", payload);
+
       if (!payload.colaboradorId) {
         showError("Selecione um passageiro para o voo.");
         return;
       }
+
       if (voo.id) {
+        if (!isChanged(voo, payload)) return;
         try {
           const updated = await atualizarVoo(voo.id, payload);
-          console.debug("[Voo][Salvar][UPDATE] Resposta backend:", updated);
-          // Se o backend retornar vazio ou só id, força merge do payload
           let result;
           if (!updated || Object.keys(updated).length === 0 || (Object.keys(updated).length === 1 && updated.id)) {
             showError("O backend não retornou os campos do voo atualizado. Os dados editados foram mantidos.");
@@ -353,7 +394,6 @@ const Etapa2Logistica = ({
           }
           updateFlightAtIndex(index, result);
         } catch (err) {
-          // Mostra erro detalhado do backend no toast
           let motivo = err?.response?.data?.message || err?.message || "Erro ao atualizar voo.";
           showError(motivo);
           console.error("[Voo][Salvar][UPDATE][Erro Backend]", err);
@@ -361,9 +401,16 @@ const Etapa2Logistica = ({
       } else {
         const { id, tempId, ...payloadSemId } = { ...payload };
         await criarVoo(payloadSemId);
-        // Após criar, busca lista do backend e atualiza estado
         const listaAtual = await listarVoo(showId);
-        setFlights(Array.isArray(listaAtual) ? listaAtual : []);
+        setFlights(Array.isArray(listaAtual)
+          ? listaAtual.map(voo => ({
+              ...voo,
+              passageiros: voo.passageiros && voo.passageiros.length > 0
+                ? voo.passageiros
+                : (voo.colaboradorId ? [voo.colaboradorId] : [])
+            }))
+          : []
+        );
       }
     } catch (err) {
       showError(err?.message || "Erro ao salvar voo.");
@@ -373,7 +420,6 @@ const Etapa2Logistica = ({
 
   const handleSalvarTransporte = async (transporte, index) => {
     try {
-      // Garantir colaboradorId sempre presente
       let colaboradorId = null;
       if (typeof transporte.colaboradorId === "number" && transporte.colaboradorId > 0) {
         colaboradorId = transporte.colaboradorId;
@@ -381,10 +427,8 @@ const Etapa2Logistica = ({
         colaboradorId = transporte.passageiros[0];
       }
 
-      // Sempre salva destino como string
       const destinoString = typeof transporte.destino === 'string' ? transporte.destino : String(transporte.destino ?? '');
 
-      // Preencher campos com valor atual do transporte se não foram alterados
       const payload = {
         tipo: transporte.tipo || "",
         colaboradorId: colaboradorId,
@@ -402,20 +446,21 @@ const Etapa2Logistica = ({
           transporte.saida === undefined || transporte.saida === "" || transporte.saida === "null"
             ? (transporte.id ? transports[index]?.saida : null)
             : transporte.saida,
-        chegada: destinoString // continua mandando destino como chegada
+        chegada: destinoString
       };
       Object.keys(payload).forEach((k) => {
         if (payload[k] === undefined) delete payload[k];
       });
-      console.log("[Transporte][Salvar][ENVIADO AO BACKEND]", JSON.stringify(payload));
+
       if (!payload.colaboradorId) {
         showError("Selecione um passageiro para o transporte.");
         return;
       }
+
       if (transporte.id) {
+        if (!isChanged(transporte, payload)) return;
         try {
           const updated = await atualizarTransporte(transporte.id, payload);
-          console.debug("[Transporte][Salvar][UPDATE] Resposta backend:", updated);
           let result;
           if (!updated || Object.keys(updated).length === 0 || (Object.keys(updated).length === 1 && updated.id)) {
             showError("O backend não retornou os campos do transporte atualizado. Os dados editados foram mantidos.");
@@ -432,9 +477,16 @@ const Etapa2Logistica = ({
       } else {
         const { id, tempId, ...payloadSemId } = { ...payload };
         await criarTransporte(payloadSemId);
-        // Após criar, busca lista do backend e atualiza estado
         const listaAtual = await listarTransporte(showId);
-        setTransports(Array.isArray(listaAtual) ? listaAtual : []);
+        setTransports(Array.isArray(listaAtual)
+          ? listaAtual.map(transporte => ({
+              ...transporte,
+              passageiros: transporte.passageiros && transporte.passageiros.length > 0
+                ? transporte.passageiros
+                : (transporte.colaboradorId ? [transporte.colaboradorId] : [])
+            }))
+          : []
+        );
       }
     } catch (err) {
       showError(err?.message || "Erro ao salvar transporte.");
@@ -482,6 +534,20 @@ const Etapa2Logistica = ({
                 let updated = 0;
                 let nomesCriados = [];
                 let nomesAtualizados = [];
+                let colabErrors = [];
+                // 1️⃣ Validação: só salva se todos os cards estão válidos
+                for (const [index, hotel] of hotels.entries()) {
+                  const colaboradorId = hotel.colaboradorId || (hotel.hospedes && hotel.hospedes[0]);
+                  if (!colaboradorId) {
+                    colabErrors.push(index);
+                  }
+                }
+                setHotelColabErrors(colabErrors);
+                if (colabErrors.length > 0) {
+                  showError("Preencha todos os campos obrigatórios antes de salvar.");
+                  return; // Não envia nada ao backend!
+                }
+                // 2️⃣ Só envia se todos válidos
                 for (const [index, hotel] of hotels.entries()) {
                   if (hotel.nome && hotel.nome !== null && hotel.nome !== "") {
                     if (!hotel.id) {
@@ -495,10 +561,18 @@ const Etapa2Logistica = ({
                     }
                   }
                 }
-                // Recarrega lista do banco após salvar
-                const listaAtual = await listarHotel(typeof showId === "number" ? showId : undefined);
-                setHotels(Array.isArray(listaAtual) ? listaAtual : []);
+                // Só atualiza lista se houve envio
                 if (created || updated) {
+                  const listaAtual = await listarHotel(typeof showId === "number" ? showId : undefined);
+                  setHotels(Array.isArray(listaAtual)
+                    ? listaAtual.map(hotel => ({
+                        ...hotel,
+                        hospedes: hotel.hospedes && hotel.hospedes.length > 0
+                          ? hotel.hospedes
+                          : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
+                      }))
+                    : []
+                  );
                   let msg = `Hospedagem salva!`;
                   if (created) msg += `\nCriado(s): ${nomesCriados.join(", ")}`;
                   if (updated) msg += `\nAtualizado(s): ${nomesAtualizados.join(", ")}`;
@@ -516,33 +590,42 @@ const Etapa2Logistica = ({
         </div>
 
         <div className="mt-6 grid md:grid-cols-2 gap-6">
-          {hotels.map((hotel, index) => (
-            <div key={hotel.tempId || hotel.id || index} className="relative">
-              <LogisticaCard
-                type={LOGISTICA_TYPES.HOTEL}
-                data={hotel}
-                colaboradores={colaboradores}
-                localShow={localShow}
-                onRemove={() => handleRemove("hotel", hotel)}
-                onChange={(updated) => updateHotelAtIndex(index, updated)}
-              />
-              <div className="absolute top-2 right-2 flex gap-2">
-                <button
-                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
-                  onClick={() => handleRemove("hotel", hotel)}
-                >
-                  Remover
-                </button>
+          {hotels.map((hotel, index) => {
+            const colaboradorId = hotel.colaboradorId || (hotel.hospedes && hotel.hospedes[0]);
+            const faltaColaborador = !colaboradorId;
+            const showColabError = hotelColabErrors.includes(index);
+            return (
+              <div key={hotel.tempId || hotel.id || index} className="relative">
+                <LogisticaCard
+                  type={LOGISTICA_TYPES.HOTEL}
+                  data={hotel}
+                  colaboradores={colaboradores}
+                  localShow={localShow}
+                  onRemove={() => handleRemove("hotel", hotel)}
+                  onChange={(updated) => updateHotelAtIndex(index, updated)}
+                />
+                {showColabError && (
+                  <div className="text-red-600 text-sm mt-2 ml-2">
+                    Selecione um hóspede para cadastrar o hotel.
+                  </div>
+                )}
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <button
+                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+                    onClick={() => handleRemove("hotel", hotel)}
+                  >
+                    Remover
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* VOOS */}
       <section>
         <h2 className="text-xl font-bold text-gray-900 mb-4">Voos da Equipe</h2>
-
         <div className="flex gap-2 mb-2">
           <button
             className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
@@ -558,31 +641,55 @@ const Etapa2Logistica = ({
                 let updated = 0;
                 let criados = [];
                 let atualizados = [];
-                // Cria apenas voos sem id
+                let colabErrors = [];
+                // 1️⃣ Validação: só salva se todos os cards estão válidos
                 for (const [index, flight] of flights.entries()) {
+                  const colaboradorId = flight.colaboradorId || (flight.passageiros && flight.passageiros[0]);
+                  if (!colaboradorId) {
+                    colabErrors.push(index);
+                  }
+                }
+                setFlightColabErrors(colabErrors);
+                if (colabErrors.length > 0) {
+                  showError("Preencha todos os campos obrigatórios antes de salvar.");
+                  return; // Não envia nada ao backend!
+                }
+                // 2️⃣ Só envia se todos válidos
+                for (const [index, flight] of flights.entries()) {
+                  const colaboradorId = flight.colaboradorId || (flight.passageiros && flight.passageiros[0]);
+                  if (!colaboradorId) {
+                    colabErrors.push(index);
+                    continue;
+                  }
                   if (!flight.id && flight.tempId) {
                     await handleSalvarVoo(flight, index); // insert
                     created++;
                     criados.push(`${flight.cia || flight.ciaAerea || ""} ${flight.numero || flight.codigoVoo || ""}`);
                   }
-                }
-                // Atualiza todos os voos com id (igual ao hotel)
-                for (const [index, flight] of flights.entries()) {
                   if (flight.id) {
                     await handleSalvarVoo(flight, index); // update
                     updated++;
                     atualizados.push(`${flight.cia || flight.ciaAerea || ""} ${flight.numero || flight.codigoVoo || ""}`);
                   }
                 }
+                setFlightColabErrors(colabErrors);
                 // Recarrega lista do banco após salvar (garante que o que está no banco aparece na tela)
                 const listaAtual = await listarVoo(typeof showId === "number" ? showId : undefined);
-                setFlights(Array.isArray(listaAtual) ? listaAtual : []);
+                setFlights(Array.isArray(listaAtual)
+                  ? listaAtual.map(voo => ({
+                      ...voo,
+                      passageiros: voo.passageiros && voo.passageiros.length > 0
+                        ? voo.passageiros
+                        : (voo.colaboradorId ? [voo.colaboradorId] : [])
+                    }))
+                  : []
+                );
                 if (created || updated) {
                   let msg = `Voos salvos!`;
                   if (created) msg += `\nCriado(s): ${criados.join(", ")}`;
                   if (updated) msg += `\nAtualizado(s): ${atualizados.join(", ")}`;
                   showSuccess(msg);
-                } else {
+                } else if (colabErrors.length === 0) {
                   showSuccess("Nenhum voo foi salvo.");
                 }
               } catch {
@@ -593,34 +700,42 @@ const Etapa2Logistica = ({
             Salvar Voos
           </button>
         </div>
-
-        <div className="mt-6 space-y-6">
-          {flights.map((flight, index) => (
-            <div key={flight.tempId || flight.id || index} className="relative">
-              <LogisticaCard
-                type={LOGISTICA_TYPES.FLIGHT}
-                data={flight}
-                colaboradores={colaboradores}
-                onRemove={() => handleRemove("flight", flight)}
-                onChange={(updated) => updateFlightAtIndex(index, updated)}
-              />
-              <div className="absolute top-2 right-2 flex gap-2">
-                <button
-                  className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
-                  onClick={() => handleRemove("flight", flight)}
-                >
-                  Remover
-                </button>
+        <div className="mt-6 grid md:grid-cols-2 gap-6">
+          {flights.map((flight, index) => {
+            const colaboradorId = flight.colaboradorId || (flight.passageiros && flight.passageiros[0]);
+            const faltaColaborador = !colaboradorId;
+            const showColabError = flightColabErrors.includes(index);
+            return (
+              <div key={flight.tempId || flight.id || index} className="relative">
+                <LogisticaCard
+                  type={LOGISTICA_TYPES.FLIGHT}
+                  data={flight}
+                  colaboradores={colaboradores}
+                  onRemove={() => handleRemove("flight", flight)}
+                  onChange={(updated) => updateFlightAtIndex(index, updated)}
+                />
+                {showColabError && (
+                  <div className="text-red-600 text-sm mt-2 ml-2">
+                    Selecione um passageiro para cadastrar o voo.
+                  </div>
+                )}
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <button
+                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+                    onClick={() => handleRemove("flight", flight)}
+                  >
+                    Remover
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       {/* TRANSPORTES */}
       <section>
         <h2 className="text-xl font-bold text-gray-900 mb-4">Transportes</h2>
-
         <div className="flex gap-2 mb-2">
           <button
             className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
@@ -636,31 +751,55 @@ const Etapa2Logistica = ({
                   let updated = 0;
                   let criados = [];
                   let atualizados = [];
-                  // Cria apenas transportes sem id
+                  let colabErrors = [];
+                  // 1️⃣ Validação: só salva se todos os cards estão válidos
                   for (const [index, t] of transports.entries()) {
+                    const colaboradorId = t.colaboradorId || (t.passageiros && t.passageiros[0]);
+                    if (!colaboradorId) {
+                      colabErrors.push(index);
+                    }
+                  }
+                  setTranspColabErrors(colabErrors);
+                  if (colabErrors.length > 0) {
+                    showError("Preencha todos os campos obrigatórios antes de salvar.");
+                    return; // Não envia nada ao backend!
+                  }
+                  // 2️⃣ Só envia se todos válidos
+                  for (const [index, t] of transports.entries()) {
+                    const colaboradorId = t.colaboradorId || (t.passageiros && t.passageiros[0]);
+                    if (!colaboradorId) {
+                      colabErrors.push(index);
+                      continue;
+                    }
                     if (!t.id && t.tempId && t.tipo) {
                       await handleSalvarTransporte(t, index); // insert
                       created++;
                       criados.push(t.tipo || "");
                     }
-                  }
-                  // Atualiza todos os transportes com id
-                  for (const [index, t] of transports.entries()) {
                     if (t.id && t.tipo) {
                       await handleSalvarTransporte(t, index); // update
                       updated++;
                       atualizados.push(t.tipo || "");
                     }
                   }
+                  setTranspColabErrors(colabErrors);
                   // Recarrega lista do banco após salvar
                   const listaAtual = await listarTransporte(typeof showId === "number" ? showId : undefined);
-                  setTransports(Array.isArray(listaAtual) ? listaAtual : []);
+                  setTransports(Array.isArray(listaAtual)
+                    ? listaAtual.map(transporte => ({
+                        ...transporte,
+                        passageiros: transporte.passageiros && transporte.passageiros.length > 0
+                          ? transporte.passageiros
+                          : (transporte.colaboradorId ? [transporte.colaboradorId] : [])
+                      }))
+                    : []
+                  );
                   if (created || updated) {
                     let msg = `Transportes salvos!`;
                     if (created) msg += `\nCriado(s): ${criados.join(", ")}`;
                     if (updated) msg += `\nAtualizado(s): ${atualizados.join(", ")}`;
                     showSuccess(msg);
-                  } else {
+                  } else if (colabErrors.length === 0) {
                     showSuccess("Nenhum transporte foi salvo.");
                   }
                 } catch {
@@ -671,30 +810,36 @@ const Etapa2Logistica = ({
             Salvar Transportes
           </button>
         </div>
-
-        <div className="mt-6 space-y-6">
-            {transports.map((t, index) => (
-              <div key={t.tempId || t.id || index} className="relative">
-                <LogisticaCard
-                  type={LOGISTICA_TYPES.TRANSPORTE}
-                  data={{
-                    ...t,
-                    destino: t.destino || ""
-                  }}
-                  colaboradores={colaboradores}
-                  onRemove={() => handleRemove("transporte", t)}
-                  onChange={(updated) => updateTransporteAtIndex(index, updated)}
-                />
-                <div className="absolute top-2 right-2 flex gap-2">
-                  <button
-                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
-                    onClick={() => handleRemove("transporte", t)}
-                  >
-                    Remover
-                  </button>
+        <div className="mt-6 grid md:grid-cols-2 gap-6">
+            {transports.map((t, index) => {
+              const colaboradorId = t.colaboradorId || (t.passageiros && t.passageiros[0]);
+              const faltaColaborador = !colaboradorId;
+              const showColabError = transpColabErrors.includes(index);
+              return (
+                <div key={t.tempId || t.id || index} className="relative">
+                  <LogisticaCard
+                    type={LOGISTICA_TYPES.TRANSPORTE}
+                    data={{ ...t, destino: t.destino || "" }}
+                    colaboradores={colaboradores}
+                    onRemove={() => handleRemove("transporte", t)}
+                    onChange={(updated) => updateTransporteAtIndex(index, updated)}
+                  />
+                  {showColabError && (
+                    <div className="text-red-600 text-sm mt-2 ml-2">
+                      Selecione um passageiro para cadastrar o transporte.
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2 flex gap-2">
+                    <button
+                      className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+                      onClick={() => handleRemove("transporte", t)}
+                    >
+                      Remover
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
         </div>
       </section>
     </div>

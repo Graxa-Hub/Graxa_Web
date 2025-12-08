@@ -113,16 +113,39 @@ export const CriarEvento = () => {
 
         console.log("RAW LOGÍSTICA:", { hoteisRaw: hoteis, voosRaw: voos, transportesRaw: transportes });
 
-        // Guardar raw para decidir updates depois
         setHoteisRaw(hoteis || []);
         setVoosRaw(voos || []);
         setTransportesRaw(transportes || []);
 
-        // Agrupar (as funções de agrupar esperam o formato do backend DTO)
-        // Não agrupa voos, mostra todos os registros do banco
-        setHotels(agruparHoteis(hoteis || []));
-        setFlights(voos || []);
-        setTransports(agruparTransportes(transportes || []));
+        // AJUSTE: mapeia os campos obrigatórios para garantir que sempre existam
+        const mappedHotels = (hoteis || []).map(hotel => ({
+          ...hotel,
+          nome: hotel.nome || hotel.nomeHotel || "Sem nome",
+          hospedes: hotel.hospedes && hotel.hospedes.length > 0
+            ? hotel.hospedes
+            : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
+        }));
+
+        const mappedFlights = (voos || []).map(voo => ({
+          ...voo,
+          cia: voo.cia || voo.ciaAerea || "Sem cia",
+          numero: voo.numero || voo.codigoVoo || "Sem número",
+          passageiros: voo.passageiros && voo.passageiros.length > 0
+            ? voo.passageiros
+            : (voo.colaboradorId ? [voo.colaboradorId] : [])
+        }));
+
+        const mappedTransports = (transportes || []).map(transporte => ({
+          ...transporte,
+          tipo: transporte.tipo || "Sem tipo",
+          passageiros: transporte.passageiros && transporte.passageiros.length > 0
+            ? transporte.passageiros
+            : (transporte.colaboradorId ? [transporte.colaboradorId] : [])
+        }));
+
+        setHotels(mappedHotels);
+        setFlights(mappedFlights);
+        setTransports(mappedTransports);
       } catch (err) {
         console.error("❌ Erro carregando logística:", err);
         showError("Erro ao carregar logística. Veja o console para detalhes.");
@@ -749,6 +772,9 @@ const salvarExtrasSeparado = async () => {
               etapaAtual={etapaAtual}
               setEtapaAtual={setEtapaAtual}
               etapas={tipoEvento === "viagem" ? etapasViagem : etapasShow}
+              onVisaoEvento={() => {
+                if (showId) navigate(`/visao-evento/show/${showId}`);
+              }}
             />
 
             <div className="mt-8">{renderEtapa()}</div>
@@ -778,6 +804,7 @@ const salvarExtrasSeparado = async () => {
             </div>
           </div>
 
+          {console.log("Hotels para SidebarDireita:", hotels)}
           <SidebarDireita
             etapaAtual={etapaAtual}
             localShow={localShow}

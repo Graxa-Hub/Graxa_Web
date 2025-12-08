@@ -1,7 +1,6 @@
 import React from "react";
 
-const Stepper = ({ etapaAtual, setEtapaAtual, etapas }) => {
-  // Usa etapas da prop, não lista fixa!
+const Stepper = ({ etapaAtual, setEtapaAtual, etapas, onVisaoEvento }) => {
   return (
     <div className="flex gap-8 items-center border-b pb-4 border-gray-200">
       {etapas.map((etapa, index) => {
@@ -28,6 +27,15 @@ const Stepper = ({ etapaAtual, setEtapaAtual, etapas }) => {
           </div>
         );
       })}
+      {/* Botão Visão do Evento */}
+      {onVisaoEvento && (
+        <button
+          className="ml-auto px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+          onClick={onVisaoEvento}
+        >
+          Visão do Evento
+        </button>
+      )}
     </div>
   );
 };
