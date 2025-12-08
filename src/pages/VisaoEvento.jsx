@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
-import { Edit2, MapPin } from "lucide-react";
+import { Edit2, MapPin, FileDown } from "lucide-react";
 import { useShows } from "../hooks/useShows";
 import { useViagens } from "../hooks/useViagens";
 import { useAgendaEvento } from "../hooks/useAgendaEvento";
@@ -10,17 +10,23 @@ import { AgendaList } from "../components/VisaoEvento/AgendaList";
 import { PainelDireito } from "../components/VisaoEvento/PainelDireito";
 import { DiaInfoCard } from "../components/VisaoEvento/DiaInfoCard";
 import { formatarData, formatarHora } from "../utils/dateFormatters";
+import { pdfService } from "../services/pdfService";
 
 export const VisaoEvento = () => {
   const { tipoEvento, id } = useParams();
   const navigate = useNavigate();
 
   const { buscarShow, loading: loadingShow, error: errorShow } = useShows();
-  const { buscarViagem, loading: loadingViagem, error: errorViagem } = useViagens();
+  const {
+    buscarViagem,
+    loading: loadingViagem,
+    error: errorViagem,
+  } = useViagens();
   const { agendas, listarPorShow } = useAgendaEvento();
 
   const [evento, setEvento] = useState(null);
   const [agendaSelecionada, setAgendaSelecionada] = useState(null);
+  const [gerandoPdf, setGerandoPdf] = useState(false);
 
   const loading = tipoEvento === "viagem" ? loadingViagem : loadingShow;
   const erro = tipoEvento === "viagem" ? errorViagem : errorShow;
@@ -28,9 +34,10 @@ export const VisaoEvento = () => {
   useEffect(() => {
     async function buscarEvento() {
       try {
-        const dados = tipoEvento === "viagem" 
-          ? await buscarViagem(id) 
-          : await buscarShow(id);
+        const dados =
+          tipoEvento === "viagem"
+            ? await buscarViagem(id)
+            : await buscarShow(id);
         setEvento(dados);
       } catch (err) {
         console.error("❌ Erro ao buscar evento:", err);
@@ -50,17 +57,16 @@ export const VisaoEvento = () => {
 
   const { agendasProcessadas, progresso } = useMemo(() => {
     const agora = new Date();
-    const agendasValidas = agendas.filter(item => item.dataHoraInicio);
+    const agendasValidas = agendas.filter((item) => item.dataHoraInicio);
 
-    const totalConcluidos = agendasValidas.filter(item => {
+    const totalConcluidos = agendasValidas.filter((item) => {
       const dataHoraFim = item.dataHoraFim ? new Date(item.dataHoraFim) : null;
       return dataHoraFim && dataHoraFim < agora;
     }).length;
 
     const totalEventos = agendasValidas.length;
-    const progressoCalculado = totalEventos > 0 
-      ? Math.round((totalConcluidos / totalEventos) * 100) 
-      : 0;
+    const progressoCalculado =
+      totalEventos > 0 ? Math.round((totalConcluidos / totalEventos) * 100) : 0;
 
     const eventosPendentes = [];
     const eventosConcluidos = [];
@@ -96,19 +102,32 @@ export const VisaoEvento = () => {
         description: item.descricao || "",
         active: éProximo,
         passed: jáPassou,
-        dadosOriginais: item
+        dadosOriginais: item,
       };
     });
 
     return { agendasProcessadas: processadas, progresso: progressoCalculado };
   }, [agendas]);
 
-  const handleSelecionarAgenda = useCallback((agendaId) => {
-    setAgendaSelecionada(prev => {
-      if (prev?.id === agendaId) return null;
-      return agendasProcessadas.find(a => a.id === agendaId);
-    });
-  }, [agendasProcessadas]);
+  const handleSelecionarAgenda = useCallback(
+    (agendaId) => {
+      setAgendaSelecionada((prev) => {
+        if (prev?.id === agendaId) return null;
+        return agendasProcessadas.find((a) => a.id === agendaId);
+      });
+    },
+    [agendasProcessadas]
+  );
+
+  const handleGerarPdf = () => {
+    if (tipoEvento !== "show" || !id) {
+      alert("PDF disponível apenas para eventos do tipo Show");
+      return;
+    }
+
+    // Redirecionar para a página de relatório dinâmico com o ID do show
+    navigate(`/relatorio/${id}`);
+  };
 
   useEffect(() => {
     if (agendasProcessadas.length > 0 && !agendaSelecionada) {
@@ -119,17 +138,19 @@ export const VisaoEvento = () => {
   const dadosEvento = useMemo(() => {
     if (!evento) return null;
 
-    const dataInicioEvento = evento.dataInicio ? new Date(evento.dataInicio) : null;
+    const dataInicioEvento = evento.dataInicio
+      ? new Date(evento.dataInicio)
+      : null;
     const cidadeExtraida = evento.local?.endereco?.cidade || "São Paulo";
     const nomeLocal = evento.local?.nome || "Local não informado";
-    
+
     return {
       nomeEvento: evento.nomeEvento || "Evento",
       nomeLocal: nomeLocal,
       dataInfo: dataInicioEvento ? formatarData(dataInicioEvento) : "",
       cidade: cidadeExtraida,
       lat: -23.5,
-      lon: -46.6
+      lon: -46.6,
     };
   }, [evento]);
 
@@ -155,6 +176,19 @@ export const VisaoEvento = () => {
 
           <div className="flex items-center gap-4 mr-10">
             <button
+              onClick={handleGerarPdf}
+              disabled={tipoEvento !== "show"}
+              className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-sm shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+              title={
+                tipoEvento !== "show"
+                  ? "PDF disponível apenas para Shows"
+                  : "Ver Relatório do Evento"
+              }
+            >
+              <FileDown size={16} />
+              Ver Relatório
+            </button>
+            <button
               onClick={() => navigate(`/criar-evento/${tipoEvento}/${id}`)}
               className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm shadow-md"
             >
@@ -166,7 +200,7 @@ export const VisaoEvento = () => {
         </div>
 
         <div className="grid grid-cols-3 gap-4 flex-1 min-h-0">
-          <AgendaList 
+          <AgendaList
             agendas={agendasProcessadas}
             agendaSelecionada={agendaSelecionada}
             onSelecionarAgenda={handleSelecionarAgenda}

@@ -21,7 +21,11 @@ import { useColaboradores } from "../hooks/useColaboradores";
 import { useToast } from "../hooks/useToast";
 
 import { logisticaService } from "../services/logisticaService";
-import { agruparHoteis, agruparVoos, agruparTransportes } from "../utils/logistica/logisticaUtils";
+import {
+  agruparHoteis,
+  agruparVoos,
+  agruparTransportes,
+} from "../utils/logistica/logisticaUtils";
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
@@ -45,10 +49,15 @@ export const CriarEvento = () => {
   const [voosRaw, setVoosRaw] = useState([]);
   const [transportesRaw, setTransportesRaw] = useState([]);
 
-  const { colaboradores: todosColaboradores, listarColaboradores } = useColaboradores();
+  const { colaboradores: todosColaboradores, listarColaboradores } =
+    useColaboradores();
   const { toasts, showSuccess, showError, showWarning, showInfo } = useToast();
 
-  const { extras, listar: listarExtras, salvar: salvarExtras } = useExtrasEvento();
+  const {
+    extras,
+    listar: listarExtras,
+    salvar: salvarExtras,
+  } = useExtrasEvento();
 
   const padDateForApi = (val) => {
     if (!val) return null;
@@ -61,7 +70,7 @@ export const CriarEvento = () => {
         if (data)
           setExtrasLocal({
             obs: data.obs || "",
-            contatos: data.contatos || ""
+            contatos: data.contatos || "",
           });
       });
   }, [showId]);
@@ -73,14 +82,18 @@ export const CriarEvento = () => {
 
         const itens = await agendaEventoService.listarPorShow(eventoId);
 
-        const normalizados = (itens || []).map(item => ({
+        const normalizados = (itens || []).map((item) => ({
           id: item.id,
           ...item,
           tipo: item.tipo ? String(item.tipo).toUpperCase() : "TECNICO",
-          dataHoraInicio: item.dataHoraInicio ? String(item.dataHoraInicio).substring(0, 16) : "",
-          dataHoraFim: item.dataHoraFim ? String(item.dataHoraFim).substring(0, 16) : "",
+          dataHoraInicio: item.dataHoraInicio
+            ? String(item.dataHoraInicio).substring(0, 16)
+            : "",
+          dataHoraFim: item.dataHoraFim
+            ? String(item.dataHoraFim).substring(0, 16)
+            : "",
           origem: item.origem || "",
-          destino: item.destino || ""
+          destino: item.destino || "",
         }));
 
         setAgenda(normalizados);
@@ -143,10 +156,15 @@ export const CriarEvento = () => {
   }, [tipoEvento, eventoId, buscarShow, buscarViagem]);
 
   const colaboradoresSelecionadosIds = [
-    ...new Set(Object.values(assignments).flat().map(Number || (() => [])))
+    ...new Set(
+      Object.values(assignments)
+        .flat()
+        .map(Number || (() => []))
+    ),
   ];
 
-  const colaboradoresEvento = evento?.alocacoes?.map(a => a.colaborador) || [];
+  const colaboradoresEvento =
+    evento?.alocacoes?.map((a) => a.colaborador) || [];
 
   const todosAlocados = colaboradoresEvento.filter((c) =>
     colaboradoresSelecionadosIds.includes(c.id)
@@ -161,13 +179,12 @@ export const CriarEvento = () => {
       await salvarExtras({
         showId,
         obs: extrasLocal.obs || "",
-        contatos: extrasLocal.contatos || ""
+        contatos: extrasLocal.contatos || "",
       });
 
       showSuccess("Extras salvos!");
 
       // ... o resto do seu salvar continua aqui sem alterações ...
-
     } catch (err) {
       console.error("Erro ao salvar:", err);
       showError("Erro ao salvar. Veja o console para detalhes.");
@@ -207,10 +224,7 @@ export const CriarEvento = () => {
     switch (etapaAtual) {
       case 1:
         return (
-          <Etapa3Local
-            localInicial={localShow}
-            setLocalShow={setLocalShow}
-          />
+          <Etapa3Local localInicial={localShow} setLocalShow={setLocalShow} />
         );
 
       case 2:
@@ -253,9 +267,7 @@ export const CriarEvento = () => {
         return <Etapa4Agenda agenda={agenda} setAgenda={setAgenda} />;
 
       case 5:
-        return (
-          <Etapa5Extras extras={extrasLocal} setExtras={setExtrasLocal} />
-        );
+        return <Etapa5Extras extras={extrasLocal} setExtras={setExtrasLocal} />;
 
       default:
         return null;
