@@ -17,7 +17,7 @@ import {
 } from "../services/turneService";
 import {
   adaptTurnesFromBackend,
-  adaptTurneFromBackend,
+  adaptTurneFromBackend,  
   dateToISO,
 } from "../utils/turneAdapter";
 import { useBandas } from "../hooks/useBandas";
@@ -395,8 +395,18 @@ export function Turne() {
   return (
     <Layout>
       <Sidebar />
-      <main className="flex-1 flex flex-col p-5 bg-neutral-300 min-h-0">
-        <Header />
+      <main className="flex-1 flex flex-col p-0 bg-white min-h-0">
+        {/* Header + TurneHeader alinhados */}
+        <div className="w-full flex flex-col">
+          
+          <div className="w-full flex justify-end">
+            <TurneHeader
+              selectedBand={selectedBand}
+              onBandSelect={handleBandSelect}
+              onCreateTurne={handleCreateTurne}
+            />
+          </div>
+        </div>
 
         {errors.geral && (
           <div className="mx-6 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
