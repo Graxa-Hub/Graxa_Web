@@ -1,0 +1,21 @@
+{
+    "name": "graxa-pdf-generator",
+    "version": "1.0.0",
+    "description": "Script para gerar PDFs usando Puppeteer",
+    "main": "generate-pdf.js",
+    "scripts": {
+        "test": "node generate-pdf.js"
+    },
+    "keywords": [
+        "pdf",
+        "puppeteer",
+        "html-to-pdf"
+    ],
+    "author": "Graxa Team",
+    "license": "ISC",
+    "dependencies": {
+        "puppeteer": "^23.11.1"
+    }
+}
+}
+}

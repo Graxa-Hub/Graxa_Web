@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { extrasService } from "../services/extrasService";
 
 export function useExtrasEvento() {
-  const [extras, setExtras] = useState(null); 
+  const [extras, setExtras] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -33,6 +33,14 @@ export function useExtrasEvento() {
       setExtras(saved);
       return saved;
     } catch (err) {
+      // Se endpoint não existe (404), apenas avisa e continua
+      if (err.response?.status === 404) {
+        console.warn("⚠️ [useExtrasEvento] Endpoint não disponível - dados salvos localmente");
+        setExtras(dto);
+        return dto; // Retorna sucesso para não travar o formulário
+      }
+      
+      // Para outros erros, lança a exceção normalmente
       setError(err.message);
       console.error("Erro ao salvar extras:", err);
       throw err;

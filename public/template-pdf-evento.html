@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Evento</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+        }
+
+        /* Cabeçalho */
+        .header {
+            border-bottom: 4px solid #16a34a;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            color: #16a34a;
+            margin-bottom: 8px;
+        }
+
+        .header .subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Informações principais */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #16a34a;
+        }
+
+        .info-card .label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .info-card .value {
+            font-size: 18px;
+            color: #111;
+            font-weight: 500;
+        }
+
+        /* Seção */
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #111;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+            font-weight: 600;
+        }
+
+        /* Tabela de Agenda */
+        .agenda-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .agenda-table thead {
+            background: #16a34a;
+            color: white;
+        }
+
+        .agenda-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .agenda-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        .agenda-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .agenda-table .time-cell {
+            color: #16a34a;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-badge.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Logística */
+        .logistica-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logistica-item {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .logistica-item .icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .logistica-item .title {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .logistica-item .content {
+            font-size: 14px;
+            color: #111;
+            font-weight: 500;
+        }
+
+        /* Colaboradores */
+        .colaboradores-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .colaborador-item {
+            background: #f9fafb;
+            padding: 12px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .colaborador-item .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #16a34a;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .colaborador-item .info .name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #111;
+        }
+
+        .colaborador-item .info .role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Rodapé */
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        /* Quebra de página */
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Cabeçalho -->
+        <div class="header">
+            <h1>{{nomeEvento}}</h1>
+            <p class="subtitle">Relatório completo do evento | Gerado em {{dataGeracao}}</p>
+        </div>
+
+        <!-- Informações Principais -->
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="label">Data do Evento</div>
+                <div class="value">{{dataEvento}}</div>
+            </div>
+            <div class="info-card">
+                <div class="label">Local</div>
+                <div class="value">{{nomeLocal}}</div>
+            </div>
+            <div class="info-card">
+                <div class="label">Endereço</div>
+                <div class="value">{{enderecoCompleto}}</div>
+            </div>
+            <div class="info-card">
+                <div class="label">Progresso</div>
+                <div class="value">{{progresso}}% Concluído</div>
+            </div>
+        </div>
+
+        <!-- Agenda do Evento -->
+        <div class="section">
+            <h2 class="section-title">📅 Agenda do Evento</h2>
+            <table class="agenda-table">
+                <thead>
+                    <tr>
+                        <th>Horário</th>
+                        <th>Atividade</th>
+                        <th>Descrição</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#agendas}}
+                    <tr>
+                        <td class="time-cell">{{horario}}</td>
+                        <td><strong>{{titulo}}</strong></td>
+                        <td>{{descricao}}</td>
+                        <td>
+                            <span class="status-badge {{statusClass}}">{{status}}</span>
+                        </td>
+                    </tr>
+                    {{/agendas}}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Logística -->
+        <div class="section">
+            <h2 class="section-title">🚗 Logística</h2>
+            <div class="logistica-grid">
+                <div class="logistica-item">
+                    <div class="icon">✈️</div>
+                    <div class="title">Voos</div>
+                    <div class="content">{{totalVoos}} voo(s)</div>
+                </div>
+                <div class="logistica-item">
+                    <div class="icon">🏨</div>
+                    <div class="title">Hotéis</div>
+                    <div class="content">{{totalHoteis}} hotel(is)</div>
+                </div>
+                <div class="logistica-item">
+                    <div class="icon">🚐</div>
+                    <div class="title">Transportes</div>
+                    <div class="content">{{totalTransportes}} transporte(s)</div>
+                </div>
+            </div>
+
+            <!-- Detalhes de Hotéis -->
+            {{#hoteis}}
+            <div style="margin-bottom: 15px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+                <strong>🏨 {{nomeHotel}}</strong><br>
+                <small style="color: #666;">
+                    Check-in: {{checkIn}} | Check-out: {{checkOut}}<br>
+                    Quartos: {{quantidadeQuartos}} | Hóspedes: {{totalHospedes}}
+                </small>
+            </div>
+            {{/hoteis}}
+
+            <!-- Detalhes de Transportes -->
+            {{#transportes}}
+            <div style="margin-bottom: 15px; padding: 15px; background: #f9fafb; border-radius: 8px;">
+                <strong>🚐 {{tipoTransporte}}</strong><br>
+                <small style="color: #666;">
+                    Motorista: {{motorista}} | Telefone: {{telefone}}<br>
+                    Capacidade: {{capacidade}} pessoas
+                </small>
+            </div>
+            {{/transportes}}
+        </div>
+
+        <!-- Colaboradores -->
+        <div class="section">
+            <h2 class="section-title">👥 Equipe Alocada</h2>
+            <div class="colaboradores-list">
+                {{#colaboradores}}
+                <div class="colaborador-item">
+                    <div class="avatar">{{iniciais}}</div>
+                    <div class="info">
+                        <div class="name">{{nome}}</div>
+                        <div class="role">{{funcao}}</div>
+                    </div>
+                </div>
+                {{/colaboradores}}
+            </div>
+        </div>
+
+        <!-- Bandas Participantes -->
+        {{#bandas}}
+        <div class="section">
+            <h2 class="section-title">🎸 Bandas</h2>
+            {{#listaBandas}}
+            <div style="margin-bottom: 10px; padding: 12px; background: #f9fafb; border-radius: 6px;">
+                <strong>{{nomeBanda}}</strong> - {{genero}}
+            </div>
+            {{/listaBandas}}
+        </div>
+        {{/bandas}}
+
+        <!-- Rodapé -->
+        <div class="footer">
+            <p>Documento gerado automaticamente pelo sistema Graxa Web</p>
+            <p>{{dataGeracao}} - Este documento é confidencial</p>
+        </div>
+    </div>
+</body>
+</html>
