@@ -21,7 +21,7 @@ const makeEmptyItem = (tipo = TIPOS_ENUM.TECNICO) => ({
   tempId: `temp_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`, // ID temporário para React key
 });
 
-const Etapa4Agenda = ({ agenda, setAgenda }) => {
+const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
   const { remover: removerDoBanco } = useAgendaEvento();
   const { showSuccess, showError } = useToast();
   const [confirmModal, setConfirmModal] = useState(null);
@@ -161,6 +161,21 @@ const Etapa4Agenda = ({ agenda, setAgenda }) => {
         >
           <MapPin className="w-4 h-4" />
           Adicionar Deslocamento
+        </button>
+      </div>
+
+      <div className="flex justify-end gap-2">
+        <button
+          onClick={() => {
+            if (!showId) {
+              showError("Salve/abra o evento antes de salvar a agenda.");
+              return;
+            }
+            if (onSave && typeof onSave === "function") onSave();
+          }}
+          className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+        >
+          Salvar Agenda
         </button>
       </div>
 
