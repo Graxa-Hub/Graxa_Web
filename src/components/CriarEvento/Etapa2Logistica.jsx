@@ -78,10 +78,13 @@ const Etapa2Logistica = ({
         if (Array.isArray(h) && h.length > 0) {
           setHotels(h.map(hotel => ({
             ...hotel,
+            nome: hotel.nome || hotel.nomeHotel || "Sem nome",
             hospedes: hotel.hospedes && hotel.hospedes.length > 0
               ? hotel.hospedes
               : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
           })));
+        } else {
+          setHotels([]);
         }
         if (Array.isArray(v) && v.length > 0) {
           setFlights(v.map(voo => ({
@@ -145,7 +148,16 @@ const Etapa2Logistica = ({
         }
         // Após remover, atualiza lista do backend
         const listaAtual = await listarHotel(typeof showId === "number" ? showId : undefined);
-        setHotels(Array.isArray(listaAtual) ? listaAtual : []);
+        setHotels(Array.isArray(listaAtual)
+          ? listaAtual.map(hotel => ({
+              ...hotel,
+              nome: hotel.nome || hotel.nomeHotel || "Sem nome",
+              hospedes: hotel.hospedes && hotel.hospedes.length > 0
+                ? hotel.hospedes
+                : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
+            }))
+          : []
+        );
       }
       // 2️⃣ REMOVER VOO
       if (kind === "flight") {
@@ -343,6 +355,7 @@ const Etapa2Logistica = ({
         setHotels(Array.isArray(listaAtual)
           ? listaAtual.map(hotel => ({
               ...hotel,
+              nome: hotel.nome || hotel.nomeHotel || "Sem nome",
               hospedes: hotel.hospedes && hotel.hospedes.length > 0
                 ? hotel.hospedes
                 : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
@@ -593,6 +606,7 @@ const Etapa2Logistica = ({
                   setHotels(Array.isArray(listaAtual)
                     ? listaAtual.map(hotel => ({
                         ...hotel,
+                        nome: hotel.nome || hotel.nomeHotel || "Sem nome",
                         hospedes: hotel.hospedes && hotel.hospedes.length > 0
                           ? hotel.hospedes
                           : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
