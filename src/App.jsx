@@ -15,6 +15,8 @@ import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
 import { CriarLogistica } from "./pages/CriarLogistica";
 import { ConfiguracaoUsuario } from "./pages/ConfiguracaoUser";
+import { RelatorioPageDinamico } from "./pages/RelatorioPageDinamico";
+
 function App() {
   const [count, setCount] = useState(0);
 
@@ -41,6 +43,7 @@ function App() {
         />
         <Route path="/criar-logistica" element={<CriarLogistica />} />
         <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
+        <Route path="/relatorio/:id" element={<RelatorioPageDinamico />} />
       </Route>
       {/* Rota não encontrada - redireciona para login */}
       <Route path="*" element={<Navigate to="/login" replace />} />

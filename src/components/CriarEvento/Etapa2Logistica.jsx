@@ -23,7 +23,9 @@ const Etapa2Logistica = ({
   setFlights,
   setTransports,
   colaboradores,
-  localShow
+  localShow,
+  showId,       
+  onSave  
 }) => {
   const { remover: removerHotelDB } = useHotelEvento();
   const { remover: removerFlightDB } = useVooEvento();
@@ -226,6 +228,23 @@ const Etapa2Logistica = ({
         type="error"
         loading={loading}
       />
+
+
+      {/* Botão Salvar Logística */}
+    <div className="flex justify-end">
+      <button
+        onClick={() => {
+          if (!showId) {
+            showError("Salve/abra o evento antes de salvar logística.");
+            return;
+          }
+          if (onSave && typeof onSave === "function") onSave();
+        }}
+        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 shadow"
+      >
+        Salvar Logística
+      </button>
+    </div>
 
       {/* HOSPEDAGEM */}
       <section>
