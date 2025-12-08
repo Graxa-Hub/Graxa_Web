@@ -16,13 +16,13 @@ function getChegadaInputValue(destino) {
   // Se não for válido, retorna undefined para não setar value no input
   return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(val) ? val : undefined;
 }
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LogisticaCard from "./cards/LogisticaCard";
 import { ConfirmModal } from "../UI/ConfirmModal";
 import { useToast } from "../../hooks/useToast";
 import { useLogistica } from "../../hooks/useLogistica";
-import { useEffect } from "react";
 import { LOGISTICA_TYPES, LOGISTICA_TEMPLATES } from "../../constants/logistica";
+import { alocacaoService } from "../../services/alocacaoService"; // ajuste o path se necessário
 
 const makeTempId = () =>
   `temp_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
@@ -37,10 +37,9 @@ const Etapa2Logistica = ({
   setHotels,
   setFlights,
   setTransports,
-  colaboradores,
   localShow,
-  showId,       
-  onSave  
+  showId,
+  onSave
 }) => {
   // ✅ Usando hook genérico
   const { criar: criarHotel, atualizar: atualizarHotel, remover: removerHotelDB, listar: listarHotel } = useLogistica(LOGISTICA_TYPES.HOTEL);
@@ -54,6 +53,7 @@ const Etapa2Logistica = ({
   const [hotelColabErrors, setHotelColabErrors] = useState([]);
   const [flightColabErrors, setFlightColabErrors] = useState([]);
   const [transpColabErrors, setTranspColabErrors] = useState([]);
+  const [colaboradoresAceitos, setColaboradoresAceitos] = useState([]);
 
   // Carrega listas do backend ao montar
   useEffect(() => {
@@ -494,6 +494,32 @@ const Etapa2Logistica = ({
     }
   };
 
+  useEffect(() => {
+    async function fetchColaboradoresAceitos() {
+      if (!showId) return;
+      try {
+        const alocacoes = await alocacaoService.listarPorShow(showId);
+        const aceitos = (alocacoes || [])
+          .filter(a => String(a.status).toUpperCase() === "ACEITO" && a.colaborador)
+          .map(a => a.colaborador);
+        // Remove duplicados por id
+        const unicos = [];
+        const ids = new Set();
+        aceitos.forEach(c => {
+          if (!ids.has(c.id)) {
+            ids.add(c.id);
+            unicos.push(c);
+          }
+        });
+        setColaboradoresAceitos(unicos);
+      } catch (err) {
+        console.error("Erro ao buscar colaboradores aceitos:", err);
+        setColaboradoresAceitos([]);
+      }
+    }
+    fetchColaboradoresAceitos();
+  }, [showId]);
+
   return (
 
     <div className="space-y-8">
@@ -599,7 +625,7 @@ const Etapa2Logistica = ({
                 <LogisticaCard
                   type={LOGISTICA_TYPES.HOTEL}
                   data={hotel}
-                  colaboradores={colaboradores}
+                  colaboradores={colaboradoresAceitos}
                   localShow={localShow}
                   onRemove={() => handleRemove("hotel", hotel)}
                   onChange={(updated) => updateHotelAtIndex(index, updated)}
@@ -710,7 +736,7 @@ const Etapa2Logistica = ({
                 <LogisticaCard
                   type={LOGISTICA_TYPES.FLIGHT}
                   data={flight}
-                  colaboradores={colaboradores}
+                  colaboradores={colaboradoresAceitos}
                   onRemove={() => handleRemove("flight", flight)}
                   onChange={(updated) => updateFlightAtIndex(index, updated)}
                 />
@@ -820,7 +846,7 @@ const Etapa2Logistica = ({
                   <LogisticaCard
                     type={LOGISTICA_TYPES.TRANSPORTE}
                     data={{ ...t, destino: t.destino || "" }}
-                    colaboradores={colaboradores}
+                    colaboradores={colaboradoresAceitos}
                     onRemove={() => handleRemove("transporte", t)}
                     onChange={(updated) => updateTransporteAtIndex(index, updated)}
                   />

@@ -179,41 +179,48 @@ export const CriarEvento = () => {
     fetchEvento();
   }, [tipoEvento, eventoId, buscarShow, buscarViagem]);
 
-  const colaboradoresSelecionadosIds = [
-    ...new Set(
-      Object.values(assignments || {})
-        .flat()
-        .map((id) => Number(id))
-        .filter(Boolean)
-    )
-  ];
+  // Adicione um estado para os colaboradores aceitos
+  const [colaboradoresAceitos, setColaboradoresAceitos] = useState([]);
 
-  // ✅ Para cada colaborador, pega só a última alocação (maior id ou data) e só inclui se for aceita
-  let colaboradoresEvento = [];
-  if (evento?.alocacoes?.length) {
-    // Agrupa alocações por colaboradorId
-    const alocacoesPorColab = {};
-    evento.alocacoes.forEach(a => {
-      const colabId = a.colaborador?.id;
-      if (!colabId) return;
-      if (!alocacoesPorColab[colabId]) alocacoesPorColab[colabId] = [];
-      alocacoesPorColab[colabId].push(a);
-    });
-    // Para cada colaborador, pega a alocação mais recente (maior id)
-    Object.values(alocacoesPorColab).forEach(alocacoes => {
-      // Ordena por id decrescente (ou pode usar data se existir)
-      const ultima = alocacoes.sort((a, b) => (b.id || 0) - (a.id || 0))[0];
-      // Considera aceito se status for 'ACEITO' (case insensitive)
-      if (ultima && typeof ultima.status === 'string' && ultima.status.toUpperCase() === 'ACEITO' && ultima.colaborador) {
-        colaboradoresEvento.push(ultima.colaborador);
-      }
-    });
-  }
+  // Atualize a lista de aceitos sempre que evento ou assignments mudar
+  useEffect(() => {
+    // Só atualiza lista de aceitos se estiver na etapa de logística
+    const isEtapaLogistica =
+      (tipoEvento === "show" && etapaAtual === 3) ||
+      (tipoEvento === "viagem" && etapaAtual === 1);
 
-  // Filtrar colaboradores que foram selecionados na Etapa 2
-  const todosAlocados = colaboradoresEvento.filter((c) =>
-    colaboradoresSelecionadosIds.includes(c.id)
-  );
+    if (!isEtapaLogistica) return;
+
+    let colaboradoresEvento = [];
+    if (evento?.alocacoes?.length) {
+      const alocacoesPorColab = {};
+      evento.alocacoes.forEach(a => {
+        const colabId = a.colaborador?.id;
+        if (!colabId) return;
+        if (!alocacoesPorColab[colabId]) alocacoesPorColab[colabId] = [];
+        alocacoesPorColab[colabId].push(a);
+      });
+      Object.values(alocacoesPorColab).forEach(alocacoes => {
+        const ultima = alocacoes.sort((a, b) => (b.id || 0) - (a.id || 0))[0];
+        if (ultima && typeof ultima.status === 'string' && ultima.status.toUpperCase() === 'ACEITO' && ultima.colaborador) {
+          colaboradoresEvento.push(ultima.colaborador);
+        }
+      });
+    }
+    const colaboradoresSelecionadosIds = [
+      ...new Set(
+        Object.values(assignments || {})
+          .flat()
+          .map((id) => Number(id))
+          .filter(Boolean)
+      )
+    ];
+    setColaboradoresAceitos(
+      colaboradoresEvento.filter((c) =>
+        colaboradoresSelecionadosIds.includes(c.id)
+      )
+    );
+  }, [evento, assignments, etapaAtual, tipoEvento]);
 
   // ===== salvarEventoCompleto (atualizado com lógica de update/create para logística) =====
   const salvarEventoCompleto = async () => {
@@ -633,6 +640,37 @@ const salvarExtrasSeparado = async () => {
   }
 };
 
+  // Função helper para calcular colaboradores aceitos
+  function getColaboradoresAceitos() {
+    let colaboradoresEvento = [];
+    if (evento?.alocacoes?.length) {
+      const alocacoesPorColab = {};
+      evento.alocacoes.forEach(a => {
+        const colabId = a.colaborador?.id;
+        if (!colabId) return;
+        if (!alocacoesPorColab[colabId]) alocacoesPorColab[colabId] = [];
+        alocacoesPorColab[colabId].push(a);
+      });
+      Object.values(alocacoesPorColab).forEach(alocacoes => {
+        const ultima = alocacoes.sort((a, b) => (b.id || 0) - (a.id || 0))[0];
+        if (ultima && typeof ultima.status === 'string' && ultima.status.toUpperCase() === 'ACEITO' && ultima.colaborador) {
+          colaboradoresEvento.push(ultima.colaborador);
+        }
+      });
+    }
+    const colaboradoresSelecionadosIds = [
+      ...new Set(
+        Object.values(assignments || {})
+          .flat()
+          .map((id) => Number(id))
+          .filter(Boolean)
+      )
+    ];
+    return colaboradoresEvento.filter((c) =>
+      colaboradoresSelecionadosIds.includes(c.id)
+    );
+  }
+
   // ===== RENDERIZAÇÃO =====
   const renderEtapa = () => {
     if (tipoEvento === "viagem") {
@@ -647,7 +685,7 @@ const salvarExtrasSeparado = async () => {
               voosRaw={voosRaw}
               transportesRaw={transportesRaw}
               localShow={localShow}
-              colaboradores={todosAlocados}
+              colaboradores={getColaboradoresAceitos()}
               setHotels={setHotels}
               setFlights={setFlights}
               setTransports={setTransports}
@@ -715,7 +753,7 @@ const salvarExtrasSeparado = async () => {
             transportesRaw={transportesRaw}
 
             localShow={localShow}
-            colaboradores={todosAlocados}
+            colaboradores={getColaboradoresAceitos()}
             setHotels={setHotels}
             setFlights={setFlights}
             setTransports={setTransports}
