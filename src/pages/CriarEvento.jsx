@@ -16,6 +16,7 @@ import VisualizarAlocacoes from "../components/CriarEvento/VisualizarAlocacoes";
 import { agendaEventoService } from "../services/agendaEventoService";
 import { useColaboradores } from "../hooks/useColaboradores";
 import { useToast } from "../hooks/useToast";
+import { ToastContainer } from "../components/UI/ToastContainer";
 import { logisticaService } from "../services/logisticaService";
 import { agruparHoteis, agruparVoos, agruparTransportes } from "../utils/logistica/logisticaUtils";
 import { useExtrasEvento } from "../hooks/useExtrasEvento";
@@ -43,7 +44,6 @@ export const CriarEvento = () => {
   const [voosRaw, setVoosRaw] = useState([]);
   const [transportesRaw, setTransportesRaw] = useState([]);
   const { colaboradores: todosColaboradores, listarColaboradores } = useColaboradores();
-  const { toasts, showSuccess, showError, showWarning, showInfo } = useToast();
   const { extras: extrasDB, listar: listarExtras, salvar: salvarExtras } = useExtrasEvento();
   const [ isModalOpen, setIsModalOpen ] = useState(false);
   const [ modalLoading, setModalLoading ] = useState(false);
@@ -63,6 +63,7 @@ export const CriarEvento = () => {
   }, [showId, listarExtras]);
 
   // sempre sincroniza o extras local com o retorno do hook
+  const { toasts, showSuccess, showError, showWarning, showInfo } = useToast();
   useEffect(() => {
     if (extrasDB) {
       setExtras(extrasDB);
@@ -118,16 +119,10 @@ export const CriarEvento = () => {
         setTransportesRaw(transportes || []);
 
         // Agrupar (as funções de agrupar esperam o formato do backend DTO)
-        const hoteisAgrupados = agruparHoteis(hoteis || []);
-        const voosAgrupados = agruparVoos(voos || []);
-        const transportesAgrupados = agruparTransportes(transportes || []);
-
-        console.log("AGRUPADOS:", { hoteisAgrupados, voosAgrupados, transportesAgrupados });
-
-        // Atualiza states usados na UI
-        setHotels(hoteisAgrupados);
-        setFlights(voosAgrupados);
-        setTransports(transportesAgrupados);
+        // Não agrupa voos, mostra todos os registros do banco
+        setHotels(agruparHoteis(hoteis || []));
+        setFlights(voos || []);
+        setTransports(agruparTransportes(transportes || []));
       } catch (err) {
         console.error("❌ Erro carregando logística:", err);
         showError("Erro ao carregar logística. Veja o console para detalhes.");
@@ -170,8 +165,27 @@ export const CriarEvento = () => {
     )
   ];
 
-  // Lista real de colaboradores retornados pelo backend no evento
-  const colaboradoresEvento = evento?.alocacoes?.map(a => a.colaborador) || [];
+  // ✅ Para cada colaborador, pega só a última alocação (maior id ou data) e só inclui se for aceita
+  let colaboradoresEvento = [];
+  if (evento?.alocacoes?.length) {
+    // Agrupa alocações por colaboradorId
+    const alocacoesPorColab = {};
+    evento.alocacoes.forEach(a => {
+      const colabId = a.colaborador?.id;
+      if (!colabId) return;
+      if (!alocacoesPorColab[colabId]) alocacoesPorColab[colabId] = [];
+      alocacoesPorColab[colabId].push(a);
+    });
+    // Para cada colaborador, pega a alocação mais recente (maior id)
+    Object.values(alocacoesPorColab).forEach(alocacoes => {
+      // Ordena por id decrescente (ou pode usar data se existir)
+      const ultima = alocacoes.sort((a, b) => (b.id || 0) - (a.id || 0))[0];
+      // Considera aceito se status for 'ACEITO' (case insensitive)
+      if (ultima && typeof ultima.status === 'string' && ultima.status.toUpperCase() === 'ACEITO' && ultima.colaborador) {
+        colaboradoresEvento.push(ultima.colaborador);
+      }
+    });
+  }
 
   // Filtrar colaboradores que foram selecionados na Etapa 2
   const todosAlocados = colaboradoresEvento.filter((c) =>
@@ -223,65 +237,38 @@ export const CriarEvento = () => {
         (hotel.hospedes || []).forEach((colabId) => {
           if (!alocadosSet.has(colabId)) return;
 
-          // procurar raw correspondente (mesmo colaborador e mesmo nome/endereco) para decidir update/create
-          const rawMatch = (hoteisRaw || []).find(hr =>
+          // ENCONTRA TODOS OS REGISTROS DO COLABORADOR PARA ESSE HOTEL
+          const rawMatches = (hoteisRaw || []).filter(hr =>
             hr.colaboradorId === colabId &&
-            // comparamos nome + endereco para ter mais certeza do match
             String(hr.nomeHotel || "").trim() === String(hotel.nome || "").trim() &&
             String(hr.endereco || "").trim() === String(hotel.endereco || "").trim()
           );
+
+          // Usa coordsHotel se disponível, senão latitude/longitude do hotel
+          const latitude = hotel.coordsHotel?.lat ?? hotel.latitude ?? null;
+          const longitude = hotel.coordsHotel?.lon ?? hotel.longitude ?? null;
 
           const dto = {
             showId: Number(showId),
             colaboradorId: Number(colabId),
             nomeHotel: hotel.nome || null,
             endereco: hotel.endereco || null,
-            latitude: hotel.latitude ?? null,
-            longitude: hotel.longitude ?? null,
+            latitude,
+            longitude,
             distanciaPalcoKm: hotel.distanciaPalcoKm ? Number(hotel.distanciaPalcoKm) : null,
             distanciaAeroportoKm: hotel.distanciaAeroportoKm ? Number(hotel.distanciaAeroportoKm) : null,
             checkin: hotel.checkin ? padDateForApi(hotel.checkin) : null,
             checkout: hotel.checkout ? padDateForApi(hotel.checkout) : null
           };
 
-          if (rawMatch && rawMatch.id) {
-            // atualizar item existente
-            promessas.push(logisticaService.atualizarHotelEvento(rawMatch.id, dto));
+          if (rawMatches.length > 0) {
+            // ATUALIZA TODOS OS REGISTROS ENCONTRADOS
+            rawMatches.forEach(rawMatch => {
+              promessas.push(logisticaService.atualizarHotelEvento(rawMatch.id, dto));
+            });
           } else {
-            // criar novo registro para esse colaborador
+            // CRIA NOVO REGISTRO PARA ESSE COLABORADOR
             promessas.push(logisticaService.criarHotelEvento(dto));
-          }
-        });
-      });
-
-      // ------ VOOS
-      flights.forEach((flight) => {
-        (flight.passageiros || []).forEach((colabId) => {
-          if (!alocadosSet.has(colabId)) return;
-
-          // match por colaborador + cia + codigo + partida
-          const rawMatch = (voosRaw || []).find(vr =>
-            vr.colaboradorId === colabId &&
-            String(vr.ciaAerea || "").trim() === String(flight.cia || "").trim() &&
-            String(vr.codigoVoo || "").trim() === String(flight.numero || "").trim() &&
-            (vr.partida ? vr.partida.substring(0,16) : "") === (flight.saida ? flight.saida.substring(0,16) : "")
-          );
-
-          const dto = {
-            showId: Number(showId),
-            colaboradorId: Number(colabId),
-            ciaAerea: flight.cia || null,
-            codigoVoo: flight.numero || null,
-            origem: flight.origem || null,
-            destino: flight.destino || null,
-            partida: flight.saida ? new Date(padDateForApi(flight.saida)).toISOString() : null,
-            chegada: flight.chegada ? new Date(padDateForApi(flight.chegada)).toISOString() : null
-          };
-
-          if (rawMatch && rawMatch.id) {
-            promessas.push(logisticaService.atualizarVooEvento(rawMatch.id, dto));
-          } else {
-            promessas.push(logisticaService.criarVooEvento(dto));
           }
         });
       });
@@ -419,27 +406,32 @@ export const CriarEvento = () => {
       (hotel.hospedes || []).forEach((colabId) => {
         if (!alocadosSet.has(colabId)) return;
 
-        const rawMatch = (hoteisRaw || []).find(hr =>
+        const rawMatches = (hoteisRaw || []).filter(hr =>
           hr.colaboradorId === colabId &&
           String(hr.nomeHotel || "").trim() === String(hotel.nome || "").trim() &&
           String(hr.endereco || "").trim() === String(hotel.endereco || "").trim()
         );
+
+        const latitude = hotel.coordsHotel?.lat ?? hotel.latitude ?? null;
+        const longitude = hotel.coordsHotel?.lon ?? hotel.longitude ?? null;
 
         const dto = {
           showId: Number(showId),
           colaboradorId: Number(colabId),
           nomeHotel: hotel.nome || null,
           endereco: hotel.endereco || null,
-          latitude: hotel.latitude ?? null,
-          longitude: hotel.longitude ?? null,
+          latitude,
+          longitude,
           distanciaPalcoKm: hotel.distanciaPalcoKm ? Number(hotel.distanciaPalcoKm) : null,
           distanciaAeroportoKm: hotel.distanciaAeroportoKm ? Number(hotel.distanciaAeroportoKm) : null,
           checkin: hotel.checkin ? padDateForApi(hotel.checkin) : null,
           checkout: hotel.checkout ? padDateForApi(hotel.checkout) : null
         };
 
-        if (rawMatch && rawMatch.id) {
-          promessas.push(logisticaService.atualizarHotelEvento(rawMatch.id, dto));
+        if (rawMatches.length > 0) {
+          rawMatches.forEach(rawMatch => {
+            promessas.push(logisticaService.atualizarHotelEvento(rawMatch.id, dto));
+          });
         } else {
           promessas.push(logisticaService.criarHotelEvento(dto));
         }
@@ -451,7 +443,7 @@ export const CriarEvento = () => {
       (flight.passageiros || []).forEach((colabId) => {
         if (!alocadosSet.has(colabId)) return;
 
-        const rawMatch = (voosRaw || []).find(vr =>
+        const rawMatches = (voosRaw || []).filter(vr =>
           vr.colaboradorId === colabId &&
           String(vr.ciaAerea || "").trim() === String(flight.cia || "").trim() &&
           String(vr.codigoVoo || "").trim() === String(flight.numero || "").trim() &&
@@ -469,8 +461,10 @@ export const CriarEvento = () => {
           chegada: flight.chegada ? new Date(padDateForApi(flight.chegada)).toISOString() : null
         };
 
-        if (rawMatch && rawMatch.id) {
-          promessas.push(logisticaService.atualizarVooEvento(rawMatch.id, dto));
+        if (rawMatches.length > 0) {
+          rawMatches.forEach(rawMatch => {
+            promessas.push(logisticaService.atualizarVooEvento(rawMatch.id, dto));
+          });
         } else {
           promessas.push(logisticaService.criarVooEvento(dto));
         }
@@ -482,7 +476,7 @@ export const CriarEvento = () => {
       (t.passageiros || []).forEach((colabId) => {
         if (!alocadosSet.has(colabId)) return;
 
-        const rawMatch = (transportesRaw || []).find(tr =>
+        const rawMatches = (transportesRaw || []).filter(tr =>
           tr.colaboradorId === colabId &&
           String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
           (tr.saida ? tr.saida.substring(0,16) : "") === (t.saida ? t.saida.substring(0,16) : "")
@@ -498,8 +492,10 @@ export const CriarEvento = () => {
           observacao: t.observacao || null
         };
 
-        if (rawMatch && rawMatch.id) {
-          promessas.push(logisticaService.atualizarTransporteEvento(rawMatch.id, dto));
+        if (rawMatches.length > 0) {
+          rawMatches.forEach(rawMatch => {
+            promessas.push(logisticaService.atualizarTransporteEvento(rawMatch.id, dto));
+          });
         } else {
           promessas.push(logisticaService.criarTransporteEvento(dto));
         }
@@ -685,14 +681,6 @@ const salvarExtrasSeparado = async () => {
         );
 
       case 3:
-        if (!localShow?.coordsLocal) {
-          return (
-            <div className="p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg">
-              ⚠️ Finalize o Local do Evento antes de continuar.
-            </div>
-          );
-        }
-
         return (
           <Etapa2Logistica
             hotels={hotels}
@@ -754,7 +742,7 @@ const salvarExtrasSeparado = async () => {
     <LocalSelecionadoProvider>
       <Layout>
         <Sidebar />
-
+        {/* ...existing code... */}
         <div className="flex w-full h-screen bg-gray-50/50">
           <div className="flex-1 p-10 overflow-y-auto">
             <Stepper

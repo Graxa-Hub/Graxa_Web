@@ -86,7 +86,11 @@ export function agruparHoteis(lista) {
       };
     }
 
-    mapa[key].hospedes.push(h.colaboradorId);
+    // ✅ Prevenir duplicação e valores undefined
+    const colabId = h.colaboradorId;
+    if (colabId !== null && colabId !== undefined && !mapa[key].hospedes.includes(colabId)) {
+      mapa[key].hospedes.push(colabId);
+    }
   });
 
   return Object.values(mapa);
@@ -115,7 +119,11 @@ export function agruparVoos(lista) {
       };
     }
 
-    mapa[key].passageiros.push(v.colaboradorId);
+    // ✅ Prevenir duplicação e valores undefined
+    const colabId = v.colaboradorId;
+    if (colabId !== null && colabId !== undefined && !mapa[key].passageiros.includes(colabId)) {
+      mapa[key].passageiros.push(colabId);
+    }
   });
 
   return Object.values(mapa);
@@ -144,7 +152,11 @@ export function agruparTransportes(lista) {
       };
     }
 
-    mapa[key].passageiros.push(t.colaboradorId);
+    // ✅ Prevenir duplicação e valores undefined
+    const colabId = t.colaboradorId;
+    if (colabId !== null && colabId !== undefined && !mapa[key].passageiros.includes(colabId)) {
+      mapa[key].passageiros.push(colabId);
+    }
   });
 
   return Object.values(mapa);

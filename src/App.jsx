@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useToast } from "./hooks/useToast";
+import { ToastContainer } from "./components/UI/ToastContainer";
 import "./index.css";
 import { Route, Routes, Navigate } from "react-router-dom";
 
@@ -16,35 +18,40 @@ import { CriarEvento } from "./pages/CriarEvento";
 import { CriarLogistica } from "./pages/CriarLogistica";
 import { ConfiguracaoUsuario } from "./pages/ConfiguracaoUser";
 function App() {
-  const [count, setCount] = useState(0);
+  // Toast global, igual ao sistema de notificações
+  const toast = useToast();
 
   return (
-    <Routes>
-      {/* Rota raiz - redireciona baseado na autenticação */}
-      <Route path="/" element={<HomeRedirect />} />
+    <>
+      {/* ToastContainer global, igual Modal de Notificação */}
+      <ToastContainer toasts={toast.toasts} onRemoveToast={toast.removeToast} position="top-right" />
+      <Routes>
+        {/* Rota raiz - redireciona baseado na autenticação */}
+        <Route path="/" element={<HomeRedirect />} />
 
-      {/* Rotas públicas */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/recuperar-senha" element={<RecuperarSenha />} />
-      <Route path="/cadastro" element={<Cadastro />} />
+        {/* Rotas públicas */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+        <Route path="/cadastro" element={<Cadastro />} />
 
-      {/* Rotas protegidas */}
-      <Route element={<ProtectedLayout />}>
-        <Route path="/calendario" element={<Calendario />} />
-        <Route path="/turne/:bandaId?" element={<Turne />} />
-        <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
-        <Route path="/artista" element={<ArtistaApp />} />
-        <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
-        <Route
-          path="/criar-evento/:tipoEvento/:eventoId?"
-          element={<CriarEvento />}
-        />
-        <Route path="/criar-logistica" element={<CriarLogistica />} />
-        <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
-      </Route>
-      {/* Rota não encontrada - redireciona para login */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+        {/* Rotas protegidas */}
+        <Route element={<ProtectedLayout />}>
+          <Route path="/calendario" element={<Calendario />} />
+          <Route path="/turne/:bandaId?" element={<Turne />} />
+          <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
+          <Route path="/artista" element={<ArtistaApp />} />
+          <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
+          <Route
+            path="/criar-evento/:tipoEvento/:eventoId?"
+            element={<CriarEvento toast={toast} />}
+          />
+          <Route path="/criar-logistica" element={<CriarLogistica />} />
+          <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
+        </Route>
+        {/* Rota não encontrada - redireciona para login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </>
   );
 }
 
