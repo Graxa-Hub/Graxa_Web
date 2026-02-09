@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Layout } from "../components/Dashboard/Layout";
+import { Layout } from "../components/Layout/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { TurneList } from "../components/TurneList";
 import { TurneHeader } from "../components/TurneHeader";
@@ -17,13 +17,13 @@ import {
 } from "../services/turneService";
 import {
   adaptTurnesFromBackend,
-  adaptTurneFromBackend,  
+  adaptTurneFromBackend,
   dateToISO,
 } from "../utils/turneAdapter";
 import { useBandas } from "../hooks/useBandas";
 import { imagemService } from "../services/imagemService";
 import { useParams } from "react-router-dom";
-import { Header } from "../components/Dashboard/Header";
+import { Header } from "../components/Layout/Header";
 
 export function Turne() {
   const { bandaId } = useParams();
@@ -120,19 +120,19 @@ export function Turne() {
             turne.bandaId === selectedBand.id ||
             turne.banda?.id === selectedBand.id ||
             turne.raw?.bandaId === selectedBand.id ||
-            turne.raw?.banda?.id === selectedBand.id
+            turne.raw?.banda?.id === selectedBand.id,
         )
         .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
     }
     return turnesData.sort((a, b) =>
-      (a.name || "").localeCompare(b.name || "")
+      (a.name || "").localeCompare(b.name || ""),
     );
   }, [turnesData, selectedBand]);
 
   const filteredBandas = useMemo(() => {
     if (!bandaSearchText.trim()) return bandas;
     return bandas.filter((banda) =>
-      banda.nome.toLowerCase().includes(bandaSearchText.toLowerCase())
+      banda.nome.toLowerCase().includes(bandaSearchText.toLowerCase()),
     );
   }, [bandas, bandaSearchText]);
 
@@ -151,7 +151,7 @@ export function Turne() {
       const existing = turnesData.find(
         (t) =>
           t.name.toLowerCase() === formData.nome.toLowerCase() &&
-          (!isEditMode || t.id !== editingTurne.id)
+          (!isEditMode || t.id !== editingTurne.id),
       );
       if (existing) {
         newErrors.nome = "Já existe uma turnê com este nome";
@@ -295,7 +295,7 @@ export function Turne() {
 
       if (isEditMode) {
         setTurnesData((prev) =>
-          prev.map((t) => (t.id === editingTurne.id ? adaptedTurne : t))
+          prev.map((t) => (t.id === editingTurne.id ? adaptedTurne : t)),
         );
       } else {
         setTurnesData((prev) => [...prev, adaptedTurne]);
@@ -398,7 +398,6 @@ export function Turne() {
       <main className="flex-1 flex flex-col p-0 bg-white min-h-0">
         {/* Header + TurneHeader alinhados */}
         <div className="w-full flex flex-col">
-          
           <div className="w-full flex justify-end">
             <TurneHeader
               selectedBand={selectedBand}

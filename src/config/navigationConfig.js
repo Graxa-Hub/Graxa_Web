@@ -3,21 +3,22 @@ import { Calendar, Spotlight, MicVocal, Settings, LogOut } from "lucide-react";
 export const mainNavigation = [
     {
         id: 1,
-        to: "/calendario",
-        label: "Calendário",
-        icon: Calendar
-    },
-    {
-        id: 2,
         to: "/artista",
         label: "Bandas",
         icon: MicVocal
     },
     {
-        id: 3,
+        id: 2,
         to: "/turne",
         label: "Turnes",
         icon: Spotlight
+    },
+    {
+        id: 3,
+        to: "/calendario",
+        label: "Calendário",
+        icon: Calendar
+
     },
 ];
 

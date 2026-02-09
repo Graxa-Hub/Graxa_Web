@@ -1,10 +1,13 @@
 import { Notificacao } from "../Notificacao/Notificacao";
+import { Sidebar } from "../Sidebar/Sidebar";
+import { Header } from "./Header";
+import { Container } from "./Container";
 
 export const Layout = ({ children }) => {
   return (
     <div className="min-h-screen overflow-hidden flex">
       <Sidebar />
-      <main className="flex-1 bg-[#f4f5f7] p-4 sm:p-8 sm:pr-20">
+      <main className="flex-1 flex flex-col p-5 bg-neutral-300 min-h-0">
         <Header
           circulo="bg-green-500"
           bandaSelecionada={bandaSelecionada}
@@ -15,8 +18,7 @@ export const Layout = ({ children }) => {
           turnes={turnes}
         />
 
-        <Container></Container>
-        {children}
+        <Container>{children}</Container>
       </main>
 
       {/* ✅ Componente de notificação fixo no canto superior direito */}

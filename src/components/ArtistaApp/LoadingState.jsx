@@ -1,6 +1,6 @@
-import React from 'react';
-import { Layout } from '../Dashboard/Layout';
-import { Sidebar } from '../Sidebar/Sidebar';
+import React from "react";
+import { Layout } from "../Layout/Layout";
+import { Sidebar } from "../Sidebar/Sidebar";
 
 export function LoadingState() {
   return (

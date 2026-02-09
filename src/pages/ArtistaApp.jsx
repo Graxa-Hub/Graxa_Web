@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Layout } from "../components/Dashboard/Layout";
+import { Layout } from "../components/Layout/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { useArtistaApp } from "../hooks/useArtistaApp";
 
@@ -19,13 +19,13 @@ export function ArtistaApp() {
     bandaParaEditar,
     confirmModal,
     bandaVisualizar,
-    
+
     // Funções
     listarBandas,
     criarBanda,
     atualizarBanda,
     adicionarIntegrantes,
-    
+
     // Handlers
     openModal,
     closeModal,
@@ -35,7 +35,7 @@ export function ArtistaApp() {
     handleConfirmDelete,
     toggleDropdown,
     setBandaVisualizar,
-    setConfirmModal
+    setConfirmModal,
   } = useArtistaApp();
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export function ArtistaApp() {
       <Sidebar />
       <main className="flex-1 bg-[#f4f5f7] p-4 sm:p-8 sm:pr-20">
         <ArtistaHeader onAddBanda={openModal} />
-        
+
         <BandasGrid
           bandas={bandas}
           onEdit={handleEdit}
@@ -71,7 +71,9 @@ export function ArtistaApp() {
           adicionarIntegrantes={adicionarIntegrantes}
           bandaParaEditar={bandaParaEditar}
           confirmModal={confirmModal}
-          onCloseConfirmModal={() => setConfirmModal({ isOpen: false, banda: null })}
+          onCloseConfirmModal={() =>
+            setConfirmModal({ isOpen: false, banda: null })
+          }
           onConfirmDelete={handleConfirmDelete}
           bandaVisualizar={bandaVisualizar}
           onCloseBandaVisualizar={() => setBandaVisualizar(null)}

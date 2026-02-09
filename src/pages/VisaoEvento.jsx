@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Layout } from "../components/Dashboard/Layout";
+import { Layout } from "../components/Layout/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { Edit2, MapPin, FileDown } from "lucide-react";
 import { useShows } from "../hooks/useShows";
@@ -116,7 +116,7 @@ export const VisaoEvento = () => {
         return agendasProcessadas.find((a) => a.id === agendaId);
       });
     },
-    [agendasProcessadas]
+    [agendasProcessadas],
   );
 
   const handleGerarPdf = () => {

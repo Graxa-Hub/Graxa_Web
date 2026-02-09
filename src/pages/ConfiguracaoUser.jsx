@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Layout } from "../components/Dashboard/Layout";
 import { Sidebar } from "../components/Sidebar/Sidebar";
 import { Camera, Save, Settings } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useColaboradores } from "../hooks/useColaboradores";
 import { colaboradorService } from "../services/colaboradorService";
+import { Layout } from "../components/Layout/Layout";
 
 export const ConfiguracaoUsuario = () => {
   const { usuario: usuarioLogado, setUsuario } = useAuth();
-  const { buscarColaboradorPorId, atualizarColaborador, loading, error } = useColaboradores();
+  const { buscarColaboradorPorId, atualizarColaborador, loading, error } =
+    useColaboradores();
 
   const [colaborador, setColaborador] = useState(null);
   const [credencial, setCredencial] = useState(null);
@@ -31,16 +32,19 @@ export const ConfiguracaoUsuario = () => {
         setPreviewFoto(dataColab.fotoUrl);
 
         // Buscar telefones
-        const telefones = await colaboradorService.buscarTelefonesPorUsuarioId(usuarioLogado.id);
-        setColaborador(prev => ({
+        const telefones = await colaboradorService.buscarTelefonesPorUsuarioId(
+          usuarioLogado.id,
+        );
+        setColaborador((prev) => ({
           ...prev,
           telefone: telefones.length > 0 ? telefones[0] : null,
         }));
 
         // Buscar credencial
-        const dataCred = await colaboradorService.buscarCredencialPorUsuarioId(usuarioLogado.id);
+        const dataCred = await colaboradorService.buscarCredencialPorUsuarioId(
+          usuarioLogado.id,
+        );
         setCredencial(dataCred);
-
       } catch (error) {
         console.error("Erro ao carregar usuário:", error);
         setErro("Erro ao carregar dados do usuário.");
@@ -80,7 +84,10 @@ export const ConfiguracaoUsuario = () => {
     }
 
     try {
-      const valido = await colaboradorService.validarSenha(credencial.email, senhaAtual);
+      const valido = await colaboradorService.validarSenha(
+        credencial.email,
+        senhaAtual,
+      );
       if (!valido) {
         setErro("Senha atual incorreta.");
         return false;
@@ -117,7 +124,7 @@ export const ConfiguracaoUsuario = () => {
           tipoUsuario: colaborador.tipoUsuario,
           fotoNome: novoFotoNome, // Usa o novo nome ou o antigo
         },
-        null // Não passa a foto aqui, já fizemos upload
+        null, // Não passa a foto aqui, já fizemos upload
       );
 
       // Atualizar credencial
@@ -133,7 +140,7 @@ export const ConfiguracaoUsuario = () => {
       setPreviewFoto(colaboradorAtualizado.fotoUrl);
 
       // Atualiza contexto e localStorage
-      setUsuario(prev => ({
+      setUsuario((prev) => ({
         ...prev,
         nome: colaboradorAtualizado.nome,
         fotoNome: colaboradorAtualizado.fotoNome,
@@ -145,7 +152,7 @@ export const ConfiguracaoUsuario = () => {
           ...usuarioLogado,
           nome: colaboradorAtualizado.nome,
           fotoNome: colaboradorAtualizado.fotoNome,
-        })
+        }),
       );
 
       // Limpa campos
@@ -156,7 +163,6 @@ export const ConfiguracaoUsuario = () => {
       // Toast de sucesso
       setSalvo(true);
       setTimeout(() => setSalvo(false), 2500);
-
     } catch (error) {
       console.error("Erro ao salvar:", error);
       setErro("Erro ao salvar alterações.");
@@ -170,7 +176,6 @@ export const ConfiguracaoUsuario = () => {
       <div className="flex w-full h-screen bg-gray-50/50">
         <div className="flex-1 p-10 overflow-y-auto">
           <div className="bg-white shadow rounded-xl p-6 max-w-2xl mx-auto space-y-6 border border-gray-200">
-            
             {/* HEADER */}
             <div className="border-b pb-3 flex items-center gap-3">
               <Settings size={24} className="text-blue-600" />
@@ -193,7 +198,12 @@ export const ConfiguracaoUsuario = () => {
 
               <label className="cursor-pointer px-4 py-2 bg-gray-800 text-white rounded-full flex items-center gap-2">
                 <Camera size={16} /> Alterar Foto
-                <input type="file" hidden accept="image/*" onChange={handleFotoUpload} />
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleFotoUpload}
+                />
               </label>
             </div>
 
@@ -221,7 +231,8 @@ export const ConfiguracaoUsuario = () => {
                     telefone: {
                       ...colaborador.telefone,
                       numeroTelefone: e.target.value,
-                      tipoTelefone: colaborador.telefone?.tipoTelefone ?? "CELULAR",
+                      tipoTelefone:
+                        colaborador.telefone?.tipoTelefone ?? "CELULAR",
                     },
                   })
                 }
