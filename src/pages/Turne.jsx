@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Layout } from "../components/Layout/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
+import { Layout } from "../components/templates/Layout";
+import { Sidebar } from "../components/organisms/Sidebar";
 import { TurneList } from "../components/TurneList";
 import { TurneHeader } from "../components/TurneHeader";
 import { Modal } from "../components/ModalEventos/Modal";
@@ -23,7 +23,6 @@ import {
 import { useBandas } from "../hooks/useBandas";
 import { imagemService } from "../services/imagemService";
 import { useParams } from "react-router-dom";
-import { Header } from "../components/Layout/Header";
 
 export function Turne() {
   const { bandaId } = useParams();
@@ -382,11 +381,8 @@ export function Turne() {
   if (loading || bandasLoading) {
     return (
       <Layout>
-        <div className="flex h-screen w-full">
-          <Sidebar />
-          <div className="flex-1 flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
         </div>
       </Layout>
     );
@@ -394,170 +390,169 @@ export function Turne() {
 
   return (
     <Layout>
-      <Sidebar />
-      <main className="flex-1 flex flex-col p-0 bg-white min-h-0">
-        {/* Header + TurneHeader alinhados */}
-        <div className="w-full flex flex-col">
-          <div className="w-full flex justify-end">
-            <TurneHeader
-              selectedBand={selectedBand}
-              onBandSelect={handleBandSelect}
-              onCreateTurne={handleCreateTurne}
-            />
-          </div>
-        </div>
 
-        {errors.geral && (
-          <div className="mx-6 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            {errors.geral}
-          </div>
-        )}
-
-        <div className="flex-1 p-6 overflow-y-auto">
-          <TurneList
-            turnes={filteredTurnes}
-            onEditTurne={handleEditTurne}
-            onDeleteTurne={handleDeleteTurne}
+      {/* Header + TurneHeader alinhados */}
+      <div className="w-full flex flex-col">
+        <div className="w-full flex justify-end">
+          Uma ideia para corrigir o botão: colocar no Header ou ver com o IA o jeito mais correto de se fazer
+          <TurneHeader
+            selectedBand={selectedBand}
+            onBandSelect={handleBandSelect}
             onCreateTurne={handleCreateTurne}
           />
         </div>
+      </div>
 
-        <Modal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          onFinish={handleFinishTurne}
-          title={isEditMode ? "Editar Turnê" : "Criar Turnê"}
-          totalSteps={2}
-          onValidate={(step) => (step === 1 ? validateStep1() : true)}
-        >
-          {(currentStep) => {
-            switch (currentStep) {
-              case 1:
-                return (
-                  <div className="flex gap-3">
-                    <div className="flex-1 space-y-6">
-                      <Input
-                        label="Nome da turnê:"
-                        placeholder="Chuva dos olhos"
-                        value={formData.nome}
-                        onChange={(e) =>
-                          handleInputChange("nome", e.target.value)
-                        }
-                        required
-                        disabled={submitLoading}
-                      />
-                      {errors.nome && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.nome}
-                        </p>
-                      )}
+      {errors.geral && (
+        <div className="mx-6 mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          {errors.geral}
+        </div>
+      )}
 
-                      <BandaInput
-                        label="Banda:"
-                        placeholder="Pesquisar banda..."
-                        value={getSelectedBandaName()}
-                        searchText={bandaSearchText}
-                        onSearchChange={(text) => {
-                          setBandaSearchText(text);
-                          setShowBandaDropdown(true);
-                        }}
-                        onFocus={() => {
-                          setBandaSearchText(getSelectedBandaName());
-                          setShowBandaDropdown(true);
-                        }}
-                        showDropdown={showBandaDropdown}
-                        filteredBandas={filteredBandas}
-                        onSelectBanda={handleBandaSelectInModal}
-                        error={errors.banda}
-                        disabled={submitLoading}
-                        required
-                      />
+      <div className="flex-1 p-6 overflow-y-auto">
+        <TurneList
+          turnes={filteredTurnes}
+          onEditTurne={handleEditTurne}
+          onDeleteTurne={handleDeleteTurne}
+          onCreateTurne={handleCreateTurne}
+        />
+      </div>
 
-                      <Input
-                        label="Início da turnê:"
-                        placeholder="13/03/2021"
-                        value={formatDate(selectedStartDate)}
-                        readOnly
-                        required
-                      />
-                      {errors.inicio && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.inicio}
-                        </p>
-                      )}
-
-                      <Input
-                        label="Fim da turnê:"
-                        placeholder="15/03/2021"
-                        value={formatDate(selectedEndDate)}
-                        readOnly
-                        required
-                      />
-                      {errors.fim && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.fim}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="flex-shrink-0 flex items-center justify-center pt-5">
-                      <Calendar
-                        selectedStartDate={selectedStartDate}
-                        selectedEndDate={selectedEndDate}
-                        onDateSelect={handleDateSelect}
-                      />
-                    </div>
-                  </div>
-                );
-
-              case 2:
-                return (
-                  <div className="flex flex-col gap-6">
-                    <div>
-                      <Textarea
-                        label="Descrição da turnê:"
-                        placeholder="Descreva a turnê, objetivos, público-alvo..."
-                        value={formData.descricao}
-                        onChange={(e) =>
-                          handleInputChange("descricao", e.target.value)
-                        }
-                        rows={8}
-                        maxLength={500}
-                        disabled={submitLoading}
-                      />
-                      {errors.descricao && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.descricao}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <InputFile
-                        label="Foto da Turnê"
-                        onFileSelect={(file) => handleChange("imagem", file)}
-                        currentImage={imagemAtual}
-                      />
-                      {errors.imagem && (
-                        <p className="text-red-500 text-sm mt-1">
-                          {errors.imagem}
-                        </p>
-                      )}
-                      <p className="text-xs text-gray-500 mt-2">
-                        {isEditMode
-                          ? "Envie apenas se quiser alterar a imagem atual"
-                          : "A imagem é obrigatória para criar uma nova turnê"}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        onFinish={handleFinishTurne}
+        title={isEditMode ? "Editar Turnê" : "Criar Turnê"}
+        totalSteps={2}
+        onValidate={(step) => (step === 1 ? validateStep1() : true)}
+      >
+        {(currentStep) => {
+          switch (currentStep) {
+            case 1:
+              return (
+                <div className="flex gap-3">
+                  <div className="flex-1 space-y-6">
+                    <Input
+                      label="Nome da turnê:"
+                      placeholder="Chuva dos olhos"
+                      value={formData.nome}
+                      onChange={(e) =>
+                        handleInputChange("nome", e.target.value)
+                      }
+                      required
+                      disabled={submitLoading}
+                    />
+                    {errors.nome && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.nome}
                       </p>
-                    </div>
-                  </div>
-                );
+                    )}
 
-              default:
-                return <div>Etapa não encontrada</div>;
-            }
-          }}
-        </Modal>
-      </main>
+                    <BandaInput
+                      label="Banda:"
+                      placeholder="Pesquisar banda..."
+                      value={getSelectedBandaName()}
+                      searchText={bandaSearchText}
+                      onSearchChange={(text) => {
+                        setBandaSearchText(text);
+                        setShowBandaDropdown(true);
+                      }}
+                      onFocus={() => {
+                        setBandaSearchText(getSelectedBandaName());
+                        setShowBandaDropdown(true);
+                      }}
+                      showDropdown={showBandaDropdown}
+                      filteredBandas={filteredBandas}
+                      onSelectBanda={handleBandaSelectInModal}
+                      error={errors.banda}
+                      disabled={submitLoading}
+                      required
+                    />
+
+                    <Input
+                      label="Início da turnê:"
+                      placeholder="13/03/2021"
+                      value={formatDate(selectedStartDate)}
+                      readOnly
+                      required
+                    />
+                    {errors.inicio && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.inicio}
+                      </p>
+                    )}
+
+                    <Input
+                      label="Fim da turnê:"
+                      placeholder="15/03/2021"
+                      value={formatDate(selectedEndDate)}
+                      readOnly
+                      required
+                    />
+                    {errors.fim && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.fim}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex-shrink-0 flex items-center justify-center pt-5">
+                    <Calendar
+                      selectedStartDate={selectedStartDate}
+                      selectedEndDate={selectedEndDate}
+                      onDateSelect={handleDateSelect}
+                    />
+                  </div>
+                </div>
+              );
+
+            case 2:
+              return (
+                <div className="flex flex-col gap-6">
+                  <div>
+                    <Textarea
+                      label="Descrição da turnê:"
+                      placeholder="Descreva a turnê, objetivos, público-alvo..."
+                      value={formData.descricao}
+                      onChange={(e) =>
+                        handleInputChange("descricao", e.target.value)
+                      }
+                      rows={8}
+                      maxLength={500}
+                      disabled={submitLoading}
+                    />
+                    {errors.descricao && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.descricao}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <InputFile
+                      label="Foto da Turnê"
+                      onFileSelect={(file) => handleChange("imagem", file)}
+                      currentImage={imagemAtual}
+                    />
+                    {errors.imagem && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.imagem}
+                      </p>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2">
+                      {isEditMode
+                        ? "Envie apenas se quiser alterar a imagem atual"
+                        : "A imagem é obrigatória para criar uma nova turnê"}
+                    </p>
+                  </div>
+                </div>
+              );
+
+            default:
+              return <div>Etapa não encontrada</div>;
+          }
+        }}
+      </Modal>
     </Layout>
   );
 }

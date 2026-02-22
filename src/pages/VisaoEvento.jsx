@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Layout } from "../components/Layout/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
+import { Layout } from "../components/templates/Layout";
+import { Sidebar } from "../components/organisms/Sidebar";
 import { Edit2, MapPin, FileDown } from "lucide-react";
 import { useShows } from "../hooks/useShows";
 import { useViagens } from "../hooks/useViagens";

@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { MoreVertical, Edit, Trash2, Eye } from 'lucide-react'
-import { ButtonPage } from './ButtonPage'
-import { DropdownMenu } from './DropdownMenu'
+import { AddButton } from './atoms/AddButton'
+import { ActionMenu } from './molecules/ActionMenu'
 import { ConfirmModal } from './ConfirmModal'
 import { useNavigate } from "react-router-dom";
 import { VisualizarTurneModal } from "./VisualizarTurneModal";
 
-export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTurne}) {
+export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTurne }) {
   const [openDropdown, setOpenDropdown] = useState(null)
   const [selectedTurne, setSelectedTurne] = useState(null)
   const [confirmModal, setConfirmModal] = useState({
@@ -54,7 +54,7 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
         <p className="text-gray-600 mb-6 max-w-md">
           Vixi! Ainda não temos nenhuma turnê criada. Que tal adicionar uma agora?
         </p>
-        <ButtonPage text="Criar turne" click={onCreateTurne} />
+        <AddButton text="Criar turne" click={onCreateTurne} />
       </div>
     )
   }
@@ -95,9 +95,8 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
             <div
               key={turne.id}
               onClick={() => handleTurneClick(turne)}
-              className={`flex items-center gap-4 p-4 bg-white rounded-2xl shadow-2xl w-300 border cursor-pointer ${
-                isSelected ? 'border-red-500 border-2' : 'border-gray-200'
-              } transition-colors hover:border-red-300`}
+              className={`flex items-center gap-4 p-4 bg-white rounded-2xl shadow-2xl w-300 border cursor-pointer ${isSelected ? 'border-red-500 border-2' : 'border-gray-200'
+                } transition-colors hover:border-red-300`}
             >
               <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
                 <img
@@ -124,7 +123,7 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
                 >
                   <MoreVertical className="w-5 h-5 text-gray-500" />
                 </button>
-                <DropdownMenu isOpen={openDropdown === turne.id} items={dropdownItems} />
+                <ActionMenu isOpen={openDropdown === turne.id} items={dropdownItems} />
               </div>
             </div>
           )

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useToast } from "./hooks/useToast";
-import { ToastContainer } from "./components/UI/ToastContainer";
+import { ToastContainer } from "./components/organisms/ToastContainer";
 import "./index.css";
 import { Route, Routes, Navigate } from "react-router-dom";
 

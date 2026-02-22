@@ -5,8 +5,8 @@ import { useColaboradores } from "../../hooks/useColaboradores";
 import useAlocacao from "../../hooks/useAlocacao";
 import { useToast } from "../../hooks/useToast";
 import { Modal } from "../ModalEventos/Modal";
-import { ToastContainer } from "../UI/ToastContainer";
-import { ConfirmModal } from "../UI/ConfirmModal";
+import { ToastContainer } from "../organisms/ToastContainer";
+import { ConfirmModal } from "../molecules/ConfirmModal";
 
 // Mapeamento de ícones por tipo
 const ICONS_MAP = {
@@ -62,28 +62,28 @@ const Etapa1Funcoes = ({
         const alocacoesPorTipo = {};
         const rolesComAlocacao = new Set();
         const colaboradoresJaSalvos = {};
-        
+
         // Agrupar por colaborador e pegar apenas a mais recente
         const alocsMapPorColaborador = {};
-        
+
         alocacoes.forEach(alocacao => {
           const colabId = alocacao.colaborador?.id;
-          
+
           if (!colabId) return;
-          
+
           if (!alocsMapPorColaborador[colabId]) {
             alocsMapPorColaborador[colabId] = alocacao;
           } else {
             // Comparar datas e manter a mais recente
             const dataAtual = new Date(alocacao.dataHoraCriacao);
             const dataSalva = new Date(alocsMapPorColaborador[colabId].dataHoraCriacao);
-            
+
             if (dataAtual > dataSalva) {
               alocsMapPorColaborador[colabId] = alocacao;
             }
           }
         });
-        
+
         // Processar apenas as alocações mais recentes
         Object.values(alocsMapPorColaborador).forEach(alocacao => {
           // Converter status para maiúsculo para comparar
@@ -97,12 +97,12 @@ const Etapa1Funcoes = ({
           const colaborador = alocacao.colaborador;
           if (colaborador) {
             const tipoUsuario = colaborador.tipoUsuario;
-            
+
             if (!alocacoesPorTipo[tipoUsuario]) {
               alocacoesPorTipo[tipoUsuario] = [];
               colaboradoresJaSalvos[tipoUsuario] = [];
             }
-            
+
             // Só salvar se ainda está PENDENTE ou ACEITO
             if (statusUpper === 'PENDENTE' || statusUpper === 'ACEITO') {
               alocacoesPorTipo[tipoUsuario].push(colaborador.id);
@@ -111,7 +111,7 @@ const Etapa1Funcoes = ({
             }
           }
         });
-        
+
         setAssignments(alocacoesPorTipo);
         setSelectedRoles(Array.from(rolesComAlocacao));
         setAlocacoesSalvas(colaboradoresJaSalvos);
@@ -128,7 +128,7 @@ const Etapa1Funcoes = ({
 
   const FUNCOES_PRINCIPAIS = ["preProdutor", "produtorEstrada", "produtor", "tecnicoSom"];
 
-  
+
   const rolesFiltradas = ROLES.filter(role => {
     if (!searchTerm) {
       return FUNCOES_PRINCIPAIS.includes(role.id);
@@ -147,7 +147,7 @@ const Etapa1Funcoes = ({
 
     if (jaSalvoNoBanco) {
       const colaborador = colaboradores.find(c => c.id === colabId);
-      
+
       // ✅ NOVO: Modal de confirmação em vez de alert
       setConfirmModal({
         type: 'warning',
@@ -193,7 +193,7 @@ const Etapa1Funcoes = ({
 
   const handleAlocarUsuarios = async () => {
     const showIdNumber = Number(showId);
-    
+
     console.log('[Etapa1Funcoes] Iniciando alocação:', {
       showId,
       showIdNumber,
@@ -244,7 +244,7 @@ const Etapa1Funcoes = ({
       console.log('[Etapa1Funcoes] Novos colaboradores a alocar:', colaboradoresParaAlocar);
 
       // Cria uma alocação por vez para cada colaborador
-      const promessas = colaboradoresParaAlocar.map(colaboradorId => 
+      const promessas = colaboradoresParaAlocar.map(colaboradorId =>
         criarAlocacao(showIdNumber, colaboradorId)
       );
 
@@ -254,25 +254,25 @@ const Etapa1Funcoes = ({
 
       // Atualizar alocacoesSalvas com os colaboradores que acabaram de ser alocados
       const novasAlocacoesSalvas = { ...alocacoesSalvas };
-      
+
       resultados.forEach(alocacao => {
         const tipoUsuario = alocacao.colaborador?.tipoUsuario;
         const colabId = alocacao.colaborador?.id;
-        
+
         if (tipoUsuario && colabId) {
           if (!novasAlocacoesSalvas[tipoUsuario]) {
             novasAlocacoesSalvas[tipoUsuario] = [];
           }
-          
+
           //  Adicionar se não existe
           if (!novasAlocacoesSalvas[tipoUsuario].includes(colabId)) {
             novasAlocacoesSalvas[tipoUsuario].push(colabId);
           }
         }
       });
-      
+
       setAlocacoesSalvas(novasAlocacoesSalvas);
-      
+
       // Remover dos assignments (para limpar a seleção visual)
       const novasAssignments = { ...assignments };
       Object.keys(novasAssignments).forEach(roleId => {
@@ -289,12 +289,12 @@ const Etapa1Funcoes = ({
 
     } catch (error) {
       console.error('[Etapa1Funcoes] Erro ao alocar usuários:', error);
-      
-      const errorMsg = error.response?.data?.message 
-        || error.response?.data?.mensagem 
-        || error.message 
+
+      const errorMsg = error.response?.data?.message
+        || error.response?.data?.mensagem
+        || error.message
         || 'Erro desconhecido';
-      
+
       showError(
         `Erro ao alocar usuários: ${errorMsg}`,
         'Falha na Alocação'
@@ -315,11 +315,10 @@ const Etapa1Funcoes = ({
         <button
           onClick={handleAlocarUsuarios}
           disabled={loadingAlocacao || selectedRoles.length === 0 || !showId}
-          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${
-            selectedRoles.length === 0 || !showId
+          className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${selectedRoles.length === 0 || !showId
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
               : "bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl"
-          }`}
+            }`}
         >
           <UserPlus className="w-5 h-5" />
           {loadingAlocacao ? "Alocando..." : "Alocar Usuários"}
@@ -383,7 +382,7 @@ const Etapa1Funcoes = ({
             )}
           </div>
         )}
-    </div>
+      </div>
 
       <div className="flex flex-col space-y-4">
         {ROLES.filter(role => selectedRoles.includes(role.id)).map((role) => {
@@ -406,13 +405,11 @@ const Etapa1Funcoes = ({
                 className="w-full flex justify-between items-center p-4 text-left"
               >
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-xl ${
-                    isSelected ? "bg-green-50" : "bg-gray-50"
-                  }`}>
+                  <div className={`p-3 rounded-xl ${isSelected ? "bg-green-50" : "bg-gray-50"
+                    }`}>
                     <Icon
-                      className={`w-6 h-6 ${
-                        isSelected ? "text-green-600" : "text-gray-500"
-                      }`}
+                      className={`w-6 h-6 ${isSelected ? "text-green-600" : "text-gray-500"
+                        }`}
                     />
                   </div>
 
@@ -431,9 +428,8 @@ const Etapa1Funcoes = ({
                 </div>
 
                 <ChevronDown
-                  className={`w-5 h-5 text-gray-400 transition-transform ${
-                    isOpen ? "rotate-180" : ""
-                  }`}
+                  className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -451,17 +447,16 @@ const Etapa1Funcoes = ({
                   {lista.map((c) => {
                     const marcado = selecionados.includes(c.id);
                     const jaSalvo = (alocacoesSalvas[role.id] || []).includes(c.id);
-                    
+
                     return (
                       <div
                         key={c.id}
-                        className={`w-full p-3 rounded-lg border flex justify-between items-center transition-colors ${
-                          marcado
-                            ? jaSalvo 
+                        className={`w-full p-3 rounded-lg border flex justify-between items-center transition-colors ${marcado
+                            ? jaSalvo
                               ? "bg-blue-50 border-blue-400"
                               : "bg-green-50 border-green-400 hover:bg-green-100"
                             : "bg-gray-50 border-gray-200 hover:bg-gray-100"
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-3">
                           <img
@@ -496,17 +491,16 @@ const Etapa1Funcoes = ({
                           >
                             Detalhes
                           </button>
-                          
+
                           <button
                             onClick={() => toggleColaborador(role.id, c.id)}
                             disabled={jaSalvo}
-                            className={`px-3 py-1 rounded transition-colors ${
-                              jaSalvo
+                            className={`px-3 py-1 rounded transition-colors ${jaSalvo
                                 ? "bg-blue-600 text-white cursor-not-allowed opacity-75"
                                 : marcado
-                                ? "bg-green-600 text-white hover:bg-green-700"
-                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                            }`}
+                                  ? "bg-green-600 text-white hover:bg-green-700"
+                                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                              }`}
                           >
                             {jaSalvo ? "✓ Alocado" : marcado ? "✓ Selecionado" : "Selecionar"}
                           </button>
@@ -590,7 +584,7 @@ const Etapa1Funcoes = ({
       )}
 
       {/* CONTAINER DE TOASTS */}
-      <ToastContainer 
+      <ToastContainer
         toasts={toasts}
         onRemoveToast={removeToast}
         position="top-right"

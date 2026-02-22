@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Layout } from "../components/Layout/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
+import { Layout } from "../components/templates/Layout";
+import { Sidebar } from "../components/organisms/Sidebar";
 import FlightCard from "../components/CriarEvento/cards/FlightCard";
 import TransporteCard from "../components/CriarEvento/cards/TransporteCard";
 import SidebarDireita from "../components/CriarEvento/SidebarLogistica";

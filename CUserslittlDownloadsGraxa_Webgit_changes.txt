@@ -1,0 +1,54 @@
+ M package-lock.json
+ M src/App.jsx
+ D src/components/ArtistaApp/AddBandaModal.jsx
+ D src/components/ArtistaApp/ArtistaHeader.jsx
+ D src/components/ArtistaApp/BandasGrid.jsx
+ D src/components/ArtistaApp/Card.jsx
+ D src/components/ArtistaApp/EmptyState.jsx
+ D src/components/ArtistaApp/LoadingState.jsx
+ D src/components/ArtistaApp/ModaisContainer.jsx
+ D src/components/ArtistaApp/VisualizarBandaModal.jsx
+ D src/components/ButtonPage.jsx
+ M src/components/CriarEvento/Etapa1Funcoes.jsx
+ M src/components/CriarEvento/Etapa2Logistica.jsx
+ M src/components/CriarEvento/Etapa4Agenda.jsx
+ M src/components/CriarEvento/VisualizarAlocacoes.jsx
+ D src/components/DropdownMenu.jsx
+ D src/components/DropdownMenuItem.jsx
+ D src/components/Layout/Container.jsx
+ D src/components/Layout/Header.jsx
+ D src/components/Layout/Layout.jsx
+ D src/components/ModalEventos/Dropdown.jsx
+ M src/components/Notificacao/AlocacaoModal.jsx
+ D src/components/Sidebar/FooterActions.jsx
+ D src/components/Sidebar/Header.jsx
+ D src/components/Sidebar/NavigationList.jsx
+ D src/components/Sidebar/Sidebar.jsx
+ M src/components/TurneHeader.jsx
+ M src/components/TurneList.jsx
+ D src/components/UI/ConfirmModal.jsx
+ D src/components/UI/NavItem.jsx
+ D src/components/UI/Toast.jsx
+ D src/components/UI/ToastContainer.jsx
+ M src/hooks/useRegister.js
+ M src/pages/AdicionandoUsuario.jsx
+ M src/pages/ArtistaApp.jsx
+ M src/pages/Cadastro.jsx
+ M src/pages/Calendario.jsx
+ M src/pages/ConfiguracaoUser.jsx
+ M src/pages/CriarEvento.jsx
+ M src/pages/CriarLogistica.jsx
+ M src/pages/Turne.jsx
+ M src/pages/VisaoEvento.jsx
+?? .env.dev
+?? .env.example
+?? "C\357\200\272UserslittlDownloadsGraxa_Webgit_changes.txt"
+?? build_error.txt
+?? src/components/ModalEventos/BandaTurneSelector.jsx
+?? src/components/atoms/
+?? src/components/molecules/
+?? src/components/organisms/
+?? src/components/templates/
+?? src/context/ModalContext.jsx
+?? src/hooks/useAddBandasForm.js
+?? src/hooks/useModalStore.js

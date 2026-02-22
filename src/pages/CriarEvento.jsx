@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Layout } from "../components/Layout/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
+import { Layout } from "../components/templates/Layout";
+import { Sidebar } from "../components/organisms/Sidebar";
 import Stepper from "../components/CriarEvento/Stepper";
 import Etapa1Funcoes from "../components/CriarEvento/Etapa1Funcoes";
 import Etapa2Logistica from "../components/CriarEvento/Etapa2Logistica";
@@ -16,7 +16,7 @@ import VisualizarAlocacoes from "../components/CriarEvento/VisualizarAlocacoes";
 import { agendaEventoService } from "../services/agendaEventoService";
 import { useColaboradores } from "../hooks/useColaboradores";
 import { useToast } from "../hooks/useToast";
-import { ToastContainer } from "../components/UI/ToastContainer";
+import { ToastContainer } from "../components/organisms/ToastContainer";
 import { logisticaService } from "../services/logisticaService";
 import {
   agruparHoteis,
@@ -24,7 +24,7 @@ import {
   agruparTransportes,
 } from "../utils/logistica/logisticaUtils";
 import { useExtrasEvento } from "../hooks/useExtrasEvento";
-import { ConfirmModal } from "../components/UI/ConfirmModal";
+import { ConfirmModal } from "../components/molecules/ConfirmModal";
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
@@ -301,9 +301,9 @@ export const CriarEvento = () => {
             (hr) =>
               hr.colaboradorId === colabId &&
               String(hr.nomeHotel || "").trim() ===
-                String(hotel.nome || "").trim() &&
+              String(hotel.nome || "").trim() &&
               String(hr.endereco || "").trim() ===
-                String(hotel.endereco || "").trim(),
+              String(hotel.endereco || "").trim(),
           );
 
           // Usa coordsHotel se disponível, senão latitude/longitude do hotel
@@ -351,7 +351,7 @@ export const CriarEvento = () => {
               tr.colaboradorId === colabId &&
               String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
               (tr.saida ? tr.saida.substring(0, 16) : "") ===
-                (t.saida ? t.saida.substring(0, 16) : ""),
+              (t.saida ? t.saida.substring(0, 16) : ""),
           );
 
           const dto = {
@@ -485,9 +485,9 @@ export const CriarEvento = () => {
             (hr) =>
               hr.colaboradorId === colabId &&
               String(hr.nomeHotel || "").trim() ===
-                String(hotel.nome || "").trim() &&
+              String(hotel.nome || "").trim() &&
               String(hr.endereco || "").trim() ===
-                String(hotel.endereco || "").trim(),
+              String(hotel.endereco || "").trim(),
           );
 
           const latitude = hotel.coordsHotel?.lat ?? hotel.latitude ?? null;
@@ -531,11 +531,11 @@ export const CriarEvento = () => {
             (vr) =>
               vr.colaboradorId === colabId &&
               String(vr.ciaAerea || "").trim() ===
-                String(flight.cia || "").trim() &&
+              String(flight.cia || "").trim() &&
               String(vr.codigoVoo || "").trim() ===
-                String(flight.numero || "").trim() &&
+              String(flight.numero || "").trim() &&
               (vr.partida ? vr.partida.substring(0, 16) : "") ===
-                (flight.saida ? flight.saida.substring(0, 16) : ""),
+              (flight.saida ? flight.saida.substring(0, 16) : ""),
           );
 
           const dto = {
@@ -575,7 +575,7 @@ export const CriarEvento = () => {
               tr.colaboradorId === colabId &&
               String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
               (tr.saida ? tr.saida.substring(0, 16) : "") ===
-                (t.saida ? t.saida.substring(0, 16) : ""),
+              (t.saida ? t.saida.substring(0, 16) : ""),
           );
 
           const dto = {

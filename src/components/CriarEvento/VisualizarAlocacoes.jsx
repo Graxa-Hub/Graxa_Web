@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  User, 
+import {
+  CheckCircle,
+  XCircle,
+  Clock,
+  User,
   Calendar,
   RefreshCw,
   Filter,
@@ -13,8 +13,8 @@ import { useAlocacao } from "../../hooks/useAlocacao";
 import { useToast } from "../../hooks/useToast";
 import { useNotificacoes } from "../../hooks/useNotificacoes"; // ✅ IMPORTAR
 import { TIPOS_USUARIO } from "../../constants/tipoUsuario";
-import { ConfirmModal } from "../UI/ConfirmModal";
-import { ToastContainer } from "../UI/ToastContainer";
+import { ConfirmModal } from "../molecules/ConfirmModal";
+import { ToastContainer } from "../organisms/ToastContainer";
 
 const STATUS_CONFIG = {
   ACEITO: {
@@ -60,16 +60,16 @@ const VisualizarAlocacoes = ({ showId }) => {
   const [filtroStatus, setFiltroStatus] = useState("TODOS");
   const [cancelando, setCancelando] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null);
-  
+
   const { toasts, showSuccess, showError, removeToast } = useToast();
   const { listarPorShow, responderAlocacao, loading, error } = useAlocacao();
-  
+
   // ✅ USAR HOOK - criarNotificacao agora está disponível
   const { criarNotificacao } = useNotificacoes();
 
   const carregarAlocacoes = useCallback(async () => {
     if (!showId) return;
-    
+
     try {
       const dados = await listarPorShow(showId);
       console.log('📊 Alocações carregadas:', dados.length);
@@ -107,18 +107,18 @@ const VisualizarAlocacoes = ({ showId }) => {
     try {
       const nomeShow = alocacao.show?.nomeEvento || 'evento';
       const mensagem = `Sua participação no show "${nomeShow}" foi cancelada pela produção. Entre em contato caso tenha dúvidas sobre este cancelamento.`;
-      
+
       console.log('📧 Enviando notificação de cancelamento para:', alocacao.colaborador?.nome);
-      
+
       // ✅ USAR criarNotificacao do hook
       await criarNotificacao(
         alocacao.colaborador.id,
         mensagem,
         'ALOCACAO_CANCELADA'
       );
-      
+
       console.log('✅ Notificação enviada com sucesso!');
-      
+
     } catch (error) {
       console.error('❌ Erro ao criar notificação:', error);
       // Não falha o cancelamento por causa da notificação
@@ -128,35 +128,35 @@ const VisualizarAlocacoes = ({ showId }) => {
   const confirmarCancelamento = useCallback(async (alocacao) => {
     setCancelando(alocacao.id);
     setConfirmModal(null);
-    
+
     try {
       // ✅ 1. CANCELAR a alocação
       await responderAlocacao(alocacao.id, 'CANCELADO');
       console.log('✅ Alocação cancelada:', alocacao.id);
-      
+
       // ✅ 2. ENVIAR NOTIFICAÇÃO para o colaborador
       if (alocacao.colaborador?.id) {
         await criarNotificacaoCancelamento(alocacao);
       }
-      
+
       // ✅ 3. RECARREGAR alocações
       await carregarAlocacoes();
-      
+
       showSuccess(
         `Alocação de ${alocacao.colaborador?.nome || 'colaborador'} foi cancelada! Uma notificação foi enviada automaticamente.`,
         'Alocação Cancelada ✅'
       );
     } catch (err) {
       console.error('❌ Erro ao cancelar alocação:', err);
-      
+
       let errorMsg = 'Erro desconhecido';
-      
+
       if (err.response?.data?.message) {
         errorMsg = err.response.data.message;
       } else if (err.message) {
         errorMsg = err.message;
       }
-      
+
       showError(
         `Falha ao cancelar alocação: ${errorMsg}`,
         'Erro no Cancelamento'
@@ -181,7 +181,7 @@ const VisualizarAlocacoes = ({ showId }) => {
 
     alocacoes.forEach(alocacao => {
       const statusNormalizado = normalizarStatus(alocacao.status);
-      
+
       if (grupos[statusNormalizado]) {
         grupos[statusNormalizado].push(alocacao);
       } else {
@@ -194,9 +194,9 @@ const VisualizarAlocacoes = ({ showId }) => {
   };
 
   const alocacoesAgrupadas = agruparPorStatus();
-  
-  const alocacoesFiltradas = filtroStatus === "TODOS" 
-    ? alocacoes 
+
+  const alocacoesFiltradas = filtroStatus === "TODOS"
+    ? alocacoes
     : alocacoes.filter(a => normalizarStatus(a.status) === filtroStatus);
 
   const formatarData = (dataString) => {
@@ -252,9 +252,8 @@ const VisualizarAlocacoes = ({ showId }) => {
           return (
             <div
               key={status}
-              className={`${config.bgColor} ${config.borderColor} border-2 rounded-xl p-5 cursor-pointer transition-all hover:shadow-lg ${
-                filtroStatus === status ? 'ring-2 ring-offset-2 ring-blue-500' : ''
-              }`}
+              className={`${config.bgColor} ${config.borderColor} border-2 rounded-xl p-5 cursor-pointer transition-all hover:shadow-lg ${filtroStatus === status ? 'ring-2 ring-offset-2 ring-blue-500' : ''
+                }`}
               onClick={() => setFiltroStatus(filtroStatus === status ? "TODOS" : status)}
             >
               <div className="flex items-center justify-between">
@@ -306,8 +305,8 @@ const VisualizarAlocacoes = ({ showId }) => {
         <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
           <User className="w-12 h-12 text-gray-400 mx-auto mb-3" />
           <p className="text-gray-600 font-medium">
-            {filtroStatus === "TODOS" 
-              ? "Nenhuma alocação encontrada" 
+            {filtroStatus === "TODOS"
+              ? "Nenhuma alocação encontrada"
               : `Nenhuma alocação ${STATUS_CONFIG[filtroStatus].label.toLowerCase()}`}
           </p>
         </div>
@@ -342,7 +341,7 @@ const VisualizarAlocacoes = ({ showId }) => {
                         {alocacao.colaborador?.nome || 'Nome não disponível'}
                       </h4>
                       <p className="text-sm text-gray-600">
-                        {alocacao.colaborador?.tipoUsuario 
+                        {alocacao.colaborador?.tipoUsuario
                           ? TIPOS_USUARIO.find(t => t.value === alocacao.colaborador.tipoUsuario)?.label || alocacao.colaborador.tipoUsuario
                           : 'Função não definida'}
                       </p>
@@ -403,7 +402,7 @@ const VisualizarAlocacoes = ({ showId }) => {
         />
       )}
 
-      <ToastContainer 
+      <ToastContainer
         toasts={toasts}
         onRemoveToast={removeToast}
         position="top-right"

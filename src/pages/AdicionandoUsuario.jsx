@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Layout } from "../components/Layout/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
+import { Layout } from "../components/templates/Layout";
+import { Sidebar } from "../components/organisms/Sidebar";
 import { ChevronDown, Settings, Camera, Volume2, Guitar } from "lucide-react";
 import { DropdownGenerico } from "../components/DropdownGenerico";
 import { useShows } from "../hooks/useShows";
@@ -29,20 +29,17 @@ const RoleCard = ({ role, isSelected, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-lg shadow-sm p-6 flex items-center justify-between hover:bg-gray-50 transition-all cursor-pointer ${
-        isSelected ? "ring-2 ring-red-300" : ""
-      }`}
+      className={`bg-white rounded-lg shadow-sm p-6 flex items-center justify-between hover:bg-gray-50 transition-all cursor-pointer ${isSelected ? "ring-2 ring-red-300" : ""
+        }`}
     >
       <div className="flex items-center gap-4">
         <div
-          className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-            isSelected ? "bg-red-50" : "bg-gray-100"
-          }`}
+          className={`w-12 h-12 rounded-lg flex items-center justify-center ${isSelected ? "bg-red-50" : "bg-gray-100"
+            }`}
         >
           <Icon
-            className={`w-6 h-6 ${
-              isSelected ? "text-red-600" : "text-gray-600"
-            }`}
+            className={`w-6 h-6 ${isSelected ? "text-red-600" : "text-gray-600"
+              }`}
           />
         </div>
         <div>

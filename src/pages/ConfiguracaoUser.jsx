@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Sidebar } from "../components/Sidebar/Sidebar";
+import { Sidebar } from "../components/organisms/Sidebar";
 import { Camera, Save, Settings } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useColaboradores } from "../hooks/useColaboradores";
 import { colaboradorService } from "../services/colaboradorService";
-import { Layout } from "../components/Layout/Layout";
+import { Layout } from "../components/templates/Layout";
 
 export const ConfiguracaoUsuario = () => {
   const { usuario: usuarioLogado, setUsuario } = useAuth();

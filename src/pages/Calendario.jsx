@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import MainCalendar from "../components/Dashboard/MainCalendar";
 import SideCalendar from "../components/Dashboard/SideCalendar";
 import { TaskList } from "../components/Dashboard/TaskList";
-import { Layout } from "../components/Layout/Layout";
+import { Layout } from "../components/templates/Layout";
 import { useSearchParams } from "react-router-dom";
 import { useBandas } from "../hooks/useBandas";
 import { useTurnes } from "../hooks/useTurnes";

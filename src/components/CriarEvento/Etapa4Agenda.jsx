@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Calendar, MapPin, Wrench, Trash2, Copy } from "lucide-react";
 import { useAgendaEvento } from "../../hooks/useAgendaEvento";
 import { useToast } from "../../hooks/useToast";
-import { ConfirmModal } from "../UI/ConfirmModal";
+import { ConfirmModal } from "../molecules/ConfirmModal";
 
 const TIPOS_ENUM = {
   DESLOCAMENTO: "DESLOCAMENTO",
@@ -66,7 +66,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
     if (!confirmModal?.item) return;
 
     const item = confirmModal.item;
-    
+
     try {
       setLoading(true);
 
@@ -197,20 +197,18 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
           return (
             <div
               key={itemKey}
-              className={`bg-white p-6 rounded-xl shadow-md space-y-4 border-l-4 ${
-                item.tipo === TIPOS_ENUM.DESLOCAMENTO
+              className={`bg-white p-6 rounded-xl shadow-md space-y-4 border-l-4 ${item.tipo === TIPOS_ENUM.DESLOCAMENTO
                   ? "border-l-green-500"
                   : "border-l-blue-500"
-              }`}
+                }`}
             >
               {/* Badge de Tipo */}
               <div className="flex items-center justify-between">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
-                    item.tipo === TIPOS_ENUM.DESLOCAMENTO
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${item.tipo === TIPOS_ENUM.DESLOCAMENTO
                       ? "bg-green-100 text-green-700"
                       : "bg-blue-100 text-blue-700"
-                  }`}
+                    }`}
                 >
                   {item.tipo === TIPOS_ENUM.DESLOCAMENTO ? (
                     <>
