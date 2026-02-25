@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { ModalHeader } from "./ModalHeader";
-import { ModalContent } from "./ModalContent";
-import { ModalFooter } from "./ModalFooter";
+import { ModalHeader } from "../ModalEventos/ModalHeader";
+import { ModalContent } from "../ModalEventos/ModalContent";
+import { ModalFooter } from "../ModalEventos/ModalFooter";
 
 export function Modal({
   isOpen,
@@ -62,7 +62,7 @@ export function Modal({
       onClick={handleOverlayClick}
     >
       {/* Modal Box */}
-      <div className="bg-white rounded-md shadow-lg min-h-80 h-fit relative overflow-x-hidden w-[700px] max-w-5xl">
+      <div className="bg-white rounded-md min-h-80 h-fit relative p-5 w-full max-w-300">
         {/* Header */}
         <ModalHeader
           title={title}
