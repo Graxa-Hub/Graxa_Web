@@ -5,7 +5,7 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ptLocale from "@fullcalendar/core/locales/pt";
-import "@fullcalendar/common/main.css";
+// import "@fullcalendar/common/main.css"; // Removido por ser legado da v5
 import "../../index.css";
 import { EventoModal } from "../EventoModal";
 import { useEventosCalendario } from "../../hooks/useEventosCalendario";
@@ -51,7 +51,7 @@ export default function MainCalendar({
   }, [eventos, onEventosChange]);
 
   const handleDateSelect = (selectInfo) => {
-   
+
     // Formata data/hora para o formato datetime-local (YYYY-MM-DDTHH:mm)
     const formatarParaDateTimeLocal = (data) => {
       const ano = data.getFullYear();
@@ -70,12 +70,12 @@ export default function MainCalendar({
 
     try {
       selectInfo.view.calendar.unselect();
-    } catch {}
+    } catch { }
 
     setCreateModalOpen(true);
   };
 
- 
+
   const handleEventClick = (selectInfo) => {
     const eventoId = selectInfo.event?.extendedProps?.dados?.id || selectInfo.event?.id;
     const tipoEvento = selectInfo.event?.extendedProps?.tipo || "show";
@@ -86,9 +86,9 @@ export default function MainCalendar({
   };
 
   return (
-    <div className="graxa-calendar-card bg-white rounded-lg shadow p-4 h-full min-h-0 flex flex-col">
+    <div className="graxa-calendar-card bg-white rounded-md shadow p-4 h-full min-h-0 flex flex-col">
       {loading && (
-        <div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-lg">
+        <div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-md">
           <p className="text-gray-600">Carregando eventos...</p>
         </div>
       )}
@@ -117,7 +117,7 @@ export default function MainCalendar({
         isOpen={createModalOpen}
         dataHoraInicial={dataHoraSelecionada}
         turneId={turneId}
-        bandaId={bandaId} 
+        bandaId={bandaId}
         onClose={() => {
           setCreateModalOpen(false);
           setDataHoraSelecionada({ inicio: "", fim: "" });

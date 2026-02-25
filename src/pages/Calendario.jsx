@@ -62,19 +62,21 @@ export const Calendario = () => {
 
   return (
     <Layout>
-      <div className="min-w-[72%] h-full">
-        <MainCalendar
-          onCalendarApi={setMainCalendarApi}
-          onEventosChange={setEventos}
-          bandaId={bandaSelecionada?.id}
-          turneId={turneSelecionada?.id}
-        />
-      </div>
+      <div className="flex flex-row gap-5 h-full w-full">
+        <div className="flex-1 min-w-0 h-full">
+          <MainCalendar
+            onCalendarApi={setMainCalendarApi}
+            onEventosChange={setEventos}
+            bandaId={bandaSelecionada?.id}
+            turneId={turneSelecionada?.id}
+          />
+        </div>
 
-      <div className="min-w-[27%] rounded-lg p-1 h-full bg-white flex flex-col">
-        <SideCalendar mainCalendarApi={mainCalendarApi} eventos={eventos} />
-        <div className="flex-1 overflow-auto">
-          <TaskList eventos={eventos} />
+        <div className="w-80 min-w-[320px] rounded-md p-1 h-full bg-white flex flex-col shadow-sm">
+          <SideCalendar mainCalendarApi={mainCalendarApi} eventos={eventos} />
+          <div className="flex-1 overflow-auto mt-4 px-2">
+            <TaskList eventos={eventos} />
+          </div>
         </div>
       </div>
     </Layout >
