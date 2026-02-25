@@ -27,7 +27,7 @@ const Etapa6Resumo = ({
 
         {localShow.aeroportoProximo && (
           <p>
-            <strong>Aeroporto mais próximo:</strong> 
+            <strong>Aeroporto mais próximo:</strong>
             {localShow.aeroportoProximo.nome} — {localShow.aeroportoProximo.distanciaKm} km
           </p>
         )}

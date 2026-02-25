@@ -2,7 +2,7 @@ import React from "react";
 
 const Stepper = ({ etapaAtual, setEtapaAtual, etapas, onVisaoEvento }) => {
   return (
-    <div className="flex gap-8 items-center border-b pb-4 border-gray-200">
+    <div className="flex justify-between items-center border-b pb-4 border-gray-200">
       {etapas.map((etapa, index) => {
         const stepNum = index + 1;
         return (
@@ -12,11 +12,10 @@ const Stepper = ({ etapaAtual, setEtapaAtual, etapas, onVisaoEvento }) => {
             onClick={() => setEtapaAtual(stepNum)}
           >
             <div
-              className={`w-10 h-10 flex items-center justify-center rounded-full font-bold ${
-                etapaAtual === stepNum
+              className={`w-10 h-10 flex items-center justify-center rounded-full font-bold ${etapaAtual === stepNum
                   ? "bg-green-600 text-white hover:bg-green-700"
                   : "bg-gray-100 text-gray-500 group-hover:bg-gray-200"
-              }`}
+                }`}
             >
               {stepNum}
             </div>

@@ -154,58 +154,73 @@ export const VisaoEvento = () => {
     };
   }, [evento]);
 
+  React.useEffect(() => {
+    // Trava o overflow do body ao montar a página
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = "hidden";
+
+    // Restaura ao desmontar
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
   if (loading) return <div className="p-6">Carregando evento...</div>;
   if (erro) return <div className="p-6 text-red-600">{erro}</div>;
   if (!dadosEvento) return <div className="p-6">Evento não encontrado.</div>;
 
   return (
-    <Layout>
-      <Sidebar />
+    <Layout className="bg-emerald-50" containerClassName="overflow-hidden">
 
-      <div className="flex-1 flex flex-col h-screen w-full overflow-hidden p-6 bg-green-100">
-        <div className="flex items-center justify-between mb-6 gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">
-              {dadosEvento.nomeEvento}
-            </h1>
-            <div className="flex items-center gap-1.5 mt-1">
-              <MapPin className="w-4 h-4 text-gray-500" />
-              <p className="text-sm text-gray-600">{dadosEvento.nomeLocal}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 mr-10">
-            <button
-              onClick={handleGerarPdf}
-              disabled={tipoEvento !== "show"}
-              className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-sm shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
-              title={
-                tipoEvento !== "show"
-                  ? "PDF disponível apenas para Shows"
-                  : "Ver Relatório do Evento"
-              }
-            >
-              <FileDown size={16} />
-              Ver Relatório
-            </button>
-            <button
-              onClick={() => navigate(`/criar-evento/${tipoEvento}/${id}`)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm shadow-md"
-            >
-              <Edit2 size={16} />
-              Editar Evento
-            </button>
-            <DiaInfoCard info={dadosEvento.dataInfo} />
+      {/* Componetizar esse bagui aqui -> pode ser VisionEvent  */}
+      <div className="flex flex-row justify-between mb-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">
+            {dadosEvento.nomeEvento}
+          </h1>
+          <div className="flex items-center gap-1.5 mt-1">
+            <MapPin className="w-4 h-4 text-gray-500" />
+            <p className="text-sm text-gray-600">{dadosEvento.nomeLocal}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 flex-1 min-h-0">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleGerarPdf}
+            disabled={tipoEvento !== "show"}
+            className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-sm shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+            title={
+              tipoEvento !== "show"
+                ? "PDF disponível apenas para Shows"
+                : "Ver Relatório do Evento"
+            }
+          >
+            <FileDown size={16} />
+            Ver Relatório
+          </button>
+          <button
+            onClick={() => navigate(`/criar-evento/${tipoEvento}/${id}`)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm shadow-md"
+          >
+            <Edit2 size={16} />
+            Editar Evento
+          </button>
+          <DiaInfoCard info={dadosEvento.dataInfo} />
+        </div>
+      </div>
+
+
+
+      <div className="grid grid-cols-3 gap-3 flex-1 min-h-0 overflow-hidden">
+        <div className="col-span-2 h-full">
           <AgendaList
             agendas={agendasProcessadas}
             agendaSelecionada={agendaSelecionada}
             onSelecionarAgenda={handleSelecionarAgenda}
           />
+        </div>
 
+        <div className="h-full">
           <PainelDireito
             agendaSelecionada={agendaSelecionada}
             progresso={progresso}

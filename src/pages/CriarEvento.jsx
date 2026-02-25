@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Layout } from "../components/templates/Layout";
-import { Sidebar } from "../components/organisms/Sidebar";
 import Stepper from "../components/CriarEvento/Stepper";
 import Etapa1Funcoes from "../components/CriarEvento/Etapa1Funcoes";
 import Etapa2Logistica from "../components/CriarEvento/Etapa2Logistica";
@@ -16,7 +15,6 @@ import VisualizarAlocacoes from "../components/CriarEvento/VisualizarAlocacoes";
 import { agendaEventoService } from "../services/agendaEventoService";
 import { useColaboradores } from "../hooks/useColaboradores";
 import { useToast } from "../hooks/useToast";
-import { ToastContainer } from "../components/organisms/ToastContainer";
 import { logisticaService } from "../services/logisticaService";
 import {
   agruparHoteis,
@@ -24,7 +22,6 @@ import {
   agruparTransportes,
 } from "../utils/logistica/logisticaUtils";
 import { useExtrasEvento } from "../hooks/useExtrasEvento";
-import { ConfirmModal } from "../components/molecules/ConfirmModal";
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
@@ -876,13 +873,13 @@ export const CriarEvento = () => {
     { label: "Extras" },
   ];
 
+  const [showSidebarDireita, setShowSidebarDireita] = useState(true);
+
   return (
     <LocalSelecionadoProvider>
-      <Layout>
-        <Sidebar />
-        {/* ...existing code... */}
-        <div className="flex w-full h-screen bg-gray-50/50">
-          <div className="flex-1 p-10 overflow-y-auto">
+      <Layout showHeader={false} showNotifications={false}>
+        <div className="flex flex-1 min-h-0 relative">
+          <div className="flex-1 px-8 py-6 overflow-y-auto">
             <Stepper
               etapaAtual={etapaAtual}
               setEtapaAtual={setEtapaAtual}
@@ -914,23 +911,40 @@ export const CriarEvento = () => {
                   Próxima Etapa
                 </button>
               )}
-
-              {/* 👉 REMOVIDO o botão Finalizar Evento */}
             </div>
           </div>
 
-          {console.log("Hotels para SidebarDireita:", hotels)}
-          <SidebarDireita
-            etapaAtual={etapaAtual}
-            localShow={localShow}
-            selectedRoles={selectedRoles}
-            assignments={assignments}
-            hotels={hotels}
-            flights={flights}
-            transports={transports}
-            agenda={agenda}
-            extras={extras}
-          />
+          {/* SIDEBAR ESTILO OVERLAY (GAVETA) */}
+          <div
+            className={`absolute top-0 right-0 h-full z-40 transition-transform duration-300 ease-in-out flex items-center ${showSidebarDireita ? "translate-x-0" : "translate-x-full"
+              }`}
+          >
+            {/* BOTÃO TOGGLE (HANDLE) - FIXO NA BORDA DA GAVETA */}
+            <button
+              onClick={() => setShowSidebarDireita(!showSidebarDireita)}
+              className="absolute -left-4 bg-white border border-gray-200 shadow-2xl rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-50 hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
+              title={showSidebarDireita ? "Esconder Resumo" : "Mostrar Resumo"}
+            >
+              <div className={`transition-transform duration-300 ${showSidebarDireita ? 'rotate-0' : 'rotate-180'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+              </div>
+            </button>
+
+            {/* CONTEÚDO DA GAVETA */}
+            <div className="w-80 h-full bg-white border-l border-gray-200 shadow-2xl rounded-md overflow-hidden">
+              <SidebarDireita
+                etapaAtual={etapaAtual}
+                localShow={localShow}
+                selectedRoles={selectedRoles}
+                assignments={assignments}
+                hotels={hotels}
+                flights={flights}
+                transports={transports}
+                agenda={agenda}
+                extras={extras}
+              />
+            </div>
+          </div>
         </div>
       </Layout>
     </LocalSelecionadoProvider>

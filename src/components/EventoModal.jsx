@@ -604,23 +604,21 @@ export function EventoModal({
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center ${
-        isOpen ? "" : "hidden"
-      }`}
+      className={`fixed inset-0 z-50 flex items-center justify-center ${isOpen ? "" : "hidden"
+        }`}
     >
       <div className="fixed inset-0 bg-black/50" onClick={onClose}></div>
-      <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-white rounded-md shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
         <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-2xl z-10">
           <div className="flex items-center justify-center gap-8 p-6">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
-                className={`pb-2 px-4 text-lg font-medium transition-all ${
-                  activeTab === tab.id
-                    ? "text-gray-900 border-b-2 border-red-500"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`pb-2 px-4 text-lg font-medium transition-all ${activeTab === tab.id
+                  ? "text-gray-900 border-b-2 border-red-500"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 {tab.label}
               </button>
@@ -633,13 +631,12 @@ export function EventoModal({
             {[1, 2].map((step) => (
               <div
                 key={step}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  currentStep === step
-                    ? "bg-red-500"
-                    : currentStep > step
+                className={`w-3 h-3 rounded-full transition-all ${currentStep === step
+                  ? "bg-red-500"
+                  : currentStep > step
                     ? "bg-green-500"
                     : "bg-gray-300"
-                }`}
+                  }`}
               />
             ))}
           </div>
@@ -718,9 +715,8 @@ function BandaCombobox({
           onChange(e.target.value);
           if (clearError) clearError("bandaId");
         }}
-        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-          error ? "border-red-500 bg-red-50" : "border-gray-300"
-        }`}
+        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${error ? "border-red-500 bg-red-50" : "border-gray-300"
+          }`}
       >
         <option value="">Selecione uma banda</option>
         {bandas.map((banda) => (
@@ -814,9 +810,8 @@ function LocalCombobox({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder="Buscar local..."
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 pr-10 ${
-            error ? "border-red-500 bg-red-50" : "border-gray-300"
-          }`}
+          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 pr-10 ${error ? "border-red-500 bg-red-50" : "border-gray-300"
+            }`}
         />
         <button
           type="button"
@@ -1138,11 +1133,10 @@ function ViagemContent({
           <select
             value={data.tipoViagem}
             onChange={(e) => handleChange("tipoViagem", e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-              fieldErrors.tipoViagem
-                ? "border-red-500 bg-red-50"
-                : "border-gray-300"
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${fieldErrors.tipoViagem
+              ? "border-red-500 bg-red-50"
+              : "border-gray-300"
+              }`}
           >
             <option value="aereo">✈️ Aéreo</option>
             <option value="onibus">🚌 Ônibus</option>
@@ -1204,11 +1198,10 @@ function ViagemContent({
           <select
             value={data.turneId || ""}
             onChange={(e) => handleChange("turneId", e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-              fieldErrors.turneId
-                ? "border-red-500 bg-red-50"
-                : "border-gray-300"
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${fieldErrors.turneId
+              ? "border-red-500 bg-red-50"
+              : "border-gray-300"
+              }`}
           >
             <option value="">Selecione uma turnê</option>
             {Array.isArray(turnes) && turnes.length > 0 ? (

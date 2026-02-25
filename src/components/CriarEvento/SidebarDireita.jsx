@@ -26,7 +26,7 @@ const SidebarDireita = ({
   const temExtras = !!(extras.obs || extras.contatos);
 
   return (
-    <aside className="w-80 bg-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
+    <aside className="w-80 flex-shrink-0 bg-gray-50 border-l border-gray-200 p-6 overflow-y-auto">
       <h2 className="text-xl font-bold mb-6 text-gray-900">
         Resumo Rápido
       </h2>

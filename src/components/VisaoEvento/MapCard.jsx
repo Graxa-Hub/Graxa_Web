@@ -5,7 +5,7 @@ import { useMapboxMap } from "../../hooks/useMapboxMap";
 
 export const MapCard = memo(({ lat, lon, origem, destino, titulo }) => {
   const isRotaMode = Boolean(origem && destino);
-  
+
   const { routeInfo, loading, error, calcularRota } = useMapboxRoute();
   const { mapContainerRef, adicionarRota, adicionarMarcador } = useMapboxMap({
     center: [lon || -46.6333, lat || -23.5505],
@@ -29,12 +29,12 @@ export const MapCard = memo(({ lat, lon, origem, destino, titulo }) => {
   }, [routeInfo, isRotaMode, lat, lon, adicionarRota, adicionarMarcador]);
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-xl shadow-sm overflow-hidden">
+    <div className="flex flex-col bg-white shadow-lg rounded-md overflow-hidden">
       {/* Mapa */}
-      <div 
-        ref={mapContainerRef} 
+      <div
+        ref={mapContainerRef}
         className="flex-1 w-full relative"
-        style={{ minHeight: '300px' }}
+        style={{ minHeight: '250px' }}
       >
         {loading && (
           <LoadingOverlay />
@@ -78,13 +78,13 @@ const ErrorOverlay = memo(({ message }) => (
 ErrorOverlay.displayName = 'ErrorOverlay';
 
 const RouteInfo = memo(({ routeInfo, titulo }) => (
-  <div className="p-3 text-sm text-gray-700 flex flex-col gap-1 border-t flex-shrink-0">
+  <div className="p-3 text-sm text-gray-700 flex flex-col gap-1 flex-shrink-0">
     <div className="flex items-center gap-2">
       <Navigation className="text-blue-500 w-4 h-4" />
       <span className="font-medium truncate">{titulo || "Rota de Deslocamento"}</span>
     </div>
     <p className="text-xs text-gray-500">
-      <b>{routeInfo.distanceKm} km</b> &nbsp;•&nbsp; 
+      <b>{routeInfo.distanceKm} km</b> &nbsp;•&nbsp;
       <b>{routeInfo.durationMin} min</b>
     </p>
   </div>
@@ -93,7 +93,7 @@ const RouteInfo = memo(({ routeInfo, titulo }) => (
 RouteInfo.displayName = 'RouteInfo';
 
 const LocalInfo = memo(() => (
-  <div className="p-3 text-sm text-gray-700 flex flex-col gap-1 border-t flex-shrink-0">
+  <div className="p-3 text-sm text-gray-700 flex flex-col gap-1 flex-shrink-0">
     <div className="flex items-center gap-2">
       <CircleDot className="text-red-500 w-4 h-4" />
       <span className="font-medium">Local do Evento</span>

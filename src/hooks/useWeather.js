@@ -342,3 +342,80 @@ export function useHourlyWeather(location, hours = 24) {
 
   return { hourlyWeather, loading, error };
 }
+/**
+ * Hook para buscar previsão horária usando coordenadas diretamente
+ * @param {number} lat - Latitude
+ * @param {number} lon - Longitude
+ * @param {number} hours - Número de horas de previsão
+ * @returns {Object} Estado com previsão horária
+ */
+export function useHourlyWeatherByCoords(lat, lon, hours = 24) {
+  const [hourlyWeather, setHourlyWeather] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (lat === undefined || lon === undefined) return;
+
+    const fetchWeather = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const weatherData = await getWeatherForecast(lat, lon, {
+          forecastDays: 1,
+          hourlyParams: [
+            "temperature_2m",
+            "precipitation",
+            "weather_code",
+            "precipitation_probability",
+          ],
+          dailyParams: [
+            "temperature_2m_max",
+            "temperature_2m_min",
+          ],
+          currentParams: [
+            "temperature_2m",
+            "precipitation",
+            "weather_code",
+            "is_day",
+          ],
+        });
+
+        const now = new Date();
+        const currentHourIndex = now.getHours();
+
+        const nextHours = weatherData.hourly.time
+          .slice(currentHourIndex, currentHourIndex + hours)
+          .map((time, index) => ({
+            time: time,
+            temperature: weatherData.hourly.temperature_2m[currentHourIndex + index],
+            precipitation: weatherData.hourly.precipitation[currentHourIndex + index],
+            weatherCode: weatherData.hourly.weather_code[currentHourIndex + index],
+            precipitationProbability: weatherData.hourly.precipitation_probability?.[currentHourIndex + index],
+          }));
+
+        setHourlyWeather({
+          current: weatherData.current,
+          hours: nextHours,
+          daily: {
+            tempMax: weatherData.daily.temperature_2m_max[0],
+            tempMin: weatherData.daily.temperature_2m_min[0],
+          },
+          location: {
+            latitude: weatherData.latitude,
+            longitude: weatherData.longitude,
+          },
+        });
+      } catch (err) {
+        setError(err.message);
+        console.error("Erro ao buscar previsão horária por coordenadas:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWeather();
+  }, [lat, lon, hours]);
+
+  return { hourlyWeather, loading, error };
+}
