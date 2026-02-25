@@ -13,16 +13,39 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = !!token && !!usuario;
 
   const loginToContext = (data) => {
-    setToken(data.token);
-    setUsuario(data.usuario);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('usuario', JSON.stringify(data.usuario));
-  };
+  console.log('📌 loginToContext - Dados recebidos:', data);
+  console.log('📌 token:', data.token);
+  console.log('📌 usuario:', data.usuario);
+  
+  if (!data.token) {
+    console.error('❌ Token não encontrado nos dados!');
+    return;
+  }
+  
+  if (!data.usuario) {
+    console.error('❌ Usuario não encontrado nos dados!');
+    return;
+  }
+  
+  setToken(data.token);
+  setUsuario(data.usuario);
+
+  localStorage.setItem('token', data.token);       // sem stringify
+  localStorage.setItem('usuario', JSON.stringify(data.usuario));
+  localStorage.setItem('roles', JSON.stringify(data.roles || []));
+  
+  console.log('✅ loginToContext concluído - token e usuario salvos');
+};
+
 
   const logout = () => {
     setToken(null);
     setUsuario(null);
-    localStorage.clear()
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('roles');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('ultimaRota');
   };
 
   return (

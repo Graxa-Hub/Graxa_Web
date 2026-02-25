@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { localService } from '../services/localService';
+import { canEditRole } from './canEditRole';
 import { enderecoService } from '../services/enderecoService';
 
 export function useLocais() {
@@ -28,13 +29,13 @@ export function useLocais() {
   }, []);
 
   const criarLocal = useCallback(async (localData) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {
       // Remove qualquer formatação e converte para número
       const numeroEndereco = String(localData.endereco.numero || '0').replace(/\D/g, '');
       const capacidadeLocal = String(localData.capacidade || '0').replace(/\D/g, '');
-
       // Primeiro cria o endereço
       const enderecoPayload = {
         tipoEndereco: 'local', // ⚠️ MINÚSCULO conforme o enum
@@ -47,21 +48,14 @@ export function useLocais() {
         estado: localData.endereco.estado,
         pais: localData.endereco.pais || 'Brasil'
       };
-
-
       const enderecoResponse = await enderecoService.criar(enderecoPayload);
-
       // Depois cria o local com o ID do endereço
       const localPayload = {
         nome: localData.nome,
         idEndereco: enderecoResponse.id,
         capacidade: parseInt(capacidadeLocal, 10)
       };
-
-
       const novoLocal = await localService.criar(localPayload);
-
-      
       setLocais(prev => [...prev, novoLocal]);
       return novoLocal;
     } catch (err) {
@@ -75,6 +69,7 @@ export function useLocais() {
   }, []);
 
   const atualizarLocal = useCallback(async (id, localData) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {
@@ -91,6 +86,7 @@ export function useLocais() {
   }, []);
 
   const deletarLocal = useCallback(async (id) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {

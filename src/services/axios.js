@@ -40,18 +40,17 @@ api.interceptors.response.use(
       const status = error.response.status;
       const message = error.response.data?.mensagem || error.response.data?.message || '';
 
+      console.warn('🔴 Interceptor axios - Status:', status, 'Message:', message);
+
       // 401 = Não autorizado (token inválido, usuário removido, etc)
-      // 403 = Forbidden (sem permissão)
-      if (status === 401 || status === 403) {
-        console.warn('🚨 Sessão inválida. Fazendo logout...');
-        
+      if (status === 401) {
         // Remove dados do localStorage
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        
-        // Redireciona para login
-        window.location.href = '/login';
-        
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('ultimaRota');
+        // window.location.href = '/login';
         return Promise.reject(new Error('Sessão expirada. Faça login novamente.'));
       }
 
@@ -62,7 +61,10 @@ api.interceptors.response.use(
         console.warn('🚨 Usuário removido do sistema. Fazendo logout...');
         
         localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('roles');
+        localStorage.removeItem('ultimaRota');
+        localStorage.removeItem('userId');
         
         window.location.href = '/login';
         

@@ -40,11 +40,15 @@ export const Login = () => {
       identificador: email.trim(),
       senha: senha.trim(),
     });
-    console.log("Está chegando aqui fora do IF")
+    console.log("🔵 Login.jsx - Dados retornados do handleLogin:", data);
+    console.log("🔵 data.token:", data?.token);
+    console.log("🔵 data.usuario:", data?.usuario);
+    
     if (data?.token) {
-      
+      console.log("✅ Token existe, chamando loginToContext...");
       loginToContext(data);
       
+      console.log("✅ Navegando para /calendario");
       navigate("/calendario");
       
     } else if (Array.isArray(data?.erros)) {

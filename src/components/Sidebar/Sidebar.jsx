@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { Header } from "./Header";
 import { UpperButton } from "./UpperButton";
 import { FooterButton } from "./FooterButton";
+import { RoleGuard } from "../UI/RoleGuard";
 
 export const Sidebar = () => {
   const { usuario, logout } = useAuth();

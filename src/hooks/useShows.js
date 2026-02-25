@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { showService } from '../services/showService';
+import { canEditRole } from './canEditRole';
 
 export function useShows() {
   const [shows, setShows] = useState([]);
@@ -23,6 +24,7 @@ export function useShows() {
   }, []);
 
   const criarShow = useCallback(async (showData) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {
@@ -39,6 +41,7 @@ export function useShows() {
   }, []);
 
   const atualizarShow = useCallback(async (id, showData) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {
@@ -55,6 +58,7 @@ export function useShows() {
   }, []);
 
   const deletarShow = useCallback(async (id) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {

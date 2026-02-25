@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { extrasService } from "../services/extrasService";
+import { canEditRole } from './canEditRole';
 
 export function useExtrasEvento() {
   const [extras, setExtras] = useState(null);
@@ -25,9 +26,9 @@ export function useExtrasEvento() {
   }, []);
 
   const salvar = useCallback(async (dto) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
-
     try {
       const saved = await extrasService.salvarExtraEvento(dto);
       setExtras(saved);
@@ -39,7 +40,6 @@ export function useExtrasEvento() {
         setExtras(dto);
         return dto; // Retorna sucesso para não travar o formulário
       }
-      
       // Para outros erros, lança a exceção normalmente
       setError(err.message);
       console.error("Erro ao salvar extras:", err);

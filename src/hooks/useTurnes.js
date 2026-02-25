@@ -68,14 +68,17 @@ export function useTurnes() {
   }, []); // ✅ Sem dependências - função estável
 
   const criar = useCallback(async (dados) => {
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    if (!usuario.roles || !usuario.roles.some(role => ['ROLE_ADMIN','ROLE_PRODUTOR'].includes(role))) {
+      return null;
+    }
     try {
       setLoading(true);
       setError(null);
       const novaTurne = await criarTurneService(dados);
-      
       // Carrega imagem da nova turnê
       let imagemUrl = null;
-      if (novaTurne.nomeFoto) {
+      if (novaTurne && novaTurne.nomeFoto) {
         try {
           imagemUrl = await imagemService(novaTurne.nomeFoto);
           jaCarregouImagens.current.add(novaTurne.id);
@@ -83,12 +86,11 @@ export function useTurnes() {
           console.error('[useTurnes] Erro ao carregar imagem da nova turnê:', err);
         }
       }
-      
+      if (!novaTurne) return null;
       const turneComImagem = {
         ...novaTurne,
         imagemUrl: imagemUrl || 'https://placehold.co/64x64/e2e8f0/64748b?text=Sem+Imagem'
       };
-      
       setTurnes((prev) => [...prev, turneComImagem]);
       return turneComImagem;
     } catch (err) {

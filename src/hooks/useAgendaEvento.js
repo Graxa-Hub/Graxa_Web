@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { agendaEventoService } from '../services/agendaEventoService';
+import { canEditRole } from './canEditRole';
 
 export function useAgendaEvento() {
   const [agendas, setAgendas] = useState([]);
@@ -24,6 +25,7 @@ export function useAgendaEvento() {
   }, []);
 
   const criar = useCallback(async (dto) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {
@@ -40,6 +42,7 @@ export function useAgendaEvento() {
   }, []);
 
   const atualizar = useCallback(async (id, dto) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {
@@ -56,6 +59,7 @@ export function useAgendaEvento() {
   }, []);
 
   const remover = useCallback(async (id) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {

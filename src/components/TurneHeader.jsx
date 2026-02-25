@@ -1,7 +1,7 @@
 import React from 'react'
 import { ButtonPage } from './ButtonPage'
 import { BandaDropdown } from './BandaDropdown'
-
+import { RoleGuard } from './UI/RoleGuard'
 export function TurneHeader({ selectedBand, onBandSelect, onCreateTurne }) {
   return (
     <header className='flex flex-col sm:flex-row justify-between items-center p-4 sm:p-6 w-full bg-white border-b border-gray-200 gap-4 sm:gap-0 sm:pr-20'>
@@ -11,10 +11,12 @@ export function TurneHeader({ selectedBand, onBandSelect, onCreateTurne }) {
         showAllOption={true}
       />
       <div className="sm:mr-8">
-        <ButtonPage 
-          text="Criar uma turnê" 
-          click={onCreateTurne} 
-        />
+        <RoleGuard allowedRoles={["admin", "produtor"]}>
+          <ButtonPage 
+            text="Criar uma turnê" 
+            click={onCreateTurne} 
+          />
+        </RoleGuard>
       </div>
     </header>
   )

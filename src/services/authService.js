@@ -4,6 +4,8 @@ const API_URL = import.meta.env.VITE_API_SPRING;
 
 export const login = async (credentials) =>{
     const response = await axios.post(`${API_URL}/auth/login`, credentials);
+    console.log('Resposta do login:', response.data);
+    // Não salva no localStorage aqui - deixa para o AuthContext fazer isso
     return response.data;
 }
 

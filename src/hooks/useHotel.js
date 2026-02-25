@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { logisticaService } from "../services/logisticaService";
+import { canEditRole } from './canEditRole';
 
 export function useHotelEvento() {
   const [hotels, setHotels] = useState([]);
@@ -23,6 +24,7 @@ export function useHotelEvento() {
   }, []);
 
   const criar = useCallback(async (dto) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {
@@ -39,6 +41,7 @@ export function useHotelEvento() {
   }, []);
 
   const atualizar = useCallback(async (id, dto) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {
@@ -55,6 +58,7 @@ export function useHotelEvento() {
   }, []);
 
   const remover = useCallback(async (id) => {
+    if (!canEditRole()) return null;
     setLoading(true);
     setError(null);
     try {
