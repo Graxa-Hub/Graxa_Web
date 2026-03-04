@@ -7,7 +7,7 @@ import interactionPlugin from "@fullcalendar/interaction";
 import ptLocale from "@fullcalendar/core/locales/pt";
 // import "@fullcalendar/common/main.css"; // Removido por ser legado da v5
 import "../../index.css";
-import { EventoModal } from "../EventoModal";
+import { EventoModal } from "../../features/Evento/components/organisms/EventoModal";
 import { useEventosCalendario } from "../../hooks/useEventosCalendario";
 
 export default function MainCalendar({

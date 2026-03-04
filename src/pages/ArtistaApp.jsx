@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Layout } from "../components/templates/Layout";
 import { useArtistaApp } from "../hooks/useArtistaApp";
 import { LoadingState } from "../components/molecules/LoadingState";
-import { ArtistaHeader } from "../components/molecules/ArtistaHeader";
-import { BandasGrid } from "../components/organisms/BandasGrid";
-import { ModaisContainer } from "../components/organisms/ModaisContainer";
+import { ArtistaHeader } from "../features/Banda/components/molecules/ArtistaHeader";
+import { BandasGrid } from "../features/Banda/components/organisms/BandasGrid";
+import { ModaisContainer } from "../features/Banda/components/organisms/ModaisContainer";
 
 export function ArtistaApp() {
   const {

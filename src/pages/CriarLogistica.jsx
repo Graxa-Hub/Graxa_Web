@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Layout } from "../components/templates/Layout";
 import { Sidebar } from "../components/organisms/Sidebar";
-import FlightCard from "../components/CriarEvento/cards/FlightCard";
-import TransporteCard from "../components/CriarEvento/cards/TransporteCard";
-import SidebarDireita from "../components/CriarEvento/SidebarLogistica";
+import FlightCard from "../features/Evento/components/CriarEvento/cards/FlightCard";
+import TransporteCard from "../features/Evento/components/CriarEvento/cards/TransporteCard";
+import SidebarDireita from "../features/Evento/components/CriarEvento/SidebarLogistica";
 
 export const CriarLogistica = () => {
   const [flights, setFlights] = useState([]);

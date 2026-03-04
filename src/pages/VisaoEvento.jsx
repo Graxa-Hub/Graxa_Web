@@ -6,9 +6,9 @@ import { Edit2, MapPin, FileDown } from "lucide-react";
 import { useShows } from "../hooks/useShows";
 import { useViagens } from "../hooks/useViagens";
 import { useAgendaEvento } from "../hooks/useAgendaEvento";
-import { AgendaList } from "../components/VisaoEvento/AgendaList";
-import { PainelDireito } from "../components/VisaoEvento/PainelDireito";
-import { DiaInfoCard } from "../components/VisaoEvento/DiaInfoCard";
+import { AgendaList } from "../features/Evento/components/VisaoEvento/AgendaList";
+import { PainelDireito } from "../features/Evento/components/VisaoEvento/PainelDireito";
+import { DiaInfoCard } from "../features/Evento/components/VisaoEvento/DiaInfoCard";
 import { formatarData, formatarHora } from "../utils/dateFormatters";
 import { pdfService } from "../services/pdfService";
 

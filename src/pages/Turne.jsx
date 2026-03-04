@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
 import { Layout } from "../components/templates/Layout";
 import { Modal } from "../components/ModalEventos/Modal";
-import { TurneList } from "../components/organisms/TurneList";
-import { TurneHeader } from "../components/molecules/TurneHeader";
-import { TurneMainForm } from "../components/organisms/TurneMainForm";
-import { TurneDetailForm } from "../components/organisms/TurneDetailForm";
-import { TurneError } from "../components/atoms/TurneError";
+import { TurneList } from "../features/Turne/components/organisms/TurneList";
+import { TurneHeader } from "../features/Turne/components/molecules/TurneHeader";
+import { TurneMainForm } from "../features/Turne/components/organisms/TurneMainForm";
+import { TurneDetailForm } from "../features/Turne/components/organisms/TurneDetailForm";
+import { TurneError } from "../features/Turne/components/atoms/TurneError";
 import { useTurnePage } from "../hooks/useTurnePage";
 import { useTurneForm } from "../hooks/useTurneForm";
 
