@@ -55,33 +55,35 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
 
   return (
     <>
-      <div className="space-y-4 w-full mx-auto py-8">
-        {turnes.map((turne) => {
-          const isSelected = selectedTurne === turne.id
+      <div className="max-h-[70vh] overflow-y-auto custom-scrollbar pr-2 mt-8 pb-4">
+        <div className="space-y-4 w-full mx-auto">
+          {turnes.map((turne) => {
+            const isSelected = selectedTurne === turne.id
 
-          return (
-            <List
-              key={turne.id}
-              title={turne.name}
-              description={turne.description}
-              image={turne.image}
-              isSelected={isSelected}
-              onClick={() => handleTurneClick(turne)}
-              onToggleMenu={() => toggleDropdown(turne.id)}
-              isMenuOpen={openDropdown === turne.id}
-              menuItems={
-                <BandShowOptions
-                  isOpen={openDropdown === turne.id}
-                  entity={turne}
-                  onView={handleVisualizarTurne}
-                  onEdit={handleEdit}
-                  onDelete={handleDeleteClick}
-                  label="Turnê"
-                />
-              }
-            />
-          )
-        })}
+            return (
+              <List
+                key={turne.id}
+                title={turne.name}
+                description={turne.description}
+                image={turne.image}
+                isSelected={isSelected}
+                onClick={() => handleTurneClick(turne)}
+                onToggleMenu={() => toggleDropdown(turne.id)}
+                isMenuOpen={openDropdown === turne.id}
+                menuItems={
+                  <BandShowOptions
+                    isOpen={openDropdown === turne.id}
+                    entity={turne}
+                    onView={handleVisualizarTurne}
+                    onEdit={handleEdit}
+                    onDelete={handleDeleteClick}
+                    label="Turnê"
+                  />
+                }
+              />
+            )
+          })}
+        </div>
       </div>
 
       <ConfirmModal
