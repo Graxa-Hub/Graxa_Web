@@ -51,27 +51,36 @@ export const VisaoEvento = () => {
 
   useEffect(() => {
     if (id && tipoEvento === "show") {
-      listarPorShow(id);
+      console.log('[VisaoEvento] 🔍 Buscando agenda para showId:', id, '(tipo:', typeof id, ')');
+      listarPorShow(id).then((data) => {
+        console.log('[VisaoEvento] 📋 Agenda recebida:', data);
+        console.log('[VisaoEvento] 📋 Total de itens:', Array.isArray(data) ? data.length : 'não é array');
+      }).catch((err) => {
+        console.error('[VisaoEvento] ❌ Erro ao buscar agenda:', err);
+      });
     }
   }, [id, tipoEvento, listarPorShow]);
 
   const { agendasProcessadas, progresso } = useMemo(() => {
     const agora = new Date();
-    const agendasValidas = agendas.filter((item) => item.dataHoraInicio);
 
-    const totalConcluidos = agendasValidas.filter((item) => {
+    // Separar itens com e sem data
+    const comData = agendas.filter((item) => item.dataHoraInicio);
+    const semData = agendas.filter((item) => !item.dataHoraInicio);
+
+    const totalConcluidos = comData.filter((item) => {
       const dataHoraFim = item.dataHoraFim ? new Date(item.dataHoraFim) : null;
       return dataHoraFim && dataHoraFim < agora;
     }).length;
 
-    const totalEventos = agendasValidas.length;
+    const totalEventos = agendas.length;
     const progressoCalculado =
       totalEventos > 0 ? Math.round((totalConcluidos / totalEventos) * 100) : 0;
 
     const eventosPendentes = [];
     const eventosConcluidos = [];
 
-    agendasValidas.forEach((item) => {
+    comData.forEach((item) => {
       const dataHoraFim = item.dataHoraFim ? new Date(item.dataHoraFim) : null;
       const jáPassou = dataHoraFim && dataHoraFim < agora;
 
@@ -85,19 +94,21 @@ export const VisaoEvento = () => {
     eventosPendentes.sort((a, b) => a.ordem - b.ordem);
     eventosConcluidos.sort((a, b) => b.ordem - a.ordem);
 
-    const agendasOrdenadas = [...eventosPendentes, ...eventosConcluidos];
+    // Itens sem data vão ao final como pendentes
+    const agendasOrdenadas = [...eventosPendentes, ...semData, ...eventosConcluidos];
 
     const processadas = agendasOrdenadas.map((item, index) => {
-      const dataHoraInicio = new Date(item.dataHoraInicio);
+      const temData = !!item.dataHoraInicio;
+      const dataHoraInicio = temData ? new Date(item.dataHoraInicio) : null;
       const dataHoraFim = item.dataHoraFim ? new Date(item.dataHoraFim) : null;
       const jáPassou = dataHoraFim && dataHoraFim < agora;
       const éProximo = !jáPassou && index === 0;
 
       return {
         id: item.id,
-        timeStart: formatarHora(dataHoraInicio),
+        timeStart: dataHoraInicio ? formatarHora(dataHoraInicio) : "—",
         timeEnd: dataHoraFim ? formatarHora(dataHoraFim) : null,
-        date: formatarData(dataHoraInicio),
+        date: dataHoraInicio ? formatarData(dataHoraInicio) : "Sem data",
         title: item.titulo || "Evento",
         description: item.descricao || "",
         active: éProximo,

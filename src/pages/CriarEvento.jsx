@@ -221,10 +221,11 @@ export const CriarEvento = () => {
       });
       Object.values(alocacoesPorColab).forEach((alocacoes) => {
         const ultima = alocacoes.sort((a, b) => (b.id || 0) - (a.id || 0))[0];
+        const statusUpper = ultima?.status?.toUpperCase?.();
         if (
           ultima &&
           typeof ultima.status === "string" &&
-          ultima.status.toUpperCase() === "ACEITO" &&
+          (statusUpper === "ACEITO" || statusUpper === "PENDENTE") &&
           ultima.colaborador
         ) {
           colaboradoresEvento.push(ultima.colaborador);
@@ -721,10 +722,11 @@ export const CriarEvento = () => {
       });
       Object.values(alocacoesPorColab).forEach((alocacoes) => {
         const ultima = alocacoes.sort((a, b) => (b.id || 0) - (a.id || 0))[0];
+        const statusUpper = ultima?.status?.toUpperCase?.();
         if (
           ultima &&
           typeof ultima.status === "string" &&
-          ultima.status.toUpperCase() === "ACEITO" &&
+          (statusUpper === "ACEITO" || statusUpper === "PENDENTE") &&
           ultima.colaborador
         ) {
           colaboradoresEvento.push(ultima.colaborador);

@@ -52,6 +52,22 @@ const Etapa1Funcoes = ({
     listarColaboradores();
   }, [listarColaboradores]);
 
+  // Auto-selecionar roles que possuam colaboradores cadastrados
+  // para que os acordeões apareçam automaticamente
+  useEffect(() => {
+    if (colaboradores.length > 0) {
+      const rolesComColaboradores = [
+        ...new Set(
+          colaboradores.map((c) => c.tipoUsuario).filter(Boolean)
+        ),
+      ];
+      setSelectedRoles((prev) => {
+        const merged = new Set([...prev, ...rolesComColaboradores]);
+        return Array.from(merged);
+      });
+    }
+  }, [colaboradores]);
+
   useEffect(() => {
     async function carregarAlocacoes() {
       if (!showId || alocacoesCarregadas) return;
@@ -113,7 +129,10 @@ const Etapa1Funcoes = ({
         });
 
         setAssignments(alocacoesPorTipo);
-        setSelectedRoles(Array.from(rolesComAlocacao));
+        setSelectedRoles((prev) => {
+          const merged = new Set([...prev, ...rolesComAlocacao]);
+          return Array.from(merged);
+        });
         setAlocacoesSalvas(colaboradoresJaSalvos);
         setAlocacoesCarregadas(true);
 
@@ -316,8 +335,8 @@ const Etapa1Funcoes = ({
           onClick={handleAlocarUsuarios}
           disabled={loadingAlocacao || selectedRoles.length === 0 || !showId}
           className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all ${selectedRoles.length === 0 || !showId
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl"
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-green-600 text-white hover:bg-green-700 shadow-lg hover:shadow-xl"
             }`}
         >
           <UserPlus className="w-5 h-5" />
@@ -452,10 +471,10 @@ const Etapa1Funcoes = ({
                       <div
                         key={c.id}
                         className={`w-full p-3 rounded-lg border flex justify-between items-center transition-colors ${marcado
-                            ? jaSalvo
-                              ? "bg-blue-50 border-blue-400"
-                              : "bg-green-50 border-green-400 hover:bg-green-100"
-                            : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                          ? jaSalvo
+                            ? "bg-blue-50 border-blue-400"
+                            : "bg-green-50 border-green-400 hover:bg-green-100"
+                          : "bg-gray-50 border-gray-200 hover:bg-gray-100"
                           }`}
                       >
                         <div className="flex items-center gap-3">
@@ -496,10 +515,10 @@ const Etapa1Funcoes = ({
                             onClick={() => toggleColaborador(role.id, c.id)}
                             disabled={jaSalvo}
                             className={`px-3 py-1 rounded transition-colors ${jaSalvo
-                                ? "bg-blue-600 text-white cursor-not-allowed opacity-75"
-                                : marcado
-                                  ? "bg-green-600 text-white hover:bg-green-700"
-                                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                              ? "bg-blue-600 text-white cursor-not-allowed opacity-75"
+                              : marcado
+                                ? "bg-green-600 text-white hover:bg-green-700"
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                               }`}
                           >
                             {jaSalvo ? "✓ Alocado" : marcado ? "✓ Selecionado" : "Selecionar"}

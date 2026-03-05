@@ -198,16 +198,16 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
             <div
               key={itemKey}
               className={`bg-white p-6 rounded-xl shadow-md space-y-4 border-l-4 ${item.tipo === TIPOS_ENUM.DESLOCAMENTO
-                  ? "border-l-green-500"
-                  : "border-l-blue-500"
+                ? "border-l-green-500"
+                : "border-l-blue-500"
                 }`}
             >
               {/* Badge de Tipo */}
               <div className="flex items-center justify-between">
                 <span
                   className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${item.tipo === TIPOS_ENUM.DESLOCAMENTO
-                      ? "bg-green-100 text-green-700"
-                      : "bg-blue-100 text-blue-700"
+                    ? "bg-green-100 text-green-700"
+                    : "bg-blue-100 text-blue-700"
                     }`}
                 >
                   {item.tipo === TIPOS_ENUM.DESLOCAMENTO ? (
@@ -286,8 +286,10 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
                   </label>
                   <input
                     type="datetime-local"
+                    step="60"
                     className="w-full p-3 border border-gray-300 rounded-lg mt-1
                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    style={{ minWidth: 0 }}
                     value={item.dataHoraInicio || ""}
                     onChange={(e) => updateItem(itemKey, "dataHoraInicio", e.target.value)}
                   />
@@ -299,8 +301,10 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
                   </label>
                   <input
                     type="datetime-local"
+                    step="60"
                     className="w-full p-3 border border-gray-300 rounded-lg mt-1
                     focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    style={{ minWidth: 0 }}
                     value={item.dataHoraFim || ""}
                     onChange={(e) => updateItem(itemKey, "dataHoraFim", e.target.value)}
                   />

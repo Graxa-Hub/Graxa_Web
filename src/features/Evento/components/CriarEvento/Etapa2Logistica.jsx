@@ -511,13 +511,35 @@ const Etapa2Logistica = ({
       if (!showId) return;
       try {
         const alocacoes = await alocacaoService.listarPorShow(showId);
-        const aceitos = (alocacoes || [])
-          .filter(a => String(a.status).toUpperCase() === "ACEITO" && a.colaborador)
+
+        // Agrupar por colaborador e pegar apenas a alocação mais recente
+        const alocsMapPorColaborador = {};
+        (alocacoes || []).forEach(alocacao => {
+          const colabId = alocacao.colaborador?.id;
+          if (!colabId) return;
+          if (!alocsMapPorColaborador[colabId]) {
+            alocsMapPorColaborador[colabId] = alocacao;
+          } else {
+            const dataAtual = new Date(alocacao.dataHoraCriacao);
+            const dataSalva = new Date(alocsMapPorColaborador[colabId].dataHoraCriacao);
+            if (dataAtual > dataSalva) {
+              alocsMapPorColaborador[colabId] = alocacao;
+            }
+          }
+        });
+
+        // Incluir colaboradores com status ACEITO ou PENDENTE
+        const validos = Object.values(alocsMapPorColaborador)
+          .filter(a => {
+            const status = String(a.status).toUpperCase();
+            return (status === "ACEITO" || status === "PENDENTE") && a.colaborador;
+          })
           .map(a => a.colaborador);
+
         // Remove duplicados por id
         const unicos = [];
         const ids = new Set();
-        aceitos.forEach(c => {
+        validos.forEach(c => {
           if (!ids.has(c.id)) {
             ids.add(c.id);
             unicos.push(c);
