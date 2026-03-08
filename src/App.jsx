@@ -17,7 +17,7 @@ import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
 import { CriarLogistica } from "./pages/CriarLogistica";
 import { ConfiguracaoUsuario } from "./pages/ConfiguracaoUser";
-import { RelatorioPageDinamico } from "./pages/RelatorioPageDinamico";
+import { RelatorioPage } from "./pages/RelatorioPage";
 
 function App() {
   // Toast global, igual ao sistema de notificações
@@ -49,7 +49,7 @@ function App() {
           />
           <Route path="/criar-logistica" element={<CriarLogistica />} />
           <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
-          <Route path="/relatorio/:id" element={<RelatorioPageDinamico />} />
+          <Route path="/relatorio/:id" element={<RelatorioPage />} />
         </Route>
         {/* Rota não encontrada - redireciona para login */}
         <Route path="*" element={<Navigate to="/login" replace />} />

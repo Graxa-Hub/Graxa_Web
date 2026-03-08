@@ -509,7 +509,7 @@ Tabela da lista: .fc-list-table */
 @media print {
   @page {
     size: A4;
-    margin: 1cm;
+    margin: 0;
   }
 
   body {
