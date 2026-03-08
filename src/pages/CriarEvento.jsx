@@ -1,29 +1,27 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Layout } from "../components/Dashboard/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
-import Stepper from "../components/CriarEvento/Stepper";
-import Etapa1Funcoes from "../components/CriarEvento/Etapa1Funcoes";
-import Etapa2Logistica from "../components/CriarEvento/Etapa2Logistica";
-import Etapa3Local from "../components/CriarEvento/Etapa3Local";
-import Etapa4Agenda from "../components/CriarEvento/Etapa4Agenda";
-import Etapa5Extras from "../components/CriarEvento/Etapa5Extras";
+import { Layout } from "../components/templates/Layout";
+import Stepper from "../features/Evento/components/CriarEvento/Stepper";
+import Etapa1Funcoes from "../features/Evento/components/CriarEvento/Etapa1Funcoes";
+import Etapa2Logistica from "../features/Evento/components/CriarEvento/Etapa2Logistica";
+import Etapa3Local from "../features/Evento/components/CriarEvento/Etapa3Local";
+import Etapa4Agenda from "../features/Evento/components/CriarEvento/Etapa4Agenda";
+import Etapa5Extras from "../features/Evento/components/CriarEvento/Etapa5Extras";
 import { useShows } from "../hooks/useShows";
 import { useViagens } from "../hooks/useViagens";
-import SidebarDireita from "../components/CriarEvento/SidebarDireita";
+import SidebarDireita from "../features/Evento/components/CriarEvento/SidebarDireita";
 import { LocalSelecionadoProvider } from "../context/LocalSelecionadoContext";
-import VisualizarAlocacoes from "../components/CriarEvento/VisualizarAlocacoes";
+import VisualizarAlocacoes from "../features/Evento/components/CriarEvento/VisualizarAlocacoes";
 import { agendaEventoService } from "../services/agendaEventoService";
 import { useColaboradores } from "../hooks/useColaboradores";
 import { useToast } from "../hooks/useToast";
-import { ToastContainer } from "../components/UI/ToastContainer";
 import { logisticaService } from "../services/logisticaService";
-import { agruparHoteis, agruparVoos, agruparTransportes } from "../utils/logistica/logisticaUtils";
+import {
+  agruparHoteis,
+  agruparVoos,
+  agruparTransportes,
+} from "../utils/logistica/logisticaUtils";
 import { useExtrasEvento } from "../hooks/useExtrasEvento";
-import { ConfirmModal } from "../components/UI/ConfirmModal";
-
-
-
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
@@ -43,12 +41,16 @@ export const CriarEvento = () => {
   const [hoteisRaw, setHoteisRaw] = useState([]);
   const [voosRaw, setVoosRaw] = useState([]);
   const [transportesRaw, setTransportesRaw] = useState([]);
-  const { colaboradores: todosColaboradores, listarColaboradores } = useColaboradores();
-  const { extras: extrasDB, listar: listarExtras, salvar: salvarExtras } = useExtrasEvento();
-  const [ isModalOpen, setIsModalOpen ] = useState(false);
-  const [ modalLoading, setModalLoading ] = useState(false);
+  const { colaboradores: todosColaboradores, listarColaboradores } =
+    useColaboradores();
+  const {
+    extras: extrasDB,
+    listar: listarExtras,
+    salvar: salvarExtras,
+  } = useExtrasEvento();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
   const navigate = useNavigate();
-
 
   // Helper para normalizar/formatar datas para envio (ISO)
   const padDateForApi = (val) => {
@@ -78,17 +80,21 @@ export const CriarEvento = () => {
 
         const itens = await agendaEventoService.listarPorShow(eventoId);
 
-        const normalizados = (itens || []).map(item => ({
+        const normalizados = (itens || []).map((item) => ({
           // Mantém id (se houver) para update/remover posteriores
           id: item.id,
           ...item,
           // Garante enum em MAIÚSCULAS
           tipo: item.tipo ? String(item.tipo).toUpperCase() : "TECNICO",
           // Normaliza para format accepted pelo input datetime-local (YYYY-MM-DDTHH:mm)
-          dataHoraInicio: item.dataHoraInicio ? String(item.dataHoraInicio).substring(0, 16) : "",
-          dataHoraFim: item.dataHoraFim ? String(item.dataHoraFim).substring(0, 16) : "",
+          dataHoraInicio: item.dataHoraInicio
+            ? String(item.dataHoraInicio).substring(0, 16)
+            : "",
+          dataHoraFim: item.dataHoraFim
+            ? String(item.dataHoraFim).substring(0, 16)
+            : "",
           origem: item.origem || "",
-          destino: item.destino || ""
+          destino: item.destino || "",
         }));
 
         setAgenda(normalizados);
@@ -111,36 +117,49 @@ export const CriarEvento = () => {
         const voos = await logisticaService.listarVoos(showId);
         const transportes = await logisticaService.listarTransportes(showId);
 
-        console.log("RAW LOGÍSTICA:", { hoteisRaw: hoteis, voosRaw: voos, transportesRaw: transportes });
+        console.log("RAW LOGÍSTICA:", {
+          hoteisRaw: hoteis,
+          voosRaw: voos,
+          transportesRaw: transportes,
+        });
 
         setHoteisRaw(hoteis || []);
         setVoosRaw(voos || []);
         setTransportesRaw(transportes || []);
 
         // AJUSTE: mapeia os campos obrigatórios para garantir que sempre existam
-        const mappedHotels = (hoteis || []).map(hotel => ({
+        const mappedHotels = (hoteis || []).map((hotel) => ({
           ...hotel,
           nome: hotel.nome || hotel.nomeHotel || "Sem nome",
-          hospedes: hotel.hospedes && hotel.hospedes.length > 0
-            ? hotel.hospedes
-            : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
+          hospedes:
+            hotel.hospedes && hotel.hospedes.length > 0
+              ? hotel.hospedes
+              : hotel.colaboradorId
+                ? [hotel.colaboradorId]
+                : [],
         }));
 
-        const mappedFlights = (voos || []).map(voo => ({
+        const mappedFlights = (voos || []).map((voo) => ({
           ...voo,
           cia: voo.cia || voo.ciaAerea || "Sem cia",
           numero: voo.numero || voo.codigoVoo || "Sem número",
-          passageiros: voo.passageiros && voo.passageiros.length > 0
-            ? voo.passageiros
-            : (voo.colaboradorId ? [voo.colaboradorId] : [])
+          passageiros:
+            voo.passageiros && voo.passageiros.length > 0
+              ? voo.passageiros
+              : voo.colaboradorId
+                ? [voo.colaboradorId]
+                : [],
         }));
 
-        const mappedTransports = (transportes || []).map(transporte => ({
+        const mappedTransports = (transportes || []).map((transporte) => ({
           ...transporte,
           tipo: transporte.tipo || "Sem tipo",
-          passageiros: transporte.passageiros && transporte.passageiros.length > 0
-            ? transporte.passageiros
-            : (transporte.colaboradorId ? [transporte.colaboradorId] : [])
+          passageiros:
+            transporte.passageiros && transporte.passageiros.length > 0
+              ? transporte.passageiros
+              : transporte.colaboradorId
+                ? [transporte.colaboradorId]
+                : [],
         }));
 
         setHotels(mappedHotels);
@@ -194,15 +213,21 @@ export const CriarEvento = () => {
     let colaboradoresEvento = [];
     if (evento?.alocacoes?.length) {
       const alocacoesPorColab = {};
-      evento.alocacoes.forEach(a => {
+      evento.alocacoes.forEach((a) => {
         const colabId = a.colaborador?.id;
         if (!colabId) return;
         if (!alocacoesPorColab[colabId]) alocacoesPorColab[colabId] = [];
         alocacoesPorColab[colabId].push(a);
       });
-      Object.values(alocacoesPorColab).forEach(alocacoes => {
+      Object.values(alocacoesPorColab).forEach((alocacoes) => {
         const ultima = alocacoes.sort((a, b) => (b.id || 0) - (a.id || 0))[0];
-        if (ultima && typeof ultima.status === 'string' && ultima.status.toUpperCase() === 'ACEITO' && ultima.colaborador) {
+        const statusUpper = ultima?.status?.toUpperCase?.();
+        if (
+          ultima &&
+          typeof ultima.status === "string" &&
+          (statusUpper === "ACEITO" || statusUpper === "PENDENTE") &&
+          ultima.colaborador
+        ) {
           colaboradoresEvento.push(ultima.colaborador);
         }
       });
@@ -212,13 +237,13 @@ export const CriarEvento = () => {
         Object.values(assignments || {})
           .flat()
           .map((id) => Number(id))
-          .filter(Boolean)
-      )
+          .filter(Boolean),
+      ),
     ];
     setColaboradoresAceitos(
       colaboradoresEvento.filter((c) =>
-        colaboradoresSelecionadosIds.includes(c.id)
-      )
+        colaboradoresSelecionadosIds.includes(c.id),
+      ),
     );
   }, [evento, assignments, etapaAtual, tipoEvento]);
 
@@ -242,7 +267,7 @@ export const CriarEvento = () => {
           descricao: evento.descricao || "",
           turneId: evento.turne?.id || null,
           localId: localShow.id,
-          responsavelId: evento.responsavelEvento?.id
+          responsavelId: evento.responsavelEvento?.id,
         };
 
         await atualizarShow(showId, showPayload);
@@ -256,7 +281,9 @@ export const CriarEvento = () => {
       });
 
       if (alocadosSet.size === 0) {
-        showWarning("Nenhum colaborador selecionado. Apenas o local foi atualizado.");
+        showWarning(
+          "Nenhum colaborador selecionado. Apenas o local foi atualizado.",
+        );
         return;
       }
 
@@ -268,10 +295,13 @@ export const CriarEvento = () => {
           if (!alocadosSet.has(colabId)) return;
 
           // ENCONTRA TODOS OS REGISTROS DO COLABORADOR PARA ESSE HOTEL
-          const rawMatches = (hoteisRaw || []).filter(hr =>
-            hr.colaboradorId === colabId &&
-            String(hr.nomeHotel || "").trim() === String(hotel.nome || "").trim() &&
-            String(hr.endereco || "").trim() === String(hotel.endereco || "").trim()
+          const rawMatches = (hoteisRaw || []).filter(
+            (hr) =>
+              hr.colaboradorId === colabId &&
+              String(hr.nomeHotel || "").trim() ===
+              String(hotel.nome || "").trim() &&
+              String(hr.endereco || "").trim() ===
+              String(hotel.endereco || "").trim(),
           );
 
           // Usa coordsHotel se disponível, senão latitude/longitude do hotel
@@ -285,16 +315,22 @@ export const CriarEvento = () => {
             endereco: hotel.endereco || null,
             latitude,
             longitude,
-            distanciaPalcoKm: hotel.distanciaPalcoKm ? Number(hotel.distanciaPalcoKm) : null,
-            distanciaAeroportoKm: hotel.distanciaAeroportoKm ? Number(hotel.distanciaAeroportoKm) : null,
+            distanciaPalcoKm: hotel.distanciaPalcoKm
+              ? Number(hotel.distanciaPalcoKm)
+              : null,
+            distanciaAeroportoKm: hotel.distanciaAeroportoKm
+              ? Number(hotel.distanciaAeroportoKm)
+              : null,
             checkin: hotel.checkin ? padDateForApi(hotel.checkin) : null,
-            checkout: hotel.checkout ? padDateForApi(hotel.checkout) : null
+            checkout: hotel.checkout ? padDateForApi(hotel.checkout) : null,
           };
 
           if (rawMatches.length > 0) {
             // ATUALIZA TODOS OS REGISTROS ENCONTRADOS
-            rawMatches.forEach(rawMatch => {
-              promessas.push(logisticaService.atualizarHotelEvento(rawMatch.id, dto));
+            rawMatches.forEach((rawMatch) => {
+              promessas.push(
+                logisticaService.atualizarHotelEvento(rawMatch.id, dto),
+              );
             });
           } else {
             // CRIA NOVO REGISTRO PARA ESSE COLABORADOR
@@ -308,24 +344,30 @@ export const CriarEvento = () => {
         (t.passageiros || []).forEach((colabId) => {
           if (!alocadosSet.has(colabId)) return;
 
-          const rawMatch = (transportesRaw || []).find(tr =>
-            tr.colaboradorId === colabId &&
-            String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
-            (tr.saida ? tr.saida.substring(0,16) : "") === (t.saida ? t.saida.substring(0,16) : "")
+          const rawMatch = (transportesRaw || []).find(
+            (tr) =>
+              tr.colaboradorId === colabId &&
+              String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
+              (tr.saida ? tr.saida.substring(0, 16) : "") ===
+              (t.saida ? t.saida.substring(0, 16) : ""),
           );
 
           const dto = {
             showId: Number(showId),
             colaboradorId: Number(colabId),
             tipo: t.tipo || null,
-            saida: t.saida ? new Date(padDateForApi(t.saida)).toISOString() : null,
+            saida: t.saida
+              ? new Date(padDateForApi(t.saida)).toISOString()
+              : null,
             destino: t.destino || null,
             motorista: t.responsavel || null,
-            observacao: t.observacao || null
+            observacao: t.observacao || null,
           };
 
           if (rawMatch && rawMatch.id) {
-            promessas.push(logisticaService.atualizarTransporteEvento(rawMatch.id, dto));
+            promessas.push(
+              logisticaService.atualizarTransporteEvento(rawMatch.id, dto),
+            );
           } else {
             promessas.push(logisticaService.criarTransporteEvento(dto));
           }
@@ -348,7 +390,7 @@ export const CriarEvento = () => {
           destino: item.destino || null,
           dataHoraInicio: padDate(item.dataHoraInicio),
           dataHoraFim: padDate(item.dataHoraFim),
-          ordem: index + 1
+          ordem: index + 1,
         };
 
         if (item.id) {
@@ -376,14 +418,15 @@ export const CriarEvento = () => {
         setTransports(agruparTransportes(transportes || []));
 
         // recarregar agenda (para pegar novos ids)
-        const itensAtualizados = await agendaEventoService.listarPorShow(showId);
-        const normalizados = itensAtualizados.map(item => ({
+        const itensAtualizados =
+          await agendaEventoService.listarPorShow(showId);
+        const normalizados = itensAtualizados.map((item) => ({
           ...item,
           tipo: item.tipo?.toUpperCase(),
           dataHoraInicio: item.dataHoraInicio?.substring(0, 16),
           dataHoraFim: item.dataHoraFim?.substring(0, 16),
           origem: item.origem || "",
-          destino: item.destino || ""
+          destino: item.destino || "",
         }));
         setAgenda(normalizados);
 
@@ -396,7 +439,7 @@ export const CriarEvento = () => {
         await salvarExtras({
           showId,
           obs: extras?.obs || "",
-          contatos: extras?.contatos || ""
+          contatos: extras?.contatos || "",
         });
 
         showSuccess("Extras salvos com sucesso!");
@@ -404,256 +447,288 @@ export const CriarEvento = () => {
         console.error("Erro ao salvar extras:", err);
         showError("Erro ao salvar extras.");
       }
-
     } catch (err) {
       console.error("Erro ao salvar:", err);
       showError("Erro ao salvar. Veja o console para detalhes.");
     }
   };
 
-
   const salvarLogisticaSeparado = async () => {
-  if (!showId) {
-    showError("Abra/Salve o evento antes de salvar logística.");
-    return;
-  }
-  try {
-    showInfo("Salvando logística...");
+    if (!showId) {
+      showError("Abra/Salve o evento antes de salvar logística.");
+      return;
+    }
+    try {
+      showInfo("Salvando logística...");
 
-    const alocadosSet = new Set();
-    Object.values(assignments || {}).forEach((arr) => {
-      if (Array.isArray(arr)) arr.forEach((id) => alocadosSet.add(id));
-    });
+      const alocadosSet = new Set();
+      Object.values(assignments || {}).forEach((arr) => {
+        if (Array.isArray(arr)) arr.forEach((id) => alocadosSet.add(id));
+      });
 
-    if (alocadosSet.size === 0) {
-      showWarning("Nenhum colaborador selecionado. Selecione alocações antes de salvar logística.");
+      if (alocadosSet.size === 0) {
+        showWarning(
+          "Nenhum colaborador selecionado. Selecione alocações antes de salvar logística.",
+        );
+        return;
+      }
+
+      const promessas = [];
+
+      hotels.forEach((hotel) => {
+        (hotel.hospedes || []).forEach((colabId) => {
+          if (!alocadosSet.has(colabId)) return;
+
+          const rawMatches = (hoteisRaw || []).filter(
+            (hr) =>
+              hr.colaboradorId === colabId &&
+              String(hr.nomeHotel || "").trim() ===
+              String(hotel.nome || "").trim() &&
+              String(hr.endereco || "").trim() ===
+              String(hotel.endereco || "").trim(),
+          );
+
+          const latitude = hotel.coordsHotel?.lat ?? hotel.latitude ?? null;
+          const longitude = hotel.coordsHotel?.lon ?? hotel.longitude ?? null;
+
+          const dto = {
+            showId: Number(showId),
+            colaboradorId: Number(colabId),
+            nomeHotel: hotel.nome || null,
+            endereco: hotel.endereco || null,
+            latitude,
+            longitude,
+            distanciaPalcoKm: hotel.distanciaPalcoKm
+              ? Number(hotel.distanciaPalcoKm)
+              : null,
+            distanciaAeroportoKm: hotel.distanciaAeroportoKm
+              ? Number(hotel.distanciaAeroportoKm)
+              : null,
+            checkin: hotel.checkin ? padDateForApi(hotel.checkin) : null,
+            checkout: hotel.checkout ? padDateForApi(hotel.checkout) : null,
+          };
+
+          if (rawMatches.length > 0) {
+            rawMatches.forEach((rawMatch) => {
+              promessas.push(
+                logisticaService.atualizarHotelEvento(rawMatch.id, dto),
+              );
+            });
+          } else {
+            promessas.push(logisticaService.criarHotelEvento(dto));
+          }
+        });
+      });
+
+      // VOOS
+      flights.forEach((flight) => {
+        (flight.passageiros || []).forEach((colabId) => {
+          if (!alocadosSet.has(colabId)) return;
+
+          const rawMatches = (voosRaw || []).filter(
+            (vr) =>
+              vr.colaboradorId === colabId &&
+              String(vr.ciaAerea || "").trim() ===
+              String(flight.cia || "").trim() &&
+              String(vr.codigoVoo || "").trim() ===
+              String(flight.numero || "").trim() &&
+              (vr.partida ? vr.partida.substring(0, 16) : "") ===
+              (flight.saida ? flight.saida.substring(0, 16) : ""),
+          );
+
+          const dto = {
+            showId: Number(showId),
+            colaboradorId: Number(colabId),
+            ciaAerea: flight.cia || null,
+            codigoVoo: flight.numero || null,
+            origem: flight.origem || null,
+            destino: flight.destino || null,
+            partida: flight.saida
+              ? new Date(padDateForApi(flight.saida)).toISOString()
+              : null,
+            chegada: flight.chegada
+              ? new Date(padDateForApi(flight.chegada)).toISOString()
+              : null,
+          };
+
+          if (rawMatches.length > 0) {
+            rawMatches.forEach((rawMatch) => {
+              promessas.push(
+                logisticaService.atualizarVooEvento(rawMatch.id, dto),
+              );
+            });
+          } else {
+            promessas.push(logisticaService.criarVooEvento(dto));
+          }
+        });
+      });
+
+      // TRANSPORTES
+      transports.forEach((t) => {
+        (t.passageiros || []).forEach((colabId) => {
+          if (!alocadosSet.has(colabId)) return;
+
+          const rawMatches = (transportesRaw || []).filter(
+            (tr) =>
+              tr.colaboradorId === colabId &&
+              String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
+              (tr.saida ? tr.saida.substring(0, 16) : "") ===
+              (t.saida ? t.saida.substring(0, 16) : ""),
+          );
+
+          const dto = {
+            showId: Number(showId),
+            colaboradorId: Number(colabId),
+            tipo: t.tipo || null,
+            saida: t.saida
+              ? new Date(padDateForApi(t.saida)).toISOString()
+              : null,
+            destino: t.destino || null,
+            motorista: t.responsavel || null,
+            observacao: t.observacao || null,
+          };
+
+          if (rawMatches.length > 0) {
+            rawMatches.forEach((rawMatch) => {
+              promessas.push(
+                logisticaService.atualizarTransporteEvento(rawMatch.id, dto),
+              );
+            });
+          } else {
+            promessas.push(logisticaService.criarTransporteEvento(dto));
+          }
+        });
+      });
+
+      if (promessas.length > 0) {
+        await Promise.all(promessas);
+
+        // Recarrega logística para sincronizar IDs
+        const hoteis = await logisticaService.listarHoteis(showId);
+        const voos = await logisticaService.listarVoos(showId);
+        const transportes = await logisticaService.listarTransportes(showId);
+
+        setHoteisRaw(hoteis || []);
+        setVoosRaw(voos || []);
+        setTransportesRaw(transportes || []);
+
+        setHotels(agruparHoteis(hoteis || []));
+        setFlights(agruparVoos(voos || []));
+        setTransports(agruparTransportes(transportes || []));
+
+        showSuccess("Logística salva com sucesso!");
+      } else {
+        showInfo("Nada para salvar em logística.");
+      }
+    } catch (err) {
+      console.error("Erro ao salvar logística:", err);
+      showError("Erro ao salvar logística. Veja console para detalhes.");
+    }
+  };
+
+  /* ===== salvarAgendaSeparado ===== */
+  const salvarAgendaSeparado = async () => {
+    if (!showId) {
+      showError("Abra/Salve o evento antes de salvar agenda.");
       return;
     }
 
-    const promessas = [];
+    try {
+      showInfo("Salvando agenda...");
 
-    hotels.forEach((hotel) => {
-      (hotel.hospedes || []).forEach((colabId) => {
-        if (!alocadosSet.has(colabId)) return;
+      const promessas = [];
 
-        const rawMatches = (hoteisRaw || []).filter(hr =>
-          hr.colaboradorId === colabId &&
-          String(hr.nomeHotel || "").trim() === String(hotel.nome || "").trim() &&
-          String(hr.endereco || "").trim() === String(hotel.endereco || "").trim()
-        );
-
-        const latitude = hotel.coordsHotel?.lat ?? hotel.latitude ?? null;
-        const longitude = hotel.coordsHotel?.lon ?? hotel.longitude ?? null;
-
-        const dto = {
-          showId: Number(showId),
-          colaboradorId: Number(colabId),
-          nomeHotel: hotel.nome || null,
-          endereco: hotel.endereco || null,
-          latitude,
-          longitude,
-          distanciaPalcoKm: hotel.distanciaPalcoKm ? Number(hotel.distanciaPalcoKm) : null,
-          distanciaAeroportoKm: hotel.distanciaAeroportoKm ? Number(hotel.distanciaAeroportoKm) : null,
-          checkin: hotel.checkin ? padDateForApi(hotel.checkin) : null,
-          checkout: hotel.checkout ? padDateForApi(hotel.checkout) : null
-        };
-
-        if (rawMatches.length > 0) {
-          rawMatches.forEach(rawMatch => {
-            promessas.push(logisticaService.atualizarHotelEvento(rawMatch.id, dto));
-          });
-        } else {
-          promessas.push(logisticaService.criarHotelEvento(dto));
-        }
-      });
-    });
-
-    // VOOS
-    flights.forEach((flight) => {
-      (flight.passageiros || []).forEach((colabId) => {
-        if (!alocadosSet.has(colabId)) return;
-
-        const rawMatches = (voosRaw || []).filter(vr =>
-          vr.colaboradorId === colabId &&
-          String(vr.ciaAerea || "").trim() === String(flight.cia || "").trim() &&
-          String(vr.codigoVoo || "").trim() === String(flight.numero || "").trim() &&
-          (vr.partida ? vr.partida.substring(0,16) : "") === (flight.saida ? flight.saida.substring(0,16) : "")
-        );
-
-        const dto = {
-          showId: Number(showId),
-          colaboradorId: Number(colabId),
-          ciaAerea: flight.cia || null,
-          codigoVoo: flight.numero || null,
-          origem: flight.origem || null,
-          destino: flight.destino || null,
-          partida: flight.saida ? new Date(padDateForApi(flight.saida)).toISOString() : null,
-          chegada: flight.chegada ? new Date(padDateForApi(flight.chegada)).toISOString() : null
-        };
-
-        if (rawMatches.length > 0) {
-          rawMatches.forEach(rawMatch => {
-            promessas.push(logisticaService.atualizarVooEvento(rawMatch.id, dto));
-          });
-        } else {
-          promessas.push(logisticaService.criarVooEvento(dto));
-        }
-      });
-    });
-
-    // TRANSPORTES
-    transports.forEach((t) => {
-      (t.passageiros || []).forEach((colabId) => {
-        if (!alocadosSet.has(colabId)) return;
-
-        const rawMatches = (transportesRaw || []).filter(tr =>
-          tr.colaboradorId === colabId &&
-          String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
-          (tr.saida ? tr.saida.substring(0,16) : "") === (t.saida ? t.saida.substring(0,16) : "")
-        );
-
-        const dto = {
-          showId: Number(showId),
-          colaboradorId: Number(colabId),
-          tipo: t.tipo || null,
-          saida: t.saida ? new Date(padDateForApi(t.saida)).toISOString() : null,
-          destino: t.destino || null,
-          motorista: t.responsavel || null,
-          observacao: t.observacao || null
-        };
-
-        if (rawMatches.length > 0) {
-          rawMatches.forEach(rawMatch => {
-            promessas.push(logisticaService.atualizarTransporteEvento(rawMatch.id, dto));
-          });
-        } else {
-          promessas.push(logisticaService.criarTransporteEvento(dto));
-        }
-      });
-    });
-
-    if (promessas.length > 0) {
-      await Promise.all(promessas);
-
-      // Recarrega logística para sincronizar IDs
-      const hoteis = await logisticaService.listarHoteis(showId);
-      const voos = await logisticaService.listarVoos(showId);
-      const transportes = await logisticaService.listarTransportes(showId);
-
-      setHoteisRaw(hoteis || []);
-      setVoosRaw(voos || []);
-      setTransportesRaw(transportes || []);
-
-      setHotels(agruparHoteis(hoteis || []));
-      setFlights(agruparVoos(voos || []));
-      setTransports(agruparTransportes(transportes || []));
-
-      showSuccess("Logística salva com sucesso!");
-    } else {
-      showInfo("Nada para salvar em logística.");
-    }
-  } catch (err) {
-    console.error("Erro ao salvar logística:", err);
-    showError("Erro ao salvar logística. Veja console para detalhes.");
-  }
-};
-
-/* ===== salvarAgendaSeparado ===== */
-const salvarAgendaSeparado = async () => {
-  if (!showId) {
-    showError("Abra/Salve o evento antes de salvar agenda.");
-    return;
-  }
-
-  try {
-    showInfo("Salvando agenda...");
-
-    const promessas = [];
-
-    const padDate = (val) => {
-      if (!val) return null;
-      return val.length === 16 ? `${val}:00` : val;
-    };
-
-    agenda.forEach((item) => {
-      const dto = {
-        showId: Number(showId),
-        titulo: item.titulo || "Evento",
-        descricao: item.descricao || null,
-        tipo: item.tipo ? String(item.tipo).toUpperCase() : "TECNICO",
-        origem: item.origem || null,
-        destino: item.destino || null,
-        dataHoraInicio: padDate(item.dataHoraInicio),
-        dataHoraFim: padDate(item.dataHoraFim),
-        ordem: 0
+      const padDate = (val) => {
+        if (!val) return null;
+        return val.length === 16 ? `${val}:00` : val;
       };
 
-      if (item.id) {
-        promessas.push(agendaEventoService.atualizar(item.id, dto));
+      agenda.forEach((item) => {
+        const dto = {
+          showId: Number(showId),
+          titulo: item.titulo || "Evento",
+          descricao: item.descricao || null,
+          tipo: item.tipo ? String(item.tipo).toUpperCase() : "TECNICO",
+          origem: item.origem || null,
+          destino: item.destino || null,
+          dataHoraInicio: padDate(item.dataHoraInicio),
+          dataHoraFim: padDate(item.dataHoraFim),
+          ordem: 0,
+        };
+
+        if (item.id) {
+          promessas.push(agendaEventoService.atualizar(item.id, dto));
+        } else {
+          promessas.push(agendaEventoService.criar(dto));
+        }
+      });
+
+      if (promessas.length > 0) {
+        await Promise.all(promessas);
+
+        // recarregar agenda (pegar IDs)
+        const itensAtualizados =
+          await agendaEventoService.listarPorShow(showId);
+        const normalizados = (itensAtualizados || []).map((item) => ({
+          ...item,
+          tipo: item.tipo?.toUpperCase(),
+          dataHoraInicio: item.dataHoraInicio?.substring(0, 16),
+          dataHoraFim: item.dataHoraFim?.substring(0, 16),
+          origem: item.origem || "",
+          destino: item.destino || "",
+        }));
+        setAgenda(normalizados);
+
+        showSuccess("Agenda salva com sucesso!");
       } else {
-        promessas.push(agendaEventoService.criar(dto));
+        showInfo("Nenhum item de agenda para salvar.");
       }
-    });
-
-    if (promessas.length > 0) {
-      await Promise.all(promessas);
-
-      // recarregar agenda (pegar IDs)
-      const itensAtualizados = await agendaEventoService.listarPorShow(showId);
-      const normalizados = (itensAtualizados || []).map(item => ({
-        ...item,
-        tipo: item.tipo?.toUpperCase(),
-        dataHoraInicio: item.dataHoraInicio?.substring(0, 16),
-        dataHoraFim: item.dataHoraFim?.substring(0, 16),
-        origem: item.origem || "",
-        destino: item.destino || ""
-      }));
-      setAgenda(normalizados);
-
-      showSuccess("Agenda salva com sucesso!");
-    } else {
-      showInfo("Nenhum item de agenda para salvar.");
+    } catch (err) {
+      console.error("Erro ao salvar agenda:", err);
+      showError("Erro ao salvar agenda.");
     }
-  } catch (err) {
-    console.error("Erro ao salvar agenda:", err);
-    showError("Erro ao salvar agenda.");
-  }
-};
+  };
 
-/* ===== salvarExtrasSeparado ===== */
-const salvarExtrasSeparado = async () => {
-  if (!showId) {
-    showError("Abra/Salve o evento antes de salvar extras.");
-    return;
-  }
+  /* ===== salvarExtrasSeparado ===== */
+  const salvarExtrasSeparado = async () => {
+    if (!showId) {
+      showError("Abra/Salve o evento antes de salvar extras.");
+      return;
+    }
 
-  try {
-    await salvarExtras({
-      showId,
-      obs: extras?.obs || "",
-      contatos: extras?.contatos || ""
-    });
-    showSuccess("Extras salvos com sucesso!");
-  } catch (err) {
-    console.error("Erro ao salvar extras:", err);
-    showError("Erro ao salvar extras.");
-  }
-};
+    try {
+      await salvarExtras({
+        showId,
+        obs: extras?.obs || "",
+        contatos: extras?.contatos || "",
+      });
+      showSuccess("Extras salvos com sucesso!");
+    } catch (err) {
+      console.error("Erro ao salvar extras:", err);
+      showError("Erro ao salvar extras.");
+    }
+  };
 
   // Função helper para calcular colaboradores aceitos
   function getColaboradoresAceitos() {
     let colaboradoresEvento = [];
     if (evento?.alocacoes?.length) {
       const alocacoesPorColab = {};
-      evento.alocacoes.forEach(a => {
+      evento.alocacoes.forEach((a) => {
         const colabId = a.colaborador?.id;
         if (!colabId) return;
         if (!alocacoesPorColab[colabId]) alocacoesPorColab[colabId] = [];
         alocacoesPorColab[colabId].push(a);
       });
-      Object.values(alocacoesPorColab).forEach(alocacoes => {
+      Object.values(alocacoesPorColab).forEach((alocacoes) => {
         const ultima = alocacoes.sort((a, b) => (b.id || 0) - (a.id || 0))[0];
-        if (ultima && typeof ultima.status === 'string' && ultima.status.toUpperCase() === 'ACEITO' && ultima.colaborador) {
+        const statusUpper = ultima?.status?.toUpperCase?.();
+        if (
+          ultima &&
+          typeof ultima.status === "string" &&
+          (statusUpper === "ACEITO" || statusUpper === "PENDENTE") &&
+          ultima.colaborador
+        ) {
           colaboradoresEvento.push(ultima.colaborador);
         }
       });
@@ -663,11 +738,11 @@ const salvarExtrasSeparado = async () => {
         Object.values(assignments || {})
           .flat()
           .map((id) => Number(id))
-          .filter(Boolean)
-      )
+          .filter(Boolean),
+      ),
     ];
     return colaboradoresEvento.filter((c) =>
-      colaboradoresSelecionadosIds.includes(c.id)
+      colaboradoresSelecionadosIds.includes(c.id),
     );
   }
 
@@ -694,19 +769,23 @@ const salvarExtrasSeparado = async () => {
             />
           );
         case 2:
-          return <Etapa4Agenda
-                  agenda={agenda}
-                  setAgenda={setAgenda}
-                  showId={showId}
-                  onSave={salvarAgendaSeparado}
-                />;
+          return (
+            <Etapa4Agenda
+              agenda={agenda}
+              setAgenda={setAgenda}
+              showId={showId}
+              onSave={salvarAgendaSeparado}
+            />
+          );
         case 3:
-          return <Etapa5Extras
-                  extras={extras}
-                  setExtras={setExtras}
-                  showId={showId}
-                  onSave={salvarExtrasSeparado}
-                />
+          return (
+            <Etapa5Extras
+              extras={extras}
+              setExtras={setExtras}
+              showId={showId}
+              onSave={salvarExtrasSeparado}
+            />
+          );
         default:
           return null;
       }
@@ -716,10 +795,7 @@ const salvarExtrasSeparado = async () => {
     switch (etapaAtual) {
       case 1:
         return (
-          <Etapa3Local
-            localInicial={localShow}
-            setLocalShow={setLocalShow}
-          />
+          <Etapa3Local localInicial={localShow} setLocalShow={setLocalShow} />
         );
 
       case 2:
@@ -747,38 +823,38 @@ const salvarExtrasSeparado = async () => {
             hotels={hotels}
             flights={flights}
             transports={transports}
-
             hoteisRaw={hoteisRaw}
             voosRaw={voosRaw}
             transportesRaw={transportesRaw}
-
             localShow={localShow}
             colaboradores={getColaboradoresAceitos()}
             setHotels={setHotels}
             setFlights={setFlights}
             setTransports={setTransports}
-
             showId={showId}
             onSave={salvarLogisticaSeparado}
           />
         );
 
       case 4:
-        return <Etapa4Agenda 
-                agenda={agenda} 
-                setAgenda={setAgenda}
-                showId={showId}
-                onSave={salvarAgendaSeparado} />;
+        return (
+          <Etapa4Agenda
+            agenda={agenda}
+            setAgenda={setAgenda}
+            showId={showId}
+            onSave={salvarAgendaSeparado}
+          />
+        );
 
       case 5:
         return (
-              <Etapa5Extras
-                extras={extras}
-                setExtras={setExtras}
-                showId={showId}
-                onSave={salvarExtrasSeparado}
-              />
-            );
+          <Etapa5Extras
+            extras={extras}
+            setExtras={setExtras}
+            showId={showId}
+            onSave={salvarExtrasSeparado}
+          />
+        );
 
       default:
         return null;
@@ -799,13 +875,13 @@ const salvarExtrasSeparado = async () => {
     { label: "Extras" },
   ];
 
+  const [showSidebarDireita, setShowSidebarDireita] = useState(true);
+
   return (
     <LocalSelecionadoProvider>
-      <Layout>
-        <Sidebar />
-        {/* ...existing code... */}
-        <div className="flex w-full h-screen bg-gray-50/50">
-          <div className="flex-1 p-10 overflow-y-auto">
+      <Layout showHeader={false} showNotifications={false}>
+        <div className="flex flex-1 min-h-0 relative">
+          <div className="flex-1 px-8 py-6 overflow-y-auto">
             <Stepper
               etapaAtual={etapaAtual}
               setEtapaAtual={setEtapaAtual}
@@ -837,23 +913,40 @@ const salvarExtrasSeparado = async () => {
                   Próxima Etapa
                 </button>
               )}
-
-              {/* 👉 REMOVIDO o botão Finalizar Evento */}
             </div>
           </div>
 
-          {console.log("Hotels para SidebarDireita:", hotels)}
-          <SidebarDireita
-            etapaAtual={etapaAtual}
-            localShow={localShow}
-            selectedRoles={selectedRoles}
-            assignments={assignments}
-            hotels={hotels}
-            flights={flights}
-            transports={transports}
-            agenda={agenda}
-            extras={extras}
-          />
+          {/* SIDEBAR ESTILO OVERLAY (GAVETA) */}
+          <div
+            className={`absolute top-0 right-0 h-full z-40 transition-transform duration-300 ease-in-out flex items-center ${showSidebarDireita ? "translate-x-0" : "translate-x-full"
+              }`}
+          >
+            {/* BOTÃO TOGGLE (HANDLE) - FIXO NA BORDA DA GAVETA */}
+            <button
+              onClick={() => setShowSidebarDireita(!showSidebarDireita)}
+              className="absolute -left-4 bg-white border border-gray-200 shadow-2xl rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-50 hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
+              title={showSidebarDireita ? "Esconder Resumo" : "Mostrar Resumo"}
+            >
+              <div className={`transition-transform duration-300 ${showSidebarDireita ? 'rotate-0' : 'rotate-180'}`}>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+              </div>
+            </button>
+
+            {/* CONTEÚDO DA GAVETA */}
+            <div className="w-80 h-full bg-white border-l border-gray-200 shadow-2xl rounded-md overflow-hidden">
+              <SidebarDireita
+                etapaAtual={etapaAtual}
+                localShow={localShow}
+                selectedRoles={selectedRoles}
+                assignments={assignments}
+                hotels={hotels}
+                flights={flights}
+                transports={transports}
+                agenda={agenda}
+                extras={extras}
+              />
+            </div>
+          </div>
         </div>
       </Layout>
     </LocalSelecionadoProvider>

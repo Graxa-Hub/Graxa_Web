@@ -27,32 +27,24 @@ export const useRegister = () => {
         },
       };
 
+      console.log("Dados para envio:", dadoUser);
+
       const response = await cadastro(dadoUser);
       return response.data;
     } catch (err) {
+      console.error("Erro completo:", err);
+      console.error("Status:", err.response?.status);
+      console.error("Dados do erro:", err.response?.data); // 🔍 IMPORTANTE: Ver o que a API retorna
+      console.error("Headers:", err.response?.headers);
+      
       const data = err.response?.data;
 
-      // ✅ Verifica primeiro se há lista de erros por campo
-      if (Array.isArray(data?.erros)) {
-        const errorsByField = data.erros.reduce((acc, err) => {
-          acc[err.campo] = err.mensagem;
-          return acc;
-        }, {});
-        setFieldErrors(errorsByField);
-      }
-      // ✅ Se vier como objeto direto (ex: { cpf: "CPF inválido" })
-      else if (data && typeof data === "object" && !Array.isArray(data)) {
+      if (data && typeof data === 'object') {
         setFieldErrors(data);
+      } else {
+        setFieldErrors({ geral: 'Erro ao cadastrar usuário. Tente novamente.' });
       }
-      // ✅ Se vier como mensagem genérica
-      else if (data?.mensagem) {
-        setFieldErrors({ geral: data.mensagem });
-      }
-      // ✅ Fallback genérico
-      else {
-        setFieldErrors({ geral: "Erro ao cadastrar" });
-      }
-
+      
       return null;
     } finally {
       setLoading(false);

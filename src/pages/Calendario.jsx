@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import MainCalendar from "../components/Dashboard/MainCalendar";
 import SideCalendar from "../components/Dashboard/SideCalendar";
-import { Header } from "../components/Dashboard/Header";
-import { Container } from "../components/Dashboard/Container";
 import { TaskList } from "../components/Dashboard/TaskList";
-import { Layout } from "../components/Dashboard/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
+import { Layout } from "../components/templates/Layout";
 import { useSearchParams } from "react-router-dom";
 import { useBandas } from "../hooks/useBandas";
 import { useTurnes } from "../hooks/useTurnes";
@@ -22,7 +19,6 @@ export const Calendario = () => {
   const [searchParams] = useSearchParams();
   const bandaIdParam = searchParams.get("bandaId");
   const turneIdParam = searchParams.get("turneId");
-  
 
   useEffect(() => {
     listarBandas();
@@ -32,7 +28,7 @@ export const Calendario = () => {
   // Sincroniza banda e turne selecionadas com os parâmetros da URL
   useEffect(() => {
     if (bandaIdParam && bandas.length > 0) {
-      const banda = bandas.find(b => String(b.id) === String(bandaIdParam));
+      const banda = bandas.find((b) => String(b.id) === String(bandaIdParam));
       setBandaSelecionada(banda || null);
     }
   }, [bandaIdParam, bandas]);
@@ -40,12 +36,14 @@ export const Calendario = () => {
   useEffect(() => {
     // Seleciona a turnê pelo parâmetro assim que turnes estiver disponível
     if (turneIdParam && turnes.length > 0) {
-      const turne = turnes.find(t => String(t.id) === String(turneIdParam));
+      const turne = turnes.find((t) => String(t.id) === String(turneIdParam));
       setTurneSelecionada(turne || null);
 
       // Se banda não estiver selecionada, selecione a banda da turnê
       if (turne && !bandaSelecionada) {
-        const banda = bandas.find(b => String(b.id) === String(turne.bandaId));
+        const banda = bandas.find(
+          (b) => String(b.id) === String(turne.bandaId),
+        );
         setBandaSelecionada(banda || null);
       }
     }
@@ -64,36 +62,23 @@ export const Calendario = () => {
 
   return (
     <Layout>
-      <Sidebar />
-      <main className="flex-1 flex flex-col p-5 bg-neutral-300 min-h-0">
-        <Header
-          circulo="bg-green-500"
-          bandaSelecionada={bandaSelecionada}
-          turneSelecionada={turneSelecionada}
-          onBandaChange={setBandaSelecionada}
-          onTurneChange={setTurneSelecionada}
-          bandas={bandas}
-          turnes={turnes}
-        />
+      <div className="flex flex-row gap-5 h-full w-full">
+        <div className="flex-1 min-w-0 h-full">
+          <MainCalendar
+            onCalendarApi={setMainCalendarApi}
+            onEventosChange={setEventos}
+            bandaId={bandaSelecionada?.id}
+            turneId={turneSelecionada?.id}
+          />
+        </div>
 
-        <Container>
-          <div className="min-w-[72%] h-full">
-            <MainCalendar
-              onCalendarApi={setMainCalendarApi}
-              onEventosChange={setEventos}
-              bandaId={bandaSelecionada?.id}
-              turneId={turneSelecionada?.id}
-            />
+        <div className="w-80 min-w-[320px] rounded-md p-1 h-full bg-white flex flex-col shadow-sm">
+          <SideCalendar mainCalendarApi={mainCalendarApi} eventos={eventos} />
+          <div className="flex-1 overflow-auto mt-4 px-2">
+            <TaskList eventos={eventos} />
           </div>
-
-          <div className="min-w-[27%] rounded-lg p-1 h-full bg-white flex flex-col">
-            <SideCalendar mainCalendarApi={mainCalendarApi} eventos={eventos} />
-            <div className="flex-1 overflow-auto">
-              <TaskList eventos={eventos} />
-            </div>
-          </div>
-        </Container>
-      </main>
-    </Layout>
+        </div>
+      </div>
+    </Layout >
   );
 };

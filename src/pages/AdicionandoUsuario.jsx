@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Layout } from "../components/Dashboard/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
-import { ChevronDown, Settings, Camera, Volume2, Guitar } from 'lucide-react';
-import { DropdownGenerico } from '../components/DropdownGenerico';
-import { useShows } from '../hooks/useShows'
-
+import React, { useState, useEffect } from "react";
+import { Layout } from "../components/templates/Layout";
+import { Sidebar } from "../components/organisms/Sidebar";
+import { ChevronDown, Settings, Camera, Volume2, Guitar } from "lucide-react";
+import { DropdownGenerico } from "../components/DropdownGenerico";
+import { useShows } from "../hooks/useShows";
 
 // Componente do card de etapa
 const StageCard = ({ number, title, description }) => {
@@ -30,17 +29,18 @@ const RoleCard = ({ role, isSelected, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-lg shadow-sm p-6 flex items-center justify-between hover:bg-gray-50 transition-all cursor-pointer ${
-        isSelected ? 'ring-2 ring-red-300' : ''
-      }`}
+      className={`bg-white rounded-lg shadow-sm p-6 flex items-center justify-between hover:bg-gray-50 transition-all cursor-pointer ${isSelected ? "ring-2 ring-red-300" : ""
+        }`}
     >
       <div className="flex items-center gap-4">
-        <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-          isSelected ? 'bg-red-50' : 'bg-gray-100'
-        }`}>
-          <Icon className={`w-6 h-6 ${
-            isSelected ? 'text-red-600' : 'text-gray-600'
-          }`} />
+        <div
+          className={`w-12 h-12 rounded-lg flex items-center justify-center ${isSelected ? "bg-red-50" : "bg-gray-100"
+            }`}
+        >
+          <Icon
+            className={`w-6 h-6 ${isSelected ? "text-red-600" : "text-gray-600"
+              }`}
+          />
         </div>
         <div>
           <h3 className="font-semibold text-gray-900">{role.title}</h3>
@@ -78,7 +78,9 @@ const AssociateCard = ({ associate, onAssociate }) => {
         className="w-16 h-16 rounded-full object-cover flex-shrink-0"
       />
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-gray-900 text-sm">{associate.name}</h3>
+        <h3 className="font-semibold text-gray-900 text-sm">
+          {associate.name}
+        </h3>
         <p className="text-xs text-gray-500">{associate.role}</p>
         <p className="text-xs text-gray-400 mt-1">
           Shows realizados: {associate.shows}
@@ -147,9 +149,15 @@ const AssociatesSidebar = ({ associates, onAssociate, selectedRole }) => {
   );
 };
 
-
 // Componente do conteúdo principal
-const MainContent = ({ roles, selectedRole, onSelectRole, selectedEvent, onSelectEvent, events }) => {
+const MainContent = ({
+  roles,
+  selectedRole,
+  onSelectRole,
+  selectedEvent,
+  onSelectEvent,
+  events,
+}) => {
   return (
     <div className="flex-1 bg-gray-50 p-8">
       {/* Header */}
@@ -208,7 +216,7 @@ export const AdicionandoUsuarios = () => {
       try {
         await listarShows();
       } catch (err) {
-        console.error('Erro ao listar shows:', err);
+        console.error("Erro ao listar shows:", err);
       }
     };
 
@@ -217,82 +225,82 @@ export const AdicionandoUsuarios = () => {
 
   // Mapeia todas as bandas de todos os shows para [{id, nome}]
   const bandasDropdown = (shows || [])
-    .flatMap(show => show || [])
-    .map(show => ({
+    .flatMap((show) => show || [])
+    .map((show) => ({
       id: show.id,
-      nome: show.nomeEvento
+      nome: show.nomeEvento,
     }));
 
   const roles = [
     {
-      id: 'produtor',
-      title: 'Produtor de estrada',
+      id: "produtor",
+      title: "Produtor de estrada",
       icon: Settings,
-      description: 'Responsável pela organização da turnê'
+      description: "Responsável pela organização da turnê",
     },
     {
-      id: 'tecnico-luz',
-      title: 'Técnico de Luz',
+      id: "tecnico-luz",
+      title: "Técnico de Luz",
       icon: Camera,
-      description: 'Responsável pela iluminação do show'
+      description: "Responsável pela iluminação do show",
     },
     {
-      id: 'tecnico-som',
-      title: 'Técnico de som',
+      id: "tecnico-som",
+      title: "Técnico de som",
       icon: Volume2,
-      description: 'Responsável pelo áudio e som ao vivo'
+      description: "Responsável pelo áudio e som ao vivo",
     },
     {
-      id: 'road',
-      title: 'Road',
+      id: "road",
+      title: "Road",
       icon: Guitar,
-      description: 'Auxilia no transporte e montagem dos equipamentos'
-    }
+      description: "Auxilia no transporte e montagem dos equipamentos",
+    },
   ];
 
   const associates = [
     {
-      name: 'Gabriel da Silva',
-      role: 'Produtor de Estrada',
-      roleId: 'produtor',
+      name: "Gabriel da Silva",
+      role: "Produtor de Estrada",
+      roleId: "produtor",
       shows: 34,
-      image: 'https://i.pravatar.cc/150?img=12'
+      image: "https://i.pravatar.cc/150?img=12",
     },
     {
-      name: 'Daniel Sena',
-      role: 'Técnico de Luz',
-      roleId: 'tecnico-luz',
+      name: "Daniel Sena",
+      role: "Técnico de Luz",
+      roleId: "tecnico-luz",
       shows: 23,
-      image: 'https://i.pravatar.cc/150?img=13'
+      image: "https://i.pravatar.cc/150?img=13",
     },
     {
-      name: 'Leandro Robotino',
-      role: 'Técnico de Som',
-      roleId: 'tecnico-som',
+      name: "Leandro Robotino",
+      role: "Técnico de Som",
+      roleId: "tecnico-som",
       shows: 18,
-      image: 'https://i.pravatar.cc/150?img=33'
+      image: "https://i.pravatar.cc/150?img=33",
     },
     {
-      name: 'Bruno Araujo',
-      role: 'Road',
-      roleId: 'road',
+      name: "Bruno Araujo",
+      role: "Road",
+      roleId: "road",
       shows: 11,
-      image: 'https://i.pravatar.cc/150?img=14'
+      image: "https://i.pravatar.cc/150?img=14",
     },
     {
-      name: 'Carlos Santos',
-      role: 'Produtor de Estrada',
-      roleId: 'produtor',
+      name: "Carlos Santos",
+      role: "Produtor de Estrada",
+      roleId: "produtor",
       shows: 28,
-      image: 'https://i.pravatar.cc/150?img=15'
+      image: "https://i.pravatar.cc/150?img=15",
     },
     {
-      name: 'Maria Oliveira',
-      role: 'Técnico de Luz',
-      roleId: 'tecnico-luz',
+      name: "Maria Oliveira",
+      role: "Técnico de Luz",
+      roleId: "tecnico-luz",
       shows: 31,
-      image: 'https://i.pravatar.cc/150?img=16'
-    }
+      image: "https://i.pravatar.cc/150?img=16",
+    },
   ];
 
   const handleSelectRole = (roleId) => {
@@ -300,13 +308,13 @@ export const AdicionandoUsuarios = () => {
   };
 
   const handleAssociate = (associate) => {
-    console.log('Associar:', associate);
+    console.log("Associar:", associate);
     // Aqui você pode adicionar a lógica para associar o profissional à função
   };
 
   // Filtra associados com base na função selecionada
   const filteredAssociates = selectedRole
-    ? associates.filter(a => a.roleId === selectedRole)
+    ? associates.filter((a) => a.roleId === selectedRole)
     : [];
 
   return (

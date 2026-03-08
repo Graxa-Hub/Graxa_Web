@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useToast } from "./hooks/useToast";
-import { ToastContainer } from "./components/UI/ToastContainer";
+import { ToastContainer } from "./components/organisms/ToastContainer";
 import "./index.css";
 import { Route, Routes, Navigate } from "react-router-dom";
 
@@ -17,7 +17,7 @@ import { RecuperarSenha } from "./pages/RecuperarSenha";
 import { CriarEvento } from "./pages/CriarEvento";
 import { CriarLogistica } from "./pages/CriarLogistica";
 import { ConfiguracaoUsuario } from "./pages/ConfiguracaoUser";
-import { RelatorioPageDinamico } from "./pages/RelatorioPageDinamico";
+import { RelatorioPage } from "./pages/RelatorioPage";
 
 function App() {
   // Toast global, igual ao sistema de notificações
@@ -36,24 +36,24 @@ function App() {
         <Route path="/recuperar-senha" element={<RecuperarSenha />} />
         <Route path="/cadastro" element={<Cadastro />} />
 
-      {/* Rotas protegidas */}
-      <Route element={<ProtectedLayout />}>
-        <Route path="/calendario" element={<Calendario />} />
-        <Route path="/turne/:bandaId?" element={<Turne />} />
-        <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
-        <Route path="/artista" element={<ArtistaApp />} />
-        <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
-        <Route
-          path="/criar-evento/:tipoEvento/:eventoId?"
-          element={<CriarEvento />}
-        />
-        <Route path="/criar-logistica" element={<CriarLogistica />} />
-        <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
-        <Route path="/relatorio/:id" element={<RelatorioPageDinamico />} />
-      </Route>
-      {/* Rota não encontrada - redireciona para login */}
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+        {/* Rotas protegidas */}
+        <Route element={<ProtectedLayout />}>
+          <Route path="/calendario" element={<Calendario />} />
+          <Route path="/turne/:bandaId?" element={<Turne />} />
+          <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
+          <Route path="/artista" element={<ArtistaApp />} />
+          <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
+          <Route
+            path="/criar-evento/:tipoEvento/:eventoId?"
+            element={<CriarEvento />}
+          />
+          <Route path="/criar-logistica" element={<CriarLogistica />} />
+          <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
+          <Route path="/relatorio/:id" element={<RelatorioPage />} />
+        </Route>
+        {/* Rota não encontrada - redireciona para login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
     </>
   );
 }

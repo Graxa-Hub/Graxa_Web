@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import InputMask from "react-input-mask";
 import { Input } from "../components/LoginCadastro/Input";
 import { ComboBox } from "../components/ComboBox";
 import { TIPOS_USUARIO } from "../constants/tipoUsuario";
@@ -139,19 +138,20 @@ export const Cadastro = () => {
 
             <div>
               <Label>Telefone:</Label>
-              <InputMask
-                mask="(99) 99999-9999"
+              <Input
                 value={telefone}
                 onChange={(e) => setTelefone(e.target.value)}
-              >
-                {(inputProps) => (
-                  <Input
-                    {...inputProps}
-                    placeholder="(11) 99999-8888"
-                    className={fieldErrors.telefone ? "border-red-500" : ""}
-                  />
-                )}
-              </InputMask>
+                placeholder="(11) 99999-8888"
+                className={fieldErrors.telefone ? "border-red-500" : ""}
+                onInput={(e) => {
+                  let value = e.target.value.replace(/\D/g, '');
+                  if (value.length <= 11) {
+                    value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                    e.target.value = value;
+                    setTelefone(value);
+                  }
+                }}
+              />
               {fieldErrors.telefone && (
                 <p className="text-red-500 text-sm">{fieldErrors.telefone}</p>
               )}
@@ -160,19 +160,20 @@ export const Cadastro = () => {
 
           <div>
             <Label>CPF:</Label>
-            <InputMask
-              mask="999.999.999-99"
+            <Input
               value={cpf}
               onChange={(e) => setCpf(e.target.value)}
-            >
-              {(inputProps) => (
-                <Input
-                  {...inputProps}
-                  placeholder="000.000.000-00"
-                  className={fieldErrors.cpf ? "border-red-500" : ""}
-                />
-              )}
-            </InputMask>
+              placeholder="000.000.000-00"
+              className={fieldErrors.cpf ? "border-red-500" : ""}
+              onInput={(e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length <= 11) {
+                  value = value.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+                  e.target.value = value;
+                  setCpf(value);
+                }
+              }}
+            />
             {fieldErrors.cpf && (
               <p className="text-red-500 text-sm">{fieldErrors.cpf}</p>
             )}

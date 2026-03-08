@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  Users, 
-  X, 
-  Music, 
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  X,
+  Music,
   Star,
   Info,
   CheckCircle,
@@ -13,15 +13,15 @@ import {
 } from 'lucide-react';
 import { useAlocacao } from '../../hooks/useAlocacao';
 import { useToast } from '../../hooks/useToast';
-import { ConfirmModal } from '../UI/ConfirmModal';
-import { ToastContainer } from '../UI/ToastContainer';
+import { ConfirmModal } from '../molecules/ConfirmModal';
+import { ToastContainer } from '../organisms/ToastContainer';
 import { obterFuncao, obterIcone, obterCategoria } from '../../utils/tipoUsuarioUtils';
 
 export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
   const { responderAlocacao, loading: loadingResponse } = useAlocacao();
   const [confirmModal, setConfirmModal] = useState({ isOpen: false, tipo: null });
   const [alocacaoAtualizada, setAlocacaoAtualizada] = useState(null);
-  
+
   // ✅ Hook de toast
   const { toasts, showSuccess, showError, removeToast } = useToast();
 
@@ -93,67 +93,67 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
   };
 
   const handleConfirm = async () => {
-  const aceitar = confirmModal.tipo === 'aceitar';
-  
-  try {
-    const status = aceitar ? 'ACEITO' : 'RECUSADO';
-    await responderAlocacao(alocacao.id, status);
-    
-    // ✅ Atualizar estado local com novo status
-    const novaAlocacao = {
-      ...alocacao,
-      status: status.toLowerCase(),
-      dataHoraResposta: new Date().toISOString()
-    };
-    
-    setAlocacaoAtualizada(novaAlocacao);
-    setConfirmModal({ isOpen: false, tipo: null });
-    
-    showSuccess(
-      aceitar 
-        ? `Convite aceito com sucesso! Você confirmou participação no show "${show?.nomeEvento || 'show'}".`
-        : `Convite recusado. Obrigado por responder.`,
-      aceitar ? 'Convite Aceito!' : 'Convite Recusado'
-    );
-    
-    // ✅ Notificar o componente pai sobre a resposta (mas não fechar)
-    if (onResponse) {
-      onResponse(aceitar, novaAlocacao);
-    }
-    
-  } catch (error) {
-    console.error('❌ Erro ao responder alocação:', error);
-    
-    let errorMsg = 'Erro desconhecido';
-    
-    if (error.response?.data?.message) {
-      errorMsg = error.response.data.message;
-      if (errorMsg.includes('Invalid boolean value')) {
-        errorMsg = 'Erro de validação no servidor. Tente novamente.';
-      } else if (errorMsg.includes('Alocação não encontrada')) {
-        errorMsg = 'Esta alocação não foi encontrada. A página será atualizada.';
+    const aceitar = confirmModal.tipo === 'aceitar';
+
+    try {
+      const status = aceitar ? 'ACEITO' : 'RECUSADO';
+      await responderAlocacao(alocacao.id, status);
+
+      // ✅ Atualizar estado local com novo status
+      const novaAlocacao = {
+        ...alocacao,
+        status: status.toLowerCase(),
+        dataHoraResposta: new Date().toISOString()
+      };
+
+      setAlocacaoAtualizada(novaAlocacao);
+      setConfirmModal({ isOpen: false, tipo: null });
+
+      showSuccess(
+        aceitar
+          ? `Convite aceito com sucesso! Você confirmou participação no show "${show?.nomeEvento || 'show'}".`
+          : `Convite recusado. Obrigado por responder.`,
+        aceitar ? 'Convite Aceito!' : 'Convite Recusado'
+      );
+
+      // ✅ Notificar o componente pai sobre a resposta (mas não fechar)
+      if (onResponse) {
+        onResponse(aceitar, novaAlocacao);
       }
-    } else if (error.message) {
-      errorMsg = error.message;
+
+    } catch (error) {
+      console.error('❌ Erro ao responder alocação:', error);
+
+      let errorMsg = 'Erro desconhecido';
+
+      if (error.response?.data?.message) {
+        errorMsg = error.response.data.message;
+        if (errorMsg.includes('Invalid boolean value')) {
+          errorMsg = 'Erro de validação no servidor. Tente novamente.';
+        } else if (errorMsg.includes('Alocação não encontrada')) {
+          errorMsg = 'Esta alocação não foi encontrada. A página será atualizada.';
+        }
+      } else if (error.message) {
+        errorMsg = error.message;
+      }
+
+      showError(
+        `Erro ao responder alocação: ${errorMsg}`,
+        'Falha na Resposta'
+      );
     }
-    
-    showError(
-      `Erro ao responder alocação: ${errorMsg}`,
-      'Falha na Resposta'
-    );
-  }
-};
+  };
 
   if (!isOpen) return null;
 
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div 
+        <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-2"
           onClick={onClose}
         />
-        
+
         <div className="relative bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-hidden z-3">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
@@ -328,7 +328,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                       </p>
                       {colaborador?.tipoUsuario && (
                         <p className="text-yellow-700 text-xs mt-1 flex items-center gap-1">
-                          Sua função: 
+                          Sua função:
                           <span className="font-medium flex items-center gap-1">
                             {obterIcone(colaborador.tipoUsuario)} {obterFuncao(colaborador.tipoUsuario)}
                           </span>
@@ -443,7 +443,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
       />
 
       {/* ✅ Container de toasts */}
-      <ToastContainer 
+      <ToastContainer
         toasts={toasts}
         onRemoveToast={removeToast}
         position="top-right"

@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { Layout } from "../components/Dashboard/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
-import FlightCard from "../components/CriarEvento/cards/FlightCard";
-import TransporteCard from "../components/CriarEvento/cards/TransporteCard";
-import SidebarDireita from "../components/CriarEvento/SidebarLogistica";
+import { Layout } from "../components/templates/Layout";
+import { Sidebar } from "../components/organisms/Sidebar";
+import FlightCard from "../features/Evento/components/CriarEvento/cards/FlightCard";
+import TransporteCard from "../features/Evento/components/CriarEvento/cards/TransporteCard";
+import SidebarDireita from "../features/Evento/components/CriarEvento/SidebarLogistica";
 
 export const CriarLogistica = () => {
- 
   const [flights, setFlights] = useState([]);
   const [transports, setTransports] = useState([]);
-
 
   const [assignments, setAssignments] = useState({});
   const colab = [
@@ -21,9 +19,18 @@ export const CriarLogistica = () => {
     { id: 106, nome: "Ana Gadú Tour", tipoUsuario: "produtor_estrada" },
   ];
 
-
   const addFlight = () =>
-    setFlights([...flights, { id: Date.now(), cia: "", numero: "", passageiros: [], origem: "", destino: "" }]);
+    setFlights([
+      ...flights,
+      {
+        id: Date.now(),
+        cia: "",
+        numero: "",
+        passageiros: [],
+        origem: "",
+        destino: "",
+      },
+    ]);
 
   const addTransporte = () =>
     setTransports([
@@ -39,9 +46,9 @@ export const CriarLogistica = () => {
       },
     ]);
 
-
   const removeFlight = (id) => setFlights(flights.filter((f) => f.id !== id));
-  const removeTransporte = (id) => setTransports(transports.filter((t) => t.id !== id));
+  const removeTransporte = (id) =>
+    setTransports(transports.filter((t) => t.id !== id));
 
   // seleção de equipe dentro da sidebar
   const toggleAssignment = (role, id) => {
@@ -60,15 +67,17 @@ export const CriarLogistica = () => {
       <Sidebar />
 
       <div className="flex w-full h-screen bg-gray-50">
-
         {/* ===== CONTEÚDO PRINCIPAL (LOGÍSTICA) ===== */}
         <div className="flex-1 p-10 overflow-y-auto">
           <div className="bg-white p-6 rounded-lg shadow space-y-8">
-
             {/* HEADER */}
             <div className="border-b border-gray-200 pb-3">
-              <h2 className="text-2xl font-bold text-gray-800">Logística da Viagem</h2>
-              <p className="text-sm text-gray-500">Configure voos e transporte da equipe.</p>
+              <h2 className="text-2xl font-bold text-gray-800">
+                Logística da Viagem
+              </h2>
+              <p className="text-sm text-gray-500">
+                Configure voos e transporte da equipe.
+              </p>
             </div>
 
             {/* VOOS */}
@@ -98,7 +107,9 @@ export const CriarLogistica = () => {
                   />
                 ))}
                 {flights.length === 0 && (
-                  <p className="text-sm text-gray-500 italic">Nenhum voo adicionado ainda.</p>
+                  <p className="text-sm text-gray-500 italic">
+                    Nenhum voo adicionado ainda.
+                  </p>
                 )}
               </div>
             </section>
@@ -130,14 +141,15 @@ export const CriarLogistica = () => {
                   />
                 ))}
                 {transports.length === 0 && (
-                  <p className="text-sm text-gray-500 italic">Nenhum transporte adicionado ainda.</p>
+                  <p className="text-sm text-gray-500 italic">
+                    Nenhum transporte adicionado ainda.
+                  </p>
                 )}
               </div>
             </section>
           </div>
         </div>
 
-    
         <aside className="w-80">
           <SidebarDireita
             etapaAtual={1}

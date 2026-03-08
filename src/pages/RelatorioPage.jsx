@@ -1,137 +1,241 @@
-import { CloudRain } from "lucide-react";
-import { useRef } from "react";
+import { CloudRain, Sun, Cloud, CloudSun, Loader2 } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { showService } from "../services/showService";
+import { alocacaoService } from "../services/alocacaoService";
+import { agendaEventoService } from "../services/agendaEventoService";
+import { logisticaService } from "../services/logisticaService";
+import { extrasService } from "../services/extrasService";
+import { formatarData, formatarHora } from "../utils/dateFormatters";
+import { getWeatherForecast, getWeatherDescription } from "../services/weatherService";
+import { TIPOS_USUARIO } from "../constants/tipoUsuario";
 
-const lista = [
-  {
-    id: 1,
-    nome: "João Silva",
-    telefone: "(11) 98765-4321",
-    cargo: "Produtor",
-  },
-  {
-    id: 2,
-    nome: "Maria Santos",
-    telefone: "(11) 99876-5432",
-    cargo: "Assistente de Produção",
-  },
-  {
-    id: 3,
-    nome: "Pedro Oliveira",
-    telefone: "(11) 97654-3210",
-    cargo: "Técnico de Som",
-  },
-  {
-    id: 4,
-    nome: "Ana Costa",
-    telefone: "(11) 98765-4321",
-    cargo: "Coordenadora",
-  },
-  {
-    id: 5,
-    nome: "Carlos Ferreira",
-    telefone: "(11) 99654-3210",
-    cargo: "Segurança",
-  },
-];
+// Helper: nome legível do tipoUsuario
+function labelTipoUsuario(tipo) {
+  const found = TIPOS_USUARIO.find((t) => t.value === tipo);
+  return found ? found.label : tipo || "Colaborador";
+}
 
-const eventos = [
-  {
-    id: 1,
-    nome: "Viagem",
-    descricao: "Deslocamento para o local do evento",
-    anotacao: "Transfer André",
-  },
-  {
-    id: 2,
-    nome: "Montagem do palco",
-    descricao: "Preparação e montagem da infraestrutura",
-    anotacao: null,
-  },
-  {
-    id: 3,
-    nome: "Show da banda",
-    descricao: "Apresentação dos artistas",
-    anotacao: null,
-  },
-  {
-    id: 4,
-    nome: "Viagem de volta a casa",
-    descricao: "Retorno do local do evento",
-    anotacao:
-      "Receptivo + Transfer Mini Van no Aeroporto \nAgência Solférias: Manuel Achando +351 965 060 401",
-  },
-];
-
-const dadosClima = [
-  {
-    id: 1,
-    diaSemana: "Seg",
-    dia: "27",
-    tempMax: 32,
-    tempMin: 22,
-    chuva: "tarde",
-  },
-  {
-    id: 2,
-    diaSemana: "Ter",
-    dia: "28",
-    tempMax: 30,
-    tempMin: 21,
-    chuva: "noite",
-  },
-  {
-    id: 3,
-    diaSemana: "Qua",
-    dia: "29",
-    tempMax: 28,
-    tempMin: 19,
-    chuva: "todo dia",
-  },
-  {
-    id: 4,
-    diaSemana: "Qui",
-    dia: "30",
-    tempMax: 31,
-    tempMin: 23,
-    chuva: null,
-  },
-  {
-    id: 5,
-    diaSemana: "Sex",
-    dia: "01",
-    tempMax: 33,
-    tempMin: 24,
-    chuva: "tarde",
-  },
-  {
-    id: 6,
-    diaSemana: "Sáb",
-    dia: "02",
-    tempMax: 29,
-    tempMin: 20,
-    chuva: "todo dia",
-  },
-  {
-    id: 7,
-    diaSemana: "Dom",
-    dia: "03",
-    tempMax: 27,
-    tempMin: 18,
-    chuva: "noite",
-  },
-];
-
-const nomesLista = lista.map((item) => item.nome).join(", ");
+// Helper: dia da semana abreviado em pt-BR
+function diaSemanaAbrev(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
+}
 
 export function RelatorioPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [dados, setDados] = useState({
+    show: null,
+    colaboradores: [],
+    agenda: [],
+    hoteis: [],
+    voos: [],
+    transportes: [],
+    extras: null,
+    clima: null,
+  });
+
+  useEffect(() => {
+    const buscarDados = async () => {
+      try {
+        setLoading(true);
+
+        const [
+          showResult,
+          alocacoesResult,
+          agendaResult,
+          hoteisResult,
+          voosResult,
+          transportesResult,
+          extrasResult,
+        ] = await Promise.allSettled([
+          showService.buscarPorId(id),
+          alocacaoService.listarPorShow(id).catch(() => []),
+          agendaEventoService.listarPorShow(id).catch(() => []),
+          logisticaService.listarHoteis(id).catch(() => []),
+          logisticaService.listarVoos(id).catch(() => []),
+          logisticaService.listarTransportes(id).catch(() => []),
+          extrasService.listarExtras(id).catch(() => null),
+        ]);
+
+        if (showResult.status === "rejected") {
+          console.error("[RelatorioPage] Erro ao buscar show:", showResult.reason);
+          setDados((prev) => ({ ...prev, show: null }));
+          return;
+        }
+
+        const showData = showResult.value;
+
+        // Filtrar alocações: apenas mais recente por colaborador, ACEITO ou PENDENTE
+        const alocacoes = alocacoesResult.status === "fulfilled" ? alocacoesResult.value : [];
+        const porColab = {};
+        (alocacoes || []).forEach((a) => {
+          const cId = a.colaborador?.id;
+          if (!cId) return;
+          if (!porColab[cId]) {
+            porColab[cId] = a;
+          } else {
+            const dAtual = new Date(a.dataHoraCriacao || 0);
+            const dSalva = new Date(porColab[cId].dataHoraCriacao || 0);
+            if (dAtual > dSalva) porColab[cId] = a;
+          }
+        });
+        const colabsFiltrados = Object.values(porColab).filter((a) => {
+          const st = String(a.status).toUpperCase();
+          return (st === "ACEITO" || st === "PENDENTE") && a.colaborador;
+        });
+
+        // Buscar clima se local com coordenadas
+        let climaData = null;
+        const lat = showData?.local?.endereco?.latitude || showData?.local?.latitude;
+        const lon = showData?.local?.endereco?.longitude || showData?.local?.longitude;
+        if (lat && lon) {
+          try {
+            climaData = await getWeatherForecast(lat, lon, { forecastDays: 7 });
+          } catch (err) {
+            console.warn("[RelatorioPage] Clima indisponível:", err);
+          }
+        }
+
+        // Extras: pode ser array ou objeto
+        let extrasData = extrasResult.status === "fulfilled" ? extrasResult.value : null;
+        if (Array.isArray(extrasData) && extrasData.length > 0) {
+          extrasData = extrasData[0];
+        }
+
+        setDados({
+          show: showData,
+          colaboradores: colabsFiltrados,
+          agenda: agendaResult.status === "fulfilled" ? agendaResult.value || [] : [],
+          hoteis: hoteisResult.status === "fulfilled" ? hoteisResult.value || [] : [],
+          voos: voosResult.status === "fulfilled" ? voosResult.value || [] : [],
+          transportes: transportesResult.status === "fulfilled" ? transportesResult.value || [] : [],
+          extras: extrasData,
+          clima: climaData,
+        });
+      } catch (error) {
+        console.error("[RelatorioPage] Erro geral:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) buscarDados();
+  }, [id]);
+
+  const contentRef = useRef(null);
+
   const handleGeneratePDF = () => {
+    // Salvar título original e trocar para o nome do evento
+    // Isso faz o Firefox mostrar o nome do evento ao invés de "Graxa" no cabeçalho do print
+    const tituloOriginal = document.title;
+    const nomeEvento = show?.nomeEvento || "Relatório do Evento";
+    document.title = nomeEvento;
+
+    // Imprimir
     window.print();
+
+    // Restaurar título original após print
+    setTimeout(() => {
+      document.title = tituloOriginal;
+    }, 1000);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-blue-100/30 flex items-center justify-center gap-3">
+        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+        <p className="text-xl">Carregando relatório...</p>
+      </div>
+    );
+  }
+
+  const { show, colaboradores, agenda, hoteis, voos, transportes, extras, clima } = dados;
+
+  if (!show) {
+    return (
+      <div className="min-h-screen bg-blue-100/30 flex flex-col items-center justify-center gap-4">
+        <p className="text-xl text-red-600">Evento não encontrado</p>
+        <button
+          onClick={() => navigate(-1)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+        >
+          Voltar
+        </button>
+      </div>
+    );
+  }
+
+  // ===== Dados formatados =====
+  const dataEvento = show.dataInicio
+    ? formatarData(new Date(show.dataInicio))
+    : "Data não definida";
+
+  const diaSemana = show.dataInicio
+    ? new Date(show.dataInicio).toLocaleDateString("pt-BR", { weekday: "long" })
+    : "";
+
+  const nomeLocal = show.local?.nome || "Local não definido";
+
+  const enderecoLocal = show.local?.endereco
+    ? [
+      show.local.endereco.logradouro,
+      show.local.endereco.numero,
+      show.local.endereco.bairro,
+      show.local.endereco.cidade,
+      show.local.endereco.uf,
+    ]
+      .filter(Boolean)
+      .join(", ")
+    : "Endereço não definido";
+
+  const nomeBanda = show.bandas?.[0]?.nome || show.nomeEvento || "Evento";
+
+  // Integrantes das bandas (todos os integrantes de todas as bandas)
+  const integrantesBanda = (show.bandas || [])
+    .flatMap((b) => b.integrantes || [])
+    .map((i) => i.nome)
+    .filter(Boolean);
+
+  // Agenda ordenada por hora
+  const agendaOrdenada = [...agenda].sort((a, b) => {
+    const da = a.dataHoraInicio || "";
+    const db = b.dataHoraInicio || "";
+    return da.localeCompare(db);
+  });
+
+  // ===== Clima processado =====
+  const climaDias = [];
+  if (clima?.daily) {
+    const d = clima.daily;
+    const len = d.time?.length || 0;
+    for (let i = 0; i < len; i++) {
+      const weatherDesc = getWeatherDescription(d.weather_code?.[i]);
+      climaDias.push({
+        id: i,
+        diaSemana: diaSemanaAbrev(d.time[i]),
+        dia: new Date(d.time[i]).getDate().toString().padStart(2, "0"),
+        tempMax: Math.round(d.temperature_2m_max?.[i] || 0),
+        tempMin: Math.round(d.temperature_2m_min?.[i] || 0),
+        precipitacao: d.precipitation_sum?.[i] || 0,
+        probChuva: d.precipitation_probability_max?.[i] || 0,
+        descricao: weatherDesc?.description || "",
+      });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-blue-100/30 py-10">
       {/* Botão para gerar PDF - não aparece no PDF */}
-      <div className="fixed top-4 right-4 print:hidden z-50">
+      <div className="fixed top-4 right-4 print:hidden z-50 flex gap-2">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded shadow-lg"
+        >
+          Voltar
+        </button>
         <button
           onClick={handleGeneratePDF}
           className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg"
@@ -141,139 +245,273 @@ export function RelatorioPage() {
       </div>
 
       {/* Conteúdo do PDF */}
-      <div className="px-8">
-        {/* Cabeçalho */}
+      <div ref={contentRef} className="max-w-5xl mx-auto px-6">
+        {/* ===== CABEÇALHO ===== */}
         <div className="mb-20">
-          <h1 className="text-4xl font-bold text-center mb-4">
-            Título - Nome artístico
-          </h1>
-          <p className="text-center text-black mb-2 text-lg">
-            CRONOGRAMA DE HORÁRIO
-          </p>
+          <h1 className="text-4xl font-bold text-center mb-4">{nomeBanda}</h1>
+          <p className="text-center text-black mb-2 text-lg">CRONOGRAMA DE HORÁRIO</p>
           <p className="text-center text-red-600 font-bold mb-2 text-lg">
-            DD.MM.YYYY - DIA DE SEMANA - NOME DO EVENTO
+            {dataEvento} - {diaSemana.toUpperCase()} - {show.nomeEvento || "Evento"}
           </p>
           <p className="text-center text-blue-600 font-bold text-lg">
-            NOME DO LOCAL - ENDEREÇO DO LOCAL
+            {nomeLocal} - {enderecoLocal}
           </p>
         </div>
 
-        {/* Equipe */}
+        {/* ===== EQUIPE ===== */}
         <div className="px-8 print:break-inside-avoid">
-          <h1 className="text-center text-xl font-bold text-red-400 mb-10">
-            EQUIPE - NOME DO EQUIPE
-          </h1>
-          {lista.map((item) => (
-            <div className="flex gap-2 text-lg" key={item.id}>
-              <p className="font-bold">{item.cargo}:</p>
-              <span>{item.nome} -</span>
-              <span>{item.telefone}</span>
-            </div>
-          ))}
-          <p className="mt-5 font-bold text-lg">Banda:</p>
-          <p className="text-lg">{nomesLista}</p>
+          <h1 className="text-center text-xl font-bold text-red-400 mb-10">EQUIPE</h1>
+
+          {colaboradores.length > 0 ? (
+            colaboradores.map((alocacao) => (
+              <div className="flex gap-2 text-lg" key={alocacao.id}>
+                <p className="font-bold">
+                  {labelTipoUsuario(alocacao.colaborador?.tipoUsuario)}:
+                </p>
+                <span>{alocacao.colaborador?.nome || "Nome não disponível"}</span>
+                {alocacao.colaborador?.telefone && (
+                  <span> - {alocacao.colaborador.telefone}</span>
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500">Nenhum colaborador alocado</p>
+          )}
+
+          {integrantesBanda.length > 0 && (
+            <>
+              <p className="mt-5 font-bold text-lg">Banda: <span className="font-normal">{integrantesBanda.join(", ")}</span></p>
+            </>
+          )}
         </div>
 
-        {/* Eventos */}
+        {/* ===== CRONOGRAMA / AGENDA ===== */}
         <div className="px-8 mt-20 print:break-inside-avoid print:break-before-page">
           <h1 className="text-center text-xl font-bold text-red-400 mb-10">
             CRONOGRAMA DE HORÁRIO
           </h1>
-          <h2 className="text-red-600 text-lg">
-            ORIGEM (IATA) X DESTINO (IATA) | TRIPULANTE
-          </h2>
-          <p className="font-bold bg-yellow-300 underline w-fit text-lg">
-            AVIAO (CODIGO): HORARIO IATA X HORARIO IATA
-          </p>
-          <p className="font-bold bg-neutral-200 w-fit text-lg">
-            LOC (PNR): TRIPULANTES
-          </p>
 
-          <ul className="mt-7 text-lg">
-            {eventos.map((item) => (
-              <li key={item.id} className="">
-                <p className="whitespace-nowrap">
-                  <span className="font-bold">00:00 - </span>
-                  {item.descricao}
-                </p>
-                <p className="text-blue-400">
-                  {item.anotacao != null ? <p>*{item.anotacao}</p> : null}
-                </p>
-              </li>
-            ))}
-          </ul>
-        </div>
+          {/* Info de voos (se houver) */}
+          {voos.length > 0 && (
+            <div className="mb-6">
+              {voos.map((voo) => {
+                const origem = voo.origem || "—";
+                const destino = voo.destino || "—";
+                const cia = voo.ciaAerea || "";
+                const codigo = voo.codigoVoo || "";
+                const partida = voo.partida
+                  ? formatarHora(new Date(voo.partida))
+                  : "—";
+                const chegada = voo.chegada
+                  ? formatarHora(new Date(voo.chegada))
+                  : "—";
+                const passageiro = voo.colaborador?.nome || "";
 
-        {/* Hospedagem */}
+                return (
+                  <div key={voo.id} className="mb-3">
+                    <h2 className="text-red-600 text-lg">
+                      {origem} ✈ {destino}
+                      {passageiro && ` | ${passageiro}`}
+                    </h2>
+                    {(cia || codigo) && (
+                      <p className="font-bold bg-yellow-300 underline w-fit text-lg">
+                        {cia} {codigo}: {partida} → {chegada}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
-        {/* DAY USE */}
-        <div className="px-8 mt-20 border border-neutral-400 print:break-inside-avoid">
-          <h1 className="text-center text-xl font-bold text-red-400 mb-8">
-            DAY USE - CIDADE/ESTADO | HORÁRIO
-            <p className="text-end font-normal justify-self-end text-base text-blue-300">
-              Reserva All Included
-            </p>
-          </h1>
-          <h2 className="underline text-lg">NOME DO LOCAL</h2>
-          <h3 className="text-lg">
-            <span className="font-bold">ENDEREÇO: </span>
-            Rua Alguma coisa 1092 Lisboa - Portugal
-          </h3>
-          <h3 className="text-lg">
-            <span className="font-bold">DISTÂNCIA AEROPORTO: </span>
-            Distância - Tempo
-          </h3>
-        </div>
+          {agendaOrdenada.length > 0 ? (
+            <ul className="mt-7 text-lg space-y-3">
+              {agendaOrdenada.map((item) => {
+                const horaInicio = item.dataHoraInicio
+                  ? formatarHora(new Date(item.dataHoraInicio))
+                  : "—:—";
+                const horaFim = item.dataHoraFim
+                  ? formatarHora(new Date(item.dataHoraFim))
+                  : null;
 
-        {/* HOTEL */}
-        <div className="px-8 mt-20 border border-neutral-400 print:break-inside-avoid">
-          <h1 className="text-center text-xl font-bold text-red-400 mb-8">
-            HOSPEDAGEM - ARTISTA
-          </h1>
-          <h2 className="underline text-lg">NOME DO LOCAL</h2>
-          <h3 className="text-lg">
-            <span className="font-bold">ENDEREÇO: </span>
-            Rua Alguma coisa 1092 Lisboa - Portugal
-          </h3>
-          <h3 className="text-lg">
-            <span className="font-bold">DISTÂNCIA AEROPORTO: </span>
-            Distância - Tempo
-          </h3>
-        </div>
-
-        {/* Clima */}
-        <div className="px-8 mt-20 print:break-inside-avoid">
-          <h1 className="text-center text-2xl font-bold text-red-400 mb-10">
-            CLIMA DO DIA
-          </h1>
-          <div className="p-4 m-auto">
-            <ul>
-              {dadosClima.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex justify-between items-center whitespace-nowrap mb-3"
-                >
-                  <p className="w-40 text-xl">
-                    {item.diaSemana}. {item.dia}
-                  </p>
-                  <p className="w-20 text-xl whitespace-nowrap">
-                    <span className="font-bold">{item.tempMax}°</span> /{" "}
-                    {item.tempMin}°
-                  </p>
-                  <p>
-                    <CloudRain className="" />
-                  </p>
-                  <p className="w-20 text-xl">{item.chuva}</p>
-                </li>
-              ))}
+                return (
+                  <li key={item.id}>
+                    <p className="whitespace-nowrap">
+                      <span className="font-bold">
+                        {horaInicio}
+                        {horaFim ? ` - ${horaFim}` : ""} -{" "}
+                      </span>
+                      {item.titulo || "Evento"}
+                    </p>
+                    {item.descricao && (
+                      <p className="text-blue-400 ml-16">*{item.descricao}</p>
+                    )}
+                    {item.tipo === "DESLOCAMENTO" && (item.origem || item.destino) && (
+                      <p className="text-gray-500 ml-16 text-sm">
+                        {item.origem || "—"} → {item.destino || "—"}
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
-          </div>
+          ) : (
+            <p className="text-center text-gray-500">Nenhum evento agendado</p>
+          )}
         </div>
 
-        <div className="px-8 mt-20">
-          <h1 className="text-center text-xl font-bold text-red-400 mb-8">
-            OBSERVAÇÕES:
-          </h1>
+        {/* ===== HOSPEDAGEM ===== */}
+        {hoteis.length > 0 && (
+          <div className="px-8 mt-20">
+            {hoteis.map((hotel, index) => (
+              <div
+                key={hotel.id || index}
+                className="border border-neutral-400 p-4 print:break-inside-avoid mb-4"
+              >
+                <h1 className="text-center text-xl font-bold text-red-400 mb-8">
+                  HOSPEDAGEM {hoteis.length > 1 ? index + 1 : ""}
+                </h1>
+                <h2 className="underline text-lg">
+                  {hotel.nomeHotel || hotel.hotel?.nome || "Hotel não especificado"}
+                </h2>
+                {(hotel.endereco || hotel.hotel?.endereco) && (
+                  <h3 className="text-lg">
+                    <span className="font-bold">ENDEREÇO: </span>
+                    {hotel.endereco ||
+                      [
+                        hotel.hotel?.endereco?.logradouro,
+                        hotel.hotel?.endereco?.numero,
+                        hotel.hotel?.endereco?.cidade,
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
+                  </h3>
+                )}
+                {hotel.checkin && (
+                  <h3 className="text-lg">
+                    <span className="font-bold">CHECK-IN: </span>
+                    {formatarData(new Date(hotel.checkin))}{" "}
+                    {formatarHora(new Date(hotel.checkin))}
+                  </h3>
+                )}
+                {hotel.checkout && (
+                  <h3 className="text-lg">
+                    <span className="font-bold">CHECK-OUT: </span>
+                    {formatarData(new Date(hotel.checkout))}{" "}
+                    {formatarHora(new Date(hotel.checkout))}
+                  </h3>
+                )}
+                {hotel.distanciaAeroportoKm && (
+                  <h3 className="text-lg">
+                    <span className="font-bold">DISTÂNCIA AEROPORTO: </span>
+                    {hotel.distanciaAeroportoKm} km
+                  </h3>
+                )}
+                {hotel.distanciaPalcoKm && (
+                  <h3 className="text-lg">
+                    <span className="font-bold">DISTÂNCIA PALCO: </span>
+                    {hotel.distanciaPalcoKm} km
+                  </h3>
+                )}
+                {hotel.colaborador?.nome && (
+                  <h3 className="text-lg mt-2">
+                    <span className="font-bold">HÓSPEDE: </span>
+                    {hotel.colaborador.nome}
+                  </h3>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ===== TRANSPORTES ===== */}
+        {transportes.length > 0 && (
+          <div className="px-8 mt-20 print:break-inside-avoid">
+            <h1 className="text-center text-xl font-bold text-red-400 mb-10">TRANSPORTES</h1>
+            {transportes.map((t) => (
+              <div key={t.id} className="mb-4 border-b border-gray-200 pb-3">
+                <p className="text-lg">
+                  <span className="font-bold">{t.tipo ? t.tipo.charAt(0).toUpperCase() + t.tipo.slice(1) : "Transporte"}: </span>
+                  {t.destino || "Destino não definido"}
+                </p>
+                {t.saida && (
+                  <p className="text-lg">
+                    <span className="font-bold">Saída: </span>
+                    {formatarData(new Date(t.saida))} {formatarHora(new Date(t.saida))}
+                  </p>
+                )}
+                {t.motorista && (
+                  <p className="text-lg">
+                    <span className="font-bold">Motorista: </span>
+                    {t.motorista}
+                  </p>
+                )}
+                {t.colaborador?.nome && (
+                  <p className="text-lg">
+                    <span className="font-bold">Passageiro: </span>
+                    {t.colaborador.nome}
+                  </p>
+                )}
+                {t.observacao && (
+                  <p className="text-blue-400">*{t.observacao}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* ===== CLIMA ===== */}
+        {climaDias.length > 0 && (
+          <div className="px-8 mt-20 print:break-inside-avoid">
+            <h1 className="text-center text-2xl font-bold text-red-400 mb-10">
+              CLIMA DA SEMANA
+            </h1>
+            <div className="p-4 m-auto">
+              <ul>
+                {climaDias.map((item) => (
+                  <li
+                    key={item.id}
+                    className="flex justify-between items-center whitespace-nowrap mb-3"
+                  >
+                    <p className="w-40 text-xl capitalize">
+                      {item.diaSemana}. {item.dia}
+                    </p>
+                    <p className="w-24 text-xl whitespace-nowrap">
+                      <span className="font-bold">{item.tempMax}°</span> / {item.tempMin}°
+                    </p>
+                    <p>
+                      {item.precipitacao > 1 ? (
+                        <CloudRain className="text-blue-500" />
+                      ) : item.probChuva > 40 ? (
+                        <Cloud className="text-gray-500" />
+                      ) : item.probChuva > 10 ? (
+                        <CloudSun className="text-yellow-500" />
+                      ) : (
+                        <Sun className="text-yellow-400" />
+                      )}
+                    </p>
+                    <p className="w-32 text-lg text-right">{item.descricao || "—"}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {/* ===== OBSERVAÇÕES ===== */}
+        <div className="px-8 mt-20 print:break-inside-avoid">
+          <h1 className="text-center text-xl font-bold text-red-400 mb-8">OBSERVAÇÕES</h1>
+          {extras?.obs ? (
+            <p className="text-lg whitespace-pre-wrap">{extras.obs}</p>
+          ) : (
+            <p className="text-center text-gray-400 italic">Nenhuma observação registrada</p>
+          )}
+          {extras?.contatos && (
+            <>
+              <h2 className="font-bold text-lg mt-6">Contatos:</h2>
+              <p className="text-lg whitespace-pre-wrap">{extras.contatos}</p>
+            </>
+          )}
         </div>
       </div>
     </div>

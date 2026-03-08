@@ -18,12 +18,13 @@
     "@fullcalendar/list": "^6.1.19",
     "@fullcalendar/react": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
-    "@stomp/stompjs": "^7.2.1",
+    "@stomp/stompjs": "^7.3.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/vite": "^4.1.13",
     "autoprefixer": "^10.4.21",
     "axios": "^1.13.0",
     "framer-motion": "^12.23.24",
+    "html2pdf.js": "^0.14.0",
     "lucide-react": "^0.544.0",
     "mapbox-gl": "^3.17.0",
     "postcss": "^8.5.6",
@@ -34,7 +35,8 @@
     "react-input-mask": "^2.0.4",
     "react-router-dom": "^7.9.1",
     "sockjs-client": "^1.6.1",
-    "tailwindcss": "^4.1.13"
+    "tailwindcss": "^4.1.13",
+    "zustand": "^5.0.11"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",

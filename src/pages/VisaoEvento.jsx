@@ -1,14 +1,14 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Layout } from "../components/Dashboard/Layout";
-import { Sidebar } from "../components/Sidebar/Sidebar";
+import { Layout } from "../components/templates/Layout";
+import { Sidebar } from "../components/organisms/Sidebar";
 import { Edit2, MapPin, FileDown } from "lucide-react";
 import { useShows } from "../hooks/useShows";
 import { useViagens } from "../hooks/useViagens";
 import { useAgendaEvento } from "../hooks/useAgendaEvento";
-import { AgendaList } from "../components/VisaoEvento/AgendaList";
-import { PainelDireito } from "../components/VisaoEvento/PainelDireito";
-import { DiaInfoCard } from "../components/VisaoEvento/DiaInfoCard";
+import { AgendaList } from "../features/Evento/components/VisaoEvento/AgendaList";
+import { PainelDireito } from "../features/Evento/components/VisaoEvento/PainelDireito";
+import { DiaInfoCard } from "../features/Evento/components/VisaoEvento/DiaInfoCard";
 import { formatarData, formatarHora } from "../utils/dateFormatters";
 import { pdfService } from "../services/pdfService";
 
@@ -51,27 +51,36 @@ export const VisaoEvento = () => {
 
   useEffect(() => {
     if (id && tipoEvento === "show") {
-      listarPorShow(id);
+      console.log('[VisaoEvento] 🔍 Buscando agenda para showId:', id, '(tipo:', typeof id, ')');
+      listarPorShow(id).then((data) => {
+        console.log('[VisaoEvento] 📋 Agenda recebida:', data);
+        console.log('[VisaoEvento] 📋 Total de itens:', Array.isArray(data) ? data.length : 'não é array');
+      }).catch((err) => {
+        console.error('[VisaoEvento] ❌ Erro ao buscar agenda:', err);
+      });
     }
   }, [id, tipoEvento, listarPorShow]);
 
   const { agendasProcessadas, progresso } = useMemo(() => {
     const agora = new Date();
-    const agendasValidas = agendas.filter((item) => item.dataHoraInicio);
 
-    const totalConcluidos = agendasValidas.filter((item) => {
+    // Separar itens com e sem data
+    const comData = agendas.filter((item) => item.dataHoraInicio);
+    const semData = agendas.filter((item) => !item.dataHoraInicio);
+
+    const totalConcluidos = comData.filter((item) => {
       const dataHoraFim = item.dataHoraFim ? new Date(item.dataHoraFim) : null;
       return dataHoraFim && dataHoraFim < agora;
     }).length;
 
-    const totalEventos = agendasValidas.length;
+    const totalEventos = agendas.length;
     const progressoCalculado =
       totalEventos > 0 ? Math.round((totalConcluidos / totalEventos) * 100) : 0;
 
     const eventosPendentes = [];
     const eventosConcluidos = [];
 
-    agendasValidas.forEach((item) => {
+    comData.forEach((item) => {
       const dataHoraFim = item.dataHoraFim ? new Date(item.dataHoraFim) : null;
       const jáPassou = dataHoraFim && dataHoraFim < agora;
 
@@ -85,19 +94,21 @@ export const VisaoEvento = () => {
     eventosPendentes.sort((a, b) => a.ordem - b.ordem);
     eventosConcluidos.sort((a, b) => b.ordem - a.ordem);
 
-    const agendasOrdenadas = [...eventosPendentes, ...eventosConcluidos];
+    // Itens sem data vão ao final como pendentes
+    const agendasOrdenadas = [...eventosPendentes, ...semData, ...eventosConcluidos];
 
     const processadas = agendasOrdenadas.map((item, index) => {
-      const dataHoraInicio = new Date(item.dataHoraInicio);
+      const temData = !!item.dataHoraInicio;
+      const dataHoraInicio = temData ? new Date(item.dataHoraInicio) : null;
       const dataHoraFim = item.dataHoraFim ? new Date(item.dataHoraFim) : null;
       const jáPassou = dataHoraFim && dataHoraFim < agora;
       const éProximo = !jáPassou && index === 0;
 
       return {
         id: item.id,
-        timeStart: formatarHora(dataHoraInicio),
+        timeStart: dataHoraInicio ? formatarHora(dataHoraInicio) : "—",
         timeEnd: dataHoraFim ? formatarHora(dataHoraFim) : null,
-        date: formatarData(dataHoraInicio),
+        date: dataHoraInicio ? formatarData(dataHoraInicio) : "Sem data",
         title: item.titulo || "Evento",
         description: item.descricao || "",
         active: éProximo,
@@ -116,7 +127,7 @@ export const VisaoEvento = () => {
         return agendasProcessadas.find((a) => a.id === agendaId);
       });
     },
-    [agendasProcessadas]
+    [agendasProcessadas],
   );
 
   const handleGerarPdf = () => {
@@ -154,58 +165,73 @@ export const VisaoEvento = () => {
     };
   }, [evento]);
 
+  React.useEffect(() => {
+    // Trava o overflow do body ao montar a página
+    const originalStyle = window.getComputedStyle(document.body).overflow;
+    document.body.style.overflow = "hidden";
+
+    // Restaura ao desmontar
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
+
   if (loading) return <div className="p-6">Carregando evento...</div>;
   if (erro) return <div className="p-6 text-red-600">{erro}</div>;
   if (!dadosEvento) return <div className="p-6">Evento não encontrado.</div>;
 
   return (
-    <Layout>
-      <Sidebar />
+    <Layout className="bg-emerald-50" containerClassName="overflow-hidden">
 
-      <div className="flex-1 flex flex-col h-screen w-full overflow-hidden p-6 bg-green-100">
-        <div className="flex items-center justify-between mb-6 gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">
-              {dadosEvento.nomeEvento}
-            </h1>
-            <div className="flex items-center gap-1.5 mt-1">
-              <MapPin className="w-4 h-4 text-gray-500" />
-              <p className="text-sm text-gray-600">{dadosEvento.nomeLocal}</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 mr-10">
-            <button
-              onClick={handleGerarPdf}
-              disabled={tipoEvento !== "show"}
-              className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-sm shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
-              title={
-                tipoEvento !== "show"
-                  ? "PDF disponível apenas para Shows"
-                  : "Ver Relatório do Evento"
-              }
-            >
-              <FileDown size={16} />
-              Ver Relatório
-            </button>
-            <button
-              onClick={() => navigate(`/criar-evento/${tipoEvento}/${id}`)}
-              className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm shadow-md"
-            >
-              <Edit2 size={16} />
-              Editar Evento
-            </button>
-            <DiaInfoCard info={dadosEvento.dataInfo} />
+      {/* Componetizar esse bagui aqui -> pode ser VisionEvent  */}
+      <div className="flex flex-row justify-between mb-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">
+            {dadosEvento.nomeEvento}
+          </h1>
+          <div className="flex items-center gap-1.5 mt-1">
+            <MapPin className="w-4 h-4 text-gray-500" />
+            <p className="text-sm text-gray-600">{dadosEvento.nomeLocal}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 flex-1 min-h-0">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={handleGerarPdf}
+            disabled={tipoEvento !== "show"}
+            className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-sm shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
+            title={
+              tipoEvento !== "show"
+                ? "PDF disponível apenas para Shows"
+                : "Ver Relatório do Evento"
+            }
+          >
+            <FileDown size={16} />
+            Ver Relatório
+          </button>
+          <button
+            onClick={() => navigate(`/criar-evento/${tipoEvento}/${id}`)}
+            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-semibold text-sm shadow-md"
+          >
+            <Edit2 size={16} />
+            Editar Evento
+          </button>
+          <DiaInfoCard info={dadosEvento.dataInfo} />
+        </div>
+      </div>
+
+
+
+      <div className="grid grid-cols-3 gap-3 flex-1 min-h-0 overflow-hidden">
+        <div className="col-span-2 h-full">
           <AgendaList
             agendas={agendasProcessadas}
             agendaSelecionada={agendaSelecionada}
             onSelecionarAgenda={handleSelecionarAgenda}
           />
+        </div>
 
+        <div className="h-full">
           <PainelDireito
             agendaSelecionada={agendaSelecionada}
             progresso={progresso}
