@@ -84,6 +84,7 @@ export function TurneMainForm({
                     selectedStartDate={selectedStartDate}
                     selectedEndDate={selectedEndDate}
                     onDateSelect={handleDateSelect}
+                    disablePastDates
                 />
             </div>
         </div>
