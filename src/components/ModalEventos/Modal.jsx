@@ -13,7 +13,8 @@ export function Modal({
   nextButtonText = "Próxima Etapa",
   beforeButtonText = "Voltar",
   showNavigation = true,
-  showFooter = true, // ✅ nova prop
+  showFooter = true,
+  size = "md",
   onFinish,
 }) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -62,7 +63,8 @@ export function Modal({
       onClick={handleOverlayClick}
     >
       {/* Modal Box */}
-      <div className="bg-white rounded-md shadow-lg min-h-80 h-fit relative overflow-x-hidden w-[700px] max-w-5xl">
+      <div className={`bg-white rounded-md shadow-lg min-h-80 h-fit relative overflow-hidden ${size === "lg" ? "w-[780px]" : "w-[700px]"
+        } max-w-[95vw]`}>
         {/* Header */}
         <ModalHeader
           title={title}

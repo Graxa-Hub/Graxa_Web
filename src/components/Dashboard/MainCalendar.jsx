@@ -15,6 +15,7 @@ export default function MainCalendar({
   onEventosChange,
   bandaId, // ✅ Novo prop
   turneId, // ✅ Novo prop
+  turne,   // ✅ Novo prop (object)
 }) {
   const calendarRef = useRef(null);
   const navigate = useNavigate();

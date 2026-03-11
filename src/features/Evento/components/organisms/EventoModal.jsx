@@ -196,6 +196,31 @@ export function EventoModal({
     }
   };
 
+  const verificarLimitesTurne = (turneId, dataInicio, dataFim) => {
+    if (!turneId || !dataInicio || !dataFim) return null;
+    const turne = turnes.find((t) => String(t.id) === String(turneId));
+    if (!turne || !turne.dataHoraInicioTurne || !turne.dataHoraFimTurne) return null;
+
+    const inicio = new Date(dataInicio);
+    const fim = new Date(dataFim);
+    const turneInicio = new Date(turne.dataHoraInicioTurne);
+    const turneFim = new Date(turne.dataHoraFimTurne);
+
+    // Ajusta para o final do dia da turne para incluir o último dia completo
+    turneInicio.setHours(0, 0, 0, 0);
+    turneFim.setHours(23, 59, 59, 999);
+
+    if (inicio < turneInicio || fim > turneFim) {
+      return {
+        temErro: true,
+        turneNome: turne.nome,
+        turneInicio: turneInicio.toLocaleDateString("pt-BR"),
+        turneFim: turneFim.toLocaleDateString("pt-BR"),
+      };
+    }
+    return null;
+  };
+
   const verificarConflito = (bandasIds, dataInicio, dataFim) => {
     if (!bandasIds || bandasIds.length === 0 || !dataInicio || !dataFim) {
       return null;
@@ -301,6 +326,26 @@ export function EventoModal({
       errors = validateShow(showData, novoLocal, showNovoLocal);
       fieldMap = SHOW_ERROR_MAP;
 
+      // Validação de Limites da Turnê (Show)
+      if (showData.turneId && showData.dataHoraInicio && showData.dataHoraFim) {
+        const limitesErro = verificarLimitesTurne(showData.turneId, showData.dataHoraInicio, showData.dataHoraFim);
+        if (limitesErro) {
+          setFieldErrors({
+            general: (
+              <div>
+                <p className="font-semibold text-red-700 mb-2">
+                  ⚠️ Fora do período da turnê!
+                </p>
+                <div className="text-sm bg-red-50 p-3 rounded border border-red-200">
+                  O evento deve ocorrer entre <strong>{limitesErro.turneInicio}</strong> e <strong>{limitesErro.turneFim}</strong>.
+                </div>
+              </div>
+            ),
+          });
+          return false;
+        }
+      }
+
       // Conflito de horário (mantenha como está)
       if (
         showData.bandaId.length > 0 &&
@@ -334,6 +379,28 @@ export function EventoModal({
     } else if (activeTab === "viagem") {
       errors = validateViagem(viagemData);
       fieldMap = VIAGEM_ERROR_MAP;
+
+      // Validação de Limites da Turnê (Viagem) REMOVIDA
+      /*
+      if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
+        const limitesErro = verificarLimitesTurne(viagemData.turneId, viagemData.dataInicio, viagemData.dataFim);
+        if (limitesErro) {
+          setFieldErrors({
+            general: (
+              <div>
+                <p className="font-semibold text-red-700 mb-2">
+                  ⚠️ Fora do período da turnê!
+                </p>
+                <div className="text-sm bg-red-50 p-3 rounded border border-red-200">
+                  A viagem deve ocorrer entre <strong>{limitesErro.turneInicio}</strong> e <strong>{limitesErro.turneFim}</strong>.
+                </div>
+              </div>
+            ),
+          });
+          return false;
+        }
+      }
+      */
 
       if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
         const turne = turnes.find((t) => t.id === Number(viagemData.turneId));
@@ -385,6 +452,26 @@ export function EventoModal({
       errors = validateShow(showData, novoLocal, showNovoLocal); // <-- só isso!
       fieldMap = SHOW_ERROR_MAP;
 
+      // Validação de Limites da Turnê (Show)
+      if (showData.turneId && showData.dataHoraInicio && showData.dataHoraFim) {
+        const limitesErro = verificarLimitesTurne(showData.turneId, showData.dataHoraInicio, showData.dataHoraFim);
+        if (limitesErro) {
+          setFieldErrors({
+            general: (
+              <div>
+                <p className="font-semibold text-red-700 mb-2">
+                  ⚠️ Fora do período da turnê!
+                </p>
+                <div className="text-sm bg-red-50 p-3 rounded border border-red-200">
+                  O evento deve ocorrer entre <strong>{limitesErro.turneInicio}</strong> e <strong>{limitesErro.turneFim}</strong>.
+                </div>
+              </div>
+            ),
+          });
+          return false;
+        }
+      }
+
       // Só verifica conflito se bandaId e datas estão preenchidos
       if (
         showData.bandaId.length > 0 &&
@@ -418,6 +505,28 @@ export function EventoModal({
     } else if (activeTab === "viagem") {
       errors = validateViagem(viagemData);
       fieldMap = VIAGEM_ERROR_MAP;
+
+      // Validação de Limites da Turnê (Viagem) REMOVIDA
+      /*
+      if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
+        const limitesErro = verificarLimitesTurne(viagemData.turneId, viagemData.dataInicio, viagemData.dataFim);
+        if (limitesErro) {
+          setFieldErrors({
+            general: (
+              <div>
+                <p className="font-semibold text-red-700 mb-2">
+                  ⚠️ Fora do período da turnê!
+                </p>
+                <div className="text-sm bg-red-50 p-3 rounded border border-red-200">
+                  A viagem deve ocorrer entre <strong>{limitesErro.turneInicio}</strong> e <strong>{limitesErro.turneFim}</strong>.
+                </div>
+              </div>
+            ),
+          });
+          return false;
+        }
+      }
+      */
 
       if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
         const turne = turnes.find((t) => t.id === Number(viagemData.turneId));
@@ -491,12 +600,14 @@ export function EventoModal({
           await listarLocais(); // Atualiza a lista para próximos cadastros
         }
 
+        const padDate = (d) => (d && d.length === 16 ? `${d}:00` : d);
+
         const showPayload = {
           nomeEvento: showData.titulo,
-          dataInicio: showData.dataHoraInicio,
-          dataFim: showData.dataHoraFim,
+          dataInicio: padDate(showData.dataHoraInicio),
+          dataFim: padDate(showData.dataHoraFim),
           descricao: showData.descricao || "",
-          turneId: showData.turneId || null,
+          turneId: showData.turneId ? Number(showData.turneId) : null,
           localId: localIdFinal, // Deve ser o id do local criado
           responsavelId: responsavelId,
         };
@@ -520,10 +631,12 @@ export function EventoModal({
       }
     } else if (activeTab === "viagem") {
       try {
+        const padDate = (d) => (d && d.length === 16 ? `${d}:00` : d);
+
         const viagemPayload = {
           nomeEvento: viagemData.nomeEvento,
-          dataInicio: viagemData.dataInicio,
-          dataFim: viagemData.dataFim,
+          dataInicio: padDate(viagemData.dataInicio),
+          dataFim: padDate(viagemData.dataFim),
           descricao: viagemData.descricao || "",
           tipoViagem: viagemData.tipoViagem,
           turneId: viagemData.turneId ? Number(viagemData.turneId) : null,
