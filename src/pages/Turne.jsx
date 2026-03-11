@@ -104,6 +104,7 @@ export function Turne() {
         onFinish={handleFinishTurne}
         title={isEditMode ? "Editar Turnê" : "Criar Turnê"}
         totalSteps={2}
+        size="lg"
         onValidate={(step) => (step === 1 ? validateStep1() : true)}
       >
         {(currentStep) => {

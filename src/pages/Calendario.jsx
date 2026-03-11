@@ -69,6 +69,7 @@ export const Calendario = () => {
             onEventosChange={setEventos}
             bandaId={bandaSelecionada?.id}
             turneId={turneSelecionada?.id}
+            turne={turneSelecionada}
           />
         </div>
 

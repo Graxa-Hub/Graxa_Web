@@ -1,6 +1,6 @@
 import { AddButton } from "../../../../components/atoms/AddButton";
 
-export function TurneHeader({ onAddBanda }) {
+export function TurneHeader({ onAddTurne }) {
     return (
         <div className="flex flex-row sm:items-start sm:items-center justify-between gap-4 mb-10">
             <div>
@@ -12,7 +12,7 @@ export function TurneHeader({ onAddBanda }) {
                 </p>
             </div>
             <div>
-                <AddButton text="Adicionar banda" click={onAddBanda} />
+                <AddButton text="Adicionar turnê" click={onAddTurne} />
             </div>
         </div>
     );

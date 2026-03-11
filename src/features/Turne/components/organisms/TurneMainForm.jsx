@@ -21,8 +21,9 @@ export function TurneMainForm({
     getSelectedBandaName,
 }) {
     return (
-        <div className="flex gap-3">
-            <div className="flex-1 space-y-6">
+        <div className="flex gap-6">
+            {/* Form fields */}
+            <div className="flex-1 min-w-0 space-y-5">
                 <Input
                     label="Nome da turnê:"
                     placeholder="Chuva dos olhos"
@@ -79,7 +80,8 @@ export function TurneMainForm({
                 )}
             </div>
 
-            <div className="flex-shrink-0 flex items-center justify-center pt-5">
+            {/* Calendar */}
+            <div className="flex-shrink-0 flex items-start pt-2">
                 <Calendar
                     selectedStartDate={selectedStartDate}
                     selectedEndDate={selectedEndDate}
