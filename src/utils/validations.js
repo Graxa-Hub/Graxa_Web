@@ -125,29 +125,29 @@ function validateDateRange(dataInicio, dataFim, labelInicio = 'Data de início',
 export function validateShow(data, novoLocal, showNovoLocal) {
   const errors = [];
 
-  if (!data.titulo || !data.titulo.trim()) errors.push("titulo");
-  if (!data.bandaId) errors.push("bandaId");
+ if (!data.titulo || !data.titulo.trim()) errors.push("Título é obrigatório");
+  if (!data.bandaId) errors.push("Banda é obrigatória");
 
   if (!showNovoLocal) {
-    if (!data.localId) errors.push("local");
+    if (!data.localId) errors.push("Local é obrigatório");
   } else {
-    if (!novoLocal.nome || !novoLocal.nome.trim()) errors.push("nomeLocal");
-    if (!novoLocal.capacidade) errors.push("capacidade");
-    if (!novoLocal.endereco?.cep || !novoLocal.endereco.cep.trim()) errors.push("cep");
-    if (!novoLocal.endereco?.logradouro || !novoLocal.endereco.logradouro.trim()) errors.push("logradouro");
-    if (!novoLocal.endereco?.numero || !novoLocal.endereco.numero.trim()) errors.push("numero");
-    if (!novoLocal.endereco?.cidade || !novoLocal.endereco.cidade.trim()) errors.push("cidade");
-    if (!novoLocal.endereco?.estado || !novoLocal.endereco.estado.trim()) errors.push("estado");
+    if (!novoLocal.nome || !novoLocal.nome.trim()) errors.push("Nome do local é obrigatório");
+    if (!novoLocal.capacidade) errors.push("Capacidade é obrigatória");
+    if (!novoLocal.endereco?.cep || !novoLocal.endereco.cep.trim()) errors.push("CEP é obrigatório");
+    if (!novoLocal.endereco?.logradouro || !novoLocal.endereco.logradouro.trim()) errors.push("Logradouro é obrigatório");
+    if (!novoLocal.endereco?.numero || !novoLocal.endereco.numero.trim()) errors.push("Número é obrigatório");
+    if (!novoLocal.endereco?.cidade || !novoLocal.endereco.cidade.trim()) errors.push("Cidade é obrigatória");
+    if (!novoLocal.endereco?.estado || !novoLocal.endereco.estado.trim()) errors.push("Estado é obrigatório");
   }
 
-  if (!data.dataHoraInicio) errors.push("dataHoraInicio");
-  if (!data.dataHoraFim) errors.push("dataHoraFim");
+  if (!data.dataHoraInicio) errors.push("Data/hora de início é obrigatória");
+  if (!data.dataHoraFim) errors.push("Data/hora de fim é obrigatória");
   if (
     data.dataHoraInicio &&
     data.dataHoraFim &&
     new Date(data.dataHoraFim) <= new Date(data.dataHoraInicio)
   ) {
-    errors.push("dataHoraFim");
+    errors.push(" Data Hora fim Invalida");
   }
 
   return errors;
@@ -156,18 +156,18 @@ export function validateShow(data, novoLocal, showNovoLocal) {
 export function validateViagem(data) {
   const errors = [];
 
-  if (!data.nomeEvento || !data.nomeEvento.trim()) errors.push("nomeEvento");
-  if (!data.tipoViagem) errors.push("tipoViagem");
-  if (!data.dataInicio) errors.push("dataInicio");
-  if (!data.dataFim) errors.push("dataFim");
+  if (!data.nomeEvento || !data.nomeEvento.trim()) errors.push("Nome do evento é obrigatório");
+  if (!data.tipoViagem) errors.push("Tipo de transporte é obrigatório");
+  if (!data.dataInicio) errors.push("Data/hora de partida é obrigatória");
+  if (!data.dataFim) errors.push("Data/hora de chegada é obrigatória");
   if (
     data.dataInicio &&
     data.dataFim &&
     new Date(data.dataFim) <= new Date(data.dataInicio)
   ) {
-    errors.push("dataFim");
+    errors.push("Data/hora de chegada deve ser posterior à data/hora de partida");
   }
-  if (!data.turneId) errors.push("turneId");
+  if (!data.turneId) errors.push("Turnê é obrigatória");
 
   return errors;
 }

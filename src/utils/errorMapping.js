@@ -17,7 +17,7 @@ export const SHOW_ERROR_MAP = {
   titulo: ["titulo", "título"],
   bandaId: ["banda", "bandaId"],
   local: ["local", "localId"],
-  nomeLocal: ["nomeLocal"],
+  nomeLocal: ["nomeLocal", "nome do local"],
   capacidade: ["capacidade"],
   logradouro: ["logradouro"],
   numero: ["numero", "número"],

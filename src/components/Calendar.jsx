@@ -1,8 +1,27 @@
 import React, { useState, useMemo } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect }) {
+export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect, disablePastDates = false }) {
   const [currentDate, setCurrentDate] = useState(new Date());
+
+  const today = useMemo(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  }, []);
+
+  const canGoToPreviousMonth = useMemo(() => {
+    if (!disablePastDates) return true;
+    const firstDayOfCurrentView = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const firstDayOfTodayMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    return firstDayOfCurrentView > firstDayOfTodayMonth;
+  }, [currentDate, disablePastDates, today]);
+
+  const isPastDate = (date) => {
+    if (!disablePastDates) return false;
+    const normalizedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    return normalizedDate < today;
+  };
+
 
   const monthNames = [
     "Janeiro",
@@ -63,6 +82,8 @@ export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect }) {
   };
 
   const handlePreviousMonth = () => {
+    if (!canGoToPreviousMonth) return;
+
     setCurrentDate(
       new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
     );
@@ -100,6 +121,11 @@ export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect }) {
       currentDate.getMonth(),
       day
     );
+     if (isPastDate(currentDateForDay)) {
+      days.push(<div key={`past-${day}`} className="h-8" />);
+      continue;
+    }
+
     const isStart = isSameDay(currentDateForDay, selectedStartDate);
     const isEnd = isSameDay(currentDateForDay, selectedEndDate);
     const inRange = isInRange(currentDateForDay);
@@ -132,7 +158,8 @@ export function Calendar({ selectedStartDate, selectedEndDate, onDateSelect }) {
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={handlePreviousMonth}
-          className="p-1 hover:bg-gray-100 rounded transition-colors"
+          disabled={!canGoToPreviousMonth}
+          className="p-1 hover:bg-gray-100 rounded transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>

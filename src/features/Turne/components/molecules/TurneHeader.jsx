@@ -12,7 +12,7 @@ export function TurneHeader({ onAddTurne }) {
                 </p>
             </div>
             <div>
-                <AddButton text="Adicionar turnê" click={onAddTurne} />
+                <AddButton text="Criar turnê" click={onAddTurne} />
             </div>
         </div>
     );
