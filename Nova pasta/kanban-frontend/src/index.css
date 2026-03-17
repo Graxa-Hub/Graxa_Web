@@ -1,0 +1,93 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Paleta dark (padrão) ───────────────────────────────────────── */
+:root {
+  --bg:               #191919;
+  --col-bg:           #212121;
+  --card-bg:          #282828;
+  --card-hover-bg:    #2f2f2f;
+  --border:           #333333;
+  --border-hover:     #444444;
+  --border-strong:    #555555;
+  --text-primary:     #e8e8e6;
+  --text-secondary:   #b0afac;
+  --text-muted:       #848481;
+  --text-placeholder: #4a4a48;
+  --btn-bg:           #2f2f2f;
+  --btn-border:       #3d3d3d;
+  --btn-hover-bg:     #383838;
+  --btn-color:        #b0afac;
+  --input-bg:         #2f2f2f;
+  --modal-bg:         #282828;
+  --overlay:          rgba(0, 0, 0, 0.6);
+  --shadow:           rgba(0, 0, 0, 0.4);
+  --icon-btn-bg:      #313131;
+  --icon-btn-border:  #3f3f3f;
+  --icon-btn-color:   #848481;
+  --empty-border:     #363636;
+  --empty-color:      #585856;
+  --count-bg:         #2d2d2d;
+  --header-border:    #2e2e2e;
+  --delete-hover-bg:  rgba(210, 80, 60, 0.18);
+  --delete-hover-color: #d45a42;
+  --delete-hover-border: rgba(210, 80, 60, 0.35);
+  --toast-bg:         #2f2f2f;
+  --toast-border:     #3f3f3f;
+}
+
+/* ── Paleta light ───────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg:               #f9f9f7;
+  --col-bg:           #f0efec;
+  --card-bg:          #ffffff;
+  --card-hover-bg:    #f7f6f3;
+  --border:           #d8d7d3;
+  --border-hover:     #b8b7b3;
+  --border-strong:    #9a9894;
+  --text-primary:     #2c2b27;
+  --text-secondary:   #4b4a47;
+  --text-muted:       #6a6966;
+  --text-placeholder: #aaa9a5;
+  --btn-bg:           #eaeae8;
+  --btn-border:       #d4d3d0;
+  --btn-hover-bg:     #dddcda;
+  --btn-color:        #4b4a47;
+  --input-bg:         #f7f6f3;
+  --modal-bg:         #ffffff;
+  --overlay:          rgba(0, 0, 0, 0.35);
+  --shadow:           rgba(0, 0, 0, 0.12);
+  --icon-btn-bg:      #eaeae8;
+  --icon-btn-border:  #d0cfcc;
+  --icon-btn-color:   #6a6966;
+  --empty-border:     #d4d3d0;
+  --empty-color:      #8f8e8a;
+  --count-bg:         #e4e3e0;
+  --header-border:    #d8d7d3;
+  --delete-hover-bg:  rgba(190, 50, 30, 0.08);
+  --delete-hover-color: #b83220;
+  --delete-hover-border: rgba(190, 50, 30, 0.22);
+  --toast-bg:         #ffffff;
+  --toast-border:     #d8d7d3;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text-primary);
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input, textarea, select {
+  font-family: inherit;
+}
