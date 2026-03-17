@@ -58,11 +58,11 @@ export function Modal({
   return (
     // Background para dar aspecto escuro no fundo
     <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+      className="fixed inset-0 flex items-center justify-center z-50 bg-[var(--overlay)] backdrop-blur-[2px]"
       onClick={handleOverlayClick}
     >
       {/* Modal Box */}
-      <div className="bg-white rounded-md min-h-80 h-fit relative p-5 w-full max-w-300">
+      <div className="bg-[var(--surface-elevated)] border border-[var(--border)] rounded-[var(--radius-md)] min-h-80 h-fit relative p-5 w-full max-w-300 shadow-[var(--shadow-card)]">
         {/* Header */}
         <ModalHeader
           title={title}

@@ -83,10 +83,10 @@ export const Cadastro = () => {
   return (
     <Layout padding="py-10">
       <Grid
-        backgroundColor="bg-purple-950"
+        backgroundColor="bg-[var(--text-primary)]"
         borderRadius="rounded-tl-lg rounded-bl-lg"
       />
-      <div className="w-full p-6 rounded-br-xl rounded-tr-xl bg-gray-50">
+      <div className="w-full p-6 rounded-br-xl rounded-tr-xl bg-[var(--surface)]">
         <Titulo
           titulo="Crie a sua conta"
           descricao="Comece a sua jornada conosco!"
@@ -244,7 +244,7 @@ export const Cadastro = () => {
             </div>
           )}
 
-          <ButtonSign onClick={handleSubmit} className="hover:bg-purple-950">
+          <ButtonSign onClick={handleSubmit} className="hover:bg-[var(--text-primary)]">
             Cadastrar
           </ButtonSign>
 

@@ -1,9 +1,8 @@
 import { Link } from "react-router-dom";
 
 export const ButtonExtra = ({ children, className = "", onClick, to }) => {
-  const base = `cursor-pointer bg-transparent text-gray-900 font-semibold underline ${className}`;
+  const base = `cursor-pointer bg-transparent text-[var(--text-secondary)] font-semibold underline underline-offset-4 hover:text-[var(--accent)] ${className}`;
 
-  // Se tiver "to", vira Link
   if (to) {
     return (
       <Link to={to} className={base}>
@@ -12,7 +11,6 @@ export const ButtonExtra = ({ children, className = "", onClick, to }) => {
     );
   }
 
-  // Senão, vira botão normal (usado na recuperação)
   return (
     <button type="button" onClick={onClick} className={base}>
       {children}

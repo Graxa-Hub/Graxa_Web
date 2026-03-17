@@ -63,7 +63,7 @@ export const Login = () => {
 
   return (
     <Layout>
-      <div className="p-6 bg-gray-50">
+      <div className="p-6 md:p-8 bg-[var(--surface)]">
         <Titulo
           titulo="Faça seu login"
           descricao="Entre na sua conta para organizar a sua vida"
@@ -77,7 +77,7 @@ export const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={
-                fieldErrors.identificador ? "border-red-500" : "border-gray-400"
+                fieldErrors.identificador ? "border-red-500" : ""
               }
             />
             {fieldErrors.identificador && (
@@ -95,7 +95,7 @@ export const Login = () => {
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               className={
-                fieldErrors.senha ? "border-red-500" : "border-gray-400"
+                fieldErrors.senha ? "border-red-500" : ""
               }
             />
             {fieldErrors.senha && (
@@ -106,7 +106,7 @@ export const Login = () => {
           <ButtonExtra to="/recuperar-senha">Esqueceu a senha?</ButtonExtra>
 
           <ButtonSign
-            className="hover:bg-orange-500"
+            className=""
             onClick={loginUser}
             disabled={loading}
           >
@@ -130,7 +130,7 @@ export const Login = () => {
 
       {/* hide Grid on small screens via Tailwind: hidden below sm (640px) */}
       <div className="hidden sm:block">
-        <Grid backgroundColor="bg-orange-500" />
+        <Grid backgroundColor="bg-[var(--accent)]" />
       </div>
     </Layout>
   );

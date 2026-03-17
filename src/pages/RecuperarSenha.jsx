@@ -94,7 +94,7 @@ export const RecuperarSenha = () => {
 
   return (
     <Layout columns={1}>
-      <div className="p-6 bg-gray-50">
+      <div className="p-6 bg-[var(--surface)]">
         <Titulo
           titulo="Recuperando a senha"
           descricao="Informe seu e-mail para receber o código e, em seguida, valide o código abaixo"
@@ -111,7 +111,7 @@ export const RecuperarSenha = () => {
                   placeholder="seuemail@empresa.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className={fieldErrors.email ? "border-red-500" : "border-gray-400"}
+                  className={fieldErrors.email ? "border-red-500" : ""}
                 />
                 {fieldErrors.email && (
                   <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
@@ -134,7 +134,7 @@ export const RecuperarSenha = () => {
                   placeholder="Código recebido"
                   value={codigo}
                   onChange={(e) => setCodigo(e.target.value)}
-                  className={fieldErrors.codigo ? "border-red-500" : "border-gray-400"}
+                  className={fieldErrors.codigo ? "border-red-500" : ""}
                 />
                 {fieldErrors.codigo && (
                   <p className="text-red-500 text-sm mt-1">{fieldErrors.codigo}</p>
@@ -157,7 +157,7 @@ export const RecuperarSenha = () => {
                   placeholder="Digite sua nova senha"
                   value={novaSenha}
                   onChange={(e) => setNovaSenha(e.target.value)}
-                  className={fieldErrors.novaSenha ? "border-red-500" : "border-gray-400"}
+                  className={fieldErrors.novaSenha ? "border-red-500" : ""}
                 />
                 {fieldErrors.novaSenha && (
                   <p className="text-red-500 text-sm mt-1">{fieldErrors.novaSenha}</p>

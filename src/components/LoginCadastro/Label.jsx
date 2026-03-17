@@ -1,5 +1,5 @@
 export const Label = ({ children }) => {
   return (
-    <label className="text-md font-semibold text-gray-800">{children}</label>
+    <label className="text-sm font-semibold text-[var(--text-secondary)]">{children}</label>
   );
 };

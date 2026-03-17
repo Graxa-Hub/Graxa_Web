@@ -4,18 +4,16 @@ import { NavigationList } from "../molecules/NavigationList";
 import { FooterActions } from "../molecules/FooterActions";
 
 export const Sidebar = () => {
-    const { usuario, logout } = useAuth();
+    const { usuario } = useAuth();
 
     return (
-        <>
-            <aside className="flex flex-col w-72 h-screen flex-shrink-0 shadow-[2px_0_20px_0_rgba(0,0,0,0.25)] p-4 bg-white z-10">
-                <SidebarHeader usuario={usuario} />
+        <aside className="flex flex-col w-72 h-screen flex-shrink-0 p-4 z-10 border-r border-[var(--border)] bg-[var(--surface-elevated)] shadow-[2px_0_20px_0_rgba(35,33,30,0.08)]">
+            <SidebarHeader usuario={usuario} />
 
-                <nav className="flex flex-col flex-1 justify-between mt-4">
-                    <NavigationList />
-                    <FooterActions />
-                </nav>
-            </aside>
-        </>
+            <nav className="flex flex-col flex-1 justify-between mt-4">
+                <NavigationList />
+                <FooterActions />
+            </nav>
+        </aside>
     );
 };
