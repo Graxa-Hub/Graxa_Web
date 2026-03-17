@@ -39,7 +39,7 @@ export const Header = ({
 
     return (
         <header className="flex justify-between items-center w-full h-14 mb-5">
-            <div className="relative flex justify-between items-center h-full max-w-70 sm:w-1/3 px-4 bg-white rounded-sm hover:shadow-lg transition-all duration-300">
+            <div className="relative flex justify-between items-center h-full max-w-70 sm:w-1/3 px-4 surface-card hover:shadow-lg transition-all duration-300">
                 <BandaTurneSelector
                     open={isOpen}
                     active={activeOption}
@@ -54,7 +54,7 @@ export const Header = ({
                 />
 
                 <div className="flex gap-3 items-center">
-                    <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center border-2 border-green-500">
+                    <div className="h-12 w-12 rounded-full overflow-hidden bg-[var(--surface-muted)] flex items-center justify-center border-2 border-[var(--success)]">
                         {turneSelecionada?.imagemUrl ? (
                             <img
                                 src={turneSelecionada.imagemUrl}
@@ -68,23 +68,23 @@ export const Header = ({
                                 className="object-cover w-full h-full"
                             />
                         ) : (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-[var(--text-muted)]">
                                 {turneSelecionada ? "🎤" : "🎸"}
                             </span>
                         )}
                     </div>
                     <div>
-                        <h2 className="font-semibold">
+                        <h2 className="font-semibold text-[var(--text-primary)]">
                             {bandaSelecionada?.nome || "Selecione"}
                         </h2>
-                        <p className="text-neutral-700 text-sm">
+                        <p className="text-[var(--text-secondary)] text-sm">
                             TURNÊ:{" "}
                             {turneSelecionada?.nomeTurne || turneSelecionada?.nome || "Todas"}
                         </p>
                     </div>
                 </div>
 
-                <div>
+                <div className="text-[var(--text-secondary)]">
                     {isOpen ? (
                         <ChevronDown
                             className="cursor-pointer"

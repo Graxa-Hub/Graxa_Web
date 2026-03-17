@@ -15,7 +15,6 @@ export const Toast = ({
         if (isOpen) {
             setVisible(true);
 
-            // Auto close
             if (duration > 0) {
                 const timer = setTimeout(() => {
                     handleClose();
@@ -30,7 +29,7 @@ export const Toast = ({
         setVisible(false);
         setTimeout(() => {
             onClose && onClose();
-        }, 300); // Espera animação de saída
+        }, 300);
     };
 
     if (!isOpen) return null;
@@ -38,28 +37,14 @@ export const Toast = ({
     const getIcon = () => {
         switch (type) {
             case 'success':
-                return <CheckCircle className="w-6 h-6 text-green-600" />;
+                return <CheckCircle className="w-6 h-6 text-[var(--success)]" />;
             case 'error':
-                return <XCircle className="w-6 h-6 text-red-600" />;
+                return <XCircle className="w-6 h-6 text-[var(--accent)]" />;
             case 'warning':
-                return <AlertTriangle className="w-6 h-6 text-yellow-600" />;
+                return <AlertTriangle className="w-6 h-6 text-[var(--warning)]" />;
             case 'info':
             default:
-                return <Info className="w-6 h-6 text-blue-600" />;
-        }
-    };
-
-    const getColors = () => {
-        switch (type) {
-            case 'success':
-                return 'border-green-200 bg-green-50 text-green-800';
-            case 'error':
-                return 'border-red-200 bg-red-50 text-red-800';
-            case 'warning':
-                return 'border-yellow-200 bg-yellow-50 text-yellow-800';
-            case 'info':
-            default:
-                return 'border-blue-200 bg-blue-50 text-blue-800';
+                return <Info className="w-6 h-6 text-sky-600" />;
         }
     };
 
@@ -69,7 +54,7 @@ export const Toast = ({
                 className={`max-w-sm w-full transition-all duration-300 transform ${visible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
                     }`}
             >
-                <div className={`border rounded-xl shadow-2xl p-4 ${getColors()}`}>
+                <div className="border rounded-xl shadow-2xl p-4 bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-secondary)]">
                     <div className="flex items-start gap-3">
                         <div className="flex-shrink-0 mt-0.5">
                             {getIcon()}
@@ -77,7 +62,7 @@ export const Toast = ({
 
                         <div className="flex-1 min-w-0">
                             {title && (
-                                <h4 className="font-semibold text-sm mb-1">
+                                <h4 className="font-semibold text-sm mb-1 text-[var(--text-primary)]">
                                     {title}
                                 </h4>
                             )}
@@ -89,13 +74,12 @@ export const Toast = ({
 
                         <button
                             onClick={handleClose}
-                            className="flex-shrink-0 ml-2 p-1 rounded-full hover:bg-black/10 transition-colors"
+                            className="flex-shrink-0 ml-2 p-1 rounded-full hover:bg-[var(--surface-muted)] transition-colors"
                         >
                             <X className="w-4 h-4" />
                         </button>
                     </div>
 
-                    {/* Barra de progresso */}
                     {duration > 0 && (
                         <div className="mt-3 bg-black/10 rounded-full h-1 overflow-hidden">
                             <div
