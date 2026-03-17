@@ -1,65 +1,46 @@
 @import "tailwindcss";
 
-:root {
-  --bg-page: #f5f4f1;
-  --surface: #fcfbf8;
-  --surface-elevated: #ffffff;
-  --surface-muted: #f0eeea;
-  --text-primary: #23211e;
-  --text-secondary: #3f3b36;
-  --text-muted: #736c63;
-  --border: #d8d2ca;
-  --border-strong: #b8b0a6;
-  --accent: #c8503c;
-  --accent-hover: #b84532;
-  --success: #5c9e6e;
-  --warning: #b8861e;
-  --danger-soft: #f9e4df;
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --shadow-soft: 0 4px 18px rgba(35, 33, 30, 0.08);
-  --shadow-card: 0 10px 30px rgba(35, 33, 30, 0.12);
-  --overlay: rgba(26, 24, 21, 0.42);
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-* {
-  box-sizing: border-box;
+:root {
+  --bg: #191919;
+  --surface: #212121;
+  --surface-elevated: #282828;
+  --surface-hover: #2f2f2f;
+  --border: #333333;
+  --border-hover: #444444;
+  --border-strong: #555555;
+  --text-primary: #e8e8e6;
+  --text-secondary: #b0afac;
+  --text-muted: #848481;
+  --text-placeholder: #4a4a48;
+  --accent: #c8503c;
+  --success: #5c9e6e;
+  --warning: #b8861e;
+  --info: #6196c8;
+  --overlay: rgba(0, 0, 0, 0.6);
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 16px 48px rgba(0, 0, 0, 0.4);
 }
 
 body {
   margin: 0;
-  font-family: "Inter", "Poppins", sans-serif;
   min-height: 100vh;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, sans-serif;
+  background: var(--bg);
   color: var(--text-primary);
-  background: radial-gradient(circle at top right, #efeae3 0%, var(--bg-page) 45%);
+  -webkit-font-smoothing: antialiased;
 }
 
-#root {
-  min-height: 100vh;
-}
+#root { min-height: 100vh; }
 
-.grid-background {
-  background-image:
-    linear-gradient(to right, #ffffff3f 1px, transparent 1px),
-    linear-gradient(to bottom, #ffffff3f 1px, transparent 1px);
-  background-size: 36px 36px;
-}
-
-.app-shell {
-  height: 100vh;
-  overflow: hidden;
-  display: flex;
-}
-
-.app-main {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  background: transparent;
-}
+.app-shell { min-height: 100vh; display: flex; background: var(--bg); }
+.app-main { flex: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; padding: 20px; gap: 14px; }
 
 .surface-card {
   background: var(--surface-elevated);
@@ -70,603 +51,134 @@ body {
 
 .form-input {
   width: 100%;
-  padding: 10px 12px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-strong);
-  background: var(--surface);
   color: var(--text-primary);
+  font-size: 14px;
+  padding: 9px 10px;
   outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  transition: border-color .12s, background .12s;
 }
-
-.form-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(200, 80, 60, 0.15);
-  background: #fff;
-}
+.form-input:focus { border-color: var(--border-strong); }
+.form-input::placeholder { color: var(--text-placeholder); }
 
 .btn-primary {
-  border: 1px solid transparent;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-hover);
+  color: var(--text-primary);
   border-radius: var(--radius-sm);
-  background: var(--text-primary);
-  color: #fdfcfb;
-  padding: 10px 14px;
+  font-size: 13px;
   font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.1s, background 0.15s;
+  padding: 9px 14px;
+  transition: background .12s, border-color .12s;
 }
+.btn-primary:hover { background: #383838; border-color: var(--border-strong); }
+.btn-primary:disabled { opacity: .65; cursor: not-allowed; }
 
-.btn-primary:hover {
-  background: var(--accent);
-}
-
-.btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
 }
 
 .auth-panel {
-  background: var(--surface-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  background: var(--surface-elevated);
   box-shadow: var(--shadow-card);
 }
 
-/* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
-/* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
-/* CALENDÁRIO CALENDÁRIO CALENDÁRIO */
-
-/* FullCalendar header title */
-.fc-toolbar-title {
-  color: #111827 !important;
-  font-weight: 600 !important;
+.sidebar-panel {
+  width: 272px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 16px;
 }
 
-/* Ajuste dos cabeçalhos das colunas para melhor contraste */
-.fc-col-header-cell {
-  background-color: #f3f4f6 !important;
-  /* gray-100 */
-  color: #374151 !important;
-  /* gray-700 */
-  font-weight: 600 !important;
-}
-
-.fc-col-header-cell-cushion {
-  color: #374151 !important;
-  text-decoration: none !important;
-}
-
-/* Modificando os dias do calendário */
-.fc-daygrid-day-number {
-  color: #374151 !important;
-  font-weight: 500 !important;
-  text-decoration: none !important;
-}
-
-/* Modificando os botões em cima do calendário */
-.fc-button {
-  background-color: rgb(217, 217, 217, );
-  border: solid 1px white !important;
-}
-
-/* Mini calendar numbers: dark gray for better contrast (override global white) */
-.mini-calendar .fc-daygrid-day-number {
-  color: #374151 !important;
-  /* gray-700 */
-  font-weight: 600 !important;
-}
-
-.fc-button:disabled {
-  background-color: rgb(255, 255, 255, 50%);
-  border: solid 1px gray !important;
-  color: #aaa;
-}
-
-/* Mini calendar styles */
-.mini-calendar .fc-toolbar-title {
-  font-size: 0.875rem !important;
-  color: #374151 !important;
-}
-
-.mini-calendar .fc-col-header-cell {
-  background: transparent !important;
-  font-size: 0.75rem !important;
-}
-
-/* LISTA LISTA LISTA LISTA LISTA */
-/* LISTA LISTA LISTA LISTA LISTA */
-/* LISTA LISTA LISTA LISTA LISTA */
-
-/* Cabeçalho do dia/mês: .fc-list-day-cushion, .fc-list-day-text, .fc-list-day-side-text
-Linha do evento: .fc-list-event
-Hora do evento: .fc-list-event-time
-Título do evento: .fc-list-event-title a
-Bolinha do evento: .fc-list-event-dot (fica dentro de .fc-list-event-graphic)
-Tabela da lista: .fc-list-table */
-
-/* Se quiser esconder a bolinha completamente: */
-.fc .fc-list-event-graphic {
-  display: none;
-}
-
-/* Cabeçalho do dia/mês totalmente transparente */
-.fc .fc-list-day,
-.fc .fc-list-day-cushion {
-  /* background: transparent !important; */
-  background-color: orangered;
-  box-shadow: none !important;
-}
-
-/* Texto do cabeçalho legível sobre seu fundo */
-.fc .fc-list-day-cushion .fc-list-day-text,
-.fc .fc-list-day-cushion .fc-list-day-side-text {
-  color: white !important;
-}
-
-/* Espaçamento geral da tabela para criar “respiro” entre blocos */
-.fc .fc-list-table>tbody>tr>td,
-.fc .fc-list-table>thead>tr>td {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  background: rgb(255, 255, 255, 50%);
-  cursor: pointer;
-}
-
-.fc-h-event .fc-event-title-container {
-  cursor: pointer;
-}
-
-/* Compact day cells for FullCalendar dayGrid (make month squares less tall) */
-.fc .fc-daygrid-day {
-  /* reduce the minimum height of each day cell */
-  min-height: 48px;
-  min-width: 48px;
-}
-
-.fc .fc-daygrid-day .fc-daygrid-day-frame {
-  padding: 4px;
-  max-height: 28px;
-}
-
-.fc .fc-daygrid-day-number {
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-/* slightly larger cells on wider screens */
-@media (min-width: 768px) {
-  .fc .fc-daygrid-day {
-    min-height: 56px;
-  }
-}
-
-/* Mini calendar: allow it to fill column height so it can match the main calendar */
-.mini-calendar {
-  width: 100%;
-  margin: 0;
-}
-
-.mini-calendar .fc {
-  /* let FullCalendar fill the wrapper height so mini matches the main calendar */
-  height: 100% !important;
-  overflow: auto;
-}
-
-.mini-calendar .fc-daygrid-day {
-  /* keep cells compact */
-  min-height: 44px !important;
-}
-
-.mini-calendar .fc-daygrid-day .fc-daygrid-day-frame {
-  padding: 4px !important;
-  box-sizing: border-box !important;
-}
-
-
-.mini-calendar .fc-col-header-cell {
-  padding: 4px 6px !important;
-}
-
-/* Dark header / lighter font for mini-calendar */
-.mini-calendar .fc .fc-toolbar {
-  background: #374151 !important;
-  /* gray-700 */
-  color: #f8fafc !important;
-  /* gray-50 */
-  border-radius: 8px 8px 0 0 !important;
-  padding: 6px 10px !important;
-}
-
-/* Add a subtle border around the month title area and make the transition
-   to the calendar grid seamless to avoid visual irregularities. */
-.mini-calendar .fc .fc-toolbar {
-  border: 1px solid #e5e7eb !important;
-  /* light gray to match card border */
-  border-bottom: none !important;
-  /* let the grid draw the separating line */
-  box-shadow: none !important;
-  overflow: hidden !important;
-}
-
-.mini-calendar .fc .fc-scrollgrid {
-  border-top: 1px solid #e5e7eb !important;
-  /* matches toolbar border */
-}
-
-/* Ensure the outer wrapper rounds consistently and clips children */
-.mini-calendar {
-  border-radius: 8px !important;
-  overflow: hidden !important;
-}
-
-
-/* Short weekday labels: darker background + lighter font */
-.mini-calendar .fc .fc-col-header-cell {
-  background: #374151 !important;
-  color: #f8fafc !important;
-  font-weight: 600 !important;
-  padding: 6px 4px !important;
-}
-
-/* Keep day cells with normal background and borders so numbers remain readable */
-.mini-calendar .fc .fc-daygrid-day-frame {
-  background: transparent !important;
-}
-
-/* Ensure the header area doesn't collapse and the title stays visible */
-.mini-calendar .fc .fc-toolbar-chunk {
-  align-items: center !important;
-}
-
-/* Remove stray gap between the toolbar and the weekday header/scrollgrid */
-.mini-calendar .fc .fc-toolbar {
-  margin-bottom: 0 !important;
-}
-
-.mini-calendar .fc .fc-scrollgrid {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-.mini-calendar .fc .fc-scrollgrid thead,
-.mini-calendar .fc .fc-scrollgrid thead tr {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-/* Slightly reduce vertical padding so the header rows are visually contiguous */
-.mini-calendar .fc .fc-toolbar {
-  padding-bottom: 4px !important;
-}
-
-.mini-calendar .fc .fc-col-header-cell {
-  padding-top: 4px !important;
-}
-
-/* Unificação do Card do Calendário */
-.graxa-calendar-card {
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  padding: 1rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.graxa-calendar {
-  height: 100% !important;
-  flex: 1;
-}
-
-/* Make the calendar fill the available flex space and allow internal scrolling
-   so the month view keeps proper row heights while overflowing content scrolls. */
-.graxa-calendar {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  min-height: 0;
-  /* important for flex children to allow proper shrinking */
-}
-
-/* The FullCalendar root element should stretch inside the wrapper */
-.graxa-calendar .fc {
-  display: flex !important;
-  flex-direction: column !important;
-  flex: 1 1 auto !important;
-  height: 100% !important;
-  min-height: 0 !important;
-}
-
-/* The scroller element inside FullCalendar holds the grid/list content and
-   needs to scroll when the available height is smaller than content. */
-.graxa-calendar .fc .fc-scroller {
-  overflow: auto !important;
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-}
-
-.graxa-calendar .fc-toolbar-chunk {
+.nav-item {
   display: flex;
   align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+  transition: background .12s, color .12s, border-color .12s;
+}
+.nav-item:hover { background: var(--surface-hover); color: var(--text-primary); border-color: var(--border-hover); }
+.nav-item--active { background: var(--surface-hover); color: var(--text-primary); border-color: var(--border-hover); font-weight: 600; }
+
+.panel-title { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; color: var(--text-primary); }
+.panel-subtitle { font-size: 12px; color: var(--text-muted); }
+
+@media (max-width: 1024px) {
+  .sidebar-panel { width: 236px; }
+  .app-main { padding: 14px; }
+}
+
+/* FullCalendar adaptation */
+.fc {
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: var(--surface-elevated);
+  --fc-border-color: var(--border);
+  --fc-button-bg-color: var(--surface-hover);
+  --fc-button-border-color: var(--border-hover);
+  --fc-button-hover-bg-color: #383838;
+  --fc-button-hover-border-color: var(--border-strong);
+  --fc-button-active-bg-color: #3d3d3d;
+  --fc-button-active-border-color: var(--border-strong);
+  --fc-today-bg-color: rgba(200, 80, 60, 0.1);
+  color: var(--text-secondary);
+}
+.fc .fc-toolbar-title,
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number {
+  color: var(--text-primary) !important;
+  text-decoration: none !important;
+}
+.fc .fc-col-header-cell,
+.fc .fc-list-day-cushion {
+  background: var(--surface) !important;
+}
+.fc .fc-list-event:hover td { background: var(--surface-hover) !important; }
+.fc .fc-list-event-dot { border-color: var(--accent) !important; }
+
+.modal-overlay,
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--overlay);
+  backdrop-filter: blur(2px);
+}
+
+.toast-container {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.graxa-calendar .fc-toolbar-title {
-  font-weight: 600;
-  /* alinhar com font-semibold pedido */
-  font-size: 1.02rem;
-  color: #111827;
-}
-
-/* Estilo dos Botões do Calendário */
-.fc .fc-button-primary {
-  background-color: #ffffff !important;
-  border: 1px solid #d1d5db !important;
-  color: #374151 !important;
-  font-weight: 500 !important;
-  text-transform: capitalize !important;
-  padding: 0.4rem 0.8rem !important;
-  border-radius: 0.5rem !important;
-  transition: all 0.2s !important;
-}
-
-.fc .fc-button-primary:hover {
-  background-color: #f9fafb !important;
-  border-color: #9ca3af !important;
-}
-
-.fc .fc-button-primary:not(:disabled).fc-button-active {
-  background-color: #ef4444 !important;
-  border-color: #ef4444 !important;
-  color: #ffffff !important;
-}
-
-.graxa-calendar .fc .fc-col-header-cell {
-  color: #374151;
-  background: transparent;
-  font-weight: 600;
-}
-
-.graxa-calendar .fc .fc-timegrid-axis {
-  color: #9ca3af;
-  font-size: 0.82rem;
-}
-
-.graxa-calendar .fc .fc-daygrid-day {
-  min-height: 48px;
-}
-
-.graxa-calendar .fc {
-  height: 100% !important;
-}
-
-@media (min-width: 768px) {
-  .graxa-calendar {
-    padding: 18px;
-  }
-}
-
-/* Header/title above the calendar when using the graxa wrapper */
-.graxa-calendar-header {
+.toast {
+  min-width: 220px;
+  max-width: 340px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  /* center the title */
-  gap: 12px;
+  gap: 10px;
+  background: var(--surface-hover);
+  border: 1px solid var(--border-hover);
+  border-radius: 7px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-soft);
 }
 
-.graxa-calendar-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
+.toast__message {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.45;
 }
 
-/* Slight spacing between the header and the calendar toolbar inside FullCalendar */
-.graxa-calendar .fc .fc-toolbar {
-  margin-top: 6px;
-}
-
-/* Stronger, higher-specificity rules to ensure toolbar/button styles apply */
-.graxa-calendar-card .fc .fc-toolbar {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  padding: 6px 0 !important;
-}
-
-/* Align the three toolbar chunks: left/center/right. Use nth-child because FullCalendar
-   renders three fc-toolbar-chunk elements in order. Center chunk is given flex:1 so
-   the title can center itself while left/right chunks stay at the edges. */
-.graxa-calendar-card .fc .fc-toolbar>.fc-toolbar-chunk:nth-child(1) {
-  display: flex !important;
-  justify-content: flex-start !important;
-  gap: 8px !important;
-  align-items: center !important;
-}
-
-.graxa-calendar-card .fc .fc-toolbar>.fc-toolbar-chunk:nth-child(2) {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  flex: 1 1 auto !important;
-}
-
-.graxa-calendar-card .fc .fc-toolbar>.fc-toolbar-chunk:nth-child(3) {
-  display: flex !important;
-  justify-content: flex-end !important;
-  gap: 8px !important;
-  align-items: center !important;
-}
-
-.graxa-calendar-card .fc .fc-toolbar-chunk {
-  display: flex !important;
-  gap: 8px !important;
-  align-items: center !important;
-}
-
-.graxa-calendar-card .fc .fc-button {
-  border-radius: 8px !important;
-  background: #F4F4F5 !important;
-  border: 0 !important;
-  color: #111827 !important;
-  padding: 6px 10px !important;
-  font-weight: 600 !important;
-  box-shadow: none !important;
-}
-
-.graxa-calendar-card .fc .fc-button:hover {
-  background: #e6e7eb !important;
-}
-
-.graxa-calendar-card .fc .fc-button.fc-button-active,
-.graxa-calendar-card .fc .fc-button:active,
-.graxa-calendar-card .fc .fc-button:focus {
-  background: #ef4444 !important;
-  color: #fff !important;
-}
-
-.graxa-calendar-card .fc .fc-col-header-cell {
-  color: #374151 !important;
-  background: transparent !important;
-  font-weight: 600 !important;
-}
-
-.graxa-calendar-card .fc .fc-timegrid-axis {
-  color: #9ca3af !important;
-  font-size: 0.82rem !important;
-}
-
-.graxa-calendar-card .fc {
-  height: 100% !important;
-}
-
-/* Ensure spacing between button groups and individual buttons in the toolbar */
-.graxa-calendar-card .fc .fc-button-group {
-  display: flex !important;
-  gap: 8px !important;
-  align-items: center !important;
-}
-
-.graxa-calendar-card .fc .fc-button-group .fc-button {
-  /* remove any collapsed margins from grouping and rely on gap */
-  margin: 0 !important;
-}
-
-/* Make non-active toolbar buttons transparent (no background) and subtle text color
-   Keep active/selected buttons with red background to match the screenshot */
-.graxa-calendar-card .fc .fc-button:not(.fc-button-active) {
-  background: transparent !important;
-  color: #6b7280 !important;
-  /* gray-500 */
-  border: none !important;
-  box-shadow: none !important;
-  padding: 4px 8px !important;
-  border-radius: 9999px !important;
-  /* keep pill shape for active button consistency */
-}
-
-/* Slight hover feedback but still transparent to match the design */
-.graxa-calendar-card .fc .fc-button:not(.fc-button-active):hover {
-  background: rgba(0, 0, 0, 0.04) !important;
-}
-
-/* Stronger background for disabled buttons inside calendar toolbars for better contrast */
-.graxa-calendar-card .fc .fc-button:disabled,
-.graxa-calendar .fc .fc-button:disabled {
-  background: #e5e7eb !important;
-  color: #6b7280 !important;
-  border: 1px solid #d1d5db !important;
-  box-shadow: none !important;
-  opacity: 1 !important;
-}
-
-/* Also ensure grouped disabled buttons don't inherit transparent rules */
-.graxa-calendar-card .fc .fc-button-group .fc-button:disabled {
-  background: #e5e7eb !important;
-}
-
-/* Also cover the .graxa-calendar wrapper variant to be safe */
-.graxa-calendar .fc .fc-button:not(.fc-button-active) {
-  background: transparent !important;
-  color: #6b7280 !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 4px 8px !important;
-}
-
-/* ========== PRINT STYLES FOR PDF ========== */
-@media print {
-  @page {
-    size: A4;
-    margin: 0;
-  }
-
-  body {
-    background: white;
-  }
-
-  .print\:hidden {
-    display: none !important;
-  }
-
-  /* Evitar quebras de página dentro de elementos */
-  .print\:break-inside-avoid {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Forçar quebra de página antes do elemento */
-  .print\:break-before-page {
-    page-break-before: always !important;
-    break-before: page !important;
-  }
-
-  /* Evitar quebras de página indesejadas */
-  h1,
-  h2,
-  h3 {
-    page-break-after: avoid !important;
-    break-after: avoid !important;
-  }
-
-  ul,
-  ol {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  li {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  /* Manter seções juntas */
-  .px-8 {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-}
-
-/* CUSTOM SCROLLBAR (Utilizada no EventoModal) */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 10px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #d1d5db;
-  border-radius: 10px;
-  border: 2px solid transparent;
-  background-clip: content-box;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background-color: #9ca3af;
-}
+.grid-background { background-image: linear-gradient(to right, #ffffff10 1px, transparent 1px), linear-gradient(to bottom, #ffffff10 1px, transparent 1px); background-size: 28px 28px; }

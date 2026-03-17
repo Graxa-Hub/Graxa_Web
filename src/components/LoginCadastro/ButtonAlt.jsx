@@ -4,6 +4,7 @@ import { ButtonExtra } from "./ButtonExtra";
 const TEXT_COLOR = {
   "orange-500": "text-[var(--accent)]",
   "green-500": "text-[var(--success)]",
+  secondary: "text-[var(--text-secondary)]",
 };
 
 export const ButtonAlt = ({ text, buttonText, textColor, to }) => {

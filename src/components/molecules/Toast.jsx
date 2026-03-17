@@ -14,12 +14,8 @@ export const Toast = ({
     useEffect(() => {
         if (isOpen) {
             setVisible(true);
-
             if (duration > 0) {
-                const timer = setTimeout(() => {
-                    handleClose();
-                }, duration);
-
+                const timer = setTimeout(() => handleClose(), duration);
                 return () => clearTimeout(timer);
             }
         }
@@ -27,80 +23,30 @@ export const Toast = ({
 
     const handleClose = () => {
         setVisible(false);
-        setTimeout(() => {
-            onClose && onClose();
-        }, 300);
+        setTimeout(() => onClose && onClose(), 200);
     };
 
     if (!isOpen) return null;
 
     const getIcon = () => {
         switch (type) {
-            case 'success':
-                return <CheckCircle className="w-6 h-6 text-[var(--success)]" />;
-            case 'error':
-                return <XCircle className="w-6 h-6 text-[var(--accent)]" />;
-            case 'warning':
-                return <AlertTriangle className="w-6 h-6 text-[var(--warning)]" />;
-            case 'info':
-            default:
-                return <Info className="w-6 h-6 text-sky-600" />;
+            case 'success': return <CheckCircle className="w-5 h-5 text-[var(--success)]" />;
+            case 'error': return <XCircle className="w-5 h-5 text-[var(--accent)]" />;
+            case 'warning': return <AlertTriangle className="w-5 h-5 text-[var(--warning)]" />;
+            default: return <Info className="w-5 h-5 text-[var(--info)]" />;
         }
     };
 
     return (
-        <>
-            <div
-                className={`max-w-sm w-full transition-all duration-300 transform ${visible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-                    }`}
-            >
-                <div className="border rounded-xl shadow-2xl p-4 bg-[var(--surface-elevated)] border-[var(--border)] text-[var(--text-secondary)]">
-                    <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-0.5">
-                            {getIcon()}
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                            {title && (
-                                <h4 className="font-semibold text-sm mb-1 text-[var(--text-primary)]">
-                                    {title}
-                                </h4>
-                            )}
-
-                            <p className="text-sm leading-relaxed">
-                                {message}
-                            </p>
-                        </div>
-
-                        <button
-                            onClick={handleClose}
-                            className="flex-shrink-0 ml-2 p-1 rounded-full hover:bg-[var(--surface-muted)] transition-colors"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-
-                    {duration > 0 && (
-                        <div className="mt-3 bg-black/10 rounded-full h-1 overflow-hidden">
-                            <div
-                                className="h-full bg-current opacity-30 rounded-full transition-all ease-linear"
-                                style={{
-                                    animation: `toast-progress ${duration}ms linear forwards`
-                                }}
-                            />
-                        </div>
-                    )}
-                </div>
+        <div className={`toast transition-all duration-200 ${visible ? 'translate-x-0 opacity-100' : 'translate-x-3 opacity-0'}`}>
+            <div className="toast__icon">{getIcon()}</div>
+            <div className="flex-1 min-w-0">
+                {title && <h4 className="text-xs font-semibold text-[var(--text-primary)] mb-0.5">{title}</h4>}
+                <p className="toast__message">{message}</p>
             </div>
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-          @keyframes toast-progress {
-            from { width: 100%; }
-            to { width: 0%; }
-          }
-        `
-            }} />
-        </>
+            <button onClick={handleClose} className="text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+                <X className="w-4 h-4" />
+            </button>
+        </div>
     );
 };
