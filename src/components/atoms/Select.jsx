@@ -3,10 +3,7 @@ import React from "react";
 export const Select = ({ children }) => {
   return (
     <div>
-      <select
-        className={`w-full py-2 px-3 rounded-sm border border-gray-400 outline-none bg-transparent
-        focus:ring-2 focus:bg-white`}
-      >
+      <select className="form-input">
         <option disabled selected hidden>
           Selecione a opção
         </option>

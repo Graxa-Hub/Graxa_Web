@@ -7,7 +7,7 @@ export const Sidebar = () => {
     const { usuario } = useAuth();
 
     return (
-        <aside className="flex flex-col w-72 h-screen flex-shrink-0 p-4 z-10 border-r border-[var(--border)] bg-[var(--surface-elevated)] shadow-[2px_0_20px_0_rgba(35,33,30,0.08)]">
+        <aside className="sidebar-panel flex flex-col h-screen flex-shrink-0">
             <SidebarHeader usuario={usuario} />
 
             <nav className="flex flex-col flex-1 justify-between mt-4">
