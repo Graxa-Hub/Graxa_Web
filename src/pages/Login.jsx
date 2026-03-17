@@ -63,7 +63,7 @@ export const Login = () => {
 
   return (
     <Layout>
-      <div className="p-6 md:p-8 bg-[var(--surface)]">
+      <div className="p-6 md:p-8 bg-[var(--surface-elevated)]">
         <Titulo
           titulo="Faça seu login"
           descricao="Entre na sua conta para organizar a sua vida"
@@ -77,11 +77,11 @@ export const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className={
-                fieldErrors.identificador ? "border-red-500" : ""
+                fieldErrors.identificador ? "border-[var(--accent)]" : ""
               }
             />
             {fieldErrors.identificador && (
-              <p className="text-red-500 text-sm mt-1">
+              <p className="text-[var(--accent)] text-sm mt-1">
                 {fieldErrors.identificador}
               </p>
             )}
@@ -95,11 +95,11 @@ export const Login = () => {
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               className={
-                fieldErrors.senha ? "border-red-500" : ""
+                fieldErrors.senha ? "border-[var(--accent)]" : ""
               }
             />
             {fieldErrors.senha && (
-              <p className="text-red-500 text-sm mt-1">{fieldErrors.senha}</p>
+              <p className="text-[var(--accent)] text-sm mt-1">{fieldErrors.senha}</p>
             )}
           </div>
 
@@ -114,7 +114,7 @@ export const Login = () => {
           </ButtonSign>
 
           {fieldErrors.geral && (
-            <p className="text-red-500 text-sm mt-2">{fieldErrors.geral}</p>
+            <p className="text-[var(--accent)] text-sm mt-2">{fieldErrors.geral}</p>
           )}
 
           <ButtonAlt

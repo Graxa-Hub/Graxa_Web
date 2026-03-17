@@ -14,9 +14,9 @@ export function Textarea({
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && (
-        <label className="text-sm font-medium text-gray-700">
+        <label className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-[var(--accent)] ml-1">*</span>}
         </label>
       )}
       <textarea
@@ -26,11 +26,11 @@ export function Textarea({
         required={required}
         rows={rows}
         maxLength={maxLength}
-        className="h-30 px-4 py-3 border border-gray-200 rounded-lg shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 bg-white "
+        className="form-input min-h-[100px] resize-y"
         {...props}
       />
       {maxLength && (
-        <div className="text-xs text-gray-500 text-right">
+        <div className="text-xs text-[var(--text-muted)] text-right">
           {value?.length || 0}/{maxLength}
         </div>
       )}

@@ -1,13 +1,16 @@
 import React from "react";
 
-export const BoxModal = ({ children }) => {
+export const BoxModal = ({ children, onClose }) => {
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget && onClose) onClose();
+  };
+
   return (
     <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+      className="modal-overlay fixed inset-0 flex items-center justify-center z-50 p-4"
       onClick={handleOverlayClick}
     >
-      {/* Modal Box */}
-      <div className="bg-white rounded-2xl shadow-2xl min-h-80 h-fit relative overflow-x-hidden min-w-100 w-fit max-w-200">
+      <div className="modal-panel overflow-x-hidden w-fit min-w-[420px] max-w-[800px]">
         {children}
       </div>
     </div>
