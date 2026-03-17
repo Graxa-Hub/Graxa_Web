@@ -4,9 +4,9 @@ import { useHeaderLogic } from "../../hooks/useHeaderLogic";
 import { ArtistaModal } from "../Dashboard/ArtistaModal";
 import { TurneModal } from "../Dashboard/TurneModal";
 import { BandaTurneSelector } from "../ModalEventos/BandaTurneSelector";
+import { ThemeToggle } from "../molecules/ThemeToggle";
 
 export const Header = ({
-    circulo,
     bandas,
     turnes,
     bandaSelecionada,
@@ -38,7 +38,7 @@ export const Header = ({
     });
 
     return (
-        <header className="flex justify-between items-center w-full mb-2">
+        <header className="flex justify-between items-center w-full mb-2 gap-3">
             <div className="relative flex justify-between items-center h-16 w-full max-w-xl px-4 surface-card border-[var(--border-hover)] hover:border-[var(--border-strong)] transition-all duration-150">
                 <BandaTurneSelector
                     open={isOpen}
@@ -102,6 +102,7 @@ export const Header = ({
                     onClose={() => setTourOpen(false)}
                 />
             </div>
+            <ThemeToggle />
         </header>
     );
 };

@@ -20,6 +20,7 @@
 
 ## 3) Refatoração aplicada
 - Layout global, sidebar, header, navegação, autenticação, formulário base, modal de confirmação e toast.
+- Adicionado suporte a **modo claro/escuro** com persistência em `localStorage` (`graxa-theme`) e alternador visual no header.
 - Customização visual de FullCalendar para aderir à nova paleta.
 - Unificação de classes utilitárias em classes base (`surface-card`, `form-input`, `btn-primary`, `nav-item`).
 
