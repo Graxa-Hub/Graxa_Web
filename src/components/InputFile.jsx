@@ -5,7 +5,7 @@ export function InputFile({
   label,
   onFileSelect,
   accept = "image/jpeg, image/png, image/webp",
-  maxSize = 50 * 1024 * 1024, // 50MB default
+  maxSize = 50 * 1024 * 1024,
   required = false,
   className = "",
   disabled,
@@ -16,7 +16,6 @@ export function InputFile({
   const [fileName, setFileName] = useState("");
   const fileInputRef = useRef(null);
 
-  // Atualiza o preview quando currentImage mudar
   useEffect(() => {
     if (currentImage) {
       setSelectedFile(currentImage);
@@ -33,30 +32,8 @@ export function InputFile({
   };
 
   const getAcceptedFormats = () => {
-    if (accept === "image/*") {
-      return "JPEG, PNG, GIF, and WebP formats";
-    }
+    if (accept === "image/*") return "JPEG, PNG, GIF e WebP";
     return accept.replace(/\./g, "").toUpperCase();
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    setIsDragOver(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragOver(false);
-
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      handleFileSelection(files[0]);
-    }
   };
 
   const handleFileSelection = (file) => {
@@ -67,58 +44,38 @@ export function InputFile({
 
     setFileName(file.name);
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setSelectedFile(reader.result);
-    };
+    reader.onloadend = () => setSelectedFile(reader.result);
     reader.readAsDataURL(file);
 
-    if (onFileSelect) {
-      onFileSelect(file);
-    }
+    if (onFileSelect) onFileSelect(file);
   };
 
-  const handleEdit = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileInputChange = (e) => {
-    const files = e.target.files;
-    if (files.length > 0) {
-      handleFileSelection(files[0]);
-    }
-  };
-
-  const handleBrowseClick = () => {
-    fileInputRef.current?.click();
-  };
+  const handleEdit = () => fileInputRef.current?.click();
+  const handleBrowseClick = () => fileInputRef.current?.click();
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && (
-        <label className="text-sm font-medium text-gray-700">
+        <label className="text-xs uppercase tracking-wide text-[var(--text-muted)]">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-[var(--accent)] ml-1">*</span>}
         </label>
       )}
 
       {selectedFile ? (
-        <div className="relative w-full h-40 border-2 border-gray-300 rounded-lg overflow-hidden group">
-          <img
-            src={selectedFile}
-            alt="Preview"
-            className="w-full h-full object-cover"
-          />
+        <div className="relative w-full h-40 border border-[var(--border)] rounded-[var(--radius-md)] overflow-hidden bg-[var(--surface)]">
+          <img src={selectedFile} alt="Preview" className="w-full h-full object-cover" />
           <button
             type="button"
             onClick={handleEdit}
             disabled={disabled}
-            className="absolute top-2 right-2 p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors disabled:opacity-50 shadow-md"
+            className="absolute top-2 right-2 h-9 w-9 flex items-center justify-center rounded-full bg-[var(--surface-hover)] text-[var(--text-primary)] border border-[var(--border)] hover:border-[var(--border-hover)] transition-colors disabled:opacity-50"
             title="Editar foto"
           >
             <Edit2 className="w-4 h-4" />
           </button>
           {fileName && (
-            <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-2 truncate">
+            <div className="absolute bottom-0 left-0 right-0 bg-black/45 text-white text-xs p-2 truncate">
               {fileName}
             </div>
           )}
@@ -126,7 +83,7 @@ export function InputFile({
             ref={fileInputRef}
             type="file"
             accept={accept}
-            onChange={handleFileInputChange}
+            onChange={(e) => e.target.files?.[0] && handleFileSelection(e.target.files[0])}
             className="hidden"
             required={required}
             disabled={disabled}
@@ -134,49 +91,55 @@ export function InputFile({
         </div>
       ) : (
         <div
-          className={`border-2 border-dashed rounded-lg px-20 py-5 text-center transition-colors cursor-pointer shadow-lg bg-white ${
-            isDragOver
-              ? "border-blue-400 bg-blue-50"
-              : "border-gray-300 hover:border-gray-400"
+          className={`border rounded-[var(--radius-md)] px-6 py-8 text-center transition-colors cursor-pointer shadow-[var(--shadow-soft)] bg-[var(--surface)] ${
+            isDragOver ? "border-[var(--border-hover)] bg-[var(--surface-hover)]" : "border-[var(--border)] hover:border-[var(--border-hover)]"
           }`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setIsDragOver(true);
+          }}
+          onDragLeave={(e) => {
+            e.preventDefault();
+            setIsDragOver(false);
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            setIsDragOver(false);
+            if (e.dataTransfer.files.length > 0) handleFileSelection(e.dataTransfer.files[0]);
+          }}
           onClick={handleBrowseClick}
         >
           <input
             ref={fileInputRef}
             type="file"
             accept={accept}
-            onChange={handleFileInputChange}
+            onChange={(e) => e.target.files?.[0] && handleFileSelection(e.target.files[0])}
             className="hidden"
             required={required}
             disabled={disabled}
           />
 
           <div className="flex flex-col items-center gap-4">
-            <div className="w-12 rounded-full bg-gray-100 flex items-center justify-center">
-              <Upload className="w-6 text-gray-500" />
+            <div className="w-12 h-12 rounded-full bg-[var(--surface-hover)] border border-[var(--border)] flex items-center justify-center">
+              <Upload className="w-5 h-5 text-[var(--text-secondary)]" />
             </div>
 
             <div>
-              <p className="font-medium text-gray-700 mb-1">
-                Choose a file or drag & drop it here
-              </p>
-              <p className="text-sm text-gray-500 mb-4">
-                {getAcceptedFormats()}, up to {formatFileSize(maxSize)}
+              <p className="font-medium text-[var(--text-primary)] mb-1">Escolha um arquivo ou arraste até aqui</p>
+              <p className="text-sm text-[var(--text-muted)] mb-4">
+                {getAcceptedFormats()}, até {formatFileSize(maxSize)}
               </p>
             </div>
 
             <button
               type="button"
-              className="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              className="btn-primary"
               onClick={(e) => {
                 e.stopPropagation();
                 handleBrowseClick();
               }}
             >
-              Browse File
+              Procurar arquivo
             </button>
           </div>
         </div>

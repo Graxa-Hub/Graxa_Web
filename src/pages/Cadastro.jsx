@@ -86,7 +86,7 @@ export const Cadastro = () => {
         backgroundColor="bg-[var(--text-primary)]"
         borderRadius="rounded-tl-lg rounded-bl-lg"
       />
-      <div className="w-full p-6 rounded-br-xl rounded-tr-xl bg-[var(--surface)]">
+      <div className="w-full p-6 rounded-br-xl rounded-tr-xl bg-[var(--surface-elevated)]">
         <Titulo
           titulo="Crie a sua conta"
           descricao="Comece a sua jornada conosco!"
@@ -99,10 +99,10 @@ export const Cadastro = () => {
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 placeholder="Nome"
-                className={fieldErrors.nome ? "border-red-500" : ""}
+                className={fieldErrors.nome ? "border-[var(--accent)]" : ""}
               />
               {fieldErrors.nome && (
-                <p className="text-red-500 text-sm">{fieldErrors.nome}</p>
+                <p className="text-[var(--accent)] text-sm">{fieldErrors.nome}</p>
               )}
             </div>
 
@@ -112,10 +112,10 @@ export const Cadastro = () => {
                 value={apelido}
                 onChange={(e) => setApelido(e.target.value)}
                 placeholder="Apelido"
-                className={fieldErrors.apelido ? "border-red-500" : ""}
+                className={fieldErrors.apelido ? "border-[var(--accent)]" : ""}
               />
               {fieldErrors.apelido && (
-                <p className="text-red-500 text-sm">{fieldErrors.apelido}</p>
+                <p className="text-[var(--accent)] text-sm">{fieldErrors.apelido}</p>
               )}
             </div>
           </div>
@@ -127,10 +127,10 @@ export const Cadastro = () => {
                 type="date"
                 value={dataNascimento}
                 onChange={(e) => setDataNascimento(e.target.value)}
-                className={fieldErrors.dataNascimento ? "border-red-500" : ""}
+                className={fieldErrors.dataNascimento ? "border-[var(--accent)]" : ""}
               />
               {fieldErrors.dataNascimento && (
-                <p className="text-red-500 text-sm">
+                <p className="text-[var(--accent)] text-sm">
                   {fieldErrors.dataNascimento}
                 </p>
               )}
@@ -142,7 +142,7 @@ export const Cadastro = () => {
                 value={telefone}
                 onChange={(e) => setTelefone(e.target.value)}
                 placeholder="(11) 99999-8888"
-                className={fieldErrors.telefone ? "border-red-500" : ""}
+                className={fieldErrors.telefone ? "border-[var(--accent)]" : ""}
                 onInput={(e) => {
                   let value = e.target.value.replace(/\D/g, '');
                   if (value.length <= 11) {
@@ -153,7 +153,7 @@ export const Cadastro = () => {
                 }}
               />
               {fieldErrors.telefone && (
-                <p className="text-red-500 text-sm">{fieldErrors.telefone}</p>
+                <p className="text-[var(--accent)] text-sm">{fieldErrors.telefone}</p>
               )}
             </div>
           </div>
@@ -164,7 +164,7 @@ export const Cadastro = () => {
               value={cpf}
               onChange={(e) => setCpf(e.target.value)}
               placeholder="000.000.000-00"
-              className={fieldErrors.cpf ? "border-red-500" : ""}
+              className={fieldErrors.cpf ? "border-[var(--accent)]" : ""}
               onInput={(e) => {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length <= 11) {
@@ -175,7 +175,7 @@ export const Cadastro = () => {
               }}
             />
             {fieldErrors.cpf && (
-              <p className="text-red-500 text-sm">{fieldErrors.cpf}</p>
+              <p className="text-[var(--accent)] text-sm">{fieldErrors.cpf}</p>
             )}
           </div>
 
@@ -190,7 +190,7 @@ export const Cadastro = () => {
               placeholder="Selecione o tipo de usuário"
             />
             {fieldErrors.tipoUsuario && (
-              <p className="text-red-500 text-sm">{fieldErrors.tipoUsuario}</p>
+              <p className="text-[var(--accent)] text-sm">{fieldErrors.tipoUsuario}</p>
             )}
           </div>
 
@@ -201,10 +201,10 @@ export const Cadastro = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
-              className={fieldErrors.email ? "border-red-500" : ""}
+              className={fieldErrors.email ? "border-[var(--accent)]" : ""}
             />
             {fieldErrors.email && (
-              <p className="text-red-500 text-sm">{fieldErrors.email}</p>
+              <p className="text-[var(--accent)] text-sm">{fieldErrors.email}</p>
             )}
           </div>
 
@@ -215,10 +215,10 @@ export const Cadastro = () => {
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               placeholder="********"
-              className={fieldErrors.senha ? "border-red-500" : ""}
+              className={fieldErrors.senha ? "border-[var(--accent)]" : ""}
             />
             {fieldErrors.senha && (
-              <p className="text-red-500 text-sm">{fieldErrors.senha}</p>
+              <p className="text-[var(--accent)] text-sm">{fieldErrors.senha}</p>
             )}
           </div>
 
@@ -229,29 +229,29 @@ export const Cadastro = () => {
               value={confirmarSenha}
               onChange={(e) => setConfirmarSenha(e.target.value)}
               placeholder="********"
-              className={fieldErrors.confirmarSenha ? "border-red-500" : ""}
+              className={fieldErrors.confirmarSenha ? "border-[var(--accent)]" : ""}
             />
             {fieldErrors.confirmarSenha && (
-              <p className="text-red-500 text-sm">
+              <p className="text-[var(--accent)] text-sm">
                 {fieldErrors.confirmarSenha}
               </p>
             )}
           </div>
 
           {fieldErrors.geral && (
-            <div className="mt-4 text-red-500 text-sm">
+            <div className="mt-4 text-[var(--accent)] text-sm">
               <p>• {fieldErrors.geral}</p>
             </div>
           )}
 
-          <ButtonSign onClick={handleSubmit} className="hover:bg-[var(--text-primary)]">
+          <ButtonSign onClick={handleSubmit} className="hover:bg-[#383838]">
             Cadastrar
           </ButtonSign>
 
           <ButtonAlt
             text="Já tem uma conta?"
             buttonText="Faça Login"
-            textColor="purple-950"
+            textColor="secondary"
             to="../login"
           />
 
