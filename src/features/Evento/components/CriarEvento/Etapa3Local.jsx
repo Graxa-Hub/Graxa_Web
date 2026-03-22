@@ -10,6 +10,7 @@ import { buscarRestaurantes } from "../../../../utils/endereco/apiRestaurantes";
 import { LocalCombobox } from "./LocalCombobox";
 import { useLocalSelecionado } from "../../../../context/LocalSelecionadoContext";
 import { useToast } from "../../../../hooks/useToast";
+import { cn, sectionHeader, sectionSubtitle, sectionTitle, surfaceCard, surfaceCardMuted } from "./uiStyles";
 
 const Etapa3Local = ({ localInicial, setLocalShow }) => {
   const { locais, listarLocais } = useLocais();
@@ -206,12 +207,12 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
   return (
     <div className="space-y-6">
       {/* Título da Seção */}
-      <div className="border-b border-gray-200 pb-4">
-        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <MapPin className="w-6 h-6 text-blue-600" />
+      <div className={sectionHeader}>
+        <h2 className={cn(sectionTitle, "flex items-center gap-3")}>
+          <span className="rounded-2xl bg-emerald-50 p-3 text-emerald-600"><MapPin className="h-5 w-5" /></span>
           Local do Evento
         </h2>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className={sectionSubtitle}>
           Selecione ou cadastre o local onde o evento acontecerá
         </p>
       </div>
@@ -226,10 +227,10 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
 
       {/* Card de Detalhes do Local */}
       {localSelecionado && (
-        <div className="bg-gradient-to-br from-white to-gray-50 shadow-lg rounded-2xl border border-gray-200 overflow-hidden">
+        <div className={cn(surfaceCard, "overflow-hidden")}>
           {/* Header do Card */}
-          <div className="bg-blue-600 px-6 py-4">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+          <div className="border-b border-slate-200 bg-slate-950 px-6 py-5">
+            <h3 className="flex items-center gap-2 text-xl font-semibold text-white">
               <Building2 className="w-5 h-5" />
               {localSelecionado.nome}
             </h3>
@@ -254,17 +255,17 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
             </div>
 
             {/* Capacidade */}
-            <div className="flex items-center gap-3 bg-blue-50 p-3 rounded-lg">
-              <Info className="w-5 h-5 text-blue-600" />
+            <div className="flex items-center gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+              <Info className="h-5 w-5 text-emerald-600" />
               <div>
                 <p className="text-sm font-semibold text-gray-700">Capacidade</p>
-                <p className="text-lg font-bold text-blue-600">{localSelecionado.capacidade} pessoas</p>
+                <p className="text-lg font-semibold text-emerald-600">{localSelecionado.capacidade} pessoas</p>
               </div>
             </div>
 
             {/* Loading State */}
             {loading && (
-              <div className="flex items-center gap-2 text-blue-600 bg-blue-50 p-3 rounded-lg">
+              <div className="flex items-center gap-2 rounded-2xl border border-emerald-100 bg-emerald-50 p-3 text-emerald-600">
                 <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
                 <p className="text-sm font-medium">Processando...</p>
               </div>
@@ -272,16 +273,16 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
 
             {/* Error State */}
             {erro && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                 {erro}
               </div>
             )}
 
             {/* Informações Adicionais */}
             {localSelecionado.coordsLocal && (
-              <div className="bg-gradient-to-br from-gray-50 to-white p-5 rounded-xl border border-gray-200 space-y-4 mt-4">
-                <h4 className="font-bold text-gray-800 text-lg flex items-center gap-2 border-b border-gray-200 pb-2">
-                  <Info className="w-5 h-5 text-blue-600" />
+              <div className={cn(surfaceCardMuted, "mt-4 space-y-4 p-5")}>
+                <h4 className="flex items-center gap-2 border-b border-slate-200 pb-3 text-lg font-semibold text-slate-900">
+                  <Info className="h-5 w-5 text-emerald-600" />
                   Informações Adicionais
                 </h4>
 
@@ -299,30 +300,30 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
 
                 {/* Aeroporto Próximo */}
                 {localSelecionado.aeroportoProximo && (
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                  <div className="rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-2">
-                      <Plane className="w-5 h-5 text-blue-600" />
+                      <Plane className="h-5 w-5 text-sky-600" />
                       <p className="font-semibold text-gray-800">Aeroporto Mais Próximo</p>
                     </div>
                     <p className="text-sm text-gray-700 font-medium">
                       {localSelecionado.aeroportoProximo.nome}
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      Distância: <span className="font-semibold text-blue-600">{localSelecionado.aeroportoProximo.distanciaKm} km</span>
+                      Distância: <span className="font-semibold text-sky-600">{localSelecionado.aeroportoProximo.distanciaKm} km</span>
                     </p>
                   </div>
                 )}
 
                 {/* Restaurantes Próximos */}
                 {localSelecionado.restaurantesProximos?.length > 0 && (
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                  <div className="rounded-2xl border border-white/80 bg-white/90 p-4 shadow-sm">
                     <div className="flex items-center gap-2 mb-3">
                       <UtensilsCrossed className="w-5 h-5 text-orange-600" />
                       <p className="font-semibold text-gray-800">Restaurantes Próximos</p>
                     </div>
                     <ul className="space-y-2">
                       {localSelecionado.restaurantesProximos.map((r, i) => (
-                        <li key={i} className="flex items-center justify-between text-sm bg-gray-50 p-2 rounded">
+                        <li key={i} className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white/80 p-3 text-sm">
                           <span className="text-gray-700 font-medium">{r.nome}</span>
                           <span className="text-xs text-orange-600 font-semibold">{r.distanciaKm} km</span>
                         </li>

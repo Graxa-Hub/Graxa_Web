@@ -22,6 +22,7 @@ import {
   agruparTransportes,
 } from "../utils/logistica/logisticaUtils";
 import { useExtrasEvento } from "../hooks/useExtrasEvento";
+import { buttonStyles, contentShell, pageShell } from "../features/Evento/components/CriarEvento/uiStyles";
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
@@ -35,21 +36,21 @@ export const CriarEvento = () => {
   const [extras, setExtras] = useState({});
   const { tipoEvento, eventoId } = useParams();
   const { buscarShow, atualizarShow } = useShows();
-  const { buscarViagem, atualizarViagem } = useViagens();
+  const { buscarViagem, atualizarViagem: _atualizarViagem } = useViagens();
   const [evento, setEvento] = useState(null);
   const showId = eventoId ? Number(eventoId) : null;
   const [hoteisRaw, setHoteisRaw] = useState([]);
   const [voosRaw, setVoosRaw] = useState([]);
   const [transportesRaw, setTransportesRaw] = useState([]);
-  const { colaboradores: todosColaboradores, listarColaboradores } =
+  const { colaboradores: _todosColaboradores, listarColaboradores } =
     useColaboradores();
   const {
     extras: extrasDB,
     listar: listarExtras,
     salvar: salvarExtras,
   } = useExtrasEvento();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalLoading, setModalLoading] = useState(false);
+  const [_isModalOpen, _setIsModalOpen] = useState(false);
+  const [_modalLoading, _setModalLoading] = useState(false);
   const navigate = useNavigate();
 
   // Helper para normalizar/formatar datas para envio (ISO)
@@ -65,7 +66,7 @@ export const CriarEvento = () => {
   }, [showId, listarExtras]);
 
   // sempre sincroniza o extras local com o retorno do hook
-  const { toasts, showSuccess, showError, showWarning, showInfo } = useToast();
+  const { toasts: _toasts, showSuccess, showError, showWarning, showInfo } = useToast();
   useEffect(() => {
     if (extrasDB) {
       setExtras(extrasDB);
@@ -198,57 +199,8 @@ export const CriarEvento = () => {
     fetchEvento();
   }, [tipoEvento, eventoId, buscarShow, buscarViagem]);
 
-  // Adicione um estado para os colaboradores aceitos
-  const [colaboradoresAceitos, setColaboradoresAceitos] = useState([]);
-
-  // Atualize a lista de aceitos sempre que evento ou assignments mudar
-  useEffect(() => {
-    // Só atualiza lista de aceitos se estiver na etapa de logística
-    const isEtapaLogistica =
-      (tipoEvento === "show" && etapaAtual === 3) ||
-      (tipoEvento === "viagem" && etapaAtual === 1);
-
-    if (!isEtapaLogistica) return;
-
-    let colaboradoresEvento = [];
-    if (evento?.alocacoes?.length) {
-      const alocacoesPorColab = {};
-      evento.alocacoes.forEach((a) => {
-        const colabId = a.colaborador?.id;
-        if (!colabId) return;
-        if (!alocacoesPorColab[colabId]) alocacoesPorColab[colabId] = [];
-        alocacoesPorColab[colabId].push(a);
-      });
-      Object.values(alocacoesPorColab).forEach((alocacoes) => {
-        const ultima = alocacoes.sort((a, b) => (b.id || 0) - (a.id || 0))[0];
-        const statusUpper = ultima?.status?.toUpperCase?.();
-        if (
-          ultima &&
-          typeof ultima.status === "string" &&
-          (statusUpper === "ACEITO" || statusUpper === "PENDENTE") &&
-          ultima.colaborador
-        ) {
-          colaboradoresEvento.push(ultima.colaborador);
-        }
-      });
-    }
-    const colaboradoresSelecionadosIds = [
-      ...new Set(
-        Object.values(assignments || {})
-          .flat()
-          .map((id) => Number(id))
-          .filter(Boolean),
-      ),
-    ];
-    setColaboradoresAceitos(
-      colaboradoresEvento.filter((c) =>
-        colaboradoresSelecionadosIds.includes(c.id),
-      ),
-    );
-  }, [evento, assignments, etapaAtual, tipoEvento]);
-
   // ===== salvarEventoCompleto (atualizado com lógica de update/create para logística) =====
-  const salvarEventoCompleto = async () => {
+  const _salvarEventoCompleto = async () => {
     if (!showId) {
       showError("Show inválido. Salve/abra o show antes de finalizar.");
       return;
@@ -810,7 +762,7 @@ export const CriarEvento = () => {
             />
 
             {showId && (
-              <div className="mt-12 border-t pt-8">
+              <div className="mt-12 border-t border-slate-200/80 pt-8">
                 <VisualizarAlocacoes showId={showId} />
               </div>
             )}
@@ -880,8 +832,8 @@ export const CriarEvento = () => {
   return (
     <LocalSelecionadoProvider>
       <Layout showHeader={false} showNotifications={false}>
-        <div className="flex flex-1 min-h-0 relative">
-          <div className="flex-1 px-8 py-6 overflow-y-auto">
+        <div className={`relative flex min-h-0 flex-1 ${pageShell}`}>
+          <div className="flex-1 overflow-y-auto px-6 py-6 lg:px-8"><div className={`${contentShell} min-h-full p-6 lg:p-8`}>
             <Stepper
               etapaAtual={etapaAtual}
               setEtapaAtual={setEtapaAtual}
@@ -893,11 +845,11 @@ export const CriarEvento = () => {
 
             <div className="mt-8">{renderEtapa()}</div>
 
-            <div className="flex justify-end mt-10 gap-4 border-t pt-6 border-gray-200">
+            <div className="mt-10 flex justify-end gap-4 border-t border-slate-200/80 pt-6">
               {/* BOTÃO VOLTAR */}
               {etapaAtual > 1 && (
                 <button
-                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                  className={buttonStyles.secondary}
                   onClick={() => setEtapaAtual(etapaAtual - 1)}
                 >
                   Voltar
@@ -907,7 +859,7 @@ export const CriarEvento = () => {
               {/* BOTÃO PRÓXIMA — só aparece se NÃO for a última etapa */}
               {etapaAtual < (tipoEvento === "viagem" ? 3 : 5) && (
                 <button
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  className={buttonStyles.accent}
                   onClick={() => setEtapaAtual(etapaAtual + 1)}
                 >
                   Próxima Etapa
@@ -918,22 +870,22 @@ export const CriarEvento = () => {
 
           {/* SIDEBAR ESTILO OVERLAY (GAVETA) */}
           <div
-            className={`absolute top-0 right-0 h-full z-40 transition-transform duration-300 ease-in-out flex items-center ${showSidebarDireita ? "translate-x-0" : "translate-x-full"
+            className={`absolute right-0 top-0 z-40 flex h-full items-center transition-transform duration-300 ease-in-out ${showSidebarDireita ? "translate-x-0" : "translate-x-full"
               }`}
           >
             {/* BOTÃO TOGGLE (HANDLE) - FIXO NA BORDA DA GAVETA */}
             <button
               onClick={() => setShowSidebarDireita(!showSidebarDireita)}
-              className="absolute -left-4 bg-white border border-gray-200 shadow-2xl rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-50 hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
+              className="group absolute -left-5 flex h-11 w-11 items-center justify-center rounded-full border border-white/70 bg-white/90 shadow-[0_18px_45px_rgba(15,23,42,0.18)] transition-all duration-300 hover:-translate-x-0.5 hover:scale-105 hover:bg-white active:scale-95 z-50"
               title={showSidebarDireita ? "Esconder Resumo" : "Mostrar Resumo"}
             >
               <div className={`transition-transform duration-300 ${showSidebarDireita ? 'rotate-0' : 'rotate-180'}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
               </div>
             </button>
 
             {/* CONTEÚDO DA GAVETA */}
-            <div className="w-80 h-full bg-white border-l border-gray-200 shadow-2xl rounded-md overflow-hidden">
+            <div className="h-full w-80 overflow-hidden rounded-l-[28px] border-l border-white/10 bg-transparent">
               <SidebarDireita
                 etapaAtual={etapaAtual}
                 localShow={localShow}
@@ -947,7 +899,7 @@ export const CriarEvento = () => {
               />
             </div>
           </div>
-        </div>
+        </div></div>
       </Layout>
     </LocalSelecionadoProvider>
   );

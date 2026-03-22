@@ -15,43 +15,44 @@ import { useNotificacoes } from "../../../../hooks/useNotificacoes"; // ✅ IMPO
 import { TIPOS_USUARIO } from "../../../../constants/tipoUsuario";
 import { ConfirmModal } from "../../../../components/molecules/ConfirmModal";
 import { ToastContainer } from "../../../../components/organisms/ToastContainer";
+import { buttonStyles, cn, sectionHeader, sectionSubtitle, sectionTitle } from "./uiStyles";
 
 const STATUS_CONFIG = {
   ACEITO: {
     label: "Aceitas",
     icon: CheckCircle,
     color: "green",
-    bgColor: "bg-green-50",
-    borderColor: "border-green-200",
-    textColor: "text-green-700",
-    badgeColor: "bg-green-100"
+    bgColor: "bg-emerald-50",
+    borderColor: "border-emerald-200",
+    textColor: "text-emerald-700",
+    badgeColor: "bg-emerald-100"
   },
   PENDENTE: {
     label: "Pendentes",
     icon: Clock,
     color: "yellow",
-    bgColor: "bg-yellow-50",
-    borderColor: "border-yellow-200",
-    textColor: "text-yellow-700",
-    badgeColor: "bg-yellow-100"
+    bgColor: "bg-amber-50",
+    borderColor: "border-amber-200",
+    textColor: "text-amber-700",
+    badgeColor: "bg-amber-100"
   },
   RECUSADO: {
     label: "Recusadas",
     icon: XCircle,
     color: "red",
-    bgColor: "bg-red-50",
-    borderColor: "border-red-200",
-    textColor: "text-red-700",
-    badgeColor: "bg-red-100"
+    bgColor: "bg-rose-50",
+    borderColor: "border-rose-200",
+    textColor: "text-rose-700",
+    badgeColor: "bg-rose-100"
   },
   CANCELADO: {
     label: "Canceladas",
     icon: XCircle,
     color: "gray",
-    bgColor: "bg-gray-50",
-    borderColor: "border-gray-300",
-    textColor: "text-gray-700",
-    badgeColor: "bg-gray-100"
+    bgColor: "bg-slate-50",
+    borderColor: "border-slate-300",
+    textColor: "text-slate-700",
+    badgeColor: "bg-slate-100"
   }
 };
 
@@ -213,9 +214,9 @@ const VisualizarAlocacoes = ({ showId }) => {
 
   if (!showId) {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-        <Calendar className="w-12 h-12 text-yellow-600 mx-auto mb-3" />
-        <p className="text-yellow-800 font-medium">
+      <div className="rounded-[28px] border border-amber-200 bg-amber-50 p-6 text-center">
+        <Calendar className="mx-auto mb-3 h-12 w-12 text-amber-600" />
+        <p className="font-medium text-amber-800">
           Salve o evento primeiro para visualizar as alocações
         </p>
       </div>
@@ -225,10 +226,10 @@ const VisualizarAlocacoes = ({ showId }) => {
   return (
     <div className="space-y-6">
       {/* Header com estatísticas */}
-      <div className="flex justify-between items-center">
+      <div className={sectionHeader + " flex flex-col gap-4 md:flex-row md:items-end md:justify-between"}>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Alocações do Evento</h2>
-          <p className="text-gray-600 mt-1">
+          <h2 className={sectionTitle}>Alocações do Evento</h2>
+          <p className={sectionSubtitle}>
             Visualize e gerencie o status de todas as alocações ({alocacoes.length} total)
           </p>
         </div>
@@ -236,7 +237,7 @@ const VisualizarAlocacoes = ({ showId }) => {
         <button
           onClick={carregarAlocacoes}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+          className={buttonStyles.primary}
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Atualizar
@@ -252,8 +253,7 @@ const VisualizarAlocacoes = ({ showId }) => {
           return (
             <div
               key={status}
-              className={`${config.bgColor} ${config.borderColor} border-2 rounded-xl p-5 cursor-pointer transition-all hover:shadow-lg ${filtroStatus === status ? 'ring-2 ring-offset-2 ring-blue-500' : ''
-                }`}
+              className={cn(config.bgColor, config.borderColor, 'cursor-pointer rounded-[24px] border p-5 transition-all hover:-translate-y-0.5 hover:shadow-lg', filtroStatus === status ? 'ring-2 ring-emerald-400 ring-offset-2' : '')}
               onClick={() => setFiltroStatus(filtroStatus === status ? "TODOS" : status)}
             >
               <div className="flex items-center justify-between">
@@ -261,7 +261,7 @@ const VisualizarAlocacoes = ({ showId }) => {
                   <p className={`text-sm font-medium ${config.textColor}`}>
                     {config.label}
                   </p>
-                  <p className="text-3xl font-bold text-gray-800 mt-1">
+                  <p className="mt-1 text-3xl font-semibold text-slate-900">
                     {count}
                   </p>
                 </div>
@@ -276,10 +276,10 @@ const VisualizarAlocacoes = ({ showId }) => {
 
       {/* Filtro ativo */}
       {filtroStatus !== "TODOS" && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+        <div className="flex items-center justify-between rounded-[24px] border border-sky-200 bg-sky-50 p-4">
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-blue-600" />
-            <span className="text-blue-800 font-medium">
+            <Filter className="h-5 w-5 text-sky-600" />
+            <span className="font-medium text-sky-800">
               Exibindo apenas: {STATUS_CONFIG[filtroStatus].label} ({alocacoesFiltradas.length})
             </span>
           </div>
