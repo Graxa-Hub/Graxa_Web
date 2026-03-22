@@ -33,7 +33,7 @@ export function TurneMainForm({
                     disabled={submitLoading}
                 />
                 {errors.nome && (
-                    <p className="text-red-500 text-sm mt-1">{errors.nome}</p>
+                    <p className="text-[var(--accent)] text-sm mt-1">{errors.nome}</p>
                 )}
 
                 <BandaInput
@@ -65,7 +65,7 @@ export function TurneMainForm({
                     required
                 />
                 {errors.inicio && (
-                    <p className="text-red-500 text-sm mt-1">{errors.inicio}</p>
+                    <p className="text-[var(--accent)] text-sm mt-1">{errors.inicio}</p>
                 )}
 
                 <Input
@@ -76,7 +76,7 @@ export function TurneMainForm({
                     required
                 />
                 {errors.fim && (
-                    <p className="text-red-500 text-sm mt-1">{errors.fim}</p>
+                    <p className="text-[var(--accent)] text-sm mt-1">{errors.fim}</p>
                 )}
             </div>
 

@@ -1,11 +1,18 @@
+// src/components/VisaoEvento/PainelDireito.jsx
 import React, { memo, useState } from "react";
 import { Porcentagem } from "./Porcentagem";
 import { ClimaCard } from "./ClimaCard";
-import { AnotacoesCard } from "./AnotacoesCard";
+import { AnotacoesCard } from "./ANotacoesCard";
 import { MapCard } from "./MapCard";
 import { Switcher } from "../../../../components/atoms/Switcher";
 
-export const PainelDireito = memo(({ agendaSelecionada, progresso, cidade, lat, lon }) => {
+export const PainelDireito = memo(({
+  agendaSelecionada,
+  progresso,
+  cidade,
+  lat,
+  lon
+}) => {
   const [activeView, setActiveView] = useState("progress");
 
   const renderConteudoDinamico = () => {
@@ -33,9 +40,13 @@ export const PainelDireito = memo(({ agendaSelecionada, progresso, cidade, lat, 
       );
     }
 
+    // Para anotações, mantemos o estilo de card pois o MapCard já tem o dele internamente
     return (
-      <div className="surface-card p-5 flex-1 min-h-0 overflow-hidden">
-        <AnotacoesCard titulo={agendaSelecionada.title} descricao={agendaSelecionada.description} />
+      <div className="bg-[var(--surface-elevated)] rounded-[var(--radius-sm)] shadow-[var(--shadow-soft)] p-6 flex-1 min-h-0 overflow-hidden">
+        <AnotacoesCard
+          titulo={agendaSelecionada.title}
+          descricao={agendaSelecionada.description}
+        />
       </div>
     );
   };
@@ -44,14 +55,23 @@ export const PainelDireito = memo(({ agendaSelecionada, progresso, cidade, lat, 
     <div className="flex flex-col gap-4 h-full min-h-0">
       {renderConteudoDinamico()}
 
-      <div className="surface-card flex flex-row items-stretch gap-3 p-4 overflow-hidden">
+      <div className="mt-2 flex flex-row items-end gap-3 p-1">
         <Switcher activeView={activeView} onViewChange={setActiveView} />
+
         <div className="flex-1 overflow-visible">
-          {activeView === "progress" ? <Porcentagem percent={progresso} /> : <ClimaCard cidade={cidade} lat={lat} lon={lon} />}
+          {activeView === "progress" ? (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 overflow-visible">
+              <Porcentagem percent={progresso} />
+            </div>
+          ) : (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 overflow-visible">
+              <ClimaCard cidade={cidade} lat={lat} lon={lon} />
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 });
 
-PainelDireito.displayName = "PainelDireito";
+PainelDireito.displayName = 'PainelDireito';

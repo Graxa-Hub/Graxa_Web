@@ -3,29 +3,35 @@ import { Sun } from "lucide-react";
 
 export const Switcher = ({ activeView, onViewChange }) => {
     return (
-        <div className="flex flex-col items-center bg-gray-200 w-10 h-48 rounded-xl p-1 relative shadow-inner cursor-pointer select-none">
-            {/* Indicador Deslizante (Pill) */}
-            <div
-                className={`absolute w-8 h-[88px] bg-white rounded-lg shadow-md transition-all duration-300 ease-in-out transform ${activeView === "weather" ? "translate-y-[92px]" : "translate-y-0"
-                    }`}
-            />
-
-            {/* Opção Porcentagem */}
-            <button
-                onClick={() => onViewChange("progress")}
-                className={`z-10 flex-1 flex items-center justify-center w-full transition-colors duration-300 ${activeView === "progress" ? "text-gray-900" : "text-gray-500"
-                    }`}
-            >
-                <span className="text-xl font-bold font-mono">%</span>
+        <div style={{
+            display: 'flex', flexDirection: 'column', alignItems: 'center',
+            background: 'var(--surface)', border: '1px solid var(--border)',
+            width: 40, height: 192, borderRadius: 'var(--radius-lg)',
+            padding: 4, position: 'relative', cursor: 'pointer', userSelect: 'none',
+            boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.2)'
+        }}>
+            <div style={{
+                position: 'absolute', width: 32, height: 88,
+                background: 'var(--surface-elevated)', border: '1px solid var(--border-hover)',
+                borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-soft)',
+                transition: 'transform 0.3s ease',
+                transform: activeView === "weather" ? 'translateY(92px)' : 'translateY(0)'
+            }} />
+            <button onClick={() => onViewChange("progress")} style={{
+                zIndex: 10, flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '100%', background: 'transparent', border: 'none',
+                color: activeView === "progress" ? 'var(--text-primary)' : 'var(--text-muted)',
+                cursor: 'pointer', transition: 'color 0.2s'
+            }}>
+                <span style={{ fontSize: 18, fontWeight: 700, fontFamily: 'monospace' }}>%</span>
             </button>
-
-            {/* Opção Clima */}
-            <button
-                onClick={() => onViewChange("weather")}
-                className={`z-10 flex-1 flex items-center justify-center w-full transition-colors duration-300 ${activeView === "weather" ? "text-yellow-500" : "text-gray-500"
-                    }`}
-            >
-                <Sun size={24} strokeWidth={activeView === "weather" ? 2.5 : 2} />
+            <button onClick={() => onViewChange("weather")} style={{
+                zIndex: 10, flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                width: '100%', background: 'transparent', border: 'none',
+                color: activeView === "weather" ? 'var(--warning)' : 'var(--text-muted)',
+                cursor: 'pointer', transition: 'color 0.2s'
+            }}>
+                <Sun size={20} strokeWidth={activeView === "weather" ? 2.5 : 2} />
             </button>
         </div>
     );

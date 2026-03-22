@@ -1,8 +1,8 @@
 import React from "react";
 
 const Section = ({ title, children }) => (
-  <div className="bg-white shadow-lg p-6 rounded-xl space-y-4 border border-gray-100">
-    <h3 className="font-bold text-xl text-gray-900 border-b pb-2 mb-3">{title}</h3>
+  <div className="bg-[var(--surface-elevated)] shadow-[var(--shadow-soft)] p-6 rounded-[var(--radius-lg)] space-y-4 border border-[var(--border)]">
+    <h3 className="font-bold text-xl text-[var(--text-primary)] border-b pb-2 mb-3">{title}</h3>
     {children}
   </div>
 );
@@ -21,9 +21,9 @@ const Etapa6Resumo = ({
 
       {/* LOCAL DO EVENTO */}
       <Section title="Local do Evento">
-        <p className="text-gray-700"><strong>Endereço:</strong> {localShow.endereco}</p>
-        <p className="text-gray-700"><strong>Cidade:</strong> {localShow.cidade}</p>
-        <p className="text-gray-700"><strong>UF:</strong> {localShow.uf}</p>
+        <p className="text-[var(--text-secondary)]"><strong>Endereço:</strong> {localShow.endereco}</p>
+        <p className="text-[var(--text-secondary)]"><strong>Cidade:</strong> {localShow.cidade}</p>
+        <p className="text-[var(--text-secondary)]"><strong>UF:</strong> {localShow.uf}</p>
 
         {localShow.aeroportoProximo && (
           <p>
@@ -35,7 +35,7 @@ const Etapa6Resumo = ({
         {localShow.restaurantesProximos && localShow.restaurantesProximos.length > 0 && (
           <div className="mt-3">
             <strong>Restaurantes próximos:</strong>
-            <ul className="list-disc ml-6 text-sm text-gray-700">
+            <ul className="list-disc ml-6 text-sm text-[var(--text-secondary)]">
               {localShow.restaurantesProximos.map((r, i) => (
                 <li key={i}>{r.nome} — {r.distanciaKm} km</li>
               ))}
@@ -47,9 +47,9 @@ const Etapa6Resumo = ({
       {/* FUNÇÕES & EQUIPE */}
       <Section title="Funções e Equipe">
         {selectedRoles.length === 0 ? (
-          <p className="text-gray-500 italic">Nenhuma função selecionada.</p>
+          <p className="text-[var(--text-muted)] italic">Nenhuma função selecionada.</p>
         ) : (
-          <ul className="list-disc ml-6 text-sm text-gray-700">
+          <ul className="list-disc ml-6 text-sm text-[var(--text-secondary)]">
             {selectedRoles.map((r, i) => (
               <li key={i}>{r.nome}: {r.pessoa?.nome || "Sem pessoa atribuída"}</li>
             ))}
@@ -60,19 +60,19 @@ const Etapa6Resumo = ({
       {/* HOSPEDAGEM */}
       <Section title="Hotéis">
         {hotels.length === 0 ? (
-          <p className="text-gray-500 italic">Nenhum hotel adicionado.</p>
+          <p className="text-[var(--text-muted)] italic">Nenhum hotel adicionado.</p>
         ) : (
           hotels.map((h) => (
-            <div key={h.id} className="border border-gray-200 bg-gray-50 p-4 rounded-lg mb-3 text-sm space-y-1">
-              <p className="font-semibold text-gray-800">{h.nome}</p>
+            <div key={h.id} className="border border-[var(--border)] bg-[var(--surface)] p-4 rounded-[var(--radius-md)] mb-3 text-sm space-y-1">
+              <p className="font-semibold text-[var(--text-primary)]">{h.nome}</p>
               <p>{h.endereco}</p>
-              <p className="text-gray-700">Check-in: {h.checkin}</p>
-              <p className="text-gray-700">Check-out: {h.checkout}</p>
-              <p className="text-gray-700">Aeroporto: {h.distanciaAeroporto} km</p>
-              <p className="text-gray-700">Palco: {h.distanciaPalco} km</p>
+              <p className="text-[var(--text-secondary)]">Check-in: {h.checkin}</p>
+              <p className="text-[var(--text-secondary)]">Check-out: {h.checkout}</p>
+              <p className="text-[var(--text-secondary)]">Aeroporto: {h.distanciaAeroporto} km</p>
+              <p className="text-[var(--text-secondary)]">Palco: {h.distanciaPalco} km</p>
 
               {h.hospedes?.length > 0 && (
-                <p className="text-sm mt-2 text-gray-700"><strong>Hóspedes:</strong> {h.hospedes.join(", ")}</p>
+                <p className="text-sm mt-2 text-[var(--text-secondary)]"><strong>Hóspedes:</strong> {h.hospedes.join(", ")}</p>
               )}
             </div>
           ))
@@ -82,15 +82,15 @@ const Etapa6Resumo = ({
       {/* VOOS */}
       <Section title="Voos">
         {flights.length === 0 ? (
-          <p className="text-gray-500 italic">Nenhum voo adicionado.</p>
+          <p className="text-[var(--text-muted)] italic">Nenhum voo adicionado.</p>
         ) : (
           flights.map((f) => (
-            <div key={f.id} className="border border-gray-200 bg-gray-50 p-4 rounded-lg mb-3 text-sm space-y-1">
-              <p className="font-semibold text-gray-800">{f.cia} — {f.numero}</p>
-              <p className="text-gray-700">{f.origem} → {f.destino}</p>
-              <p className="text-gray-700">Saída: {f.saida}</p>
-              <p className="text-gray-700">Chegada: {f.chegada}</p>
-              <p className="text-gray-700">Passageiros: {f.passageiros.join(", ")}</p>
+            <div key={f.id} className="border border-[var(--border)] bg-[var(--surface)] p-4 rounded-[var(--radius-md)] mb-3 text-sm space-y-1">
+              <p className="font-semibold text-[var(--text-primary)]">{f.cia} — {f.numero}</p>
+              <p className="text-[var(--text-secondary)]">{f.origem} → {f.destino}</p>
+              <p className="text-[var(--text-secondary)]">Saída: {f.saida}</p>
+              <p className="text-[var(--text-secondary)]">Chegada: {f.chegada}</p>
+              <p className="text-[var(--text-secondary)]">Passageiros: {f.passageiros.join(", ")}</p>
             </div>
           ))
         )}
@@ -99,16 +99,16 @@ const Etapa6Resumo = ({
       {/* TRANSPORTES */}
       <Section title="Transportes">
         {transports.length === 0 ? (
-          <p className="text-gray-500 italic">Nenhum transporte adicionado.</p>
+          <p className="text-[var(--text-muted)] italic">Nenhum transporte adicionado.</p>
         ) : (
           transports.map((t) => (
-            <div key={t.id} className="border border-gray-200 bg-gray-50 p-4 rounded-lg mb-3 text-sm space-y-1">
-              <p className="font-semibold text-gray-800">{t.tipo}</p>
-              <p className="text-gray-700">Saída: {t.saida}</p>
-              <p className="text-gray-700">Chegada: {t.chegada}</p>
-              <p className="text-gray-700">Responsável: {t.responsavel}</p>
-              <p className="text-gray-700">Passageiros: {t.passageiros.join(", ")}</p>
-              {t.observacao && <p className="text-gray-700"><strong>Obs:</strong> {t.observacao}</p>}
+            <div key={t.id} className="border border-[var(--border)] bg-[var(--surface)] p-4 rounded-[var(--radius-md)] mb-3 text-sm space-y-1">
+              <p className="font-semibold text-[var(--text-primary)]">{t.tipo}</p>
+              <p className="text-[var(--text-secondary)]">Saída: {t.saida}</p>
+              <p className="text-[var(--text-secondary)]">Chegada: {t.chegada}</p>
+              <p className="text-[var(--text-secondary)]">Responsável: {t.responsavel}</p>
+              <p className="text-[var(--text-secondary)]">Passageiros: {t.passageiros.join(", ")}</p>
+              {t.observacao && <p className="text-[var(--text-secondary)]"><strong>Obs:</strong> {t.observacao}</p>}
             </div>
           ))
         )}
@@ -117,9 +117,9 @@ const Etapa6Resumo = ({
       {/* AGENDA */}
       <Section title="Agenda do Dia">
         {agenda.length === 0 ? (
-          <p className="text-gray-500 italic">Nenhum item na agenda.</p>
+          <p className="text-[var(--text-muted)] italic">Nenhum item na agenda.</p>
         ) : (
-          <ul className="list-disc ml-6 text-sm text-gray-700">
+          <ul className="list-disc ml-6 text-sm text-[var(--text-secondary)]">
             {agenda.map((a, i) => (
               <li key={i}>
                 <strong>{a.hora}</strong>: {a.titulo} — {a.descricao}
@@ -132,9 +132,9 @@ const Etapa6Resumo = ({
       {/* INFORMAÇÕES EXTRAS */}
       <Section title="Informações Extras">
         {Object.keys(extras).length === 0 ? (
-          <p className="text-gray-500">Nenhuma informação extra adicionada.</p>
+          <p className="text-[var(--text-muted)]">Nenhuma informação extra adicionada.</p>
         ) : (
-          <pre className="text-sm bg-gray-100 p-4 rounded-lg border border-gray-200">
+          <pre className="text-sm bg-[var(--surface-hover)] p-4 rounded-[var(--radius-md)] border border-[var(--border)]">
             {JSON.stringify(extras, null, 2)}
           </pre>
         )}

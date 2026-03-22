@@ -25,7 +25,7 @@ export const NavButton = ({ activeTab, onTabChange }) => {
         <li key={item.id}>
           <button
             onClick={() => onTabChange(item.value)}
-            className={`px-4 py-2 rounded-lg transition-all ${
+            className={`px-4 py-2 rounded-[var(--radius-md)] transition-all ${
               activeTab === item.value
                 ? "bg-neutral-700 text-white"
                 : "font-bold"

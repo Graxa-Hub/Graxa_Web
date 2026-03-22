@@ -5,10 +5,27 @@ export const GeneratePdf = ({ onClick, disabled, title, label }) => {
         <button
             onClick={onClick}
             disabled={disabled}
-            className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold text-sm shadow-md disabled:bg-gray-400 disabled:cursor-not-allowed"
             title={title}
+            style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '8px 14px',
+                background: disabled ? 'var(--surface-hover)' : 'rgba(92,158,110,0.18)',
+                border: '1px solid',
+                borderColor: disabled ? 'var(--border)' : 'rgba(92,158,110,0.35)',
+                borderRadius: 'var(--radius-sm)',
+                color: disabled ? 'var(--text-muted)' : 'var(--success)',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                opacity: disabled ? 0.6 : 1,
+                transition: 'background 0.12s, border-color 0.12s, filter 0.12s'
+            }}
+            onMouseEnter={e => { if (!disabled) e.currentTarget.style.filter = 'brightness(1.1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.filter = ''; }}
         >
-            <FileDown size={16} />
+            <FileDown size={15} />
             {label}
         </button>
     )

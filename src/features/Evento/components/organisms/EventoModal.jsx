@@ -333,10 +333,10 @@ export function EventoModal({
           setFieldErrors({
             general: (
               <div>
-                <p className="font-semibold text-red-700 mb-2">
+                <p className="font-semibold text-[var(--accent)] mb-2">
                   ⚠️ Fora do período da turnê!
                 </p>
-                <div className="text-sm bg-red-50 p-3 rounded border border-red-200">
+                <div className="text-sm bg-[var(--surface)] p-3 rounded border border-[var(--border)]">
                   O evento deve ocorrer entre <strong>{limitesErro.turneInicio}</strong> e <strong>{limitesErro.turneFim}</strong>.
                 </div>
               </div>
@@ -361,13 +361,13 @@ export function EventoModal({
           setFieldErrors({
             general: (
               <div>
-                <p className="font-semibold text-red-700 mb-2">
+                <p className="font-semibold text-[var(--accent)] mb-2">
                   ⚠️ Conflito de horário detectado!
                 </p>
-                <div className="text-sm whitespace-pre-line bg-red-50 p-3 rounded border border-red-200 font-mono">
+                <div className="text-sm whitespace-pre-line bg-[var(--surface)] p-3 rounded border border-[var(--border)] font-mono">
                   {conflito.detalhes}
                 </div>
-                <p className="text-xs text-red-500 mt-2">
+                <p className="text-xs text-[var(--accent)] mt-2">
                   Ajuste as datas ou escolha outras bandas para continuar.
                 </p>
               </div>
@@ -388,10 +388,10 @@ export function EventoModal({
           setFieldErrors({
             general: (
               <div>
-                <p className="font-semibold text-red-700 mb-2">
+                <p className="font-semibold text-[var(--accent)] mb-2">
                   ⚠️ Fora do período da turnê!
                 </p>
-                <div className="text-sm bg-red-50 p-3 rounded border border-red-200">
+                <div className="text-sm bg-[var(--surface)] p-3 rounded border border-[var(--border)]">
                   A viagem deve ocorrer entre <strong>{limitesErro.turneInicio}</strong> e <strong>{limitesErro.turneFim}</strong>.
                 </div>
               </div>
@@ -415,18 +415,18 @@ export function EventoModal({
             setFieldErrors({
               general: (
                 <div>
-                  <p className="font-semibold text-red-700 mb-2">
+                  <p className="font-semibold text-[var(--accent)] mb-2">
                     ⚠️ Conflito de horário detectado!
                   </p>
-                  <p className="text-sm text-red-600 mb-2">
+                  <p className="text-sm text-[var(--accent)] mb-2">
                     A banda <strong>{conflito.bandas}</strong> já possui{" "}
                     {conflito.quantidade} evento(s) agendado(s) que conflita(m)
                     com este horário:
                   </p>
-                  <div className="text-sm whitespace-pre-line bg-red-50 p-3 rounded border border-red-200 font-mono">
+                  <div className="text-sm whitespace-pre-line bg-[var(--surface)] p-3 rounded border border-[var(--border)] font-mono">
                     {conflito.detalhes}
                   </div>
-                  <p className="text-xs text-red-500 mt-2">
+                  <p className="text-xs text-[var(--accent)] mt-2">
                     Ajuste as datas ou escolha outra turnê para continuar.
                   </p>
                 </div>
@@ -459,10 +459,10 @@ export function EventoModal({
           setFieldErrors({
             general: (
               <div>
-                <p className="font-semibold text-red-700 mb-2">
+                <p className="font-semibold text-[var(--accent)] mb-2">
                   ⚠️ Fora do período da turnê!
                 </p>
-                <div className="text-sm bg-red-50 p-3 rounded border border-red-200">
+                <div className="text-sm bg-[var(--surface)] p-3 rounded border border-[var(--border)]">
                   O evento deve ocorrer entre <strong>{limitesErro.turneInicio}</strong> e <strong>{limitesErro.turneFim}</strong>.
                 </div>
               </div>
@@ -487,13 +487,13 @@ export function EventoModal({
           setFieldErrors({
             general: (
               <div>
-                <p className="font-semibold text-red-700 mb-2">
+                <p className="font-semibold text-[var(--accent)] mb-2">
                   ⚠️ Conflito de horário detectado!
                 </p>
-                <div className="text-sm whitespace-pre-line bg-red-50 p-3 rounded border border-red-200 font-mono">
+                <div className="text-sm whitespace-pre-line bg-[var(--surface)] p-3 rounded border border-[var(--border)] font-mono">
                   {conflito.detalhes}
                 </div>
-                <p className="text-xs text-red-500 mt-2">
+                <p className="text-xs text-[var(--accent)] mt-2">
                   Ajuste as datas ou escolha outras bandas para continuar.
                 </p>
               </div>
@@ -514,10 +514,10 @@ export function EventoModal({
           setFieldErrors({
             general: (
               <div>
-                <p className="font-semibold text-red-700 mb-2">
+                <p className="font-semibold text-[var(--accent)] mb-2">
                   ⚠️ Fora do período da turnê!
                 </p>
-                <div className="text-sm bg-red-50 p-3 rounded border border-red-200">
+                <div className="text-sm bg-[var(--surface)] p-3 rounded border border-[var(--border)]">
                   A viagem deve ocorrer entre <strong>{limitesErro.turneInicio}</strong> e <strong>{limitesErro.turneFim}</strong>.
                 </div>
               </div>
@@ -541,18 +541,18 @@ export function EventoModal({
             setFieldErrors({
               general: (
                 <div>
-                  <p className="font-semibold text-red-700 mb-2">
+                  <p className="font-semibold text-[var(--accent)] mb-2">
                     ⚠️ Conflito de horário detectado!
                   </p>
-                  <p className="text-sm text-red-600 mb-2">
+                  <p className="text-sm text-[var(--accent)] mb-2">
                     A banda <strong>{conflito.bandas}</strong> já possui{" "}
                     {conflito.quantidade} evento(s) agendado(s) que conflita(m)
                     com este horário:
                   </p>
-                  <div className="text-sm whitespace-pre-line bg-red-50 p-3 rounded border border-red-200 font-mono">
+                  <div className="text-sm whitespace-pre-line bg-[var(--surface)] p-3 rounded border border-[var(--border)] font-mono">
                     {conflito.detalhes}
                   </div>
-                  <p className="text-xs text-red-500 mt-2">
+                  <p className="text-xs text-[var(--accent)] mt-2">
                     Ajuste as datas ou escolha outra turnê para continuar.
                   </p>
                 </div>
@@ -720,17 +720,17 @@ export function EventoModal({
       className={`fixed inset-0 z-50 flex items-center justify-center ${isOpen ? "" : "hidden"
         }`}
     >
-      <div className="fixed inset-0 bg-black/50" onClick={onClose}></div>
-      <div className="relative bg-white rounded-md shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
-        <div className="sticky top-0 bg-white border-b border-gray-200 rounded-t-2xl z-10">
+      <div style={{position:"fixed",inset:0,background:"var(--overlay)"}} onClick={onClose}></div>
+      <div className="relative w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto rounded-[var(--radius-md)] shadow-[var(--shadow-card)]">
+        <div className="sticky top-0 z-10 bg-[var(--surface-elevated)] border-b border-[var(--border)]">
           <div className="flex items-center justify-center gap-8 p-6">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => handleTabChange(tab.id)}
                 className={`pb-2 px-4 text-lg font-medium transition-all ${activeTab === tab.id
-                  ? "text-gray-900 border-b-2 border-red-500"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "text-[var(--text-primary)] border-b-2 border-[var(--accent)]"
+                  : "text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
                   }`}
               >
                 {tab.label}
@@ -739,26 +739,26 @@ export function EventoModal({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 bg-[var(--surface-elevated)]">
           <div className="flex items-center justify-center gap-2 mb-6">
             {[1, 2].map((step) => (
               <div
                 key={step}
                 className={`w-3 h-3 rounded-full transition-all ${currentStep === step
-                  ? "bg-red-500"
+                  ? "bg-[var(--accent)]"
                   : currentStep > step
-                    ? "bg-green-500"
-                    : "bg-gray-300"
+                    ? "bg-[var(--success)]"
+                    : "bg-[var(--border-strong)]"
                   }`}
               />
             ))}
           </div>
 
           {fieldErrors.general && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <div className="mb-4 p-4 rounded-[var(--radius-sm)]" style={{background:"rgba(200,80,60,0.08)",border:"1px solid rgba(200,80,60,0.3)"}}><div className="">
               <div className="flex items-start gap-2">
                 <svg
-                  className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0"
+                  className="w-5 h-5 mt-0.5 flex-shrink-0" style={{color:"var(--accent)"}}
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -768,19 +768,20 @@ export function EventoModal({
                     clipRule="evenodd"
                   />
                 </svg>
-                <p className="text-sm text-red-800">{fieldErrors.general}</p>
+                <p className="text-sm text-[var(--accent)]">{fieldErrors.general}</p>
               </div>
+            </div>
             </div>
           )}
 
           {renderContent()}
         </div>
 
-        <div className="sticky bottom-0 bg-white border-t border-gray-200 p-6 rounded-b-2xl">
+        <div className="sticky bottom-0 p-5 border-t border-[var(--border)] bg-[var(--surface-elevated)]">
           <div className="flex items-center justify-between gap-4">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors px-4 py-2"
             >
               Cancelar
             </button>
@@ -789,7 +790,7 @@ export function EventoModal({
               {currentStep > 1 && (
                 <button
                   onClick={handleBack}
-                  className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="modal-btn-secondary px-6 h-9"
                 >
                   Voltar
                 </button>
@@ -797,7 +798,7 @@ export function EventoModal({
 
               <button
                 onClick={handleNext}
-                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className="btn-primary px-6 h-9"
               >
                 {currentStep === TOTAL_STEPS ? "Finalizar" : "Próxima Etapa"}
               </button>
@@ -819,8 +820,8 @@ function BandaCombobox({
 }) {
   return (
     <div className="mb-4">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Banda do Show <span className="text-red-500">*</span>
+      <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
+        Banda do Show <span className="text-[var(--accent)]">*</span>
       </label>
       <select
         value={selectedId || ""}
@@ -828,7 +829,7 @@ function BandaCombobox({
           onChange(e.target.value);
           if (clearError) clearError("bandaId");
         }}
-        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${error ? "border-red-500 bg-red-50" : "border-gray-300"
+        className={`w-full px-3 py-2 border rounded-[var(--radius-md)]   ${error ? "border-[var(--accent)]" : "border-[var(--border)]"
           }`}
       >
         <option value="">Selecione uma banda</option>
@@ -838,7 +839,7 @@ function BandaCombobox({
           </option>
         ))}
       </select>
-      {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+      {error && <p className="text-[var(--accent)] text-xs mt-1">{error}</p>}
     </div>
   );
 }
@@ -882,23 +883,23 @@ function LocalCombobox({
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        Local do Show <span className="text-red-500">*</span>
+      <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
+        Local do Show <span className="text-[var(--accent)]">*</span>
       </label>
 
       {selectedLocal && (
-        <div className="mb-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex justify-between items-start">
+        <div className="mb-2 p-3 surface-card flex justify-between items-start">
           <div className="text-sm">
-            <p className="font-medium text-blue-900">{selectedLocal.nome}</p>
+            <p className="font-medium text-[var(--text-primary)]">{selectedLocal.nome}</p>
             {selectedLocal.endereco && (
-              <p className="text-blue-700 text-xs mt-1">
+              <p className="text-xs mt-1 text-[var(--text-secondary)]">
                 {selectedLocal.endereco.logradouro},{" "}
                 {selectedLocal.endereco.numero} -{" "}
                 {selectedLocal.endereco.cidade}/{selectedLocal.endereco.estado}
               </p>
             )}
             {selectedLocal.capacidade && (
-              <p className="text-blue-600 text-xs mt-1">
+              <p className="text-xs mt-1 text-[var(--text-muted)]">
                 Capacidade: {selectedLocal.capacidade} pessoas
               </p>
             )}
@@ -906,7 +907,7 @@ function LocalCombobox({
           <button
             type="button"
             onClick={handleRemove}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           >
             ×
           </button>
@@ -923,13 +924,13 @@ function LocalCombobox({
           }}
           onFocus={() => setIsOpen(true)}
           placeholder="Buscar local..."
-          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 pr-10 ${error ? "border-red-500 bg-red-50" : "border-gray-300"
+          className={`form-input pr-10 ${error ? "border-[var(--accent)]" : "border-[var(--border)]"
             }`}
         />
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-secondary)]"
         >
           <svg
             className="w-5 h-5"
@@ -947,7 +948,7 @@ function LocalCombobox({
         </button>
       </div>
 
-      {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
+      {error && <p className="text-[var(--accent)] text-xs mt-1">{error}</p>}
 
       {isOpen && (
         <>
@@ -955,14 +956,14 @@ function LocalCombobox({
             className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          <div className="absolute z-20 w-full mt-1 surface-card max-h-60 overflow-y-auto">
             <button
               type="button"
               onClick={() => {
                 onNovoLocal();
                 setIsOpen(false);
               }}
-              className="w-full px-3 py-2 text-left text-sm text-blue-600 hover:bg-blue-50 border-b border-gray-200 font-medium"
+              className="w-full px-3 py-2 text-left text-sm text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] border-b border-[var(--border)] font-medium"
             >
               + Cadastrar novo local
             </button>
@@ -973,13 +974,13 @@ function LocalCombobox({
                   key={local.id}
                   type="button"
                   onClick={() => handleSelect(local.id)}
-                  className="w-full px-3 py-2 text-left hover:bg-gray-50 border-b border-gray-100 last:border-0"
+                  className="w-full px-3 py-2 text-left hover:bg-[var(--surface-hover)] border-b border-[var(--border)] last:border-0"
                 >
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-[var(--text-primary)]">
                     {local.nome}
                   </p>
                   {local.endereco && (
-                    <p className="text-xs text-gray-600 mt-1">
+                    <p className="text-xs text-[var(--text-muted)] mt-1">
                       {local.endereco.cidade}/{local.endereco.estado}
                       {local.capacidade && ` • Cap: ${local.capacidade}`}
                     </p>
@@ -987,7 +988,7 @@ function LocalCombobox({
                 </button>
               ))
             ) : (
-              <div className="px-3 py-2 text-sm text-gray-500">
+              <div className="px-3 py-2 text-sm text-[var(--text-muted)]">
                 {searchTerm
                   ? "Nenhum local encontrado"
                   : "Nenhum local cadastrado"}
@@ -1055,7 +1056,7 @@ function ShowContent({
           error={fieldErrors.titulo} // <-- borda vermelha se erro
         />
         {fieldErrors.titulo && (
-          <p className="text-red-500 text-sm">{errorMessages.titulo}</p>
+          <p className="text-[var(--accent)] text-xs">{errorMessages.titulo}</p>
         )}
 
         <BandaCombobox
@@ -1068,18 +1069,18 @@ function ShowContent({
           clearError={clearFieldError}
         />
         {fieldErrors.bandaId && (
-          <p className="text-red-500 text-sm">{fieldErrors.bandaId}</p>
+          <p className="text-[var(--accent)] text-xs">{fieldErrors.bandaId}</p>
         )}
 
         {/* Seleção de turnê */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
             Turnê (Opcional)
           </label>
           <select
             value={data.turneId || ""}
             onChange={(e) => setData({ ...data, turneId: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="form-input"
           >
             <option value="">Selecione uma turnê</option>
             {turnesFiltradas.length > 0 ? (
@@ -1094,7 +1095,7 @@ function ShowContent({
               </option>
             )}
           </select>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-[var(--text-muted)] mt-1">
             Para cadastrar uma nova turnê, acesse a página de Turnês
           </p>
         </div>
@@ -1109,15 +1110,15 @@ function ShowContent({
             clearError={clearFieldError}
           />
         ) : (
-          <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <div className="space-y-4 p-4 surface-card">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-blue-900">
+              <h3 className="text-sm font-semibold text-[var(--text-primary)]">
                 Cadastrar Novo Local
               </h3>
               <button
                 type="button"
                 onClick={() => setShowNovoLocal(false)}
-                className="text-blue-600 hover:text-blue-800 text-sm"
+                className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] text-sm"
               >
                 Cancelar
               </button>
@@ -1132,7 +1133,7 @@ function ShowContent({
               error={fieldErrors.nomeLocal} // <-- borda vermelha se erro
             />
             {fieldErrors.nomeLocal && (
-              <p className="text-red-500 text-sm">{fieldErrors.nomeLocal}</p>
+              <p className="text-[var(--accent)] text-xs">{fieldErrors.nomeLocal}</p>
             )}
 
             <Input
@@ -1149,7 +1150,7 @@ function ShowContent({
               error={fieldErrors.capacidade}
             />
             {fieldErrors.capacidade && (
-              <p className="text-red-500 text-sm">{fieldErrors.capacidade}</p>
+              <p className="text-[var(--accent)] text-xs">{fieldErrors.capacidade}</p>
             )}
 
             <EnderecoForm
@@ -1196,7 +1197,7 @@ function ShowContent({
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
           Descrição do Show
         </label>
         <textarea
@@ -1204,7 +1205,7 @@ function ShowContent({
           onChange={(e) => setData({ ...data, descricao: e.target.value })}
           placeholder="Descreva os detalhes do show..."
           rows={4}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+          className="form-input resize-none"
         />
       </div>
     </div>
@@ -1240,15 +1241,15 @@ function ViagemContent({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
             Tipo de Transporte *
           </label>
           <select
             value={data.tipoViagem}
             onChange={(e) => handleChange("tipoViagem", e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${fieldErrors.tipoViagem
-              ? "border-red-500 bg-red-50"
-              : "border-gray-300"
+            className={`w-full px-3 py-2 border rounded-[var(--radius-md)]   ${fieldErrors.tipoViagem
+              ? "border-[var(--accent)]"
+              : "border-[var(--border)]"
               }`}
           >
             <option value="aereo">✈️ Aéreo</option>
@@ -1258,14 +1259,14 @@ function ViagemContent({
             <option value="terrestre">🚛 Terrestre (Outro)</option>
           </select>
           {fieldErrors.tipoViagem && (
-            <p className="text-red-600 text-sm mt-1">
+            <p className="text-[var(--accent)] text-xs mt-1">
               {fieldErrors.tipoViagem}
             </p>
           )}
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
             Descrição
           </label>
           <textarea
@@ -1273,7 +1274,7 @@ function ViagemContent({
             onChange={(e) => handleChange("descricao", e.target.value)}
             placeholder="Informações sobre a viagem..."
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
+            className="form-input resize-none"
           />
         </div>
       </div>
@@ -1305,15 +1306,15 @@ function ViagemContent({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
             Turnê *
           </label>
           <select
             value={data.turneId || ""}
             onChange={(e) => handleChange("turneId", e.target.value)}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 ${fieldErrors.turneId
-              ? "border-red-500 bg-red-50"
-              : "border-gray-300"
+            className={`w-full px-3 py-2 border rounded-[var(--radius-md)]   ${fieldErrors.turneId
+              ? "border-[var(--accent)]"
+              : "border-[var(--border)]"
               }`}
           >
             <option value="">Selecione uma turnê</option>
@@ -1330,7 +1331,7 @@ function ViagemContent({
             )}
           </select>
           {fieldErrors.turneId && (
-            <p className="text-red-600 text-sm mt-1">{fieldErrors.turneId}</p>
+            <p className="text-[var(--accent)] text-xs mt-1">{fieldErrors.turneId}</p>
           )}
         </div>
       </div>

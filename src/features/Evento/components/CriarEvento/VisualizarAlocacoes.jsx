@@ -21,37 +21,37 @@ const STATUS_CONFIG = {
     label: "Aceitas",
     icon: CheckCircle,
     color: "green",
-    bgColor: "bg-green-50",
+    bgColor: "bg-[var(--surface)]",
     borderColor: "border-green-200",
-    textColor: "text-green-700",
-    badgeColor: "bg-green-100"
+    textColor: "text-[var(--success)]",
+    badgeColor: "bg-[var(--surface-hover)]"
   },
   PENDENTE: {
     label: "Pendentes",
     icon: Clock,
     color: "yellow",
-    bgColor: "bg-yellow-50",
-    borderColor: "border-yellow-200",
-    textColor: "text-yellow-700",
-    badgeColor: "bg-yellow-100"
+    bgColor: "bg-[var(--surface)]",
+    borderColor: "border-[var(--border)]",
+    textColor: "text-[var(--warning)]",
+    badgeColor: "bg-[var(--surface-hover)]"
   },
   RECUSADO: {
     label: "Recusadas",
     icon: XCircle,
     color: "red",
-    bgColor: "bg-red-50",
-    borderColor: "border-red-200",
-    textColor: "text-red-700",
-    badgeColor: "bg-red-100"
+    bgColor: "bg-[var(--surface)]",
+    borderColor: "border-[var(--border)]",
+    textColor: "text-[var(--accent)]",
+    badgeColor: "bg-[var(--surface-hover)]"
   },
   CANCELADO: {
     label: "Canceladas",
     icon: XCircle,
     color: "gray",
-    bgColor: "bg-gray-50",
-    borderColor: "border-gray-300",
-    textColor: "text-gray-700",
-    badgeColor: "bg-gray-100"
+    bgColor: "bg-[var(--surface)]",
+    borderColor: "border-[var(--border)]",
+    textColor: "text-[var(--text-secondary)]",
+    badgeColor: "bg-[var(--surface-hover)]"
   }
 };
 
@@ -213,7 +213,7 @@ const VisualizarAlocacoes = ({ showId }) => {
 
   if (!showId) {
     return (
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)] p-6 text-center">
         <Calendar className="w-12 h-12 text-yellow-600 mx-auto mb-3" />
         <p className="text-yellow-800 font-medium">
           Salve o evento primeiro para visualizar as alocações
@@ -227,8 +227,8 @@ const VisualizarAlocacoes = ({ showId }) => {
       {/* Header com estatísticas */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Alocações do Evento</h2>
-          <p className="text-gray-600 mt-1">
+          <h2 className="text-2xl font-bold text-[var(--text-primary)]">Alocações do Evento</h2>
+          <p className="text-[var(--text-secondary)] mt-1">
             Visualize e gerencie o status de todas as alocações ({alocacoes.length} total)
           </p>
         </div>
@@ -236,7 +236,7 @@ const VisualizarAlocacoes = ({ showId }) => {
         <button
           onClick={carregarAlocacoes}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors disabled:bg-gray-400"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
           Atualizar
@@ -252,7 +252,7 @@ const VisualizarAlocacoes = ({ showId }) => {
           return (
             <div
               key={status}
-              className={`${config.bgColor} ${config.borderColor} border-2 rounded-xl p-5 cursor-pointer transition-all hover:shadow-lg ${filtroStatus === status ? 'ring-2 ring-offset-2 ring-blue-500' : ''
+              className={`${config.bgColor} ${config.borderColor} border-2 rounded-[var(--radius-lg)] p-5 cursor-pointer transition-all hover:shadow-[var(--shadow-soft)] ${filtroStatus === status ? 'ring-2 ring-offset-2 ring-blue-500' : ''
                 }`}
               onClick={() => setFiltroStatus(filtroStatus === status ? "TODOS" : status)}
             >
@@ -261,11 +261,11 @@ const VisualizarAlocacoes = ({ showId }) => {
                   <p className={`text-sm font-medium ${config.textColor}`}>
                     {config.label}
                   </p>
-                  <p className="text-3xl font-bold text-gray-800 mt-1">
+                  <p className="text-3xl font-bold text-[var(--text-primary)] mt-1">
                     {count}
                   </p>
                 </div>
-                <div className={`${config.badgeColor} p-3 rounded-xl`}>
+                <div className={`${config.badgeColor} p-3 rounded-[var(--radius-lg)]`}>
                   <Icon className={`w-8 h-8 ${config.textColor}`} />
                 </div>
               </div>
@@ -276,16 +276,16 @@ const VisualizarAlocacoes = ({ showId }) => {
 
       {/* Filtro ativo */}
       {filtroStatus !== "TODOS" && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center justify-between">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)] p-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-blue-600" />
+            <Filter className="w-5 h-5 text-[var(--info)]" />
             <span className="text-blue-800 font-medium">
               Exibindo apenas: {STATUS_CONFIG[filtroStatus].label} ({alocacoesFiltradas.length})
             </span>
           </div>
           <button
             onClick={() => setFiltroStatus("TODOS")}
-            className="text-blue-600 hover:text-blue-800 font-medium"
+            className="text-[var(--info)] hover:text-blue-800 font-medium"
           >
             Limpar filtro
           </button>
@@ -295,16 +295,16 @@ const VisualizarAlocacoes = ({ showId }) => {
       {/* Loading */}
       {loading && (
         <div className="text-center py-8">
-          <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto" />
-          <p className="text-gray-600 mt-2">Carregando alocações...</p>
+          <RefreshCw className="w-8 h-8 text-[var(--info)] animate-spin mx-auto" />
+          <p className="text-[var(--text-secondary)] mt-2">Carregando alocações...</p>
         </div>
       )}
 
       {/* Lista de alocações */}
       {!loading && alocacoesFiltradas.length === 0 && (
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-          <User className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600 font-medium">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)] p-8 text-center">
+          <User className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
+          <p className="text-[var(--text-secondary)] font-medium">
             {filtroStatus === "TODOS"
               ? "Nenhuma alocação encontrada"
               : `Nenhuma alocação ${STATUS_CONFIG[filtroStatus].label.toLowerCase()}`}
@@ -323,29 +323,29 @@ const VisualizarAlocacoes = ({ showId }) => {
             return (
               <div
                 key={alocacao.id}
-                className={`${config.bgColor} ${config.borderColor} border rounded-xl p-4 transition-all hover:shadow-md`}
+                className={`${config.bgColor} ${config.borderColor} border rounded-[var(--radius-lg)] p-4 transition-all hover:shadow-[var(--shadow-soft)]`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <img
                       src={alocacao.colaborador?.fotoUrl || 'https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Foto'}
                       alt={alocacao.colaborador?.nome || 'Colaborador'}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-white "
                       onError={(e) => {
                         e.target.src = 'https://placehold.co/300x300/e2e8f0/64748b?text=Erro';
                       }}
                     />
 
                     <div>
-                      <h4 className="font-semibold text-gray-800">
+                      <h4 className="font-semibold text-[var(--text-primary)]">
                         {alocacao.colaborador?.nome || 'Nome não disponível'}
                       </h4>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-[var(--text-secondary)]">
                         {alocacao.colaborador?.tipoUsuario
                           ? TIPOS_USUARIO.find(t => t.value === alocacao.colaborador.tipoUsuario)?.label || alocacao.colaborador.tipoUsuario
                           : 'Função não definida'}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-[var(--text-muted)] mt-1">
                         Criado em: {formatarData(alocacao.dataHoraCriacao)}
                       </p>
                     </div>
@@ -353,13 +353,13 @@ const VisualizarAlocacoes = ({ showId }) => {
 
                   <div className="flex items-center gap-3">
                     {alocacao.dataHoraResposta && (
-                      <div className="text-right text-xs text-gray-600">
+                      <div className="text-right text-xs text-[var(--text-secondary)]">
                         <p>Respondido em:</p>
                         <p className="font-medium">{formatarData(alocacao.dataHoraResposta)}</p>
                       </div>
                     )}
 
-                    <div className={`${config.badgeColor} px-4 py-2 rounded-lg flex items-center gap-2`}>
+                    <div className={`${config.badgeColor} px-4 py-2 rounded-[var(--radius-md)] flex items-center gap-2`}>
                       <Icon className={`w-5 h-5 ${config.textColor}`} />
                       <span className={`font-semibold ${config.textColor}`}>
                         {config.label}
@@ -370,7 +370,7 @@ const VisualizarAlocacoes = ({ showId }) => {
                       <button
                         onClick={() => handleCancelarAlocacao(alocacao)}
                         disabled={cancelando === alocacao.id}
-                        className="p-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
+                        className="p-2 bg-[var(--surface-hover)] text-[var(--accent)] rounded-[var(--radius-md)] hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
                         title="Cancelar alocação"
                       >
                         {cancelando === alocacao.id ? (

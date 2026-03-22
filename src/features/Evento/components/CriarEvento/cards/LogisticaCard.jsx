@@ -80,7 +80,7 @@ const LogisticaCard = ({
   const currentConfig = config[type];
 
   if (!currentConfig) {
-    return <div className="text-red-500">Tipo inválido: {type}</div>;
+    return <div className="text-[var(--accent)] text-sm">Tipo inválido: {type}</div>;
   }
 
   // ===================================================================
@@ -173,12 +173,12 @@ const LogisticaCard = ({
   // ===================================================================
   const colorClasses = {
     green: {
-      selected: "bg-green-50 border-green-400 hover:bg-green-100",
-      text: "text-green-600",
+      selected: "bg-[var(--surface)] border-green-400 hover:bg-[var(--surface-hover)]",
+      text: "text-[var(--success)]",
     },
     blue: {
-      selected: "bg-blue-50 border-blue-400 hover:bg-blue-100",
-      text: "text-blue-600",
+      selected: "bg-[var(--surface)] border-blue-400 hover:bg-[var(--surface-hover)]",
+      text: "text-[var(--info)]",
     },
     purple: {
       selected: "bg-purple-50 border-purple-400 hover:bg-purple-100",
@@ -192,17 +192,17 @@ const LogisticaCard = ({
   // RENDER
   // ===================================================================
   return (
-    <div className="relative bg-white rounded-xl shadow-lg p-6 space-y-5 border border-gray-100">
+    <div className="surface-card p-6 space-y-5 relative">
       {/* BOTÃO REMOVER */}
       <button
         onClick={onRemove}
-        className="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl"
+        className="absolute top-2 right-2 text-[var(--accent)] hover:text-[var(--accent)] font-bold text-xl"
       >
         ×
       </button>
 
       {/* TÍTULO */}
-      <h3 className="font-bold text-gray-900 text-xl">
+      <h3 className="font-bold text-[var(--text-primary)] text-base font-semibold">
         {currentConfig.icon} {currentConfig.title}
       </h3>
 
@@ -212,12 +212,12 @@ const LogisticaCard = ({
           return (
             <div key={index}>
               {field.label && (
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label className="text-sm font-medium text-[var(--text-secondary)] block mb-1">
                   {field.label}
                 </label>
               )}
               <select
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
                 value={get(field.key, field.alt)}
                 onChange={(e) => updateField(field.key, e.target.value)}
               >
@@ -235,12 +235,12 @@ const LogisticaCard = ({
           return (
             <div key={index}>
               {field.label && (
-                <label className="text-sm font-medium text-gray-700 block mb-1">
+                <label className="text-sm font-medium text-[var(--text-secondary)] block mb-1">
                   {field.label}
                 </label>
               )}
               <textarea
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
                 rows="3"
                 placeholder={field.placeholder}
                 value={get(field.key, field.alt)}
@@ -254,14 +254,14 @@ const LogisticaCard = ({
         return (
           <div key={index}>
             {field.label && field.type === "datetime-local" && (
-              <label className="text-sm font-medium text-gray-700 block mb-1">
+              <label className="text-sm font-medium text-[var(--text-secondary)] block mb-1">
                 {field.label}
               </label>
             )}
             
             <input
               type={field.type}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
               placeholder={field.placeholder}
               value={get(field.key, field.alt)}
               onChange={(e) => updateField(field.key, e.target.value)}
@@ -272,12 +272,12 @@ const LogisticaCard = ({
               <>
                 <button
                   onClick={handleBuscarEnderecoHotel}
-                  className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors font-medium"
+                  className="btn-primary mt-2 text-sm"
                   disabled={loading}
                 >
                   {loading ? "Buscando..." : "Confirmar Endereço"}
                 </button>
-                {erro && <p className="text-red-500 text-sm mt-1">{erro}</p>}
+                {erro && <p className="text-[var(--accent)] text-sm mt-1">{erro}</p>}
               </>
             )}
           </div>
@@ -286,20 +286,20 @@ const LogisticaCard = ({
 
       {/* DISTÂNCIAS AUTOMÁTICAS (só para hotel) */}
       {type === "hotel" && data.distanciaPalcoKm && (
-        <p className="text-gray-600">
+        <p className="text-[var(--text-secondary)]">
           🎤 <strong>{data.distanciaPalcoKm} km</strong> do local do show
         </p>
       )}
 
       {type === "hotel" && data.distanciaAeroportoKm && (
-        <p className="text-gray-600">
+        <p className="text-[var(--text-secondary)]">
           ✈️ <strong>{data.distanciaAeroportoKm} km</strong> do aeroporto
         </p>
       )}
 
       {/* SELEÇÃO DE PESSOAS (HÓSPEDES/PASSAGEIROS) */}
       <div>
-        <label className="text-sm font-medium text-gray-700 block mb-2">
+        <label className="text-sm font-medium text-[var(--text-secondary)] block mb-2">
           {currentConfig.pessoasLabel}
         </label>
 
@@ -314,10 +314,10 @@ const LogisticaCard = ({
               <button
                 key={c.id}
                 onClick={() => togglePessoa(c.id)}
-                className={`w-full flex justify-between p-3 border rounded-lg transition-colors ${
+                className={`w-full flex justify-between p-3 border rounded-[var(--radius-md)] transition-colors ${
                   selected 
                     ? colors.selected 
-                    : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                    : "bg-[var(--surface-hover)] border-[var(--border)] hover:bg-[#383838]"
                 }`}
               >
                 <span>{c.nome}</span>

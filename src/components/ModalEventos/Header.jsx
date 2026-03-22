@@ -1,36 +1,18 @@
-import React from "react";
-
-export const Header = () => {
-  return (
-    <div className="flex justify-between items-center p-6 border-b border-gray-200">
-      <div className="flex flex-col items-center flex-1">
-        <h2 className="text-xl font-semibold text-gray-900 mb-3">{title}</h2>
-
-        {/* Indicadores de etapa */}
-        {showNavigation && totalSteps > 1 && (
-          <div className="flex items-center gap-2">
-            {[...Array(totalSteps)].map((_, index) => (
-              <div
-                key={index}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index + 1 === currentStep
-                    ? "bg-red-500"
-                    : index + 1 < currentStep
-                    ? "bg-gray-300"
-                    : "bg-gray-300"
-                }`}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      <button
-        onClick={handleClose}
-        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-      >
-        <X className="w-5 h-5 text-gray-500" />
-      </button>
+import { X } from "lucide-react";
+export const Header = ({ title, currentStep, totalSteps, onClose }) => (
+    <div className="flex justify-between items-center p-5 border-b border-[var(--border)]">
+        <div>
+            <h2 className="text-base font-semibold text-[var(--text-primary)] mb-1">{title}</h2>
+            {totalSteps > 1 && (
+                <div className="flex gap-1.5">
+                    {Array.from({ length: totalSteps }, (_, i) => (
+                        <span key={i} className="w-2 h-2 rounded-full transition-colors" style={{ background: i < currentStep ? 'var(--accent)' : i === currentStep - 1 ? 'var(--accent)' : 'var(--border-strong)' }} />
+                    ))}
+                </div>
+            )}
+        </div>
+        <button onClick={onClose} className="p-2 hover:bg-[var(--surface-hover)] rounded-[var(--radius-sm)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+            <X className="w-4 h-4" />
+        </button>
     </div>
-  );
-};
+);

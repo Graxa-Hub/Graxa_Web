@@ -73,7 +73,7 @@ export function EnderecoForm({ endereco, onChange, errors = {} }) {
             error={errors.cep}
           />
           {loading && (
-            <div className="absolute right-3 top-9 text-blue-600">
+            <div className="absolute right-3 top-9 text-[var(--info)]">
               <svg
                 className="animate-spin h-5 w-5"
                 fill="none"

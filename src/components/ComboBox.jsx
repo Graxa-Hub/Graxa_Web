@@ -1,97 +1,47 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 
-export function ComboBox({ label, value, onChange, options, error, placeholder = "Selecione..." }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const containerRef = useRef(null);
-
-  const selectedOption = options.find(opt => opt.value === value);
-
-  const filteredOptions = options.filter(opt =>
-    opt.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
-        setIsOpen(false);
-        setSearchTerm('');
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [isOpen]);
-
-  const handleSelect = (optionValue) => {
-    onChange(optionValue);
-    setIsOpen(false);
-    setSearchTerm('');
-  };
-
-  return (
-    <div ref={containerRef} className="relative">
-      {label && (
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          {label} <span className="text-red-500">*</span>
-        </label>
-      )}
-
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 flex items-center justify-between bg-white ${
-          error ? 'border-red-500' : 'border-gray-300'
-        }`}
-      >
-        <span className={selectedOption ? 'text-gray-900' : 'text-gray-400'}>
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
-        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-
-      {error && (
-        <p className="text-red-600 text-sm mt-1">{error}</p>
-      )}
-
-      {isOpen && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg">
-          <div className="p-2 border-b border-gray-200">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Buscar..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-              autoFocus
-            />
-          </div>
-
-          <div className="max-h-60 overflow-y-auto">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((opt) => (
-                <button
-                  key={opt.value}
-                  type="button"
-                  onClick={() => handleSelect(opt.value)}
-                  className={`w-full px-3 py-2 text-left hover:bg-blue-50 transition-colors text-sm ${
-                    opt.value === value ? 'bg-blue-100 text-blue-700 font-medium' : 'text-gray-900'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))
-            ) : (
-              <div className="px-3 py-4 text-sm text-gray-500 text-center">
-                Nenhuma opção encontrada
-              </div>
+export const ComboBox = ({ label, value, onChange, options = [], error, placeholder = "Selecione...", required = false }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    const ref = useRef(null);
+    useEffect(() => {
+        const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setIsOpen(false); };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+    const filtered = options.filter(o => o.label.toLowerCase().includes(search.toLowerCase()));
+    const selected = options.find(o => o.value === value);
+    return (
+        <div className="relative w-full" ref={ref}>
+            {label && <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">{label}{required && <span className="text-[var(--accent)] ml-1">*</span>}</label>}
+            <button type="button" onClick={() => setIsOpen(!isOpen)}
+                className={`form-input flex items-center justify-between cursor-pointer ${error ? "border-[var(--accent)]" : ""}`}>
+                <span className={selected ? "text-[var(--text-primary)]" : "text-[var(--text-placeholder)]"}>{selected ? selected.label : placeholder}</span>
+                <ChevronDown className={`w-4 h-4 text-[var(--text-muted)] transition-transform ${isOpen ? "rotate-180" : ""}`} />
+            </button>
+            {error && <p className="text-[var(--accent)] text-xs mt-1">{error}</p>}
+            {isOpen && (
+                <div className="absolute z-50 w-full mt-1 surface-card overflow-hidden">
+                    <div className="p-2 border-b border-[var(--border)]">
+                        <input autoFocus value={search} onChange={e => setSearch(e.target.value)}
+                            placeholder="Buscar..." className="form-input text-sm py-1.5" />
+                    </div>
+                    <div className="max-h-52 overflow-y-auto">
+                        {filtered.length === 0
+                            ? <div className="px-3 py-4 text-sm text-[var(--text-muted)] text-center">Nenhum resultado</div>
+                            : filtered.map(opt => (
+                                <button key={opt.value} type="button"
+                                    onClick={() => { onChange(opt.value); setIsOpen(false); setSearch(""); }}
+                                    className={`w-full px-3 py-2 text-left text-sm hover:bg-[var(--surface-hover)] transition-colors ${opt.value === value ? "text-[var(--text-primary)] font-medium bg-[var(--surface-hover)]" : "text-[var(--text-secondary)]"}`}>
+                                    {opt.label}
+                                </button>
+                            ))
+                        }
+                    </div>
+                </div>
             )}
-          </div>
         </div>
-      )}
-    </div>
-  );
-}
+    );
+};
+export default ComboBox;

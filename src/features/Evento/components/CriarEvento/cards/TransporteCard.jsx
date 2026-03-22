@@ -19,23 +19,23 @@ const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemov
   };
 
   return (
-    <div className="relative bg-white rounded-xl shadow-lg p-6 space-y-5 border border-gray-100">
+    <div className="surface-card p-6 space-y-5 relative">
 
       {/* BOTÃO REMOVER */}
       <button
         onClick={onRemove}
-        className="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl"
+        className="absolute top-2 right-2 text-[var(--accent)] hover:text-[var(--accent)] font-bold text-xl"
       >
         ×
       </button>
 
-      <h3 className="font-bold text-gray-900 text-xl">
+      <h3 className="font-bold text-[var(--text-primary)] text-base font-semibold">
         Transporte
       </h3>
 
       {/* TIPO */}
       <select
-        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
         value={get("tipo", "tipo")}
         onChange={(e) => updateField("tipo", e.target.value)}
       >
@@ -48,31 +48,31 @@ const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemov
 
       {/* INFORMAÇÕES */}
       <input
-        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
         placeholder="Responsável"
         value={get("responsavel", "motorista")}
         onChange={(e) => updateField("responsavel", e.target.value)}
       />
 
-      <label className="text-sm font-medium text-gray-700">Horário de Saída</label>
+      <label className="text-sm font-medium text-[var(--text-secondary)]">Horário de Saída</label>
       <input
         type="datetime-local"
-        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
         value={get("saida", "saida")}
         onChange={(e) => updateField("saida", e.target.value)}
       />
 
-      <label className="text-sm font-medium text-gray-700">Horário de Chegada</label>
+      <label className="text-sm font-medium text-[var(--text-secondary)]">Horário de Chegada</label>
       <input
         type="datetime-local"
-        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
         value={get("chegada", "chegada") || ""}
         onChange={(e) => updateField("chegada", e.target.value)}
       />
 
       {/* PASSAGEIROS */}
       <div>
-        <label className="text-sm font-medium text-gray-700 block mb-2">Passageiros</label>
+        <label className="text-sm font-medium text-[var(--text-secondary)] block mb-2">Passageiros</label>
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
@@ -83,8 +83,8 @@ const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemov
               <button
                 key={c.id}
                 onClick={() => togglePassageiro(c.id)}
-                className={`w-full flex justify-between p-3 border rounded-lg transition-colors ${
-                  selected ? "bg-purple-50 border-purple-400 hover:bg-purple-100" : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                className={`w-full flex justify-between p-3 border rounded-[var(--radius-md)] transition-colors ${
+                  selected ? "bg-purple-50 border-purple-400 hover:bg-purple-100" : "bg-[var(--surface-hover)] border-[var(--border)] hover:bg-[#383838]"
                 }`}
               >
                 <span>{c.nome}</span>
@@ -99,7 +99,7 @@ const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemov
 
       {/* OBSERVAÇÃO */}
       <textarea
-        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
         rows="3"
         placeholder="Observações"
         value={get("observacao", "observacao")}

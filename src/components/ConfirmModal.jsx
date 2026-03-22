@@ -1,89 +1,124 @@
 import React from 'react'
-import { X, AlertTriangle, CheckCircle, Info, XCircle } from 'lucide-react'
+import { AlertTriangle, CheckCircle, Info, XCircle } from 'lucide-react'
 
-export function ConfirmModal({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
+export function ConfirmModal({
+  isOpen,
+  onClose,
+  onConfirm,
   title = "Confirmar ação",
   message = "Tem certeza que deseja continuar?",
   confirmText = "Confirmar",
   cancelText = "Cancelar",
   type = "warning", // "warning", "danger", "success", "info"
+  loading = false,
   className = ""
 }) {
   if (!isOpen) return null
 
   const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose()
-    }
+    if (e.target === e.currentTarget) onClose()
   }
 
   const getIcon = () => {
     switch (type) {
       case "danger":
-        return <XCircle className="w-6 h-6 text-red-500" />
+        return <XCircle style={{ width: 40, height: 40, color: 'var(--accent)' }} />
       case "success":
-        return <CheckCircle className="w-6 h-6 text-green-500" />
+        return <CheckCircle style={{ width: 40, height: 40, color: 'var(--success)' }} />
       case "info":
-        return <Info className="w-6 h-6 text-blue-500" />
+        return <Info style={{ width: 40, height: 40, color: 'var(--info)' }} />
       default:
-        return <AlertTriangle className="w-6 h-6 text-yellow-500" />
+        return <AlertTriangle style={{ width: 40, height: 40, color: 'var(--warning)' }} />
     }
   }
 
-  const getConfirmButtonStyle = () => {
-    switch (type) {
-      case "danger":
-        return "bg-red-600 hover:bg-red-700 text-white"
-      case "success":
-        return "bg-green-600 hover:bg-green-700 text-white"
-      case "info":
-        return "bg-blue-600 hover:bg-blue-700 text-white"
-      default:
-        return "bg-yellow-600 hover:bg-yellow-700 text-white"
-    }
-  }
+  const isDanger = type === "danger"
 
   return (
     <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+      className="confirm-overlay"
+      style={{
+        position: 'fixed', inset: 0,
+        background: 'var(--overlay)',
+        backdropFilter: 'blur(3px)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: 200, padding: 16
+      }}
       onClick={handleOverlayClick}
     >
-      <div className={`bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden ${className}`}>
-        {/* Header */}
-        <div className="flex justify-between items-center p-6 border-b border-gray-200">
-          <div className="flex items-center gap-3">
-            {getIcon()}
-            <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
+      <div
+        className={className}
+        style={{
+          background: 'var(--surface-elevated)',
+          border: '1px solid var(--border-hover)',
+          borderRadius: 'var(--radius-md)',
+          padding: '28px 24px 22px',
+          width: '100%', maxWidth: 360,
+          boxShadow: 'var(--shadow-card)',
+          textAlign: 'center',
+          animation: 'confirm-in 0.18s ease'
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        <style>{`
+          @keyframes confirm-in {
+            from { opacity: 0; transform: scale(0.96); }
+            to   { opacity: 1; transform: scale(1); }
+          }
+        `}</style>
+
+        <div style={{
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          width: 52, height: 52, borderRadius: '50%', marginBottom: 14,
+          background: isDanger ? 'rgba(200,80,60,0.12)' : 'var(--surface-hover)',
+          color: isDanger ? 'var(--accent)' : 'var(--text-secondary)'
+        }}>
+          {getIcon()}
         </div>
 
-        {/* Content */}
-        <div className="p-6">
-          <p className="text-gray-600 leading-relaxed">{message}</p>
-        </div>
+        <h3 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 8 }}>
+          {title}
+        </h3>
+        <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.55, marginBottom: 22 }}>
+          {message}
+        </p>
 
-        {/* Footer */}
-        <div className="flex justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
+        <div style={{ display: 'flex', gap: 8 }}>
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors"
+            disabled={loading}
+            style={{
+              flex: 1, fontSize: 13, fontWeight: 500, padding: '8px 0',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--border)',
+              background: 'var(--surface-hover)',
+              color: 'var(--text-muted)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.6 : 1,
+              transition: 'background 0.12s, border-color 0.12s, color 0.12s'
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#383838'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--surface-hover)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${getConfirmButtonStyle()}`}
+            disabled={loading}
+            style={{
+              flex: 1, fontSize: 13, fontWeight: 500, padding: '8px 0',
+              borderRadius: 'var(--radius-sm)',
+              border: isDanger ? '1px solid rgba(210,80,60,0.35)' : '1px solid var(--border-hover)',
+              background: isDanger ? 'rgba(210,80,60,0.18)' : 'var(--surface-hover)',
+              color: isDanger ? '#d45a42' : 'var(--text-primary)',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.6 : 1,
+              transition: 'background 0.12s, border-color 0.12s, color 0.12s'
+            }}
+            onMouseEnter={e => { if (!loading) e.currentTarget.style.filter = 'brightness(1.1)'; }}
+            onMouseLeave={e => { e.currentTarget.style.filter = ''; }}
           >
-            {confirmText}
+            {loading ? 'Processando...' : confirmText}
           </button>
         </div>
       </div>

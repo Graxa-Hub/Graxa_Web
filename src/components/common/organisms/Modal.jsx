@@ -1,92 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { ModalHeader } from "../ModalEventos/ModalHeader";
-import { ModalContent } from "../ModalEventos/ModalContent";
-import { ModalFooter } from "../ModalEventos/ModalFooter";
+import React from "react";
+import { X } from "lucide-react";
 
-export function Modal({
-  isOpen,
-  onClose,
-  title,
-  children,
-  totalSteps = 1,
-  nextButtonText = "Próxima Etapa",
-  beforeButtonText = "Voltar",
-  showNavigation = true,
-  showFooter = true, // ✅ nova prop
-  onFinish,
-}) {
-  const [currentStep, setCurrentStep] = useState(1);
-
-  useEffect(() => {
-    if (isOpen) {
-      setCurrentStep(1);
-    }
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
-  const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      if (onFinish) {
-        onFinish();
-      } else {
-        onClose();
-      }
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const handleClose = () => {
-    setCurrentStep(1);
-    onClose();
-  };
-
-  return (
-    // Background para dar aspecto escuro no fundo
-    <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-      onClick={handleOverlayClick}
-    >
-      {/* Modal Box */}
-      <div className="bg-white rounded-md min-h-80 h-fit relative p-5 w-full max-w-300">
-        {/* Header */}
-        <ModalHeader
-          title={title}
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          showNavigation={showNavigation}
-          onClose={handleClose}
-        />
-
-        {/* Content */}
-        <ModalContent currentStep={currentStep}>{children}</ModalContent>
-
-        {/* Footer com botão centrado */}
-        <ModalFooter
-          showNavigation={showNavigation}
-          showFooter={showFooter}
-          currentStep={currentStep}
-          totalSteps={totalSteps}
-          nextButtonText={nextButtonText}
-          beforeButtonText={beforeButtonText}
-          onNext={handleNext}
-          onPrevious={handlePrevious}
-        />
-      </div>
-    </div>
-  );
+export function Modal({ isOpen, onClose, title, children }) {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-[var(--overlay)] backdrop-blur-[2px]"
+            onClick={e => e.target === e.currentTarget && onClose()}>
+            <div className="modal-panel">
+                <div className="modal-header">
+                    <h2 className="text-base font-semibold text-[var(--text-primary)]">{title}</h2>
+                    <button onClick={onClose} className="p-1.5 hover:bg-[var(--surface-hover)] rounded-[var(--radius-sm)] text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"><X size={16} /></button>
+                </div>
+                <div className="modal-body">{children}</div>
+            </div>
+        </div>
+    );
 }

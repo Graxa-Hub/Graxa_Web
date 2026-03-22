@@ -1,26 +1,13 @@
-import React, { memo } from "react";
+import React from "react";
 import { AgendaCard } from "./AgendaCard";
-
-export const AgendaList = memo(({ agendas, agendaSelecionada, onSelecionarAgenda }) => {
-  return (
-    <div className="surface-card overflow-hidden flex flex-col h-full p-5">
-      <div className="mb-4 border-b border-[var(--border)] pb-3">
-        <h3 className="text-lg font-semibold text-[var(--text-primary)]">Agenda do Dia</h3>
-        <p className="text-sm text-[var(--text-muted)] mt-1">Linha do tempo do evento e próximos marcos.</p>
-      </div>
-      <div className="space-y-3 overflow-y-auto flex-1 pr-2">
-        {agendas.length > 0 ? (
-          agendas.map((item) => (
-            <div key={item.id} className={item.passed ? "opacity-45" : ""} onClick={() => onSelecionarAgenda(item.id)}>
-              <AgendaCard {...item} selected={agendaSelecionada?.id === item.id} />
-            </div>
-          ))
-        ) : (
-          <p className="text-[var(--text-muted)] text-center py-8">Nenhuma agenda cadastrada</p>
-        )}
-      </div>
+export const AgendaList = ({ itens = [], selectedId, onSelect }) => (
+    <div className="col-span-2 surface-card p-4 overflow-hidden flex flex-col h-full">
+        <h3 className="text-sm font-bold text-[var(--text-primary)] mb-3 pb-3 border-b border-[var(--border)]">Agenda do Dia</h3>
+        <div className="flex-1 overflow-y-auto flex flex-col gap-2">
+            {itens.length === 0
+                ? <p className="text-[var(--text-muted)] text-center py-8 text-sm">Nenhuma agenda cadastrada</p>
+                : itens.map(item => <AgendaCard key={item.id} {...item} selected={item.id === selectedId} onSelect={() => onSelect?.(item)} />)
+            }
+        </div>
     </div>
-  );
-});
-
-AgendaList.displayName = "AgendaList";
+);

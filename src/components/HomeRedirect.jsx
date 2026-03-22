@@ -1,23 +1,13 @@
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 export const HomeRedirect = () => {
-  const { isAuthenticated, token, loading } = useAuth();
-
-  // Aguarda validação do token
-  if (loading) {
+    const { usuario } = useAuth();
+    const navigate = useNavigate();
+    useEffect(() => { navigate(usuario ? "/calendario" : "/login"); }, [usuario]);
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--accent)]"></div>
-      </div>
+        <div className="flex items-center justify-center min-h-screen bg-[var(--bg)]">
+            <div className="w-12 h-12 border-2 border-[var(--border-hover)] border-t-[var(--accent)] rounded-full animate-spin" />
+        </div>
     );
-  }
-
-  // Se estiver autenticado, vai para dashboard
-  if (isAuthenticated && token) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  // Se não estiver autenticado, vai para login
-  return <Navigate to="/login" replace />;
 };

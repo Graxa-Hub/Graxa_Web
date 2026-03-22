@@ -12,7 +12,7 @@ export function BandaFormStep({
     return (
         <div className="space-y-4">
             {errors.geral && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+                <div className="p-3 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)] text-sm text-[var(--accent)]">
                     {errors.geral}
                 </div>
             )}
@@ -38,7 +38,7 @@ export function BandaFormStep({
                 currentImage={imagemAtual}
             />
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
                     Descrição
                 </label>
                 <textarea
@@ -46,12 +46,12 @@ export function BandaFormStep({
                     onChange={(e) => handleChange("descricao", e.target.value)}
                     placeholder="Descreva a banda..."
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-md)]  focus:ring-0"
                 />
             </div>
             <div>
                 <label
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-[var(--text-secondary)] mb-2"
                     required
                 >
                     Representante *
@@ -63,7 +63,7 @@ export function BandaFormStep({
                             onChange={(e) =>
                                 handleChange("representanteId", Number(e.target.value))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-md)]  focus:ring-0"
                         >
                             <option value="">Selecione um representante</option>
                             {representantes.map((rep) => (
@@ -76,14 +76,14 @@ export function BandaFormStep({
                             <button
                                 type="button"
                                 onClick={() => setShowNovoRepresentante(true)}
-                                className="text-sm text-blue-600 hover:text-blue-700"
+                                className="text-sm text-[var(--info)] hover:text-[var(--info)]"
                             >
                                 + Adicionar novo representante
                             </button>
                         )}
                     </div>
                 ) : (
-                    <div className="p-4 border border-gray-200 rounded-lg space-y-3">
+                    <div className="p-4 border border-[var(--border)] rounded-[var(--radius-md)] space-y-3">
                         <h4 className="font-medium text-sm">Novo Representante</h4>
                         <Input
                             label="Nome *"
@@ -109,19 +109,19 @@ export function BandaFormStep({
                         <button
                             type="button"
                             onClick={() => setShowNovoRepresentante(false)}
-                            className="text-sm text-gray-600 hover:text-gray-700"
+                            className="text-sm text-[var(--text-secondary)] hover:text-[var(--text-secondary)]"
                         >
                             ← Voltar para seleção
                         </button>
                     </div>
                 )}
                 {errors.representanteId && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-sm text-[var(--accent)] mt-1">
                         {errors.representanteId}
                     </p>
                 )}
                 {errors.representante && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-sm text-[var(--accent)] mt-1">
                         {errors.representante}
                     </p>
                 )}

@@ -1,66 +1,12 @@
-import { Eye, Edit, Trash2 } from "lucide-react";
-import { ActionMenu } from "../../../../components/molecules/ActionMenu";
-import { useNavigate } from "react-router-dom";
-import { OptionButton } from "../../../../components/atoms/OptionButton";
+import React from "react";
 import { CardImage } from "../atoms/CardImage";
 import { CardInfo } from "../atoms/CardInfo";
+import { OptionButton } from "../../../../components/atoms/OptionButton";
 
-export function Card({ banda, onEdit, onDelete, isDropdownOpen, onToggleDropdown, onVisualizar }) {
-    const navigate = useNavigate();
-
-    const dropdownItems = [
-        {
-            icon: Eye,
-            label: "Visualizar",
-            onClick: (e) => {
-                e.stopPropagation();
-                onVisualizar(banda);
-            }
-        },
-        {
-            icon: Edit,
-            label: "Editar banda",
-            onClick: (e) => {
-                e.stopPropagation();
-                onEdit(banda);
-            }
-        },
-        {
-            icon: Trash2,
-            label: "Excluir banda",
-            onClick: (e) => {
-                e.stopPropagation();
-                onDelete(banda);
-            }
-        }
-    ];
-
-    const handleCardClick = () => {
-        navigate(`/turne/${banda.id}`);
-    };
-
-    return (
-        <div
-            className="group bg-white rounded-sm shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden relative cursor-pointer border border-gray-100"
-            onClick={handleCardClick}
-        >
-            <OptionButton
-                onClick={(e) => {
-                    e.stopPropagation();
-                    onToggleDropdown();
-                }}
-            />
-
-            <ActionMenu isOpen={isDropdownOpen} items={dropdownItems} />
-
-            <CardImage src={banda.imagemUrl} alt={banda.nome} />
-
-            <CardInfo
-                nome={banda.nome}
-                representante={banda.representante?.nome}
-                integrantes={banda.integrantes?.length}
-                genero={banda.genero}
-            />
-        </div>
-    );
-}
+export const Card = ({ banda, onClick, onOptions }) => (
+    <div onClick={onClick} className="surface-card overflow-hidden relative cursor-pointer hover:border-[var(--border-hover)] transition-all duration-200 group">
+        <CardImage src={banda.imagemUrl} alt={banda.nome} />
+        <CardInfo nome={banda.nome} genero={banda.genero} integrantes={banda.integrantes?.length} />
+        {onOptions && <OptionButton onClick={e => { e.stopPropagation(); onOptions(e); }} />}
+    </div>
+);

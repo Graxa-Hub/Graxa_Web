@@ -20,28 +20,28 @@ const FlightCard = ({ flight = {}, colaboradores = [], onChange, onRemove }) => 
   };
 
   return (
-    <div className="relative bg-white rounded-xl shadow-lg p-6 space-y-5 border border-gray-100">
+    <div className="surface-card p-6 space-y-5 relative">
 
       {/* BOTÃO REMOVER */}
       <button
         onClick={onRemove}
-        className="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl"
+        className="absolute top-2 right-2 text-[var(--accent)] hover:text-[var(--accent)] font-bold text-xl"
       >
         ×
       </button>
 
-      <h3 className="font-bold text-gray-900 text-xl">Voo</h3>
+      <h3 className="font-bold text-[var(--text-primary)] text-base font-semibold">Voo</h3>
 
       {/* CAMPOS */}
       <input
-        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
         placeholder="Companhia aérea"
         value={get("cia", "ciaAerea")}
         onChange={(e) => updateField("cia", e.target.value)}
       />
 
       <input
-        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
         placeholder="Número do voo"
         value={get("numero", "codigoVoo")}
         onChange={(e) => updateField("numero", e.target.value)}
@@ -49,14 +49,14 @@ const FlightCard = ({ flight = {}, colaboradores = [], onChange, onRemove }) => 
 
       <div className="grid grid-cols-2 gap-4">
         <input
-          className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="p-3 border border-[var(--border)] rounded-[var(--radius-md)]  focus:ring-0 focus:border-[var(--border-strong)]"
           placeholder="Origem"
           value={get("origem", "origem")}
           onChange={(e) => updateField("origem", e.target.value)}
         />
 
         <input
-          className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="p-3 border border-[var(--border)] rounded-[var(--radius-md)]  focus:ring-0 focus:border-[var(--border-strong)]"
           placeholder="Destino"
           value={get("destino", "destino")}
           onChange={(e) => updateField("destino", e.target.value)}
@@ -65,10 +65,10 @@ const FlightCard = ({ flight = {}, colaboradores = [], onChange, onRemove }) => 
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium text-gray-700">Saída</label>
+          <label className="text-sm font-medium text-[var(--text-secondary)]">Saída</label>
           <input
             type="datetime-local"
-            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="form-input mt-1  focus:ring-0 focus:border-[var(--border-strong)]"
             // backend pode enviar partida (LocalDateTime) ou frontend usa saida
             value={get("saida", "partida")}
             onChange={(e) => updateField("saida", e.target.value)}
@@ -76,10 +76,10 @@ const FlightCard = ({ flight = {}, colaboradores = [], onChange, onRemove }) => 
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700">Chegada</label>
+          <label className="text-sm font-medium text-[var(--text-secondary)]">Chegada</label>
           <input
             type="datetime-local"
-            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="form-input mt-1  focus:ring-0 focus:border-[var(--border-strong)]"
             value={get("chegada", "chegada")}
             onChange={(e) => updateField("chegada", e.target.value)}
           />
@@ -88,7 +88,7 @@ const FlightCard = ({ flight = {}, colaboradores = [], onChange, onRemove }) => 
 
       {/* PASSAGEIROS */}
       <div>
-        <label className="text-sm font-medium text-gray-700 block mb-2">Passageiros</label>
+        <label className="text-sm font-medium text-[var(--text-secondary)] block mb-2">Passageiros</label>
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
@@ -99,12 +99,12 @@ const FlightCard = ({ flight = {}, colaboradores = [], onChange, onRemove }) => 
               <button
                 key={c.id}
                 onClick={() => togglePassageiro(c.id)}
-                className={`w-full flex justify-between p-3 border rounded-lg transition-colors ${
-                  selected ? "bg-blue-50 border-blue-400 hover:bg-blue-100" : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                className={`w-full flex justify-between p-3 border rounded-[var(--radius-md)] transition-colors ${
+                  selected ? "bg-[var(--surface)] border-blue-400 hover:bg-[var(--surface-hover)]" : "bg-[var(--surface-hover)] border-[var(--border)] hover:bg-[#383838]"
                 }`}
               >
                 <span>{c.nome}</span>
-                {selected && <span className="text-blue-600 font-bold">✓</span>}
+                {selected && <span className="text-[var(--info)] font-bold">✓</span>}
               </button>
             );
           })}

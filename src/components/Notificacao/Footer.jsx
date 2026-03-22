@@ -1,20 +1,7 @@
-import React from "react";
-
-export const Footer = ({ notificacaoLista = [], onMarkAllAsRead }) => {
-  const hasUnread = notificacaoLista.some((n) => !n.lida);
-
-  if (notificacaoLista.length === 0 || !hasUnread) {
-    return null;
-  }
-
-  return (
-    <div className="p-3 border-t border-gray-200">
-      <button
-        onClick={onMarkAllAsRead}
-        className="w-full text-sm text-blue-600 hover:text-blue-700 font-medium py-2 hover:bg-blue-50 rounded transition-colors"
-      >
-        Marcar todas como lidas
-      </button>
+export const Footer = ({ onViewAll }) => (
+    <div className="p-3 border-t border-[var(--border)]">
+        <button onClick={onViewAll} className="w-full text-sm text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium py-2 hover:bg-[var(--surface-hover)] rounded-[var(--radius-sm)] transition-colors">
+            Ver todas as notificações
+        </button>
     </div>
-  );
-};
+);

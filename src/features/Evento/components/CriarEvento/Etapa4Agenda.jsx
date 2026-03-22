@@ -135,12 +135,12 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
       />
 
       {/* Título da Seção */}
-      <div className="border-b border-gray-200 pb-4">
-        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <Calendar className="w-6 h-6 text-blue-600" />
+      <div className="border-b border-[var(--border)] pb-4">
+        <h2 className="panel-title flex items-center gap-2">
+          <Calendar className="w-6 h-6 text-[var(--info)]" />
           Agenda do Evento
         </h2>
-        <p className="text-sm text-gray-600 mt-1">
+        <p className="text-sm text-[var(--text-secondary)] mt-1">
           Configure as atividades técnicas e deslocamentos do evento
         </p>
       </div>
@@ -149,7 +149,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
       <div className="flex gap-3">
         <button
           onClick={() => adicionarItem(TIPOS_ENUM.TECNICO)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors font-medium "
         >
           <Wrench className="w-4 h-4" />
           Adicionar Técnico
@@ -157,7 +157,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
         <button
           onClick={() => adicionarItem(TIPOS_ENUM.DESLOCAMENTO)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium shadow-sm"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors font-medium "
         >
           <MapPin className="w-4 h-4" />
           Adicionar Deslocamento
@@ -173,7 +173,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
             }
             if (onSave && typeof onSave === "function") onSave();
           }}
-          className="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-5 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]"
         >
           Salvar Agenda
         </button>
@@ -182,10 +182,10 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
       {/* Lista de Itens */}
       <div className="space-y-4 mt-6">
         {agenda.length === 0 && (
-          <div className="text-center py-12 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
-            <Calendar className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-sm text-gray-500">Nenhum item de agenda criado.</p>
-            <p className="text-xs text-gray-400 mt-1">
+          <div className="text-center py-12 bg-[var(--surface)] rounded-[var(--radius-lg)] border-2 border-dashed border-[var(--border)]">
+            <Calendar className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
+            <p className="text-sm text-[var(--text-muted)]">Nenhum item de agenda criado.</p>
+            <p className="text-xs text-[var(--text-muted)] mt-1">
               Clique nos botões acima para adicionar
             </p>
           </div>
@@ -197,7 +197,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
           return (
             <div
               key={itemKey}
-              className={`bg-white p-6 rounded-xl shadow-md space-y-4 border-l-4 ${item.tipo === TIPOS_ENUM.DESLOCAMENTO
+              className={`bg-[var(--surface-elevated)] p-6 rounded-[var(--radius-lg)] shadow-[var(--shadow-soft)] space-y-4 border-l-4 ${item.tipo === TIPOS_ENUM.DESLOCAMENTO
                 ? "border-l-green-500"
                 : "border-l-blue-500"
                 }`}
@@ -206,8 +206,8 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
               <div className="flex items-center justify-between">
                 <span
                   className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${item.tipo === TIPOS_ENUM.DESLOCAMENTO
-                    ? "bg-green-100 text-green-700"
-                    : "bg-blue-100 text-blue-700"
+                    ? "bg-[var(--surface-hover)] text-[var(--success)]"
+                    : "bg-[var(--surface-hover)] text-[var(--info)]"
                     }`}
                 >
                   {item.tipo === TIPOS_ENUM.DESLOCAMENTO ? (
@@ -221,16 +221,16 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
                   )}
                 </span>
                 {item.id && (
-                  <span className="text-xs text-gray-400">ID: {item.id}</span>
+                  <span className="text-xs text-[var(--text-muted)]">ID: {item.id}</span>
                 )}
               </div>
 
               {/* TIPO */}
               <div>
-                <label className="text-sm font-semibold text-gray-700">Tipo</label>
+                <label className="text-sm font-semibold text-[var(--text-secondary)]">Tipo</label>
                 <select
-                  className="w-full p-3 border border-gray-300 rounded-lg mt-1
-                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input mt-1
+                   focus:ring-0 focus:border-[var(--border-strong)]"
                   value={item.tipo}
                   onChange={(e) => updateItem(itemKey, "tipo", e.target.value)}
                 >
@@ -241,10 +241,10 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
               {/* TITULO */}
               <div>
-                <label className="text-sm font-semibold text-gray-700">Título</label>
+                <label className="text-sm font-semibold text-[var(--text-secondary)]">Título</label>
                 <input
-                  className="w-full p-3 border border-gray-300 rounded-lg mt-1
-                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="form-input mt-1
+                   focus:ring-0 focus:border-[var(--border-strong)]"
                   value={item.titulo}
                   placeholder="Ex: Montagem de palco"
                   onChange={(e) => updateItem(itemKey, "titulo", e.target.value)}
@@ -255,10 +255,10 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
               {item.tipo === TIPOS_ENUM.DESLOCAMENTO && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Origem</label>
+                    <label className="text-sm font-semibold text-[var(--text-secondary)]">Origem</label>
                     <input
-                      className="w-full p-3 border border-gray-300 rounded-lg mt-1
-                      focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="form-input mt-1
+                       focus:ring-0 focus:border-[var(--border-strong)]"
                       value={item.origem}
                       placeholder="Ex: Hotel X"
                       onChange={(e) => updateItem(itemKey, "origem", e.target.value)}
@@ -266,10 +266,10 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700">Destino</label>
+                    <label className="text-sm font-semibold text-[var(--text-secondary)]">Destino</label>
                     <input
-                      className="w-full p-3 border border-gray-300 rounded-lg mt-1
-                      focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="form-input mt-1
+                       focus:ring-0 focus:border-[var(--border-strong)]"
                       value={item.destino}
                       placeholder="Ex: Estádio Y"
                       onChange={(e) => updateItem(itemKey, "destino", e.target.value)}
@@ -281,14 +281,14 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
               {/* DATA HORA INICIO / FIM */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-semibold text-gray-700">
+                  <label className="text-sm font-semibold text-[var(--text-secondary)]">
                     Data e Hora - Início
                   </label>
                   <input
                     type="datetime-local"
                     step="60"
-                    className="w-full p-3 border border-gray-300 rounded-lg mt-1
-                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input mt-1
+                     focus:ring-0 focus:border-[var(--border-strong)]"
                     style={{ minWidth: 0 }}
                     value={item.dataHoraInicio || ""}
                     onChange={(e) => updateItem(itemKey, "dataHoraInicio", e.target.value)}
@@ -296,14 +296,14 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
                 </div>
 
                 <div>
-                  <label className="text-sm font-semibold text-gray-700">
+                  <label className="text-sm font-semibold text-[var(--text-secondary)]">
                     Data e Hora - Fim
                   </label>
                   <input
                     type="datetime-local"
                     step="60"
-                    className="w-full p-3 border border-gray-300 rounded-lg mt-1
-                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="form-input mt-1
+                     focus:ring-0 focus:border-[var(--border-strong)]"
                     style={{ minWidth: 0 }}
                     value={item.dataHoraFim || ""}
                     onChange={(e) => updateItem(itemKey, "dataHoraFim", e.target.value)}
@@ -313,10 +313,10 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
               {/* DESCRIÇÃO */}
               <div>
-                <label className="text-sm font-semibold text-gray-700">Descrição</label>
+                <label className="text-sm font-semibold text-[var(--text-secondary)]">Descrição</label>
                 <textarea
-                  className="w-full p-3 border border-gray-300 rounded-lg mt-1
-                  focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  className="form-input mt-1
+                   focus:ring-0 focus:border-[var(--border-strong)] resize-none"
                   rows="3"
                   value={item.descricao}
                   placeholder="Adicione detalhes sobre esta atividade..."
@@ -325,10 +325,10 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
               </div>
 
               {/* Botões de Ação */}
-              <div className="flex gap-2 pt-2 border-t border-gray-200">
+              <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
                 <button
                   onClick={() => handleRemoverClick(item)}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface)]0 text-white rounded-[var(--radius-md)] text-sm hover:bg-red-600 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                   Remover
@@ -336,7 +336,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
                 <button
                   onClick={() => duplicarItem(item)}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg text-sm hover:bg-gray-300 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-hover)] text-[var(--text-primary)] rounded-[var(--radius-md)] text-sm hover:bg-gray-300 transition-colors"
                 >
                   <Copy className="w-4 h-4" />
                   Duplicar

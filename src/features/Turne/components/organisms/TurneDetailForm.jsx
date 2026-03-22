@@ -24,7 +24,7 @@ export function TurneDetailForm({
                     disabled={submitLoading}
                 />
                 {errors.descricao && (
-                    <p className="text-red-500 text-sm mt-1">{errors.descricao}</p>
+                    <p className="text-[var(--accent)] text-sm mt-1">{errors.descricao}</p>
                 )}
             </div>
 
@@ -35,9 +35,9 @@ export function TurneDetailForm({
                     currentImage={imagemAtual}
                 />
                 {errors.imagem && (
-                    <p className="text-red-500 text-sm mt-1">{errors.imagem}</p>
+                    <p className="text-[var(--accent)] text-sm mt-1">{errors.imagem}</p>
                 )}
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-[var(--text-muted)] mt-2">
                     {isEditMode
                         ? "Envie apenas se quiser alterar a imagem atual"
                         : "A imagem é obrigatória para criar uma nova turnê"}

@@ -1,141 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
-export function DropdownGenerico({
-  options = [],
-  selected,
-  onSelect,
-  getLabel = (item) => item.nome,
-  getSubLabel,
-  getImage,
-  placeholder = "Selecione...",
-  showAllOption = false,
-  allLabel = "Todos",
-  allSubLabel,
-  allImage,
-  minWidth = "min-w-110",
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
-
-  const selectedDisplay = selected
-    ? {
-        name: getLabel(selected),
-        sub: getSubLabel ? getSubLabel(selected) : "",
-        imagemUrl: getImage ? getImage(selected) : null,
-      }
-    : {
-        name: allLabel,
-        sub: allSubLabel,
-        imagemUrl: allImage,
-      };
-
-  // Filtragem das opções pelo campo de busca
-  const filteredOptions = options.filter((item) =>
-    getLabel(item).toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <div className={`relative max-w-md ${minWidth}`}>
-      <button
-        onClick={() => setIsOpen((v) => !v)}
-        className="bg-white rounded-lg shadow-sm p-4 w-full"
-        type="button"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden border-2 border-green-500">
-              {selectedDisplay.imagemUrl ? (
-                <img
-                  src={selectedDisplay.imagemUrl}
-                  alt={selectedDisplay.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span>{selectedDisplay.name?.charAt(0).toUpperCase()}</span>
-              )}
-            </div>
-            <div>
-              <div className="font-semibold text-gray-900">
-                {selectedDisplay.name || placeholder}
-              </div>
-              {selectedDisplay.sub && (
-                <div className="text-sm text-gray-500">{selectedDisplay.sub}</div>
-              )}
-            </div>
-          </div>
-          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-        </div>
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-full z-10 max-h-60 overflow-y-auto">
-          <div className="p-2 border-b border-gray-200">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm"
-              autoFocus
-            />
-          </div>
-          {showAllOption && (
-            <button
-              onClick={() => {
-                onSelect(null);
-                setIsOpen(false);
-                setSearch("");
-              }}
-              className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-3 ${
-                !selected ? "bg-gray-50" : ""
-              }`}
-            >
-              <div className="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold">
-                {allLabel?.charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <div className="font-semibold text-gray-900">{allLabel}</div>
-                {allSubLabel && (
-                  <div className="text-sm text-gray-500">{allSubLabel}</div>
-                )}
-              </div>
-            </button>
-          )}
-          <ul>
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((item) => (
-                <li
-                  key={item.id}
-                  onClick={() => {
-                    onSelect(item);
-                    setIsOpen(false);
-                    setSearch("");
-                  }}
-                  className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded"
-                >
-                  <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-green-500 bg-gray-200 flex items-center justify-center">
-                    {getImage && getImage(item) ? (
-                      <img
-                        src={getImage(item)}
-                        alt={getLabel(item)}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-gray-400">
-                        {getLabel(item)?.charAt(0).toUpperCase()}
-                      </span>
+export const DropdownGenerico = ({ selected, options = [], onSelect, allLabel = "Todos", allSubLabel = "", placeholder = "Selecione...", renderAvatar }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    const ref = useRef(null);
+    useEffect(() => {
+        const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setIsOpen(false); };
+        document.addEventListener("mousedown", h);
+        return () => document.removeEventListener("mousedown", h);
+    }, []);
+    const filtered = search ? options.filter(o => (o.nome || o.label || "").toLowerCase().includes(search.toLowerCase())) : options;
+    const selectedItem = options.find(o => o.id === selected || o.value === selected);
+    return (
+        <div className="relative w-full" ref={ref}>
+            <button type="button" onClick={() => setIsOpen(!isOpen)} className="surface-card w-full flex items-center justify-between px-4 py-3 hover:border-[var(--border-hover)] transition-all">
+                <div className="flex items-center gap-3">
+                    {renderAvatar ? renderAvatar(selectedItem) : (
+                        <div className="w-9 h-9 rounded-full bg-[var(--surface-hover)] border border-[var(--border)] overflow-hidden flex items-center justify-center text-[var(--text-muted)] text-sm font-semibold">
+                            {selectedItem ? (selectedItem.imagemUrl ? <img src={selectedItem.imagemUrl} alt="" className="w-full h-full object-cover" /> : (selectedItem.nome || selectedItem.label || "?").charAt(0)) : "?"}
+                        </div>
                     )}
-                  </div>
-                  <span>{getLabel(item)}</span>
-                </li>
-              ))
-            ) : (
-              <li className="px-4 py-2 text-gray-500 text-sm">Nenhum resultado encontrado</li>
+                    <div>
+                        <div className="font-semibold text-[var(--text-primary)] text-sm">{selectedItem ? (selectedItem.nome || selectedItem.label) : (allLabel)}</div>
+                        {allSubLabel && !selectedItem && <div className="text-xs text-[var(--text-muted)]">{allSubLabel}</div>}
+                    </div>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-[var(--text-muted)] transition-transform ${isOpen ? "rotate-180" : ""}`} />
+            </button>
+            {isOpen && (
+                <div className="absolute top-full left-0 mt-1 surface-card w-full z-50 overflow-hidden">
+                    <div className="p-2 border-b border-[var(--border)]">
+                        <input autoFocus value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar..." className="form-input text-sm py-1.5" />
+                    </div>
+                    <div className="max-h-52 overflow-y-auto py-1">
+                        <button type="button" onClick={() => { onSelect(null); setIsOpen(false); setSearch(""); }}
+                            className="w-full text-left px-4 py-2 flex items-center gap-3 hover:bg-[var(--surface-hover)] transition-colors">
+                            <div className="w-9 h-9 rounded-full bg-[var(--border)] flex items-center justify-center text-[var(--text-muted)] text-xs font-semibold">∗</div>
+                            <div>
+                                <div className="font-semibold text-[var(--text-primary)] text-sm">{allLabel}</div>
+                                {allSubLabel && <div className="text-xs text-[var(--text-muted)]">{allSubLabel}</div>}
+                            </div>
+                        </button>
+                        {filtered.length === 0
+                            ? <div className="px-4 py-2 text-sm text-[var(--text-muted)]">Nenhum resultado</div>
+                            : filtered.map(item => (
+                                <button key={item.id || item.value} type="button" onClick={() => { onSelect(item); setIsOpen(false); setSearch(""); }}
+                                    className="w-full text-left px-4 py-2 flex items-center gap-3 hover:bg-[var(--surface-hover)] transition-colors">
+                                    <div className="w-9 h-9 rounded-full overflow-hidden border border-[var(--border)] bg-[var(--surface-hover)] flex items-center justify-center text-[var(--text-muted)] text-xs font-semibold flex-shrink-0">
+                                        {item.imagemUrl ? <img src={item.imagemUrl} alt="" className="w-full h-full object-cover" /> : (item.nome || item.label || "?").charAt(0).toUpperCase()}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <div className="font-medium text-[var(--text-primary)] text-sm truncate">{item.nome || item.label}</div>
+                                        {item.sub && <div className="text-xs text-[var(--text-muted)] truncate">{item.sub}</div>}
+                                    </div>
+                                </button>
+                            ))
+                        }
+                    </div>
+                </div>
             )}
-          </ul>
         </div>
-      )}
-    </div>
-  );
-}
+    );
+};
+export default DropdownGenerico;

@@ -5,18 +5,18 @@ export function IntegranteFormStep({ draft, errors, handleIntegranteChange, adic
     return (
         <div className="space-y-4">
             {errors.integrantes && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+                <div className="p-3 bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)] text-sm text-[var(--accent)]">
                     {errors.integrantes}
                 </div>
             )}
             <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-700">
+                <h3 className="text-sm font-medium text-[var(--text-secondary)]">
                     Integrantes ({draft.integrantes.length})
                 </h3>
                 <button
                     type="button"
                     onClick={adicionarIntegrante}
-                    className="px-3 py-3 text-md bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                    className="px-3 py-3 text-md bg-[var(--surface)]0 text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-elevated)] transition-colors"
                 >
                     + Adicionar Integrante
                 </button>
@@ -25,13 +25,13 @@ export function IntegranteFormStep({ draft, errors, handleIntegranteChange, adic
                 {draft.integrantes.map((integrante, i) => (
                     <div
                         key={i}
-                        className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-3 relative"
+                        className="p-4 border border-[var(--border)] rounded-[var(--radius-md)] bg-[var(--surface)] space-y-3 relative"
                     >
                         <div className="flex items-center justify-between">
                             <h4 className="font-medium text-sm">
                                 Integrante {i + 1}
                                 {integrante.id && (
-                                    <span className="ml-2 text-xs text-green-600">
+                                    <span className="ml-2 text-xs text-[var(--success)]">
                                         (Cadastrado)
                                     </span>
                                 )}
@@ -39,7 +39,7 @@ export function IntegranteFormStep({ draft, errors, handleIntegranteChange, adic
                             <button
                                 type="button"
                                 onClick={() => removerIntegrante(i)}
-                                className="text-red-500 hover:text-red-700 transition-colors"
+                                className="text-[var(--accent)] hover:text-[var(--accent)] transition-colors"
                                 title="Remover integrante"
                             >
                                 <Trash2 className="w-4 h-4" />
@@ -65,7 +65,7 @@ export function IntegranteFormStep({ draft, errors, handleIntegranteChange, adic
                 ))}
             </div>
             {draft.integrantes.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-[var(--text-muted)]">
                     <p>Nenhum integrante adicionado.</p>
                     <p className="text-sm">
                         Clique em "Adicionar Integrante" para começar.

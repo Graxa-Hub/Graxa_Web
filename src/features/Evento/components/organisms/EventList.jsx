@@ -1,15 +1,10 @@
 import { MapPin } from "lucide-react";
-
-export const EventList = ({ dadosEvento }) => {
-    return (
-        <div>
-            <h1 className="text-2xl font-bold text-gray-800">
-                {dadosEvento.nomeEvento}
-            </h1>
-            <div className="flex items-center gap-1.5 mt-1">
-                <MapPin className="w-4 h-4 text-gray-500" />
-                <p className="text-sm text-gray-600">{dadosEvento.nomeLocal}</p>
-            </div>
+export const EventList = ({ dadosEvento }) => (
+    <div>
+        <h1 className="text-xl font-bold text-[var(--text-primary)] mb-2">{dadosEvento.titulo}</h1>
+        <div className="flex items-center gap-1.5">
+            <MapPin className="w-4 h-4 text-[var(--text-muted)]" />
+            <p className="text-sm text-[var(--text-secondary)]">{dadosEvento.nomeLocal}</p>
         </div>
-    )
-}
+    </div>
+);

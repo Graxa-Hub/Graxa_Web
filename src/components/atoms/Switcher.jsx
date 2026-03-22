@@ -2,25 +2,78 @@ import React from "react";
 import { Sun } from "lucide-react";
 
 export const Switcher = ({ activeView, onViewChange }) => {
-  return (
-    <div className="flex flex-col items-center bg-[var(--surface)] border border-[var(--border)] w-10 h-48 rounded-[var(--radius-md)] p-1 relative shadow-[var(--shadow-soft)] cursor-pointer select-none">
-      <div
-        className={`absolute w-8 h-[88px] bg-[var(--surface-hover)] border border-[var(--border)] rounded-[var(--radius-sm)] transition-all duration-300 ease-in-out transform ${activeView === "weather" ? "translate-y-[92px]" : "translate-y-0"}`}
-      />
+    return (
+        <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                width: 40,
+                height: 192,
+                borderRadius: 'var(--radius-lg)',
+                padding: 4,
+                position: 'relative',
+                cursor: 'pointer',
+                userSelect: 'none',
+                boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.2)'
+            }}
+        >
+            {/* Sliding pill indicator */}
+            <div
+                style={{
+                    position: 'absolute',
+                    width: 32,
+                    height: 88,
+                    background: 'var(--surface-elevated)',
+                    border: '1px solid var(--border-hover)',
+                    borderRadius: 'var(--radius-md)',
+                    boxShadow: 'var(--shadow-soft)',
+                    transition: 'transform 0.3s ease',
+                    transform: activeView === "weather" ? 'translateY(92px)' : 'translateY(0)'
+                }}
+            />
 
-      <button
-        onClick={() => onViewChange("progress")}
-        className={`z-10 flex-1 flex items-center justify-center w-full transition-colors duration-300 ${activeView === "progress" ? "text-[var(--text-primary)]" : "text-[var(--text-muted)]"}`}
-      >
-        <span className="text-xl font-bold font-mono">%</span>
-      </button>
+            {/* Percentage option */}
+            <button
+                onClick={() => onViewChange("progress")}
+                style={{
+                    zIndex: 10,
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    color: activeView === "progress" ? 'var(--text-primary)' : 'var(--text-muted)',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s'
+                }}
+            >
+                <span style={{ fontSize: 18, fontWeight: 700, fontFamily: 'monospace' }}>%</span>
+            </button>
 
-      <button
-        onClick={() => onViewChange("weather")}
-        className={`z-10 flex-1 flex items-center justify-center w-full transition-colors duration-300 ${activeView === "weather" ? "text-[var(--warning)]" : "text-[var(--text-muted)]"}`}
-      >
-        <Sun size={22} strokeWidth={activeView === "weather" ? 2.5 : 2} />
-      </button>
-    </div>
-  );
+            {/* Weather option */}
+            <button
+                onClick={() => onViewChange("weather")}
+                style={{
+                    zIndex: 10,
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%',
+                    background: 'transparent',
+                    border: 'none',
+                    color: activeView === "weather" ? 'var(--warning)' : 'var(--text-muted)',
+                    cursor: 'pointer',
+                    transition: 'color 0.2s'
+                }}
+            >
+                <Sun size={20} strokeWidth={activeView === "weather" ? 2.5 : 2} />
+            </button>
+        </div>
+    );
 };

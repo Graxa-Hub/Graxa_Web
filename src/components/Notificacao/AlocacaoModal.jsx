@@ -65,16 +65,16 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
       case 'aceito':
       case 'aceita':
       case 'confirmada':
-        return 'text-green-700 bg-green-100 border-green-200';
+        return 'text-[var(--success)] bg-[var(--surface-hover)] border-green-200';
       case 'recusado':
       case 'recusada':
-        return 'text-red-700 bg-red-100 border-red-200';
+        return 'text-[var(--accent)] bg-[var(--surface-hover)] border-[var(--border)]';
       case 'cancelado':
       case 'cancelada':
-        return 'text-gray-700 bg-gray-100 border-gray-300';
+        return 'text-[var(--text-secondary)] bg-[var(--surface-hover)] border-[var(--border)]';
       case 'pendente':
       default:
-        return 'text-yellow-700 bg-yellow-100 border-yellow-200';
+        return 'text-[var(--warning)] bg-[var(--surface-hover)] border-[var(--border)]';
     }
   };
 
@@ -154,12 +154,12 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
           onClick={onClose}
         />
 
-        <div className="relative bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-hidden z-3">
+        <div className="modal-panel relative overflow-hidden z-3 max-w-lg">
           {/* Header */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 rounded-full">
+                <div className="p-2 bg-[var(--surface-elevated)]/20 rounded-full">
                   <Music className="w-6 h-6" />
                 </div>
                 <div>
@@ -177,7 +177,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-white/20 rounded-full transition-colors"
+                className="p-2 hover:bg-[var(--surface-elevated)]/20 rounded-full transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -188,9 +188,9 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
           <div className="max-h-[70vh] overflow-y-auto">
             <div className="p-6 space-y-6">
               {/* Mensagem */}
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-[var(--border)] rounded-[var(--radius-md)] p-4">
                 <div className="flex items-start gap-3">
-                  <Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                  <Info className="w-5 h-5 text-[var(--info)] mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-blue-900 font-medium text-sm leading-relaxed">
                       {notificacao.mensagem}
@@ -201,15 +201,15 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
 
               {/* Card do Show */}
               {show ? (
-                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+                <div className="surface-card overflow-hidden ">
                   {/* Header do Show */}
-                  <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                  <div className="px-5 py-4 border-b border-[var(--border)]">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-purple-100 rounded-lg">
+                      <div className="p-2 bg-purple-100 rounded-[var(--radius-md)]">
                         <Star className="w-5 h-5 text-purple-600" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-lg text-gray-900">
+                        <h3 className="font-bold text-lg text-[var(--text-primary)]">
                           {show.nomeEvento}
                         </h3>
                       </div>
@@ -220,16 +220,16 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                   <div className="p-6 space-y-4">
                     {/* Data e Hora */}
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-blue-100 rounded-lg mt-1">
-                        <Calendar className="w-4 h-4 text-blue-600" />
+                      <div className="p-2 bg-[var(--surface-hover)] rounded-[var(--radius-md)] mt-1">
+                        <Calendar className="w-4 h-4 text-[var(--info)]" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">Data do Show</p>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="font-medium text-[var(--text-primary)]">Data do Show</p>
+                        <p className="text-sm text-[var(--text-secondary)] mt-1">
                           {formatarData(show.dataInicio)}
                         </p>
                         {show.dataFim && show.dataFim !== show.dataInicio && (
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-[var(--text-muted)] mt-1">
                             Término: {formatarDataCurta(show.dataFim)}
                           </p>
                         )}
@@ -238,21 +238,21 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
 
                     {/* Local */}
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-green-100 rounded-lg mt-1">
-                        <MapPin className="w-4 h-4 text-green-600" />
+                      <div className="p-2 bg-[var(--surface-hover)] rounded-[var(--radius-md)] mt-1">
+                        <MapPin className="w-4 h-4 text-[var(--success)]" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">Local</p>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="font-medium text-[var(--text-primary)]">Local</p>
+                        <p className="text-sm text-[var(--text-secondary)] mt-1">
                           {local?.nome || 'Local não informado'}
                         </p>
                         {local?.endereco && (
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="text-xs text-[var(--text-muted)] mt-1">
                             {formatarEndereco(local.endereco)}
                           </p>
                         )}
                         {local?.capacidade && (
-                          <p className="text-xs text-gray-400 mt-1">
+                          <p className="text-xs text-[var(--text-muted)] mt-1">
                             Capacidade: {local.capacidade.toLocaleString()} pessoas
                           </p>
                         )}
@@ -261,19 +261,19 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
 
                     {/* Sua Função */}
                     <div className="flex items-start gap-3">
-                      <div className="p-2 bg-purple-100 rounded-lg mt-1">
+                      <div className="p-2 bg-purple-100 rounded-[var(--radius-md)] mt-1">
                         <Users className="w-4 h-4 text-purple-600" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-gray-900">Sua Função</p>
+                        <p className="font-medium text-[var(--text-primary)]">Sua Função</p>
                         <div className="mt-2">
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800 gap-2">
+                          <span className="inline-flex items-center px-3 py-1 rounded-[var(--radius-sm)] text-xs font-medium bg-[var(--surface-hover)] text-[var(--text-secondary)] gap-2 border border-[var(--border)]">
                             <span>{obterIcone(colaborador?.tipoUsuario)}</span>
                             {obterFuncao(colaborador?.tipoUsuario)}
                           </span>
                         </div>
                         {colaborador?.nome && (
-                          <p className="text-xs text-gray-500 mt-2">
+                          <p className="text-xs text-[var(--text-muted)] mt-2">
                             Colaborador: {colaborador.nome}
                           </p>
                         )}
@@ -283,23 +283,23 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                     {/* Status da Alocação */}
                     {alocacao?.status && (
                       <div className="flex items-start gap-3">
-                        <div className="p-2 bg-gray-100 rounded-lg mt-1">
-                          <Clock className="w-4 h-4 text-gray-600" />
+                        <div className="p-2 bg-[var(--surface-hover)] rounded-[var(--radius-md)] mt-1">
+                          <Clock className="w-4 h-4 text-[var(--text-secondary)]" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium text-gray-900">Status</p>
+                          <p className="font-medium text-[var(--text-primary)]">Status</p>
                           <div className="mt-2">
                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${obterCorStatus(alocacao.status)}`}>
                               {alocacao.status.charAt(0).toUpperCase() + alocacao.status.slice(1).toLowerCase()}
                             </span>
                           </div>
                           {alocacao.dataHoraCriacao && (
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-[var(--text-muted)] mt-1">
                               Criado em: {formatarDataCurta(alocacao.dataHoraCriacao)}
                             </p>
                           )}
                           {alocacao.dataHoraResposta && (
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-[var(--text-muted)]">
                               Respondido em: {formatarDataCurta(alocacao.dataHoraResposta)}
                             </p>
                           )}
@@ -309,9 +309,9 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
 
                     {/* Descrição */}
                     {show.descricao && (
-                      <div className="pt-4 border-t border-gray-100">
-                        <h4 className="font-medium text-gray-900 mb-3">Sobre o Show</h4>
-                        <p className="text-sm text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-lg">
+                      <div className="pt-4 border-t border-[var(--border)]">
+                        <h4 className="font-medium text-[var(--text-primary)] mb-3">Sobre o Show</h4>
+                        <p className="text-sm text-[var(--text-secondary)] leading-relaxed bg-[var(--surface)] p-4 rounded-[var(--radius-md)]">
                           {show.descricao}
                         </p>
                       </div>
@@ -319,7 +319,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                   </div>
                 </div>
               ) : (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)] p-4">
                   <div className="flex items-start gap-3">
                     <Info className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
                     <div>
@@ -327,7 +327,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                         Detalhes do show não disponíveis no momento.
                       </p>
                       {colaborador?.tipoUsuario && (
-                        <p className="text-yellow-700 text-xs mt-1 flex items-center gap-1">
+                        <p className="text-[var(--warning)] text-xs mt-1 flex items-center gap-1">
                           Sua função:
                           <span className="font-medium flex items-center gap-1">
                             {obterIcone(colaborador.tipoUsuario)} {obterFuncao(colaborador.tipoUsuario)}
@@ -340,9 +340,9 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
               )}
 
               {/* Informações importantes */}
-              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-lg p-4">
+              <div className="surface-card p-4 text-[var(--warning)]">
                 <div className="flex items-start gap-3">
-                  <div className="p-1 bg-yellow-100 rounded-full mt-1">
+                  <div className="p-1 bg-[var(--surface-hover)] rounded-full mt-1">
                     <Info className="w-4 h-4 text-yellow-600" />
                   </div>
                   <div className="text-sm text-yellow-800">
@@ -357,8 +357,8 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
               </div>
 
               {/* Metadados da notificação */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="flex justify-between items-center text-xs text-gray-500">
+              <div className="surface-card p-4">
+                <div className="flex justify-between items-center text-xs text-[var(--text-muted)]">
                   <span className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
                     {notificacao.tipo?.replace('_', ' ').toUpperCase()}
@@ -373,12 +373,12 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
 
           {/* Footer com botões - APENAS para status PENDENTE */}
           {alocacao?.status?.toLowerCase() === 'pendente' && (
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div className="modal-footer">
               <div className="flex gap-3">
                 <button
                   onClick={handleReject}
                   disabled={loadingResponse}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-red-300 text-red-700 rounded-xl hover:bg-red-50 hover:border-red-400 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-red-300 text-[var(--accent)] rounded-[var(--radius-lg)] hover:bg-[var(--surface)] hover:border-red-400 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <XCircle className="w-4 h-4" />
                   {loadingResponse ? 'Processando...' : 'Recusar'}
@@ -386,7 +386,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                 <button
                   onClick={handleAccept}
                   disabled={loadingResponse}
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:from-green-700 hover:to-green-800 transition-all font-medium shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-[var(--radius-lg)] hover:from-green-700 hover:to-green-800 transition-all font-medium shadow-[var(--shadow-soft)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CheckCircle className="w-4 h-4" />
                   {loadingResponse ? 'Processando...' : 'Aceitar'}
@@ -397,9 +397,9 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
 
           {/* Status já respondido */}
           {alocacao?.status && alocacao.status.toLowerCase() !== 'pendente' && (
-            <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+            <div className="modal-footer">
               <div className="text-center">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-[var(--text-secondary)]">
                   {(() => {
                     const status = alocacao.status.toLowerCase();
                     if (status === 'aceito' || status === 'aceita' || status === 'confirmada') {
@@ -412,7 +412,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                   })()}
                 </p>
                 {alocacao.dataHoraResposta && (
-                  <p className="text-xs text-gray-400 mt-1">
+                  <p className="text-xs text-[var(--text-muted)] mt-1">
                     {alocacao.status.toLowerCase() === 'cancelado' || alocacao.status.toLowerCase() === 'cancelada'
                       ? `Cancelado em: ${formatarDataCurta(alocacao.dataHoraResposta)}`
                       : `Respondido em: ${formatarDataCurta(alocacao.dataHoraResposta)}`

@@ -40,7 +40,7 @@ export function VisualizarBandaModal({ banda, onClose }) {
                             </li>
                         ))
                     ) : (
-                        <li className="text-gray-400">Nenhum integrante cadastrado</li>
+                        <li className="text-[var(--text-muted)]">Nenhum integrante cadastrado</li>
                     )}
                 </ul>
             </div>

@@ -74,7 +74,7 @@ export function RelatorioPageDinamico() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-blue-100/30 flex items-center justify-center">
+      <div className="min-h-screen bg-[var(--surface-hover)]/30 flex items-center justify-center">
         <p className="text-xl">Carregando relatório...</p>
       </div>
     );
@@ -84,8 +84,8 @@ export function RelatorioPageDinamico() {
 
   if (!show) {
     return (
-      <div className="min-h-screen bg-blue-100/30 flex items-center justify-center">
-        <p className="text-xl text-red-600">Evento não encontrado</p>
+      <div className="min-h-screen bg-[var(--surface-hover)]/30 flex items-center justify-center">
+        <p className="text-xl text-[var(--accent)]">Evento não encontrado</p>
       </div>
     );
   }
@@ -107,12 +107,12 @@ export function RelatorioPageDinamico() {
     .join(", ");
 
   return (
-    <div className="min-h-screen bg-blue-100/30 py-10">
+    <div className="min-h-screen bg-[var(--surface-hover)]/30 py-10">
       {/* Botão para gerar PDF - não aparece no PDF */}
       <div className="fixed top-4 right-4 print:hidden z-50">
         <button
           onClick={handleGeneratePDF}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg"
+          className="btn-primary py-2 px-4 shadow-[var(--shadow-soft)]"
         >
           Gerar PDF
         </button>
@@ -128,10 +128,10 @@ export function RelatorioPageDinamico() {
           <p className="text-center text-black mb-2 text-lg">
             CRONOGRAMA DE HORÁRIO
           </p>
-          <p className="text-center text-red-600 font-bold mb-2 text-lg">
+          <p className="text-center text-[var(--text-primary)] font-bold mb-2 text-base">
             {dataEvento} - {show.nomeEvento || "Nome do Evento"}
           </p>
-          <p className="text-center text-blue-600 font-bold text-lg">
+          <p className="text-center text-[var(--text-secondary)] font-bold text-base">
             {nomeLocal} - {enderecoLocal}
           </p>
         </div>
@@ -156,7 +156,7 @@ export function RelatorioPageDinamico() {
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-500">
+            <p className="text-center text-[var(--text-muted)]">
               Nenhum colaborador alocado
             </p>
           )}
@@ -196,7 +196,7 @@ export function RelatorioPageDinamico() {
               })}
             </ul>
           ) : (
-            <p className="text-center text-gray-500">Nenhum evento agendado</p>
+            <p className="text-center text-[var(--text-muted)]">Nenhum evento agendado</p>
           )}
         </div>
 

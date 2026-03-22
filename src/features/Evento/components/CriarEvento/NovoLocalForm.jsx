@@ -81,7 +81,7 @@ export function NovoLocalForm({
   };
 
   return (
-    <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+    <div className="space-y-4 p-4 bg-[var(--surface)] rounded-[var(--radius-md)] border border-[var(--border)]">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold text-blue-900">
           Cadastrar Novo Local
@@ -89,7 +89,7 @@ export function NovoLocalForm({
         <button
           type="button"
           onClick={onCancel}
-          className="text-blue-600 hover:text-blue-800 text-sm"
+          className="text-[var(--info)] hover:text-blue-800 text-sm"
           disabled={adicionando || loading}
         >
           Cancelar
@@ -105,7 +105,7 @@ export function NovoLocalForm({
         error={fieldErrors.nomeLocal}
       />
       {fieldErrors.nomeLocal && (
-        <p className="text-red-500 text-sm">{fieldErrors.nomeLocal}</p>
+        <p className="text-[var(--accent)] text-sm">{fieldErrors.nomeLocal}</p>
       )}
 
       <Input
@@ -122,7 +122,7 @@ export function NovoLocalForm({
         error={fieldErrors.capacidade}
       />
       {fieldErrors.capacidade && (
-        <p className="text-red-500 text-sm">{fieldErrors.capacidade}</p>
+        <p className="text-[var(--accent)] text-sm">{fieldErrors.capacidade}</p>
       )}
 
       <EnderecoForm
@@ -137,12 +137,12 @@ export function NovoLocalForm({
         }}
       />
 
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {error && <p className="text-[var(--accent)] text-sm">{error}</p>}
 
       <div className="flex justify-end gap-2 mt-2">
         <button
           type="button"
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+          className="px-6 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] font-semibold hover:bg-[var(--surface-hover)] transition-colors"
           onClick={handleSalvar}
           disabled={adicionando || loading}
         >

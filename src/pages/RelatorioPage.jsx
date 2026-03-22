@@ -145,8 +145,8 @@ export function RelatorioPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-blue-100/30 flex items-center justify-center gap-3">
-        <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+      <div className="min-h-screen bg-[var(--surface-hover)]/30 flex items-center justify-center gap-3">
+        <Loader2 className="w-6 h-6 animate-spin text-[var(--info)]" />
         <p className="text-xl">Carregando relatório...</p>
       </div>
     );
@@ -156,11 +156,11 @@ export function RelatorioPage() {
 
   if (!show) {
     return (
-      <div className="min-h-screen bg-blue-100/30 flex flex-col items-center justify-center gap-4">
-        <p className="text-xl text-red-600">Evento não encontrado</p>
+      <div className="min-h-screen bg-[var(--surface-hover)]/30 flex flex-col items-center justify-center gap-4">
+        <p className="text-xl text-[var(--accent)]">Evento não encontrado</p>
         <button
           onClick={() => navigate(-1)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          className="px-4 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)]"
         >
           Voltar
         </button>
@@ -227,18 +227,18 @@ export function RelatorioPage() {
   }
 
   return (
-    <div className="min-h-screen bg-blue-100/30 py-10">
+    <div className="min-h-screen bg-[var(--surface-hover)]/30 py-10">
       {/* Botão para gerar PDF - não aparece no PDF */}
       <div className="fixed top-4 right-4 print:hidden z-50 flex gap-2">
         <button
           onClick={() => navigate(-1)}
-          className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded shadow-lg"
+          className="bg-gray-600 hover:bg-[var(--surface-elevated)] text-white font-bold py-2 px-4 rounded shadow-[var(--shadow-soft)]"
         >
           Voltar
         </button>
         <button
           onClick={handleGeneratePDF}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-lg"
+          className="btn-primary py-2 px-4 shadow-[var(--shadow-soft)]"
         >
           Gerar PDF
         </button>
@@ -250,10 +250,10 @@ export function RelatorioPage() {
         <div className="mb-20">
           <h1 className="text-4xl font-bold text-center mb-4">{nomeBanda}</h1>
           <p className="text-center text-black mb-2 text-lg">CRONOGRAMA DE HORÁRIO</p>
-          <p className="text-center text-red-600 font-bold mb-2 text-lg">
+          <p className="text-center text-[var(--text-primary)] font-bold mb-2 text-base">
             {dataEvento} - {diaSemana.toUpperCase()} - {show.nomeEvento || "Evento"}
           </p>
-          <p className="text-center text-blue-600 font-bold text-lg">
+          <p className="text-center text-[var(--text-secondary)] font-bold text-base">
             {nomeLocal} - {enderecoLocal}
           </p>
         </div>
@@ -275,7 +275,7 @@ export function RelatorioPage() {
               </div>
             ))
           ) : (
-            <p className="text-center text-gray-500">Nenhum colaborador alocado</p>
+            <p className="text-center text-[var(--text-muted)]">Nenhum colaborador alocado</p>
           )}
 
           {integrantesBanda.length > 0 && (
@@ -309,7 +309,7 @@ export function RelatorioPage() {
 
                 return (
                   <div key={voo.id} className="mb-3">
-                    <h2 className="text-red-600 text-lg">
+                    <h2 className="text-[var(--accent)] text-lg">
                       {origem} ✈ {destino}
                       {passageiro && ` | ${passageiro}`}
                     </h2>
@@ -347,7 +347,7 @@ export function RelatorioPage() {
                       <p className="text-blue-400 ml-16">*{item.descricao}</p>
                     )}
                     {item.tipo === "DESLOCAMENTO" && (item.origem || item.destino) && (
-                      <p className="text-gray-500 ml-16 text-sm">
+                      <p className="text-[var(--text-muted)] ml-16 text-sm">
                         {item.origem || "—"} → {item.destino || "—"}
                       </p>
                     )}
@@ -356,7 +356,7 @@ export function RelatorioPage() {
               })}
             </ul>
           ) : (
-            <p className="text-center text-gray-500">Nenhum evento agendado</p>
+            <p className="text-center text-[var(--text-muted)]">Nenhum evento agendado</p>
           )}
         </div>
 
@@ -429,7 +429,7 @@ export function RelatorioPage() {
           <div className="px-8 mt-20 print:break-inside-avoid">
             <h1 className="text-center text-xl font-bold text-red-400 mb-10">TRANSPORTES</h1>
             {transportes.map((t) => (
-              <div key={t.id} className="mb-4 border-b border-gray-200 pb-3">
+              <div key={t.id} className="mb-4 border-b border-[var(--border)] pb-3">
                 <p className="text-lg">
                   <span className="font-bold">{t.tipo ? t.tipo.charAt(0).toUpperCase() + t.tipo.slice(1) : "Transporte"}: </span>
                   {t.destino || "Destino não definido"}
@@ -481,9 +481,9 @@ export function RelatorioPage() {
                     </p>
                     <p>
                       {item.precipitacao > 1 ? (
-                        <CloudRain className="text-blue-500" />
+                        <CloudRain className="text-[var(--info)]" />
                       ) : item.probChuva > 40 ? (
-                        <Cloud className="text-gray-500" />
+                        <Cloud className="text-[var(--text-muted)]" />
                       ) : item.probChuva > 10 ? (
                         <CloudSun className="text-yellow-500" />
                       ) : (
@@ -504,7 +504,7 @@ export function RelatorioPage() {
           {extras?.obs ? (
             <p className="text-lg whitespace-pre-wrap">{extras.obs}</p>
           ) : (
-            <p className="text-center text-gray-400 italic">Nenhuma observação registrada</p>
+            <p className="text-center text-[var(--text-muted)] italic">Nenhuma observação registrada</p>
           )}
           {extras?.contatos && (
             <>

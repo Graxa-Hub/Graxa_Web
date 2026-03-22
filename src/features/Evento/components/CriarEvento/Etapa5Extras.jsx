@@ -18,20 +18,20 @@ const Etapa5Extras = ({ extras, setExtras, onSave, showId }) => {
       <div className="flex justify-end">
         <button
           onClick={handleSave}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-6 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]"
         >
           Salvar Extras
         </button>
       </div>
 
-      <h2 className="text-xl font-bold text-gray-900">Informações Extras</h2>
+      <h2 className="text-xl font-bold text-[var(--text-primary)]">Informações Extras</h2>
 
-      <div className="bg-white p-6 rounded-xl shadow-lg space-y-4 border border-gray-100">
+      <div className="bg-[var(--surface-elevated)] p-6 rounded-[var(--radius-lg)] shadow-[var(--shadow-soft)] space-y-4 border border-[var(--border)]">
 
         <div>
-          <label className="text-sm font-medium text-gray-700">Observações Gerais</label>
+          <label className="text-sm font-medium text-[var(--text-secondary)]">Observações Gerais</label>
           <textarea
-            className="w-full p-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 mt-1 border border-[var(--border)] rounded-[var(--radius-md)]  focus:ring-0 focus:border-[var(--border-strong)]"
             rows="5"
             value={extras.obs || ""}
             onChange={(e) => updateField("obs", e.target.value)}
@@ -39,9 +39,9 @@ const Etapa5Extras = ({ extras, setExtras, onSave, showId }) => {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700">Contatos Importantes</label>
+          <label className="text-sm font-medium text-[var(--text-secondary)]">Contatos Importantes</label>
           <textarea
-            className="w-full p-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-3 mt-1 border border-[var(--border)] rounded-[var(--radius-md)]  focus:ring-0 focus:border-[var(--border-strong)]"
             rows="5"
             value={extras.contatos || ""}
             onChange={(e) => updateField("contatos", e.target.value)}

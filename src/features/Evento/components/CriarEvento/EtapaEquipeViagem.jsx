@@ -37,7 +37,7 @@ const EtapaEquipeViagem = ({ turne, showSelecionado, setShowSelecionado, equipeD
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-gray-500 text-sm">
+          <p className="mt-2 text-[var(--text-muted)] text-sm">
             * Não é possível editar a equipe do show, apenas visualizá-la.
           </p>
         </div>

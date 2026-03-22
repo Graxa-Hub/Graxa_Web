@@ -8,14 +8,14 @@ import { useShows } from "../hooks/useShows";
 // Componente do card de etapa
 const StageCard = ({ number, title, description }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6 mb-8 max-w-md">
+    <div className="bg-[var(--surface-elevated)] rounded-[var(--radius-md)]  p-6 mb-8 max-w-md">
       <div className="flex items-start gap-4">
-        <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 font-semibold flex-shrink-0">
+        <div className="w-10 h-10 bg-[var(--surface-hover)] rounded-full flex items-center justify-center text-[var(--text-secondary)] font-semibold flex-shrink-0">
           {number}
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900 mb-1">{title}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
+          <h3 className="font-semibold text-[var(--text-primary)] mb-1">{title}</h3>
+          <p className="text-sm text-[var(--text-secondary)]">{description}</p>
         </div>
       </div>
     </div>
@@ -29,25 +29,25 @@ const RoleCard = ({ role, isSelected, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-lg shadow-sm p-6 flex items-center justify-between hover:bg-gray-50 transition-all cursor-pointer ${isSelected ? "ring-2 ring-red-300" : ""
+      className={`bg-[var(--surface-elevated)] rounded-[var(--radius-md)]  p-6 flex items-center justify-between hover:bg-[var(--surface)] transition-all cursor-pointer ${isSelected ? "ring-2 ring-red-300" : ""
         }`}
     >
       <div className="flex items-center gap-4">
         <div
-          className={`w-12 h-12 rounded-lg flex items-center justify-center ${isSelected ? "bg-red-50" : "bg-gray-100"
+          className={`w-12 h-12 rounded-[var(--radius-md)] flex items-center justify-center ${isSelected ? "bg-[var(--surface)]" : "bg-[var(--surface-hover)]"
             }`}
         >
           <Icon
-            className={`w-6 h-6 ${isSelected ? "text-red-600" : "text-gray-600"
+            className={`w-6 h-6 ${isSelected ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"
               }`}
           />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900">{role.title}</h3>
-          <p className="text-sm text-gray-500">{role.description}</p>
+          <h3 className="font-semibold text-[var(--text-primary)]">{role.title}</h3>
+          <p className="text-sm text-[var(--text-muted)]">{role.description}</p>
         </div>
       </div>
-      <ChevronDown className="w-5 h-5 text-gray-400" />
+      <ChevronDown className="w-5 h-5 text-[var(--text-muted)]" />
     </div>
   );
 };
@@ -71,24 +71,24 @@ const RolesList = ({ roles, selectedRole, onSelectRole }) => {
 // Componente de card de associado
 const AssociateCard = ({ associate, onAssociate }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 flex items-center gap-4">
+    <div className="bg-[var(--surface-elevated)] rounded-[var(--radius-md)]  p-4 flex items-center gap-4">
       <img
         src={associate.image}
         alt={associate.name}
         className="w-16 h-16 rounded-full object-cover flex-shrink-0"
       />
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-gray-900 text-sm">
+        <h3 className="font-semibold text-[var(--text-primary)] text-sm">
           {associate.name}
         </h3>
-        <p className="text-xs text-gray-500">{associate.role}</p>
-        <p className="text-xs text-gray-400 mt-1">
+        <p className="text-xs text-[var(--text-muted)]">{associate.role}</p>
+        <p className="text-xs text-[var(--text-muted)] mt-1">
           Shows realizados: {associate.shows}
         </p>
       </div>
       <button
         onClick={() => onAssociate(associate)}
-        className="px-4 py-2 bg-gray-800 text-white text-xs rounded-full hover:bg-gray-700 transition-colors flex-shrink-0"
+        className="px-4 py-2 bg-[var(--surface-hover)] text-white text-xs rounded-full hover:bg-[var(--surface-elevated)] transition-colors flex-shrink-0"
       >
         escolher
       </button>
@@ -101,8 +101,8 @@ const AssociatesSidebar = ({ associates, onAssociate, selectedRole }) => {
   // Nenhuma função selecionada
   if (!selectedRole) {
     return (
-      <div className="w-96 bg-gray-50 flex items-center justify-center">
-        <div className="text-center text-gray-500 p-8">
+      <div className="w-96 flex items-center justify-center bg-[var(--bg)]">
+        <div className="text-center text-[var(--text-muted)] p-8">
           <p className="text-sm">Selecione uma função para ver os</p>
           <p className="text-sm">associados disponíveis</p>
         </div>
@@ -113,8 +113,8 @@ const AssociatesSidebar = ({ associates, onAssociate, selectedRole }) => {
   // Nenhum associado para a função
   if (associates.length === 0) {
     return (
-      <div className="w-96 bg-gray-50 flex items-center justify-center">
-        <div className="text-center text-gray-500 p-8">
+      <div className="w-96 flex items-center justify-center bg-[var(--bg)]">
+        <div className="text-center text-[var(--text-muted)] p-8">
           <p className="text-sm">Nenhum associado disponível</p>
           <p className="text-sm">para esta função</p>
         </div>
@@ -124,13 +124,13 @@ const AssociatesSidebar = ({ associates, onAssociate, selectedRole }) => {
 
   // Lista de associados
   return (
-    <div className="w-96 bg-gray-50 flex flex-col h-screen border-l border-gray-200">
+    <div className="sidebar-panel flex flex-col h-screen w-96">
       {/* Header do sidebar */}
-      <div className="px-8 pt-10 pb-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-800">
+      <div className="px-8 pt-10 pb-4 border-b border-[var(--border)]">
+        <h2 className="text-lg font-semibold text-[var(--text-primary)]">
           Associados disponíveis
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-[var(--text-muted)] mt-1">
           Selecione alguém para essa função
         </p>
       </div>
@@ -159,7 +159,7 @@ const MainContent = ({
   events,
 }) => {
   return (
-    <div className="flex-1 bg-gray-50 p-8">
+    <div className="flex-1 p-8">
       {/* Header */}
       <div className="mb-8">
         <DropdownGenerico
@@ -198,7 +198,7 @@ const MainContent = ({
 // Layout específico para a página de adicionar usuários
 const EventDashboardLayout = ({ children, sidebar }) => {
   return (
-    <div className="flex h-screen w-screen bg-gray-50">
+    <div className="flex h-screen w-screen bg-[var(--bg)]">
       {children}
       {sidebar}
     </div>

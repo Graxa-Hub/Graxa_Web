@@ -893,11 +893,11 @@ export const CriarEvento = () => {
 
             <div className="mt-8">{renderEtapa()}</div>
 
-            <div className="flex justify-end mt-10 gap-4 border-t pt-6 border-gray-200">
+            <div className="flex justify-end mt-10 gap-4 border-t pt-6 border-[var(--border)]">
               {/* BOTÃO VOLTAR */}
               {etapaAtual > 1 && (
                 <button
-                  className="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                  className="px-6 py-2 bg-[var(--surface-hover)] text-[var(--text-secondary)] rounded-[var(--radius-md)] hover:bg-gray-300"
                   onClick={() => setEtapaAtual(etapaAtual - 1)}
                 >
                   Voltar
@@ -907,7 +907,7 @@ export const CriarEvento = () => {
               {/* BOTÃO PRÓXIMA — só aparece se NÃO for a última etapa */}
               {etapaAtual < (tipoEvento === "viagem" ? 3 : 5) && (
                 <button
-                  className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                  className="px-6 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]"
                   onClick={() => setEtapaAtual(etapaAtual + 1)}
                 >
                   Próxima Etapa
@@ -924,7 +924,7 @@ export const CriarEvento = () => {
             {/* BOTÃO TOGGLE (HANDLE) - FIXO NA BORDA DA GAVETA */}
             <button
               onClick={() => setShowSidebarDireita(!showSidebarDireita)}
-              className="absolute -left-4 bg-white border border-gray-200 shadow-2xl rounded-full w-8 h-8 flex items-center justify-center hover:bg-gray-50 hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
+              className="absolute -left-4 bg-[var(--surface-elevated)] border border-[var(--border)] shadow-[var(--shadow-card)] rounded-full w-8 h-8 flex items-center justify-center hover:bg-[var(--surface)] hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
               title={showSidebarDireita ? "Esconder Resumo" : "Mostrar Resumo"}
             >
               <div className={`transition-transform duration-300 ${showSidebarDireita ? 'rotate-0' : 'rotate-180'}`}>
@@ -933,7 +933,7 @@ export const CriarEvento = () => {
             </button>
 
             {/* CONTEÚDO DA GAVETA */}
-            <div className="w-80 h-full bg-white border-l border-gray-200 shadow-2xl rounded-md overflow-hidden">
+            <div className="w-80 h-full bg-[var(--surface-elevated)] border-l border-[var(--border)] shadow-[var(--shadow-card)] rounded-[var(--radius-sm)] overflow-hidden">
               <SidebarDireita
                 etapaAtual={etapaAtual}
                 localShow={localShow}

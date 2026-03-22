@@ -91,21 +91,21 @@ const HotelCard = ({ hotel = {}, colaboradores = [], localShow = {}, onChange, o
   };
 
   return (
-    <div className="relative bg-white rounded-xl shadow-lg p-6 space-y-5 border border-gray-100">
+    <div className="surface-card p-6 space-y-5 relative">
 
       {/* BOTÃO REMOVER */}
       <button
         onClick={onRemove}
-        className="absolute top-2 right-2 text-red-500 hover:text-red-700 font-bold text-xl"
+        className="absolute top-2 right-2 text-[var(--accent)] hover:text-[var(--accent)] font-bold text-xl"
       >
         ×
       </button>
 
-      <h3 className="font-bold text-gray-900 text-xl">Hotel</h3>
+      <h3 className="font-bold text-[var(--text-primary)] text-base font-semibold">Hotel</h3>
 
       {/* NOME DO HOTEL */}
       <input
-        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
         placeholder="Nome do hotel"
         value={get("nome", "nomeHotel")}
         onChange={(e) => updateField("nome", e.target.value)}
@@ -114,7 +114,7 @@ const HotelCard = ({ hotel = {}, colaboradores = [], localShow = {}, onChange, o
       {/* ENDEREÇO */}
       <div>
         <input
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
           placeholder="Endereço do hotel"
           value={get("endereco", "endereco")}
           onChange={(e) => updateField("endereco", e.target.value)}
@@ -122,32 +122,32 @@ const HotelCard = ({ hotel = {}, colaboradores = [], localShow = {}, onChange, o
 
         <button
           onClick={handleBuscarEnderecoHotel}
-          className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors font-medium"
+          className="btn-primary mt-2 text-sm"
           disabled={loading}
         >
           {loading ? "Buscando..." : "Confirmar Endereço"}
         </button>
 
-        {erro && <p className="text-red-500 text-sm mt-1">{erro}</p>}
+        {erro && <p className="text-[var(--accent)] text-sm mt-1">{erro}</p>}
       </div>
 
       {/* CHECKIN/CHECKOUT */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium text-gray-700">Check-in</label>
+          <label className="text-sm font-medium text-[var(--text-secondary)]">Check-in</label>
           <input
             type="datetime-local"
-            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="form-input mt-1  focus:ring-0 focus:border-[var(--border-strong)]"
             value={get("checkin", "checkin")}
             onChange={(e) => updateField("checkin", e.target.value)}
           />
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700">Check-out</label>
+          <label className="text-sm font-medium text-[var(--text-secondary)]">Check-out</label>
           <input
             type="datetime-local"
-            className="w-full mt-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="form-input mt-1  focus:ring-0 focus:border-[var(--border-strong)]"
             value={get("checkout", "checkout")}
             onChange={(e) => updateField("checkout", e.target.value)}
           />
@@ -156,20 +156,20 @@ const HotelCard = ({ hotel = {}, colaboradores = [], localShow = {}, onChange, o
 
       {/* DISTÂNCIAS AUTOMÁTICAS */}
       {hotel.distanciaPalcoKm && (
-        <p className="text-gray-600">
+        <p className="text-[var(--text-secondary)]">
           🎤 <strong>{hotel.distanciaPalcoKm} km</strong> do local do show
         </p>
       )}
 
       {hotel.distanciaAeroportoKm && (
-        <p className="text-gray-600">
+        <p className="text-[var(--text-secondary)]">
           ✈️ <strong>{hotel.distanciaAeroportoKm} km</strong> do aeroporto
         </p>
       )}
 
       {/* HÓSPEDES */}
       <div>
-        <label className="text-sm font-medium text-gray-700 block mb-2">Hóspedes</label>
+        <label className="text-sm font-medium text-[var(--text-secondary)] block mb-2">Hóspedes</label>
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
@@ -180,13 +180,13 @@ const HotelCard = ({ hotel = {}, colaboradores = [], localShow = {}, onChange, o
               <button
                 key={c.id}
                 onClick={() => toggleHospede(c.id)}
-                className={`w-full flex justify-between p-3 border rounded-lg transition-colors ${
-                  selected ? "bg-green-50 border-green-400 hover:bg-green-100" : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                className={`w-full flex justify-between p-3 border rounded-[var(--radius-md)] transition-colors ${
+                  selected ? "bg-[var(--surface)] border-green-400 hover:bg-[var(--surface-hover)]" : "bg-[var(--surface-hover)] border-[var(--border)] hover:bg-[#383838]"
                 }`}
               >
                 <span>{c.nome}</span>
                 {selected && (
-                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-[var(--success)]">✓</span>
                 )}
               </button>
             );

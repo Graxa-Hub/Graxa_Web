@@ -559,7 +559,7 @@ const Etapa2Logistica = ({
     <div className="space-y-8">
       {/* Aviso se listas vierem vazias */}
       {hotels.length === 0 && flights.length === 0 && transports.length === 0 && (
-        <div className="bg-yellow-100 text-yellow-800 p-4 rounded mb-4 text-center">
+        <div className="bg-[var(--surface-hover)] text-yellow-800 p-4 rounded mb-4 text-center">
           Nenhuma hospedagem, voo ou transporte encontrado no banco para este evento.
         </div>
       )}
@@ -577,17 +577,17 @@ const Etapa2Logistica = ({
         loading={loading}
       />
       <section>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Hospedagem</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Hospedagem</h2>
 
         <div className="flex gap-2 mb-2">
           <button
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            className="px-6 py-2 btn-primary font-medium"
             onClick={addHotel}
           >
             Adicionar Hotel
           </button>
           <button
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="px-6 py-2 btn-primary font-medium"
             onClick={async () => {
               try {
                 let created = 0;
@@ -666,13 +666,13 @@ const Etapa2Logistica = ({
                   onChange={(updated) => updateHotelAtIndex(index, updated)}
                 />
                 {showColabError && (
-                  <div className="text-red-600 text-sm mt-2 ml-2">
+                  <div className="text-[var(--accent)] text-xs mt-2 ml-2">
                     Selecione um hóspede para cadastrar o hotel.
                   </div>
                 )}
                 <div className="absolute top-2 right-2 flex gap-2">
                   <button
-                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+                    className="px-3 py-1 bg-[var(--surface)]0 text-white rounded hover:bg-red-700"
                     onClick={() => handleRemove("hotel", hotel)}
                   >
                     Remover
@@ -686,16 +686,16 @@ const Etapa2Logistica = ({
 
       {/* VOOS */}
       <section>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Voos da Equipe</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Voos da Equipe</h2>
         <div className="flex gap-2 mb-2">
           <button
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            className="px-6 py-2 btn-primary font-medium"
             onClick={addFlight}
           >
             Adicionar Voo
           </button>
           <button
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="px-6 py-2 btn-primary font-medium"
             onClick={async () => {
               try {
                 let created = 0;
@@ -776,13 +776,13 @@ const Etapa2Logistica = ({
                   onChange={(updated) => updateFlightAtIndex(index, updated)}
                 />
                 {showColabError && (
-                  <div className="text-red-600 text-sm mt-2 ml-2">
+                  <div className="text-[var(--accent)] text-xs mt-2 ml-2">
                     Selecione um passageiro para cadastrar o voo.
                   </div>
                 )}
                 <div className="absolute top-2 right-2 flex gap-2">
                   <button
-                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+                    className="px-3 py-1 bg-[var(--surface)]0 text-white rounded hover:bg-red-700"
                     onClick={() => handleRemove("flight", flight)}
                   >
                     Remover
@@ -796,16 +796,16 @@ const Etapa2Logistica = ({
 
       {/* TRANSPORTES */}
       <section>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Transportes</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Transportes</h2>
         <div className="flex gap-2 mb-2">
           <button
-            className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+            className="px-6 py-2 btn-primary font-medium"
             onClick={addTransporte}
           >
             Adicionar Transporte
           </button>
           <button
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="px-6 py-2 btn-primary font-medium"
             onClick={async () => {
               try {
                 let created = 0;
@@ -886,13 +886,13 @@ const Etapa2Logistica = ({
                   onChange={(updated) => updateTransporteAtIndex(index, updated)}
                 />
                 {showColabError && (
-                  <div className="text-red-600 text-sm mt-2 ml-2">
+                  <div className="text-[var(--accent)] text-xs mt-2 ml-2">
                     Selecione um passageiro para cadastrar o transporte.
                   </div>
                 )}
                 <div className="absolute top-2 right-2 flex gap-2">
                   <button
-                    className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-700"
+                    className="px-3 py-1 bg-[var(--surface)]0 text-white rounded hover:bg-red-700"
                     onClick={() => handleRemove("transporte", t)}
                   >
                     Remover
