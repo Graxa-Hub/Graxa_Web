@@ -31,12 +31,10 @@ export const SidebarHeader = () => {
     }, [usuario?.fotoNome]);
 
     return (
-        <header className="flex gap-3 py-5 border-b border-neutral-300">
-
-            {/* Foto de perfil */}
-            <div className="h-12 w-12 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+        <header className="flex gap-3 py-4 border-b border-[var(--border)]">
+            <div className="h-11 w-11 rounded-full overflow-hidden bg-[var(--surface-hover)] border border-[var(--border)] flex items-center justify-center">
                 {loading ? (
-                    <div className="animate-pulse bg-gray-300 w-full h-full" />
+                    <div className="animate-pulse bg-[var(--border)] w-full h-full" />
                 ) : fotoUrl ? (
                     <img
                         src={fotoUrl}
@@ -45,25 +43,24 @@ export const SidebarHeader = () => {
                         onError={() => setFotoUrl(null)}
                     />
                 ) : (
-                    <User className="text-blue-600" />
+                    <User size={18} className="text-[var(--text-muted)]" />
                 )}
             </div>
 
-            {/* Informações */}
             <div>
                 {usuario ? (
                     <>
-                        <h2 className="text-blue-700 font-semibold">
+                        <h2 className="text-[13px] leading-5 font-semibold text-[var(--text-primary)]">
                             {usuario.nome || "Usuário"}
                         </h2>
-                        <p className="text-sm uppercase text-gray-600">
+                        <p className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">
                             {obterFuncao(usuario.tipoUsuario) || "Colaborador"}
                         </p>
                     </>
                 ) : (
                     <>
-                        <h2 className="text-gray-500">Não logado</h2>
-                        <p className="text-sm text-gray-400">Faça seu login</p>
+                        <h2 className="text-[var(--text-secondary)]">Não logado</h2>
+                        <p className="text-sm text-[var(--text-muted)]">Faça seu login</p>
                     </>
                 )}
             </div>

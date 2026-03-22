@@ -12,20 +12,13 @@ export const TurneModal = ({ open = false, onClose = () => {}, onSelect = () => 
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  // Carrega turnês apenas uma vez quando abre o modal
   useEffect(() => {
-
     if (open && !jaCarregou.current) {
-
       jaCarregou.current = true;
       listarTurnes();
     }
-    
-    // Reset quando fecha
-    if (!open) {
-      jaCarregou.current = false;
-    }
-  }, [open, listarTurnes]); // ✅ Apenas open e listarTurnes
+    if (!open) jaCarregou.current = false;
+  }, [open, listarTurnes]);
 
   if (!open) return null;
 
@@ -35,64 +28,58 @@ export const TurneModal = ({ open = false, onClose = () => {}, onSelect = () => 
   };
 
   return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/30" onClick={onClose} aria-hidden="true" />
+    <div className="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
       <div
-        className="absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto"
+        className="modal-panel relative z-10 w-full max-w-3xl p-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <header className="mb-4">
-          <h2 className="text-2xl font-semibold">Turnês</h2>
-          <p className="text-sm text-neutral-500 mt-1">
-            Selecione a turnê
-          </p>
+        <header className="mb-5 border-b border-[var(--border)] pb-4">
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">Turnês</h2>
+          <p className="text-sm text-[var(--text-muted)] mt-1">Selecione a turnê</p>
         </header>
 
         {loading ? (
           <div className="flex items-center justify-center p-12">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-500">Carregando turnês...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--accent)] mx-auto mb-4"></div>
+              <p className="text-[var(--text-muted)]">Carregando turnês...</p>
             </div>
           </div>
         ) : turnes.length === 0 ? (
-          <div className="flex items-center justify-center p-12">
-            <p className="text-gray-400">Nenhuma turnê cadastrada</p>
+          <div className="flex items-center justify-center p-12 rounded-[var(--radius-md)] border border-dashed border-[var(--border)] bg-[var(--surface)]">
+            <p className="text-[var(--text-muted)]">Nenhuma turnê cadastrada</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             {turnes.map((turne) => (
               <div
                 key={turne.id}
-                className="flex gap-4 items-center p-4 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors border border-gray-200 hover:border-blue-300"
+                className="flex gap-4 items-center p-4 rounded-[var(--radius-md)] cursor-pointer transition-all border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)]"
                 role="button"
                 tabIndex={0}
                 onClick={() => handleTurneClick(turne)}
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    handleTurneClick(turne);
-                  }
+                  if (e.key === "Enter" || e.key === " ") handleTurneClick(turne);
                 }}
               >
-                <img 
+                <img
                   src={turne.imagemUrl}
                   alt={turne.nomeTurne || turne.nome}
-                  className="h-16 w-16 rounded-lg object-cover flex-shrink-0"
+                  className="h-16 w-16 rounded-[var(--radius-sm)] object-cover flex-shrink-0 border border-[var(--border)]"
                   onError={(e) => {
-                    e.target.src = 'https://placehold.co/64x64/e2e8f0/64748b?text=Erro';
+                    e.target.src = "https://placehold.co/64x64/2f2f2f/e8e8e6?text=Erro";
                   }}
                 />
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-base text-gray-800">
+                  <h3 className="font-semibold text-base text-[var(--text-primary)]">
                     {turne.nomeTurne || turne.nome}
                   </h3>
-                  <p className="text-neutral-500 text-sm truncate">
-                    {turne.descricao || 'Sem descrição'}
+                  <p className="text-[var(--text-muted)] text-sm truncate">
+                    {turne.descricao || "Sem descrição"}
                   </p>
                   {turne.banda?.nome && (
-                    <p className="text-xs text-blue-600 mt-1">
-                      {turne.banda.nome}
-                    </p>
+                    <p className="text-xs text-[var(--accent)] mt-1">{turne.banda.nome}</p>
                   )}
                 </div>
               </div>

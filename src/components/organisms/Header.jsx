@@ -4,9 +4,9 @@ import { useHeaderLogic } from "../../hooks/useHeaderLogic";
 import { ArtistaModal } from "../Dashboard/ArtistaModal";
 import { TurneModal } from "../Dashboard/TurneModal";
 import { BandaTurneSelector } from "../ModalEventos/BandaTurneSelector";
+import { ThemeToggle } from "../molecules/ThemeToggle";
 
 export const Header = ({
-    circulo,
     bandas,
     turnes,
     bandaSelecionada,
@@ -38,8 +38,8 @@ export const Header = ({
     });
 
     return (
-        <header className="flex justify-between items-center w-full h-14 mb-5">
-            <div className="relative flex justify-between items-center h-full max-w-70 sm:w-1/3 px-4 surface-card hover:shadow-lg transition-all duration-300">
+        <header className="flex justify-between items-center w-full mb-2 gap-3">
+            <div className="relative flex justify-between items-center h-16 w-full max-w-xl px-4 surface-card border-[var(--border-hover)] hover:border-[var(--border-strong)] transition-all duration-150">
                 <BandaTurneSelector
                     open={isOpen}
                     active={activeOption}
@@ -54,7 +54,7 @@ export const Header = ({
                 />
 
                 <div className="flex gap-3 items-center">
-                    <div className="h-12 w-12 rounded-full overflow-hidden bg-[var(--surface-muted)] flex items-center justify-center border-2 border-[var(--success)]">
+                    <div className="h-11 w-11 rounded-full overflow-hidden bg-[var(--surface-hover)] border border-[var(--border)] flex items-center justify-center">
                         {turneSelecionada?.imagemUrl ? (
                             <img
                                 src={turneSelecionada.imagemUrl}
@@ -74,22 +74,18 @@ export const Header = ({
                         )}
                     </div>
                     <div>
-                        <h2 className="font-semibold text-[var(--text-primary)]">
+                        <h2 className="font-semibold text-sm text-[var(--text-primary)]">
                             {bandaSelecionada?.nome || "Selecione"}
                         </h2>
-                        <p className="text-[var(--text-secondary)] text-sm">
-                            TURNÊ:{" "}
-                            {turneSelecionada?.nomeTurne || turneSelecionada?.nome || "Todas"}
+                        <p className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
+                            TURNÊ: {turneSelecionada?.nomeTurne || turneSelecionada?.nome || "Todas"}
                         </p>
                     </div>
                 </div>
 
                 <div className="text-[var(--text-secondary)]">
                     {isOpen ? (
-                        <ChevronDown
-                            className="cursor-pointer"
-                            onClick={alternarDropdown}
-                        />
+                        <ChevronDown className="cursor-pointer" onClick={alternarDropdown} />
                     ) : (
                         <ChevronUp className="cursor-pointer" onClick={alternarDropdown} />
                     )}
@@ -106,6 +102,7 @@ export const Header = ({
                     onClose={() => setTourOpen(false)}
                 />
             </div>
+            <ThemeToggle />
         </header>
     );
 };

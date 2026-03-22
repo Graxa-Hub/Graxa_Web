@@ -12,10 +12,8 @@ export const Calendario = () => {
   const [eventos, setEventos] = useState([]);
   const [bandaSelecionada, setBandaSelecionada] = useState(null);
   const [turneSelecionada, setTurneSelecionada] = useState(null);
-
   const { bandas, listarBandas } = useBandas();
   const { turnes, listarTurnes } = useTurnes();
-
   const [searchParams] = useSearchParams();
   const bandaIdParam = searchParams.get("bandaId");
   const turneIdParam = searchParams.get("turneId");
@@ -25,7 +23,6 @@ export const Calendario = () => {
     listarTurnes();
   }, [listarBandas, listarTurnes]);
 
-  // Sincroniza banda e turne selecionadas com os parâmetros da URL
   useEffect(() => {
     if (bandaIdParam && bandas.length > 0) {
       const banda = bandas.find((b) => String(b.id) === String(bandaIdParam));
@@ -34,28 +31,18 @@ export const Calendario = () => {
   }, [bandaIdParam, bandas]);
 
   useEffect(() => {
-    // Seleciona a turnê pelo parâmetro assim que turnes estiver disponível
     if (turneIdParam && turnes.length > 0) {
       const turne = turnes.find((t) => String(t.id) === String(turneIdParam));
       setTurneSelecionada(turne || null);
-
-      // Se banda não estiver selecionada, selecione a banda da turnê
       if (turne && !bandaSelecionada) {
-        const banda = bandas.find(
-          (b) => String(b.id) === String(turne.bandaId),
-        );
+        const banda = bandas.find((b) => String(b.id) === String(turne.bandaId));
         setBandaSelecionada(banda || null);
       }
     }
-  }, [turneIdParam, turnes, bandas]);
+  }, [turneIdParam, turnes, bandas, bandaSelecionada]);
 
-  // Quando bandaSelecionada mudar, se a turne selecionada não pertence à banda, reseta turneSelecionada
   useEffect(() => {
-    if (
-      bandaSelecionada &&
-      turneSelecionada &&
-      String(turneSelecionada.bandaId) !== String(bandaSelecionada.id)
-    ) {
+    if (bandaSelecionada && turneSelecionada && String(turneSelecionada.bandaId) !== String(bandaSelecionada.id)) {
       setTurneSelecionada(null);
     }
   }, [bandaSelecionada, turneSelecionada]);
@@ -73,13 +60,13 @@ export const Calendario = () => {
           />
         </div>
 
-        <div className="w-80 min-w-[320px] rounded-md p-1 h-full bg-white flex flex-col shadow-sm">
+        <div className="w-80 min-w-[320px] surface-card p-3 h-full flex flex-col">
           <SideCalendar mainCalendarApi={mainCalendarApi} eventos={eventos} />
-          <div className="flex-1 overflow-auto mt-4 px-2">
+          <div className="flex-1 overflow-auto mt-4 px-1">
             <TaskList eventos={eventos} />
           </div>
         </div>
       </div>
-    </Layout >
+    </Layout>
   );
 };
