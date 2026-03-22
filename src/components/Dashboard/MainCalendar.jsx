@@ -5,55 +5,36 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ptLocale from "@fullcalendar/core/locales/pt";
-// import "@fullcalendar/common/main.css"; // Removido por ser legado da v5
 import "../../index.css";
 import { EventoModal } from "../../features/Evento/components/organisms/EventoModal";
 import { useEventosCalendario } from "../../hooks/useEventosCalendario";
 
-export default function MainCalendar({
-  onCalendarApi,
-  onEventosChange,
-  bandaId, // ✅ Novo prop
-  turneId, // ✅ Novo prop
-  turne,   // ✅ Novo prop (object)
-}) {
+export default function MainCalendar({ onCalendarApi, onEventosChange, bandaId, turneId }) {
   const calendarRef = useRef(null);
   const navigate = useNavigate();
-  const { eventos, loading, carregarEventos, adicionarEventoLocal } =
-    useEventosCalendario();
-
+  const { eventos, loading, carregarEventos, adicionarEventoLocal } = useEventosCalendario();
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [dataHoraSelecionada, setDataHoraSelecionada] = useState({
-    inicio: "",
-    fim: "",
-  });
+  const [dataHoraSelecionada, setDataHoraSelecionada] = useState({ inicio: "", fim: "" });
 
-  // ✅ Recarrega eventos quando filtros mudarem
   useEffect(() => {
     carregarEventos({ bandaId, turneId });
   }, [bandaId, turneId, carregarEventos]);
 
-  // Expõe API do calendário se necessário
   useEffect(() => {
     if (calendarRef.current && typeof onCalendarApi === "function") {
       try {
         onCalendarApi(calendarRef.current.getApi());
-      } catch (e) {
-        // ignore if getApi isn't available yet
+      } catch {
+        // noop
       }
     }
   }, [onCalendarApi]);
 
-  // Compartilha eventos com SideCalendar
   useEffect(() => {
-    if (typeof onEventosChange === "function") {
-      onEventosChange(eventos);
-    }
+    if (typeof onEventosChange === "function") onEventosChange(eventos);
   }, [eventos, onEventosChange]);
 
   const handleDateSelect = (selectInfo) => {
-
-    // Formata data/hora para o formato datetime-local (YYYY-MM-DDTHH:mm)
     const formatarParaDateTimeLocal = (data) => {
       const ano = data.getFullYear();
       const mes = String(data.getMonth() + 1).padStart(2, "0");
@@ -63,34 +44,31 @@ export default function MainCalendar({
       return `${ano}-${mes}-${dia}T${hora}:${minuto}`;
     };
 
-    const inicio = formatarParaDateTimeLocal(selectInfo.start);
-    const fim = formatarParaDateTimeLocal(selectInfo.end);
-
-
-    setDataHoraSelecionada({ inicio, fim });
+    setDataHoraSelecionada({
+      inicio: formatarParaDateTimeLocal(selectInfo.start),
+      fim: formatarParaDateTimeLocal(selectInfo.end),
+    });
 
     try {
       selectInfo.view.calendar.unselect();
-    } catch { }
+    } catch {
+      // noop
+    }
 
     setCreateModalOpen(true);
   };
 
-
   const handleEventClick = (selectInfo) => {
     const eventoId = selectInfo.event?.extendedProps?.dados?.id || selectInfo.event?.id;
     const tipoEvento = selectInfo.event?.extendedProps?.tipo || "show";
-    if (eventoId) {
-      // ✅ MUDOU: agora vai para visao-evento ao invés de criar-evento
-      navigate(`/visao-evento/${tipoEvento}/${eventoId}`);
-    }
+    if (eventoId) navigate(`/visao-evento/${tipoEvento}/${eventoId}`);
   };
 
   return (
-    <div className="graxa-calendar-card bg-white rounded-md shadow p-4 h-full min-h-0 flex flex-col">
+    <div className="graxa-calendar-card surface-card p-4 h-full min-h-0 flex flex-col relative overflow-hidden">
       {loading && (
-        <div className="absolute inset-0 bg-white/50 flex items-center justify-center rounded-md">
-          <p className="text-gray-600">Carregando eventos...</p>
+        <div className="absolute inset-0 bg-[color:var(--overlay)]/30 flex items-center justify-center rounded-[var(--radius-md)] z-10">
+          <p className="text-[var(--text-primary)]">Carregando eventos...</p>
         </div>
       )}
       <FullCalendar
@@ -100,16 +78,12 @@ export default function MainCalendar({
         locale={ptLocale}
         initialView="timeGridWeek"
         aspectRatio={1.35}
-        headerToolbar={{
-          left: "prev,today,next",
-          center: "title",
-          right: "timeGridWeek,timeGridDay",
-        }}
-        selectable={true}
+        headerToolbar={{ left: "prev,today,next", center: "title", right: "timeGridWeek,timeGridDay" }}
+        selectable
         select={handleDateSelect}
         events={eventos}
         eventClick={handleEventClick}
-        editable={true}
+        editable
         dayMaxEvents={3}
         allDaySlot={false}
         height="100%"
@@ -124,18 +98,11 @@ export default function MainCalendar({
           setDataHoraSelecionada({ inicio: "", fim: "" });
         }}
         onFinish={(entidadeCriada) => {
-
           const tipo = entidadeCriada?.tipoViagem ? "viagem" : "show";
-
           adicionarEventoLocal(entidadeCriada, tipo);
-
           setCreateModalOpen(false);
           setDataHoraSelecionada({ inicio: "", fim: "" });
-
-          setTimeout(() => {
-
-            carregarEventos({ bandaId, turneId });
-          }, 500);
+          setTimeout(() => carregarEventos({ bandaId, turneId }), 500);
         }}
       />
     </div>
