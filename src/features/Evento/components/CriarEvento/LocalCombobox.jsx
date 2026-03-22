@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { MapPin } from "lucide-react";
 import { NovoLocalForm } from "./NovoLocalForm";
 import { ComboBox } from "../../../../components/ComboBox";
+import { cn, sectionSubtitle, surfaceCard } from "./uiStyles";
 
 export function LocalCombobox({ locais, value, onChange, onNovoLocal, fieldErrors = {}, clearFieldError }) {
   const [showNovoLocal, setShowNovoLocal] = useState(false);
@@ -19,14 +21,13 @@ export function LocalCombobox({ locais, value, onChange, onNovoLocal, fieldError
     },
   });
 
-  // Adiciona opção "Cadastrar novo local"
   const options = [
-    ...locais.map(local => ({
+    ...locais.map((local) => ({
       value: local.id,
       label: `${local.nome} — ${local.endereco?.cidade || ""}/${local.endereco?.estado || ""}`,
       localObj: local,
     })),
-    { value: "__novo__", label: "+ Cadastrar novo local" }
+    { value: "__novo__", label: "+ Cadastrar novo local" },
   ];
 
   const handleSelect = (optionValue) => {
@@ -55,12 +56,22 @@ export function LocalCombobox({ locais, value, onChange, onNovoLocal, fieldError
       },
     });
     if (onNovoLocal) onNovoLocal(novoLocalObj);
-    onChange(novoLocalObj.id); // seleciona o novo local
+    onChange(novoLocalObj.id);
     if (clearFieldError) clearFieldError("local");
   };
 
   return (
-    <div>
+    <div className={cn(surfaceCard, "p-5")}>
+      <div className="mb-4 flex items-start gap-3">
+        <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-600">
+          <MapPin className="h-5 w-5" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-slate-950">Escolha o local do evento</h3>
+          <p className={sectionSubtitle}>Selecione um local existente ou cadastre um novo sem sair da etapa.</p>
+        </div>
+      </div>
+
       <ComboBox
         label="Selecione um local"
         value={value}
@@ -69,6 +80,7 @@ export function LocalCombobox({ locais, value, onChange, onNovoLocal, fieldError
         placeholder="Selecione um local"
         error={fieldErrors.local}
       />
+
       {showNovoLocal && (
         <NovoLocalForm
           novoLocal={novoLocal}
