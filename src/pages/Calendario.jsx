@@ -35,14 +35,20 @@ export const Calendario = () => {
       const turne = turnes.find((t) => String(t.id) === String(turneIdParam));
       setTurneSelecionada(turne || null);
       if (turne && !bandaSelecionada) {
-        const banda = bandas.find((b) => String(b.id) === String(turne.bandaId));
+        const banda = bandas.find(
+          (b) => String(b.id) === String(turne.bandaId),
+        );
         setBandaSelecionada(banda || null);
       }
     }
   }, [turneIdParam, turnes, bandas, bandaSelecionada]);
 
   useEffect(() => {
-    if (bandaSelecionada && turneSelecionada && String(turneSelecionada.bandaId) !== String(bandaSelecionada.id)) {
+    if (
+      bandaSelecionada &&
+      turneSelecionada &&
+      String(turneSelecionada.bandaId) !== String(bandaSelecionada.id)
+    ) {
       setTurneSelecionada(null);
     }
   }, [bandaSelecionada, turneSelecionada]);

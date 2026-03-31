@@ -4,6 +4,7 @@ export const AuthLayout = ({
   columns = 2,
   className = "",
   padding = "px-4",
+  panelPosition = "right",
 }) => {
   const colsClass =
     columns === 1 ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2";
@@ -16,8 +17,15 @@ export const AuthLayout = ({
       <div
         className={`w-full ${maxWidthClass} grid ${colsClass} auth-panel overflow-hidden ${className}`}
       >
+        {panelPosition === "left" && columns > 1 && (
+          <div
+            className={`hidden sm:block grid-background ${rightPanelColor}`}
+          />
+        )}
+
         {children}
-        {columns > 1 && (
+
+        {panelPosition !== "left" && columns > 1 && (
           <div
             className={`hidden sm:block grid-background ${rightPanelColor}`}
           />

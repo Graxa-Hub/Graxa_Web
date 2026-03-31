@@ -4,7 +4,7 @@ const COLOR_CLASS = {
   white: "text-white",
   black: "text-[var(--text-primary)]",
   orange: "text-[var(--accent)]",
-  purple: "text-[var(--text-secondary)]",
+  purple: "text-[var(--grid)]",
   green: "text-[var(--success)]",
 };
 

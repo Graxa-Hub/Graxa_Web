@@ -1,7 +1,13 @@
 import { Link } from "react-router-dom";
 
-export const ButtonExtra = ({ children, className = "", onClick, to }) => {
-  const base = `cursor-pointer bg-transparent text-[var(--text-secondary)] font-semibold underline underline-offset-4 hover:text-[var(--accent)] ${className}`;
+export const ButtonExtra = ({
+  children,
+  className = "",
+  onClick,
+  to,
+  hoverClass = "hover:text-[var(--accent)]",
+}) => {
+  const base = `cursor-pointer bg-transparent text-[var(--text-secondary)] font-semibold underline underline-offset-4 ${hoverClass} ${className}`;
 
   if (to) {
     return (
