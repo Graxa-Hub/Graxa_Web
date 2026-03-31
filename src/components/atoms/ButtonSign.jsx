@@ -4,7 +4,7 @@ export const ButtonSign = ({ children, className = "", onClick, disabled }) => {
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`btn-primary block w-full text-center mt-2 ${className}`}
+      className={`btn-primary block w-full text-center ${className}`}
     >
       {children}
     </button>
