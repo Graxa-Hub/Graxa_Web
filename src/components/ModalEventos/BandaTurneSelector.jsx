@@ -14,8 +14,8 @@ export const BandaTurneSelector = ({
   if (!open) return null;
 
   return (
-    <div className="absolute top-full mt-2 z-50 translate-x-[-15px]" role="menu">
-      <div className="w-[320px] surface-card overflow-hidden shadow-[var(--shadow-card)]">
+    <div className="absolute top-full left-0 mt-2 z-50 w-full" role="menu">
+      <div className="w-full surface-card overflow-hidden shadow-[var(--shadow-card)]">
         <div className="border-b border-[var(--border)]">
           <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)]">
             <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">🎸 Bandas</span>
