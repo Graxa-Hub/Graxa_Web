@@ -1,17 +1,22 @@
 import { api } from './axios';
 
 export const bandaService = {
-  // Listar todas as bandas
-  async listarBandas() {
+  // Listar bandas com paginação
+  async listarBandas(page = 0) {
     try {
-      const response = await api.get('/bandas');
+      const response = await api.get('/bandas', {
+        params: {
+          page,
+          sort: 'nome,asc'
+        }
+      });
       return response.data;
     } catch (error) {
       // Se o erro for "Não há bandas salvas", retorna lista vazia ao invés de erro
       const errorMessage = error.response?.data?.message || error.response?.data?.mensagem || '';
       if (error.response?.status === 500 && errorMessage.includes('Não há bandas salvas')) {
         console.warn('[bandaService] Nenhuma banda encontrada, retornando lista vazia');
-        return [];
+        return { content: [], totalPages: 0, number: 0, size: 10 };
       }
 
       console.error('[bandaService] Erro ao listar bandas:', {

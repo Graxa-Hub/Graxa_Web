@@ -6,21 +6,28 @@ export function useBandas() {
   const [bandas, setBandas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [paginationData, setPaginationData] = useState({
+    totalPages: 0,
+    totalElements: 0,
+    pageNumber: 0,
+    pageSize: 10,
+    first: true,
+    last: false
+  });
   const jaCarregouImagens = useRef(new Set());
 
-  const listarBandas = useCallback(async () => {
+  const listarBandas = useCallback(async (page = 0) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await bandaService.listarBandas();
+      const data = await bandaService.listarBandas(page);
       
-      
-      const bandasArray = data || [];
+      // Extrai o array de bandas - pode vir em 'content' (paginado) ou como array direto
+      const bandasArray = data.content ? data.content : (Array.isArray(data) ? data : []);
       
       const bandasComImagem = await Promise.all(
         bandasArray.map(async (banda) => {
           if (jaCarregouImagens.current.has(banda.id)) {
-            
             const bandaExistente = bandas.find(b => b.id === banda.id);
             if (bandaExistente?.imagemUrl) {
               return bandaExistente;
@@ -31,10 +38,8 @@ export function useBandas() {
           
           if (banda.nomeFoto) {
             try {
-              
               imagemUrl = await imagemService(banda.nomeFoto);
               jaCarregouImagens.current.add(banda.id);
-              
             } catch (err) {
               console.error('[useBandas] Erro ao carregar imagem:', err);
               jaCarregouImagens.current.add(banda.id);
@@ -50,17 +55,36 @@ export function useBandas() {
         })
       );
       
-      
       setBandas(bandasComImagem);
-      return bandasComImagem;
+
+      // Atualiza metadados de paginação
+      setPaginationData({
+        totalPages: data.totalPages ?? 0,
+        totalElements: data.totalElements ?? 0,
+        pageNumber: data.number ?? page,
+        pageSize: data.size ?? 10,
+        first: data.first ?? false,
+        last: data.last ?? false
+      });
+
+      return {
+        content: bandasComImagem,
+        totalPages: data.totalPages ?? 0,
+        totalElements: data.totalElements ?? 0,
+        pageNumber: data.number ?? page,
+        pageSize: data.size ?? 10,
+        first: data.first ?? false,
+        last: data.last ?? false
+      };
     } catch (err) {
       setError(err.message);
       console.error('[useBandas] Erro ao listar bandas:', err);
       setBandas([]);
+      return { content: [], totalPages: 0 };
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [bandas]);
 
   const buscarBandaPorId = useCallback(async (id) => {
     setLoading(true);
@@ -184,6 +208,7 @@ export function useBandas() {
     bandas,
     loading,
     error,
+    paginationData,
     listarBandas,
     buscarBandaPorId,
     criarBanda,

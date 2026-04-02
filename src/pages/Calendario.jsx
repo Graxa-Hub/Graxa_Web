@@ -22,8 +22,8 @@ export const Calendario = () => {
 
   useEffect(() => {
     listarBandas();
-    listarTurnes();
-  }, [listarBandas, listarTurnes]);
+    listarTurnes(0); // Carrega todas as turnês
+  }, []); // Array vazio - executa apenas na montagem
 
   // Sincroniza banda e turne selecionadas com os parâmetros da URL
   useEffect(() => {

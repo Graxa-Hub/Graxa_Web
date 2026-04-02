@@ -1,9 +1,14 @@
 import { api } from './axios';
 
-export async function getTurnes() {
+export async function getTurnes(page = 0) {
   try {
-    const response = await api.get('/turnes');
-    
+    const response = await api.get('/turnes', {
+      params: {
+        page,
+        sort: 'nomeTurne,asc'
+      }
+    });
+
     return response.data;
   } catch (error) {
     console.error('Erro ao buscar turnês:', error);
