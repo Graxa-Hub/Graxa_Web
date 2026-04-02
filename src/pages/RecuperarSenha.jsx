@@ -3,8 +3,15 @@ import { RecuperarSenhaForm } from "../components/organisms/RecuperarSenhaForm";
 import { useRecuperarSenhaForm } from "../hooks/useRecuperarSenhaForm";
 
 export const RecuperarSenha = () => {
-  const { fields, etapa, errors, successMessage, loading, handleChange, handleSubmit } =
-    useRecuperarSenhaForm();
+  const {
+    fields,
+    etapa,
+    errors,
+    successMessage,
+    loading,
+    handleChange,
+    handleSubmit,
+  } = useRecuperarSenhaForm();
 
   return (
     <AuthLayout columns={1}>

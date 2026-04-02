@@ -108,7 +108,23 @@ export const useRecuperarSenhaForm = () => {
   );
 
   return useMemo(
-    () => ({ fields, etapa, errors, successMessage, loading, handleChange, handleSubmit }),
-    [fields, etapa, errors, successMessage, loading, handleChange, handleSubmit],
+    () => ({
+      fields,
+      etapa,
+      errors,
+      successMessage,
+      loading,
+      handleChange,
+      handleSubmit,
+    }),
+    [
+      fields,
+      etapa,
+      errors,
+      successMessage,
+      loading,
+      handleChange,
+      handleSubmit,
+    ],
   );
 };
