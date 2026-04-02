@@ -26,7 +26,11 @@ function App() {
   return (
     <>
       {/* ToastContainer global, igual Modal de Notificação */}
-      <ToastContainer toasts={toast.toasts} onRemoveToast={toast.removeToast} position="top-right" />
+      <ToastContainer
+        toasts={toast.toasts}
+        onRemoveToast={toast.removeToast}
+        position="top-right"
+      />
       <Routes>
         {/* Rota raiz - redireciona baseado na autenticação */}
         <Route path="/" element={<HomeRedirect />} />
@@ -40,9 +44,15 @@ function App() {
         <Route element={<ProtectedLayout />}>
           <Route path="/calendario" element={<Calendario />} />
           <Route path="/turne/:bandaId?" element={<Turne />} />
-          <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
+          <Route
+            path="/adicionando-usuario"
+            element={<AdicionandoUsuarios />}
+          />
           <Route path="/artista" element={<ArtistaApp />} />
-          <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
+          <Route
+            path="/visao-evento/:tipoEvento/:id"
+            element={<VisaoEvento />}
+          />
           <Route
             path="/criar-evento/:tipoEvento/:eventoId?"
             element={<CriarEvento />}

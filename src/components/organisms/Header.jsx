@@ -4,7 +4,6 @@ import { useHeaderLogic } from "../../hooks/useHeaderLogic";
 import { ArtistaModal } from "../Dashboard/ArtistaModal";
 import { TurneModal } from "../Dashboard/TurneModal";
 import { BandaTurneSelector } from "../ModalEventos/BandaTurneSelector";
-import { ThemeToggle } from "../molecules/ThemeToggle";
 
 export const Header = ({
     bandas,
@@ -102,7 +101,6 @@ export const Header = ({
                     onClose={() => setTourOpen(false)}
                 />
             </div>
-            <ThemeToggle />
         </header>
     );
 };
