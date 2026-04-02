@@ -8,6 +8,7 @@ import { TurneDetailForm } from "../features/Turne/components/organisms/TurneDet
 import { TurneError } from "../features/Turne/components/atoms/TurneError";
 import { useTurnePage } from "../hooks/useTurnePage";
 import { useTurneForm } from "../hooks/useTurneForm";
+import { LoadingState } from "../components/molecules/LoadingState";
 
 export function Turne() {
   const {
@@ -55,7 +56,7 @@ export function Turne() {
   const filteredBandasForm = useMemo(() => {
     if (!bandaSearchText.trim()) return bandas;
     return bandas.filter((banda) =>
-      banda.nome.toLowerCase().includes(bandaSearchText.toLowerCase())
+      banda.nome.toLowerCase().includes(bandaSearchText.toLowerCase()),
     );
   }, [bandas, bandaSearchText]);
 
@@ -74,7 +75,7 @@ export function Turne() {
     return (
       <Layout>
         <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--border-strong)]"></div>
+          <LoadingState message="Carregando turnes..." />
         </div>
       </Layout>
     );
@@ -120,7 +121,9 @@ export function Turne() {
                   filteredBandas={filteredBandasForm}
                   selectedStartDate={selectedStartDate}
                   selectedEndDate={selectedEndDate}
-                  handleInputChange={(field, value) => handleChange(field, value)}
+                  handleInputChange={(field, value) =>
+                    handleChange(field, value)
+                  }
                   setBandaSearchText={setBandaSearchText}
                   setShowBandaDropdown={setShowBandaDropdown}
                   handleBandaSelectInModal={handleBandaSelectInModal}
@@ -137,7 +140,9 @@ export function Turne() {
                   submitLoading={submitLoading}
                   isEditMode={isEditMode}
                   imagemAtual={imagemAtual}
-                  handleInputChange={(field, value) => handleChange(field, value)}
+                  handleInputChange={(field, value) =>
+                    handleChange(field, value)
+                  }
                   handleChange={handleChange}
                 />
               );

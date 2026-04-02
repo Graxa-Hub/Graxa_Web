@@ -9,7 +9,7 @@ import { Cadastro } from "./pages/Cadastro";
 import { HomeRedirect } from "./components/HomeRedirect";
 import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
-import { ArtistaApp } from "./pages/ArtistaApp";
+import { Artista } from "./pages/Artista";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
 import { VisaoEvento } from "./pages/VisaoEvento";
 import { Calendario } from "./pages/Calendario";
@@ -44,7 +44,7 @@ function App() {
         <Route path="/calendario" element={<Calendario />} />
         <Route path="/turne/:bandaId?" element={<Turne />} />
         <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
-        <Route path="/artista" element={<ArtistaApp />} />
+        <Route path="/artista" element={<Artista />} />
         <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
         <Route
           path="/criar-evento/:tipoEvento/:eventoId?"
