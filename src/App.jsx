@@ -41,19 +41,26 @@ function App() {
         <Route path="/cadastro" element={<Cadastro />} />
 
         {/* Rotas protegidas */}
-        <Route path="/calendario" element={<Calendario />} />
-        <Route path="/turne/:bandaId?" element={<Turne />} />
-        <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
-        <Route path="/artista" element={<ArtistaApp />} />
-        <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
-        <Route
-          path="/criar-evento/:tipoEvento/:eventoId?"
-          element={<CriarEvento />}
-        />
-        <Route path="/criar-logistica" element={<CriarLogistica />} />
-        <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
-        <Route path="/relatorio/:id" element={<RelatorioPage />} />
-        <Route element={<ProtectedLayout />}></Route>
+        <Route element={<ProtectedLayout />}>
+          <Route path="/calendario" element={<Calendario />} />
+          <Route path="/turne/:bandaId?" element={<Turne />} />
+          <Route
+            path="/adicionando-usuario"
+            element={<AdicionandoUsuarios />}
+          />
+          <Route path="/artista" element={<ArtistaApp />} />
+          <Route
+            path="/visao-evento/:tipoEvento/:id"
+            element={<VisaoEvento />}
+          />
+          <Route
+            path="/criar-evento/:tipoEvento/:eventoId?"
+            element={<CriarEvento />}
+          />
+          <Route path="/criar-logistica" element={<CriarLogistica />} />
+          <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
+          <Route path="/relatorio/:id" element={<RelatorioPage />} />
+        </Route>
         {/* Rota não encontrada - redireciona para login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
