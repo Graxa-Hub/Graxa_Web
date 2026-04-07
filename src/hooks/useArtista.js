@@ -1,25 +1,29 @@
-import { useState, useCallback } from 'react';
-import { useBandas } from './useBandas';
+import { useState, useCallback, useEffect } from "react";
+import { useBandas } from "./useBandas";
 
-export function useArtistaApp() {
-  const { 
-    bandas, 
-    loading, 
-    listarBandas, 
-    criarBanda, 
-    atualizarBanda, 
-    excluirBanda, 
-    adicionarIntegrantes 
+export function useArtista() {
+  const {
+    bandas,
+    loading,
+    listarBandas,
+    criarBanda,
+    atualizarBanda,
+    excluirBanda,
+    adicionarIntegrantes,
   } = useBandas();
-  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [bandaParaEditar, setBandaParaEditar] = useState(null);
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
-    banda: null
+    banda: null,
   });
   const [bandaVisualizar, setBandaVisualizar] = useState(null);
+
+  useEffect(() => {
+    listarBandas();
+  }, [listarBandas]);
 
   const openModal = useCallback(() => {
     setBandaParaEditar(null);
@@ -36,7 +40,7 @@ export function useArtistaApp() {
     try {
       await listarBandas();
     } catch (err) {
-      console.error("Erro ao atualizar lista de bandas após criação:", err);
+      console.error("Erro ao atualizar lista de bandas apos criacao:", err);
     }
   }, [closeModal, listarBandas]);
 
@@ -65,11 +69,10 @@ export function useArtistaApp() {
   }, [confirmModal.banda, excluirBanda, listarBandas]);
 
   const toggleDropdown = useCallback((bandaId) => {
-    setOpenDropdown(openDropdown === bandaId ? null : bandaId);
-  }, [openDropdown]);
+    setOpenDropdown((prev) => (prev === bandaId ? null : bandaId));
+  }, []);
 
   return {
-    // Estados
     bandas,
     loading,
     isModalOpen,
@@ -77,14 +80,9 @@ export function useArtistaApp() {
     bandaParaEditar,
     confirmModal,
     bandaVisualizar,
-    
-    // Funções principais
-    listarBandas,
     criarBanda,
     atualizarBanda,
     adicionarIntegrantes,
-    
-    // Handlers
     openModal,
     closeModal,
     onBandaCreated,
@@ -93,6 +91,6 @@ export function useArtistaApp() {
     handleConfirmDelete,
     toggleDropdown,
     setBandaVisualizar,
-    setConfirmModal
+    setConfirmModal,
   };
 }

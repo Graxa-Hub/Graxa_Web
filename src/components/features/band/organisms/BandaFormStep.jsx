@@ -34,8 +34,8 @@ export function BandaFormStep({
             />
             <InputFile
                 label="Foto da Banda"
-                onFileSelect={(file) => handleChange("foto", file)}
-                currentImage={imagemAtual}
+                value={imagemAtual}
+                onChange={(e) => handleChange("foto", e.target.files?.[0] || null)}
             />
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">

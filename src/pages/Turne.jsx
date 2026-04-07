@@ -1,34 +1,22 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Layout } from "../components/templates/Layout";
 import { Modal } from "../components/ModalEventos/Modal";
 import { TurneList } from "../features/Turne/components/organisms/TurneList";
 import { TurneHeader } from "../features/Turne/components/molecules/TurneHeader";
-import { TurneMainForm } from "../features/Turne/components/organisms/TurneMainForm";
-import { TurneDetailForm } from "../features/Turne/components/organisms/TurneDetailForm";
+import { TurneFormSteps } from "../features/Turne/components/organisms/TurneFormSteps";
 import { TurneError } from "../features/Turne/components/atoms/TurneError";
-import { useTurnePage } from "../hooks/useTurnePage";
-import { useTurneForm } from "../hooks/useTurneForm";
+import { useTurneViewModel } from "../features/Turne/hooks/useTurneViewModel";
+import { LoadingState } from "../components/molecules/LoadingState";
 
 export function Turne() {
   const {
     bandas,
-    bandasLoading,
     selectedBand,
-    loading,
+    isPageLoading,
     isModalOpen,
     isEditMode,
-    editingTurne,
     errorHeader,
     filteredTurnes,
-    setIsModalOpen,
-    handleBandSelect,
-    handleCreateTurne,
-    handleEditTurne,
-    handleDeleteTurne,
-    handleSuccess,
-  } = useTurnePage();
-
-  const {
     formData,
     errors,
     submitLoading,
@@ -37,44 +25,30 @@ export function Turne() {
     imagemAtual,
     bandaSearchText,
     showBandaDropdown,
+    filteredBandasForm,
+    modalTitle,
+    handleBandSelect,
+    handleCreateTurne,
+    handleEditTurne,
+    handleDeleteTurne,
+    closeModal,
+    handleFinishTurne,
+    validateModalStep,
     setBandaSearchText,
     setShowBandaDropdown,
     handleDateSelect,
-    handleFinishTurne,
     handleBandaSelectInModal,
+    formatDate,
+    getSelectedBandaName,
+    handleInputChange,
     handleChange,
-    validateStep1,
-  } = useTurneForm({
-    onSuccess: handleSuccess,
-    turnesData: filteredTurnes,
-    isEditMode,
-    editingTurne,
-    selectedBand,
-  });
+  } = useTurneViewModel();
 
-  const filteredBandasForm = useMemo(() => {
-    if (!bandaSearchText.trim()) return bandas;
-    return bandas.filter((banda) =>
-      banda.nome.toLowerCase().includes(bandaSearchText.toLowerCase())
-    );
-  }, [bandas, bandaSearchText]);
-
-  const formatDate = (date) => {
-    if (!date) return "";
-    return date.toLocaleDateString("pt-BR");
-  };
-
-  const getSelectedBandaName = () => {
-    if (!formData.bandaId) return "";
-    const banda = bandas.find((b) => b.id === formData.bandaId);
-    return banda ? banda.nome : "";
-  };
-
-  if (loading || bandasLoading) {
+  if (isPageLoading) {
     return (
       <Layout>
         <div className="flex-1 flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--border-strong)]"></div>
+          <LoadingState message="Carregando turnes..." />
         </div>
       </Layout>
     );
@@ -100,51 +74,36 @@ export function Turne() {
 
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         onFinish={handleFinishTurne}
-        title={isEditMode ? "Editar Turnê" : "Criar Turnê"}
+        title={modalTitle}
         totalSteps={2}
         size="lg"
-        onValidate={(step) => (step === 1 ? validateStep1() : true)}
+        onValidate={validateModalStep}
       >
-        {(currentStep) => {
-          switch (currentStep) {
-            case 1:
-              return (
-                <TurneMainForm
-                  formData={formData}
-                  errors={errors}
-                  submitLoading={submitLoading}
-                  bandaSearchText={bandaSearchText}
-                  showBandaDropdown={showBandaDropdown}
-                  filteredBandas={filteredBandasForm}
-                  selectedStartDate={selectedStartDate}
-                  selectedEndDate={selectedEndDate}
-                  handleInputChange={(field, value) => handleChange(field, value)}
-                  setBandaSearchText={setBandaSearchText}
-                  setShowBandaDropdown={setShowBandaDropdown}
-                  handleBandaSelectInModal={handleBandaSelectInModal}
-                  handleDateSelect={handleDateSelect}
-                  formatDate={formatDate}
-                  getSelectedBandaName={getSelectedBandaName}
-                />
-              );
-            case 2:
-              return (
-                <TurneDetailForm
-                  formData={formData}
-                  errors={errors}
-                  submitLoading={submitLoading}
-                  isEditMode={isEditMode}
-                  imagemAtual={imagemAtual}
-                  handleInputChange={(field, value) => handleChange(field, value)}
-                  handleChange={handleChange}
-                />
-              );
-            default:
-              return <div>Etapa não encontrada</div>;
-          }
-        }}
+        {(currentStep) => (
+          <TurneFormSteps
+            currentStep={currentStep}
+            formData={formData}
+            errors={errors}
+            submitLoading={submitLoading}
+            bandaSearchText={bandaSearchText}
+            showBandaDropdown={showBandaDropdown}
+            filteredBandas={filteredBandasForm}
+            selectedStartDate={selectedStartDate}
+            selectedEndDate={selectedEndDate}
+            setBandaSearchText={setBandaSearchText}
+            setShowBandaDropdown={setShowBandaDropdown}
+            handleBandaSelectInModal={handleBandaSelectInModal}
+            handleDateSelect={handleDateSelect}
+            formatDate={formatDate}
+            getSelectedBandaName={getSelectedBandaName}
+            handleInputChange={handleInputChange}
+            handleChange={handleChange}
+            isEditMode={isEditMode}
+            imagemAtual={imagemAtual}
+          />
+        )}
       </Modal>
     </Layout>
   );

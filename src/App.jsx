@@ -9,7 +9,7 @@ import { Cadastro } from "./pages/Cadastro";
 import { HomeRedirect } from "./components/HomeRedirect";
 import { ProtectedLayout } from "./components/ProtectedLayout";
 import { Turne } from "./pages/Turne";
-import { ArtistaApp } from "./pages/ArtistaApp";
+import { Artista } from "./pages/Artista";
 import { AdicionandoUsuarios } from "./pages/AdicionandoUsuario";
 import { VisaoEvento } from "./pages/VisaoEvento";
 import { Calendario } from "./pages/Calendario";
@@ -41,26 +41,19 @@ function App() {
         <Route path="/cadastro" element={<Cadastro />} />
 
         {/* Rotas protegidas */}
-        <Route element={<ProtectedLayout />}>
-          <Route path="/calendario" element={<Calendario />} />
-          <Route path="/turne/:bandaId?" element={<Turne />} />
-          <Route
-            path="/adicionando-usuario"
-            element={<AdicionandoUsuarios />}
-          />
-          <Route path="/artista" element={<ArtistaApp />} />
-          <Route
-            path="/visao-evento/:tipoEvento/:id"
-            element={<VisaoEvento />}
-          />
-          <Route
-            path="/criar-evento/:tipoEvento/:eventoId?"
-            element={<CriarEvento />}
-          />
-          <Route path="/criar-logistica" element={<CriarLogistica />} />
-          <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
-          <Route path="/relatorio/:id" element={<RelatorioPage />} />
-        </Route>
+        <Route path="/calendario" element={<Calendario />} />
+        <Route path="/turne/:bandaId?" element={<Turne />} />
+        <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
+        <Route path="/artista" element={<Artista />} />
+        <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
+        <Route
+          path="/criar-evento/:tipoEvento/:eventoId?"
+          element={<CriarEvento />}
+        />
+        <Route path="/criar-logistica" element={<CriarLogistica />} />
+        <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
+        <Route path="/relatorio/:id" element={<RelatorioPage />} />
+        <Route element={<ProtectedLayout />}></Route>
         {/* Rota não encontrada - redireciona para login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

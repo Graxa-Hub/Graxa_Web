@@ -9,16 +9,21 @@ export function ModalHeader({
   onClose,
 }) {
   return (
-    <div className="modal-header">
-      <div className="flex flex-col gap-3 flex-1">
-        <h2 className="text-base font-semibold text-[var(--text-primary)]">{title}</h2>
+    <div className="modal-header flex items-center justify-between">
+      <div className="flex-1 flex flex-col items-center gap-3">
+        <h2 className="text-base font-semibold text-[var(--text-primary)]">
+          {title}
+        </h2>
+
         {showNavigation && totalSteps > 1 && (
           <div className="flex items-center gap-2">
             {[...Array(totalSteps)].map((_, index) => (
               <div
                 key={index}
                 className={`w-2.5 h-2.5 rounded-full transition-colors ${
-                  index + 1 === currentStep ? "bg-[var(--accent)]" : "bg-[var(--border)]"
+                  index + 1 === currentStep
+                    ? "bg-[var(--accent)]"
+                    : "bg-[var(--border)]"
                 }`}
               />
             ))}
@@ -28,7 +33,7 @@ export function ModalHeader({
 
       <button
         onClick={onClose}
-        className="h-8 w-8 flex items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-muted)] hover:bg-[var(--surface-hover)]"
+        className="h-8 w-8 flex items-center justify-center rounded-[var(--radius-sm)] text-[var(--text-muted)] hover:bg-[var(--surface-hover)] flex-shrink-0"
       >
         <X className="w-4 h-4" />
       </button>

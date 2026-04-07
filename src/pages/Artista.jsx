@@ -1,14 +1,14 @@
-import { useEffect } from "react";
 import { Layout } from "../components/templates/Layout";
-import { useArtistaApp } from "../hooks/useArtistaApp";
+import { useArtista } from "../hooks/useArtista";
 import { LoadingState } from "../components/molecules/LoadingState";
 import { ArtistaHeader } from "../features/Banda/components/molecules/ArtistaHeader";
 import { BandasGrid } from "../features/Banda/components/organisms/BandasGrid";
 import { ModaisContainer } from "../features/Banda/components/organisms/ModaisContainer";
+import { useNavigate } from "react-router-dom";
 
-export function ArtistaApp() {
+export function Artista() {
+  const navigate = useNavigate();
   const {
-    // Estados
     bandas,
     loading,
     isModalOpen,
@@ -16,14 +16,9 @@ export function ArtistaApp() {
     bandaParaEditar,
     confirmModal,
     bandaVisualizar,
-
-    // Funções
-    listarBandas,
     criarBanda,
     atualizarBanda,
     adicionarIntegrantes,
-
-    // Handlers
     openModal,
     closeModal,
     onBandaCreated,
@@ -33,24 +28,27 @@ export function ArtistaApp() {
     toggleDropdown,
     setBandaVisualizar,
     setConfirmModal,
-  } = useArtistaApp();
-
-  useEffect(() => {
-    listarBandas();
-  }, [listarBandas]);
+  } = useArtista();
 
   if (loading && bandas.length === 0) {
-    return <LoadingState />;
+    return (
+      <Layout>
+        <div className="flex-1 flex items-center justify-center">
+          <LoadingState message="Carregando artistas..." />
+        </div>
+      </Layout>
+    );
   }
 
   return (
     <Layout>
       <ArtistaHeader onAddBanda={openModal} />
+
       <BandasGrid
         bandas={bandas}
         onEdit={handleEdit}
         onDelete={handleDeleteClick}
-        onVisualizar={setBandaVisualizar}
+        onVisualizar={(banda) => navigate(`/turne/${banda.id}`)}
         onAddBanda={openModal}
         openDropdown={openDropdown}
         onToggleDropdown={toggleDropdown}

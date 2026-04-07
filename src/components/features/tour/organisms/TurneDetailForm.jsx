@@ -31,8 +31,8 @@ export function TurneDetailForm({
             <div>
                 <InputFile
                     label="Foto da Turnê"
-                    onFileSelect={(file) => handleChange("imagem", file)}
-                    currentImage={imagemAtual}
+                    value={imagemAtual}
+                    onChange={(e) => handleChange("imagem", e.target.files?.[0] || null)}
                 />
                 {errors.imagem && (
                     <p className="text-red-500 text-sm mt-1">{errors.imagem}</p>

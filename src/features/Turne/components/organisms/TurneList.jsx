@@ -1,86 +1,96 @@
-import { useState } from 'react'
-import { List } from "../../../../components/molecules/List"
-import { EmptyState } from "../../../../components/molecules/EmptyState"
-import { ConfirmModal } from "../../../../components/molecules/ConfirmModal"
+import { useState } from "react";
+import { List } from "../../../../components/molecules/List";
+import { EmptyState } from "../../../../components/molecules/EmptyState";
+import { ConfirmModal } from "../../../../components/molecules/ConfirmModal";
 import { useNavigate } from "react-router-dom";
 import { VisualizarTurneModal } from "./VisualizarTurneModal";
-import { BandShowOptions } from '../molecules/BandShowOptions';
+import { BandShowOptions } from "../molecules/BandShowOptions";
 
-export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTurne }) {
-  const [openDropdown, setOpenDropdown] = useState(null)
-  const [selectedTurne, setSelectedTurne] = useState(null)
+export function TurneList({
+  turnes = [],
+  onEditTurne,
+  onDeleteTurne,
+  onCreateTurne,
+}) {
+  const [openDropdown, setOpenDropdown] = useState(null);
+  const [selectedTurne, setSelectedTurne] = useState(null);
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
-    turne: null
-  })
+    turne: null,
+  });
   const [turneVisualizar, setTurneVisualizar] = useState(null);
   const navigate = useNavigate();
 
   const toggleDropdown = (turneId) => {
-    setOpenDropdown(openDropdown === turneId ? null : turneId)
-    setSelectedTurne(turneId)
-  }
+    setOpenDropdown(openDropdown === turneId ? null : turneId);
+    setSelectedTurne(turneId);
+  };
 
   const handleTurneClick = (turne) => {
     navigate(`/calendario?bandaId=${turne.bandaId}&turneId=${turne.id}`);
-  }
+  };
 
   const handleEdit = (turne) => {
-    setOpenDropdown(null)
+    setOpenDropdown(null);
     if (onEditTurne) {
-      onEditTurne(turne)
+      onEditTurne(turne);
     }
-  }
+  };
 
   const handleDeleteClick = (turne) => {
-    setOpenDropdown(null)
-    setConfirmModal({ isOpen: true, turne: turne })
-  }
+    setOpenDropdown(null);
+    setConfirmModal({ isOpen: true, turne: turne });
+  };
 
   const handleConfirmDelete = () => {
     if (confirmModal.turne && onDeleteTurne) {
-      onDeleteTurne(confirmModal.turne)
+      onDeleteTurne(confirmModal.turne);
     }
-    setConfirmModal({ isOpen: false, turne: null })
-  }
+    setConfirmModal({ isOpen: false, turne: null });
+  };
 
   const handleVisualizarTurne = (turne) => {
     setOpenDropdown(null);
     setTurneVisualizar(turne);
-  }
+  };
 
   if (turnes.length === 0) {
-    return <EmptyState onAdd={onCreateTurne} />
+    return <EmptyState onAdd={onCreateTurne} />;
   }
 
   return (
     <>
       <div className="space-y-4 w-full mx-auto py-8">
         {turnes.map((turne) => {
-          const isSelected = selectedTurne === turne.id
+          const isSelected = selectedTurne === turne.id;
 
           return (
-            <List
-              key={turne.id}
-              title={turne.name}
-              description={turne.description}
-              image={turne.image}
-              isSelected={isSelected}
-              onClick={() => handleTurneClick(turne)}
-              onToggleMenu={() => toggleDropdown(turne.id)}
-              isMenuOpen={openDropdown === turne.id}
-              menuItems={
-                <BandShowOptions
-                  isOpen={openDropdown === turne.id}
-                  entity={turne}
-                  onView={handleVisualizarTurne}
-                  onEdit={handleEdit}
-                  onDelete={handleDeleteClick}
-                  label="Turnê"
-                />
-              }
-            />
-          )
+            <div key={turne.id} className="relative">
+              <List
+                title={turne.name}
+                description={turne.description}
+                image={turne.image}
+                isSelected={isSelected}
+                onClick={() => handleTurneClick(turne)}
+                onOptions={() => toggleDropdown(turne.id)}
+              />
+
+              {openDropdown === turne.id && (
+                <div
+                  className="absolute top-14 right-2 z-20"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <BandShowOptions
+                    entity={turne}
+                    onView={handleVisualizarTurne}
+                    onEdit={handleEdit}
+                    onDelete={handleDeleteClick}
+                    label="Turne"
+                  />
+                </div>
+              )}
+            </div>
+          );
         })}
       </div>
 
@@ -102,5 +112,5 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
         />
       )}
     </>
-  )
+  );
 }
