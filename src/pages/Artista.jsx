@@ -4,8 +4,10 @@ import { LoadingState } from "../components/molecules/LoadingState";
 import { ArtistaHeader } from "../features/Banda/components/molecules/ArtistaHeader";
 import { BandasGrid } from "../features/Banda/components/organisms/BandasGrid";
 import { ModaisContainer } from "../features/Banda/components/organisms/ModaisContainer";
+import { useNavigate } from "react-router-dom";
 
 export function Artista() {
+  const navigate = useNavigate();
   const {
     bandas,
     loading,
@@ -46,7 +48,7 @@ export function Artista() {
         bandas={bandas}
         onEdit={handleEdit}
         onDelete={handleDeleteClick}
-        onVisualizar={setBandaVisualizar}
+        onVisualizar={(banda) => navigate(`/turne/${banda.id}`)}
         onAddBanda={openModal}
         openDropdown={openDropdown}
         onToggleDropdown={toggleDropdown}
