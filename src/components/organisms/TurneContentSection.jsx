@@ -1,7 +1,7 @@
 import { TurneHeader } from "../molecules/TurneHeader";
 import { TurneError } from "../atoms/TurneError";
 import { TurneList } from "./TurneList";
-import { Pagination } from "../../../../components/molecules/Pagination";
+import { Pagination } from "../molecules/Pagination";
 
 export function TurneContentSection({
   bandas,

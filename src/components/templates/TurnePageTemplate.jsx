@@ -1,5 +1,5 @@
-import { Layout } from "../../../../components/templates/Layout";
-import { LoadingState } from "../../../../components/molecules/LoadingState";
+import { Layout } from "./Layout";
+import { LoadingState } from "../molecules/LoadingState";
 import { TurneTopBar } from "../organisms/TurneTopBar";
 import { TurneContentSection } from "../organisms/TurneContentSection";
 import { TurneModalContainer } from "../organisms/TurneModalContainer";

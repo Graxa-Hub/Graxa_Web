@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { List } from "../../../../components/molecules/List";
-import { EmptyState } from "../../../../components/molecules/EmptyState";
-import { ConfirmModal } from "../../../../components/molecules/ConfirmModal";
 import { useNavigate } from "react-router-dom";
-import { VisualizarTurneModal } from "./VisualizarTurneModal";
+import { List } from "../molecules/List";
+import { EmptyState } from "../molecules/EmptyState";
+import { ConfirmModal } from "../molecules/ConfirmModal";
 import { BandShowOptions } from "../molecules/BandShowOptions";
+import { VisualizarTurneModal } from "../VisualizarTurneModal";
 
 export function TurneList({
   turnes = [],
@@ -39,7 +39,7 @@ export function TurneList({
 
   const handleDeleteClick = (turne) => {
     setOpenDropdown(null);
-    setConfirmModal({ isOpen: true, turne: turne });
+    setConfirmModal({ isOpen: true, turne });
   };
 
   const handleConfirmDelete = () => {
@@ -98,8 +98,8 @@ export function TurneList({
         isOpen={confirmModal.isOpen}
         onClose={() => setConfirmModal({ isOpen: false, turne: null })}
         onConfirm={handleConfirmDelete}
-        title="Excluir turnê"
-        message={`Tem certeza que deseja excluir a turnê "${confirmModal.turne?.name}"?`}
+        title="Excluir turne"
+        message={`Tem certeza que deseja excluir a turne "${confirmModal.turne?.name}"?`}
         confirmText="Excluir"
         cancelText="Cancelar"
         type="danger"

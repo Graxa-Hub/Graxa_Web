@@ -1,13 +1,7 @@
-import { ActionMenu } from "../../../../components/molecules/ActionMenu";
+import { ActionMenu } from "./ActionMenu";
 import { Eye, Edit, Trash2 } from "lucide-react";
 
-export const BandShowOptions = ({
-  entity,
-  onView,
-  onEdit,
-  onDelete,
-  label,
-}) => {
+export function BandShowOptions({ entity, onView, onEdit, onDelete, label }) {
   const dropdownItems = [
     {
       icon: Eye,
@@ -36,4 +30,4 @@ export const BandShowOptions = ({
   ];
 
   return <ActionMenu actions={dropdownItems} />;
-};
+}

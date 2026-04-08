@@ -1,5 +1,5 @@
-import { Header } from "../../../../components/organisms/Header";
-import { Notificacao } from "../../../../components/Notificacao/Notificacao";
+import { Header } from "./Header";
+import { Notificacao } from "../Notificacao/Notificacao";
 
 export function TurneTopBar({ bandas, selectedBand, onBandSelect }) {
   return (

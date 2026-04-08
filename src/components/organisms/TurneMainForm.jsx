@@ -1,7 +1,6 @@
-import React from "react";
-import { Input } from "../../../../components/ModalEventos/Input";
-import { BandaInput } from "../../../../components/ModalEventos/BandaInput";
-import { Calendar } from "../../../../components/Calendar";
+import { Input } from "../ModalEventos/Input";
+import { BandaInput } from "../ModalEventos/BandaInput";
+import { Calendar } from "../Calendar";
 
 export function TurneMainForm({
   formData,
@@ -22,10 +21,9 @@ export function TurneMainForm({
 }) {
   return (
     <div className="flex gap-6">
-      {/* Form fields */}
       <div className="flex-1 min-w-0 max-w-[500px] space-y-5">
         <Input
-          label="Nome da turnê:"
+          label="Nome da turne:"
           placeholder="Chuva dos olhos"
           value={formData.nome}
           onChange={(e) => handleInputChange("nome", e.target.value)}
@@ -60,7 +58,7 @@ export function TurneMainForm({
         <div className="space-y-5">
           <div>
             <Input
-              label="Início da turnê:"
+              label="Inicio da turne:"
               placeholder="13/03/2021"
               value={formatDate(selectedStartDate)}
               readOnly
@@ -75,7 +73,7 @@ export function TurneMainForm({
 
           <div>
             <Input
-              label="Fim da turnê:"
+              label="Fim da turne:"
               placeholder="15/03/2021"
               value={formatDate(selectedEndDate)}
               readOnly
@@ -88,7 +86,6 @@ export function TurneMainForm({
         </div>
       </div>
 
-      {/* Calendar */}
       <div className="flex-shrink-0 flex items-start pt-1 w-[320px]">
         <Calendar
           selectedStartDate={selectedStartDate}
