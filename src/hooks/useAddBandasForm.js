@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRepresentantes } from "./useRepresentantes";
 import { useArtistas } from "./useArtistas";
+import { useToast } from "./useToast";
 import { bandaService } from "../services/bandaService";
 
 export function useAddBandaForm({
@@ -37,7 +38,8 @@ export function useAddBandaForm({
 
   const { representantes, listarRepresentantes, criarRepresentante } =
     useRepresentantes();
-  const { criarArtista, atualizarArtista, excluirArtista } = useArtistas();
+  const { criarArtista, atualizarArtista, excluirArtista, listarArtistas } = useArtistas();
+  const { showSuccess, showError } = useToast();
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -104,7 +106,7 @@ export function useAddBandaForm({
       setErrors({});
       if (!draft.nome) {
         setErrors({ nome: "Nome da banda é obrigatório" });
-        return;
+        return false; // ✅ Indica falha
       }
 
       // Validar se banda já existe (prevenção de erro 500)
@@ -115,7 +117,7 @@ export function useAddBandaForm({
         );
         if (bandaJaExiste) {
           setErrors({ geral: `A banda "${draft.nome}" já existe no sistema.` });
-          return;
+          return false; // ✅ Indica falha
         }
       } catch (err) {
         console.warn(
@@ -146,21 +148,22 @@ export function useAddBandaForm({
             await adicionarIntegrantes(bandaParaEditar.id, [artistaCriado.id]);
           }
         }
+        showSuccess(`"${draft.nome}" foi atualizada com sucesso!`, 'Banda atualizada');
         onSuccess();
-        return;
+        return true; // ✅ Indica sucesso
       }
       let representanteId = draft.representanteId;
       if (showNovoRepresentante) {
         if (!novoRepresentante.nome || !novoRepresentante.email) {
           setErrors({ representante: "Preencha todos os campos obrigatórios" });
-          return;
+          return false; // ✅ Indica falha
         }
         const representanteCriado = await criarRepresentante(novoRepresentante);
         representanteId = representanteCriado.id;
       }
       if (!representanteId) {
         setErrors({ representanteId: "Selecione um representante" });
-        return;
+        return false; // ✅ Indica falha
       }
       const integrantesValidos = draft.integrantes.filter(
         (int) => int.nome?.trim() && int.cpf?.trim(),
@@ -170,7 +173,7 @@ export function useAddBandaForm({
           integrantes:
             "Adicione pelo menos um integrante com nome e CPF preenchidos",
         });
-        return;
+        return false; // ✅ Indica falha
       }
       const cpfs = integrantesValidos.map((int) => int.cpf.replace(/\D/g, ""));
       const cpfsDuplicados = cpfs.filter(
@@ -180,8 +183,35 @@ export function useAddBandaForm({
         setErrors({
           integrantes: `CPF duplicado na lista: ${cpfsDuplicados.join(", ")}`,
         });
-        return;
+        return false; // ✅ Indica falha
       }
+
+      // ✅ Validar se CPFs já existem no banco de dados
+      try {
+        const artistasExistentes = await listarArtistas();
+        const cpfsExistentes = artistasExistentes.map((a) =>
+          (a.cpf || "").replace(/\D/g, ""),
+        );
+
+        const cpfComDuplicataNoBanco = integrantesValidos.find((integrante) => {
+          const cpfLimpo = integrante.cpf.replace(/\D/g, "");
+          return cpfsExistentes.includes(cpfLimpo);
+        });
+
+        if (cpfComDuplicataNoBanco) {
+          setErrors({
+            integrantes: `❌ CPF ${cpfComDuplicataNoBanco.cpf} já existe no banco de dados. Integrante: "${cpfComDuplicataNoBanco.nome}"`,
+          });
+          return false; // ✅ Indica falha
+        }
+      } catch (err) {
+        console.warn(
+          "[useAddBandaForm] Aviso ao validar CPFs no banco:",
+          err.message,
+        );
+        // Não bloqueia o fluxo se falhar a validação
+      }
+
       const bandaCriada = await criarBanda(
         {
           nome: draft.nome,
@@ -224,7 +254,9 @@ export function useAddBandaForm({
       if (integrantesIds.length > 0) {
         await adicionarIntegrantes(bandaCriada.id, integrantesIds);
       }
+      showSuccess(`"${draft.nome}" foi criada com sucesso!`, 'Banda criada');
       onSuccess();
+      return true; // ✅ Indica sucesso
     } catch (error) {
       let errorMessage = "Erro ao processar banda";
       const serverMessage =
@@ -257,6 +289,8 @@ export function useAddBandaForm({
         errorMessage = error.message;
       }
       setErrors({ geral: errorMessage });
+      showError(errorMessage, 'Erro ao processar banda');
+      return false; // ✅ Indica falha
     } finally {
       setLoading(false);
     }

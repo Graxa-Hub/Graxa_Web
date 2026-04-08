@@ -15,6 +15,7 @@ export function Modal({
   showFooter = true,
   size = "md",
   onFinish,
+  loading = false,
 }) {
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -28,9 +29,20 @@ export function Modal({
     if (e.target === e.currentTarget) onClose();
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < totalSteps) setCurrentStep(currentStep + 1);
-    else if (onFinish) onFinish();
+    else if (onFinish) {
+      try {
+        const success = await onFinish();
+        // ✅ Só fecha se onFinish retornar true (sucesso)
+        if (success !== false) {
+          setCurrentStep(1);
+          onClose();
+        }
+      } catch (error) {
+        console.error("Erro ao finalizar modal:", error);
+      }
+    }
     else onClose();
   };
 
@@ -63,6 +75,7 @@ export function Modal({
           beforeButtonText={beforeButtonText}
           onNext={handleNext}
           onPrevious={handlePrevious}
+          loading={loading}
         />
       </div>
     </div>

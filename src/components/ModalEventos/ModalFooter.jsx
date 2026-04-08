@@ -9,18 +9,27 @@ export function ModalFooter({
   beforeButtonText = "Voltar",
   onNext,
   onPrevious,
+  loading = false,
 }) {
   if (!showNavigation || !showFooter) return null;
 
   return (
     <div className="modal-footer">
       {currentStep > 1 && (
-        <button onClick={onPrevious} className="modal-btn-secondary">
+        <button 
+          onClick={onPrevious} 
+          className="modal-btn-secondary"
+          disabled={loading}
+        >
           {beforeButtonText}
         </button>
       )}
-      <button onClick={onNext} className="modal-btn-primary">
-        {currentStep === totalSteps ? "Finalizar" : nextButtonText}
+      <button 
+        onClick={onNext} 
+        className="modal-btn-primary"
+        disabled={loading}
+      >
+        {loading ? "Processando..." : (currentStep === totalSteps ? "Finalizar" : nextButtonText)}
       </button>
     </div>
   );
