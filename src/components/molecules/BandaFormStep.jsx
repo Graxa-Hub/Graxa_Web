@@ -1,7 +1,7 @@
-import { Input } from "../../../../components/ModalEventos/Input";
-import { InputFile } from "../../../../components/InputFile";
-import { ComboBox } from "../../../../components/ComboBox";
-import { GENEROS } from "../../../../constants/generos";
+import { Input } from "../ModalEventos/Input";
+import { InputFile } from "../InputFile";
+import { ComboBox } from "../ComboBox";
+import { GENEROS } from "../../constants/generos";
 
 export function BandaFormStep({
   draft,
