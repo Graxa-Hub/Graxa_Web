@@ -12,6 +12,8 @@ export const Header = ({
     turneSelecionada,
     onBandaChange,
     onTurneChange,
+    showBandaSelector = true,
+    showTurneSelector = true,
 }) => {
     const {
         isOpen,
@@ -39,18 +41,22 @@ export const Header = ({
     return (
         <header className="w-full mb-2">
             <div className="relative flex justify-between items-center h-16 w-full max-w-[320px] px-4 surface-card border-[var(--border-hover)] hover:border-[var(--border-strong)] transition-all duration-150">
+                {showBandaSelector && (
                 <BandaTurneSelector
                     open={isOpen}
                     active={activeOption}
                     bandas={bandas}
-                    turnes={turnesDaBanda}
+                    turnes={turnes}
                     bandaSelecionada={bandaSelecionada}
                     turneSelecionada={turneSelecionada}
                     onOpenArtist={handleOpenArtist}
                     onOpenTour={handleOpenTour}
                     onBandaSelect={handleBandaSelect}
                     onTurneSelect={handleTurneSelect}
+                    showBandaSelector={showBandaSelector}
+                    showTurneSelector={showTurneSelector}
                 />
+                )}
                 <HeaderDrilldownTrigger
                     bandaSelecionada={bandaSelecionada}
                     turneSelecionada={turneSelecionada}

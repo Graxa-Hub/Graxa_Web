@@ -6,17 +6,21 @@ export const HeaderDrilldownTrigger = ({
   isOpen,
   onToggle,
 }) => {
+  // Determinar qual imagem exibir e qual emoji usar
+  const temImagemTurne = turneSelecionada && turneSelecionada.imagemUrl;
+  const temImagemBanda = bandaSelecionada && bandaSelecionada.imagemUrl;
+  
   return (
     <>
       <div className="flex gap-3 items-center">
         <div className="h-11 w-11 rounded-full overflow-hidden bg-[var(--surface-hover)] border border-[var(--border)] flex items-center justify-center">
-          {turneSelecionada?.imagemUrl ? (
+          {temImagemTurne ? (
             <img
               src={turneSelecionada.imagemUrl}
               alt={turneSelecionada.nomeTurne || turneSelecionada.nome}
               className="object-cover w-full h-full"
             />
-          ) : bandaSelecionada?.imagemUrl ? (
+          ) : temImagemBanda ? (
             <img
               src={bandaSelecionada.imagemUrl}
               alt={bandaSelecionada.nome}
@@ -24,7 +28,7 @@ export const HeaderDrilldownTrigger = ({
             />
           ) : (
             <span className="text-xs text-[var(--text-muted)]">
-              {turneSelecionada ? "🎤" : "🎸"}
+              {temImagemTurne ? "🎤" : "🎸"}
             </span>
           )}
         </div>
@@ -34,7 +38,7 @@ export const HeaderDrilldownTrigger = ({
             {bandaSelecionada?.nome || "Selecione"}
           </h2>
           <p className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
-            TURNE: {turneSelecionada?.nomeTurne || turneSelecionada?.nome || "Todas"}
+            TURNE: {turneSelecionada?.name || turneSelecionada?.nomeTurne || turneSelecionada?.nome || "Todas"}
           </p>
         </div>
       </div>

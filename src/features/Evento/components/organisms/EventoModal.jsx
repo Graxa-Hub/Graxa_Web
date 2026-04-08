@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Input } from "../../../../components/ModalEventos/Input";
 import { InputDate } from "../../../../components/InputDate";
 import { EnderecoForm } from "../../../../components/EnderecoForm";
+import { BandaTurneSelectorForm } from "../../../../components/ModalEventos/BandaTurneSelectorForm";
 import { useBandas } from "../../../../hooks/useBandas";
 import { useLocais } from "../../../../hooks/useLocais";
 import { useTurnes } from "../../../../hooks/useTurnes";
@@ -810,40 +811,6 @@ export function EventoModal({
   );
 }
 
-// ========== COMPONENTE COMBOBOX DE BANDAS ==========
-function BandaCombobox({
-  bandas = [],
-  selectedId = "",
-  onChange,
-  error,
-  clearError,
-}) {
-  return (
-    <div className="mb-4">
-      <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
-        Banda do Show <span className="text-[var(--accent)]">*</span>
-      </label>
-      <select
-        value={selectedId || ""}
-        onChange={(e) => {
-          onChange(e.target.value);
-          if (clearError) clearError("bandaId");
-        }}
-        className={`w-full px-3 py-2 border rounded-[var(--radius-md)]   ${error ? "border-[var(--accent)]" : "border-[var(--border)]"
-          }`}
-      >
-        <option value="">Selecione uma banda</option>
-        {bandas.map((banda) => (
-          <option key={banda.id} value={String(banda.id)}>
-            {banda.nome}
-          </option>
-        ))}
-      </select>
-      {error && <p className="text-[var(--accent)] text-xs mt-1">{error}</p>}
-    </div>
-  );
-}
-
 // ========== COMPONENTE COMBOBOX DE LOCAIS ==========
 function LocalCombobox({
   locais = [],
@@ -1036,11 +1003,6 @@ function ShowContent({
     if (clearFieldError) clearFieldError(field);
   };
 
-  // ✅ Filtra turnês pelas bandas selecionadas
-  const turnesFiltradas = turnes.filter(
-    (turne) => String(turne.banda?.id || turne.bandaId) === String(data.bandaId)
-  );
-
   if (currentStep === 1) {
     return (
       <div className="space-y-4">
@@ -1053,52 +1015,30 @@ function ShowContent({
           }}
           placeholder="Ex: Festival de Rock 2025"
           required
-          error={fieldErrors.titulo} // <-- borda vermelha se erro
+          error={fieldErrors.titulo}
         />
         {fieldErrors.titulo && (
           <p className="text-[var(--accent)] text-xs">{errorMessages.titulo}</p>
         )}
 
-        <BandaCombobox
+        <BandaTurneSelectorForm
           bandas={bandas}
-          selectedId={data.bandaId}
-          onChange={(id) => {
+          turnes={turnes}
+          selectedBandaId={data.bandaId}
+          selectedTurneId={data.turneId}
+          onBandaChange={(id) => {
             setData({ ...data, bandaId: id, turneId: "" });
+            if (clearFieldError) clearFieldError("bandaId");
           }}
-          error={fieldErrors.bandaId} // <-- borda vermelha se erro
-          clearError={clearFieldError}
+          onTurneChange={(id) => {
+            setData({ ...data, turneId: id });
+            if (clearFieldError) clearFieldError("turneId");
+          }}
+          bandaError={fieldErrors.bandaId}
+          turneError={fieldErrors.turneId}
+          clearBandaError={() => clearFieldError("bandaId")}
+          clearTurneError={() => clearFieldError("turneId")}
         />
-        {fieldErrors.bandaId && (
-          <p className="text-[var(--accent)] text-xs">{fieldErrors.bandaId}</p>
-        )}
-
-        {/* Seleção de turnê */}
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
-            Turnê (Opcional)
-          </label>
-          <select
-            value={data.turneId || ""}
-            onChange={(e) => setData({ ...data, turneId: e.target.value })}
-            className="form-input"
-          >
-            <option value="">Selecione uma turnê</option>
-            {turnesFiltradas.length > 0 ? (
-              turnesFiltradas.map((turne) => (
-                <option key={turne.id} value={String(turne.id)}>
-                  {turne.nomeTurne || turne.nome}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>
-                Nenhuma turnê cadastrada para a banda selecionada
-              </option>
-            )}
-          </select>
-          <p className="text-xs text-[var(--text-muted)] mt-1">
-            Para cadastrar uma nova turnê, acesse a página de Turnês
-          </p>
-        </div>
 
         {!showNovoLocal ? (
           <LocalCombobox

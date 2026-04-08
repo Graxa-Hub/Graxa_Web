@@ -5,6 +5,7 @@ import { ArtistaHeader } from "../features/Banda/components/molecules/ArtistaHea
 import { BandasGrid } from "../features/Banda/components/organisms/BandasGrid";
 import { ModaisContainer } from "../features/Banda/components/organisms/ModaisContainer";
 import { Pagination } from "../components/molecules/Pagination";
+import { Header } from "../components/organisms/Header";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -86,7 +87,7 @@ export function Artista() {
 
   if (loading && bandas.length === 0) {
     return (
-      <Layout>
+      <Layout showHeader={false}>
         <div className="flex-1 flex items-center justify-center">
           <LoadingState message="Carregando artistas..." />
         </div>
@@ -95,7 +96,7 @@ export function Artista() {
   }
 
   return (
-    <Layout>
+    <Layout showHeader={false}>
       {/* Header + Paginação no topo */}
       <div className="flex items-end justify-between gap-4 mb-6">
         <ArtistaHeader onAddBanda={openModal} />

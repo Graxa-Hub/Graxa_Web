@@ -83,6 +83,30 @@ export const bandaService = {
     }
   },
 
+  // Buscar bandas por nome/query
+  async buscarBandas(query) {
+    try {
+      const response = await api.get("/bandas/buscar", {
+        params: { nome: query },
+      });
+      
+      if (Array.isArray(response.data)) {
+        return response.data;
+      } else if (response.data?.content) {
+        return response.data.content;
+      } else {
+        return [];
+      }
+    } catch (error) {
+      console.error("[bandaService] Erro ao buscar bandas:", {
+        status: error.response?.status,
+        message: error.response?.data?.mensagem || error.message,
+      });
+      // Se erro, retorna array vazio ao invés de quebrar
+      return [];
+    }
+  },
+
   // Buscar banda por ID
   async buscarBandaPorId(id) {
     const response = await api.get(`/bandas/${id}`);

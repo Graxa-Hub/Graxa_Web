@@ -40,7 +40,7 @@ export const VisaoEvento = () => {
             : await buscarShow(id);
         setEvento(dados);
       } catch (err) {
-        console.error("❌ Erro ao buscar evento:", err);
+        console.error("Erro ao buscar evento:", err);
       }
     }
 
@@ -51,13 +51,7 @@ export const VisaoEvento = () => {
 
   useEffect(() => {
     if (id && tipoEvento === "show") {
-      console.log('[VisaoEvento] 🔍 Buscando agenda para showId:', id, '(tipo:', typeof id, ')');
-      listarPorShow(id).then((data) => {
-        console.log('[VisaoEvento] 📋 Agenda recebida:', data);
-        console.log('[VisaoEvento] 📋 Total de itens:', Array.isArray(data) ? data.length : 'não é array');
-      }).catch((err) => {
-        console.error('[VisaoEvento] ❌ Erro ao buscar agenda:', err);
-      });
+      listarPorShow(id);
     }
   }, [id, tipoEvento, listarPorShow]);
 
@@ -121,13 +115,13 @@ export const VisaoEvento = () => {
   }, [agendas]);
 
   const handleSelecionarAgenda = useCallback(
-    (agendaId) => {
+    (agenda) => {
       setAgendaSelecionada((prev) => {
-        if (prev?.id === agendaId) return null;
-        return agendasProcessadas.find((a) => a.id === agendaId);
+        if (prev?.id === agenda?.id) return null;
+        return agenda || null;
       });
     },
-    [agendasProcessadas],
+    []
   );
 
   const handleGerarPdf = () => {
@@ -144,7 +138,7 @@ export const VisaoEvento = () => {
     if (agendasProcessadas.length > 0 && !agendaSelecionada) {
       setAgendaSelecionada(agendasProcessadas[0]);
     }
-  }, [agendasProcessadas, agendaSelecionada]);
+  }, [agendasProcessadas.length, agendaSelecionada]);
 
   const dadosEvento = useMemo(() => {
     if (!evento) return null;
@@ -177,11 +171,11 @@ export const VisaoEvento = () => {
   }, []);
 
   if (loading) return <div className="p-6">Carregando evento...</div>;
-  if (erro) return <div className="p-6 text-[var(--accent)] p-6">{erro}</div>;
+  if (erro) return <div className="p-6 text-[var(--accent)]">{erro}</div>;
   if (!dadosEvento) return <div className="p-6">Evento não encontrado.</div>;
 
   return (
-    <Layout className="bg-emerald-50" containerClassName="overflow-hidden">
+    <Layout className="bg-emerald-50" containerClassName="overflow-hidden" showHeader={false}>
 
       {/* Componetizar esse bagui aqui -> pode ser VisionEvent  */}
       <div className="flex flex-row justify-between mb-4">
@@ -225,9 +219,9 @@ export const VisaoEvento = () => {
       <div className="grid grid-cols-3 gap-3 flex-1 min-h-0 overflow-hidden">
         <div className="col-span-2 h-full">
           <AgendaList
-            agendas={agendasProcessadas}
-            agendaSelecionada={agendaSelecionada}
-            onSelecionarAgenda={handleSelecionarAgenda}
+            itens={agendasProcessadas}
+            selectedId={agendaSelecionada?.id}
+            onSelect={handleSelecionarAgenda}
           />
         </div>
 

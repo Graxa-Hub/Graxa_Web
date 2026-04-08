@@ -1,7 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export const TaskList = ({ eventos = [] }) => {
-  const eventosOrdenados = [...eventos].sort((a, b) => new Date(a.start) - new Date(b.start));
+  const navigate = useNavigate();
+  const agora = new Date();
+
+  // Filtrar apenas eventos com data/hora posterior à atual
+  const eventosFuturos = [...eventos].filter((evento) => {
+    const dataEvento = new Date(evento.start);
+    return dataEvento > agora;
+  }).sort((a, b) => new Date(a.start) - new Date(b.start));
 
   const formatarDataHora = (dataStr) => {
     if (!dataStr) return "";
@@ -14,16 +22,23 @@ export const TaskList = ({ eventos = [] }) => {
     });
   };
 
+  const handleEventoClick = (evento) => {
+    const tipoEvento = evento.type === "show" ? "show" : "viagem";
+    // Extrair apenas o ID numérico se o id for no formato "show-5" ou "viagem-5"
+    const idNumerico = evento.id.split('-').pop();
+    navigate(`/visao-evento/${tipoEvento}/${idNumerico}`);
+  };
+
   return (
     <div className="w-full overflow-auto p-4">
-      <h1 className="text-center text-[var(--text-primary)] font-semibold mb-4">Próximos Eventos ({eventos.length})</h1>
+      <h1 className="text-center text-[var(--text-primary)] font-semibold mb-4">Próximos Eventos ({eventosFuturos.length})</h1>
 
-      {eventosOrdenados.length === 0 ? (
+      {eventosFuturos.length === 0 ? (
         <p className="text-center text-[var(--text-muted)] text-sm">Nenhum evento agendado</p>
       ) : (
         <ul className="flex flex-col gap-3">
-          {eventosOrdenados.map((evento, index) => (
-            <li key={evento.id || index} className="flex items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3">
+          {eventosFuturos.map((evento, index) => (
+            <li key={evento.id || index} onClick={() => handleEventoClick(evento)} className="flex items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 cursor-pointer hover:bg-[var(--surface-hover)] transition-colors">
               <div className={`h-3 w-3 rounded-full flex-shrink-0 mt-1 ${evento.type === "show" ? "bg-[var(--accent)]" : "bg-[var(--info)]"}`}></div>
               <div className="flex flex-col flex-1 min-w-0">
                 <h2 className="text-xs text-[var(--text-muted)]">

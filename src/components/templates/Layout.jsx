@@ -3,12 +3,26 @@ import { Sidebar } from "../organisms/Sidebar";
 import { Header } from "../organisms/Header";
 import { Container } from "../atoms/Container";
 
-export const Layout = ({ children, className = "", containerClassName = "", showHeader = true, padding = "", showNotifications = true }) => {
+export const Layout = ({ 
+    children, 
+    className = "", 
+    containerClassName = "", 
+    showHeader = true, 
+    padding = "", 
+    showNotifications = true,
+    showBandaSelector = true,
+    showTurneSelector = true,
+}) => {
     return (
         <div className="app-shell">
             <Sidebar />
             <main className={`app-main ${padding} ${className}`}>
-                {showHeader && <Header />}
+                {showHeader && (
+                    <Header 
+                        showBandaSelector={showBandaSelector}
+                        showTurneSelector={showTurneSelector}
+                    />
+                )}
 
                 <Container className={containerClassName}>
                     {children}

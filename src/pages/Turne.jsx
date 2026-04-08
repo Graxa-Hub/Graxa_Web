@@ -8,6 +8,7 @@ import { TurneError } from "../features/Turne/components/atoms/TurneError";
 import { useTurneViewModel } from "../features/Turne/hooks/useTurneViewModel";
 import { LoadingState } from "../components/molecules/LoadingState";
 import { Pagination } from "../components/molecules/Pagination";
+import { Header } from "../components/organisms/Header";
 
 export function Turne() {
   const {
@@ -19,6 +20,8 @@ export function Turne() {
     errorHeader,
     filteredTurnes,
     pagination,
+    paginacaoBanda,
+    loadingBanda,
     formData,
     errors,
     submitLoading,
@@ -47,11 +50,14 @@ export function Turne() {
     nextPage,
     prevPage,
     goToPage,
+    nextPageBanda,
+    prevPageBanda,
+    goToPageBanda,
   } = useTurneViewModel();
 
   if (isPageLoading) {
     return (
-      <Layout>
+      <Layout showHeader={false}>
         <div className="flex-1 flex items-center justify-center">
           <LoadingState message="Carregando turnes..." />
         </div>
@@ -60,7 +66,19 @@ export function Turne() {
   }
 
   return (
-    <Layout>
+    <Layout showHeader={false}>
+      {/* Header com seletor de bandas (busca + paginação) */}
+      <Header
+        bandas={bandas}
+        turnes={[]}
+        bandaSelecionada={selectedBand}
+        turneSelecionada={null}
+        onBandaChange={handleBandSelect}
+        onTurneChange={() => {}}
+        showBandaSelector={true}
+        showTurneSelector={false}
+      />
+
       {/* Header + Paginação no topo */}
       <div className="flex items-end justify-between gap-4 mb-6">
         <TurneHeader
@@ -71,11 +89,11 @@ export function Turne() {
         />
 
         <Pagination
-          pagination={pagination}
-          onNextPage={nextPage}
-          onPrevPage={prevPage}
-          onGoToPage={goToPage}
-          disabled={isPageLoading}
+          pagination={selectedBand?.id ? paginacaoBanda : pagination}
+          onNextPage={selectedBand?.id ? nextPageBanda : nextPage}
+          onPrevPage={selectedBand?.id ? prevPageBanda : prevPage}
+          onGoToPage={selectedBand?.id ? goToPageBanda : goToPage}
+          disabled={isPageLoading || loadingBanda}
         />
       </div>
 

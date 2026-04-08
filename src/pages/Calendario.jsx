@@ -6,12 +6,15 @@ import { Layout } from "../components/templates/Layout";
 import { useSearchParams } from "react-router-dom";
 import { useBandas } from "../hooks/useBandas";
 import { useTurnes } from "../hooks/useTurnes";
+import { BandaTurneSelector } from "../components/ModalEventos/BandaTurneSelector";
+import { Header } from "../components/organisms/Header";
 
 export const Calendario = () => {
   const [mainCalendarApi, setMainCalendarApi] = useState(null);
   const [eventos, setEventos] = useState([]);
   const [bandaSelecionada, setBandaSelecionada] = useState(null);
   const [turneSelecionada, setTurneSelecionada] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { bandas, listarBandas } = useBandas();
   const { turnes, listarTurnes } = useTurnes();
   const [searchParams] = useSearchParams();
@@ -54,7 +57,21 @@ export const Calendario = () => {
   }, [bandaSelecionada, turneSelecionada]);
 
   return (
-    <Layout>
+    <Layout showHeader={false}>
+      {/* Header com seletor de bandas e turnês */}
+      <div className="mb-4">
+        <Header
+          bandas={bandas}
+          turnes={turnes}
+          bandaSelecionada={bandaSelecionada}
+          turneSelecionada={turneSelecionada}
+          onBandaChange={setBandaSelecionada}
+          onTurneChange={setTurneSelecionada}
+          showBandaSelector={true}
+          showTurneSelector={true}
+        />
+      </div>
+
       <div className="flex flex-row gap-5 h-full w-full">
         <div className="flex-1 min-w-0 h-full">
           <MainCalendar

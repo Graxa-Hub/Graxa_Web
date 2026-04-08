@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { getTurnes, getTurnesPaginadas, criarTurne as criarTurneService } from '../services/turneService';
 import { imagemService } from '../services/imagemService';
-import { adaptTurnesFromBackend, adaptTurneFromBackend } from '../utils/turneAdapter';
+import { adaptTurneFromBackend } from '../utils/turneAdapter';
 
 // 🎚️ MUDAR AQUI PARA ALTERAR TAMANHO DE PÁGINA PADRÃO DE TURNÊS
 const DEFAULT_PAGE_SIZE = 1;
@@ -26,8 +26,8 @@ export function useTurnes() {
       setLoading(true);
       setError(null);
       
-      const data = await getTurnes();
-      const turnesAdaptados = await adaptTurnesFromBackend(data);
+      // getTurnes() já aplica o adapter, então não precisa adaptar novamente
+      const turnesAdaptados = await getTurnes();
       
       setTurnes(turnesAdaptados);
       return turnesAdaptados;
@@ -49,8 +49,8 @@ export function useTurnes() {
       try {
         const response = await getTurnesPaginadas(page, size);
         
-        // Usar adapter para normalizar os dados
-        const turnesAdaptados = await adaptTurnesFromBackend(response.content);
+        // getTurnesPaginadas() já retorna dados adaptados em response.content
+        const turnesAdaptados = response.content;
 
         setPagination({
           pageNumber: response.pageable?.pageNumber ?? page,
@@ -72,7 +72,7 @@ export function useTurnes() {
         setLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Navegar próxima página
