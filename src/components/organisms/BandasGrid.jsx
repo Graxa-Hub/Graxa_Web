@@ -1,6 +1,5 @@
-import React from "react";
 import { Card } from "./Card";
-import { EmptyState } from "../../../../components/molecules/EmptyState";
+import { EmptyState } from "../molecules/EmptyState";
 
 export function BandasGrid({
   bandas,

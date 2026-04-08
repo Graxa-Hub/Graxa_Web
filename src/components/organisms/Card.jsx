@@ -1,7 +1,6 @@
-import React from "react";
 import { CardImage } from "../atoms/CardImage";
 import { CardInfo } from "../atoms/CardInfo";
-import { OptionButton } from "../../../../components/atoms/OptionButton";
+import { OptionButton } from "../atoms/OptionButton";
 
 export const Card = ({
   banda,

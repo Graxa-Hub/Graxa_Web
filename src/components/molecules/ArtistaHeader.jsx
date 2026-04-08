@@ -1,4 +1,4 @@
-import { AddButton } from "../../../../components/atoms/AddButton";
+import { AddButton } from "../atoms/AddButton";
 
 export const ArtistaHeader = ({ titulo = "Bandas", subtitulo, onAddBanda }) => (
   <div className="flex items-center justify-between gap-4">
