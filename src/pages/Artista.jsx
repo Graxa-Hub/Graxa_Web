@@ -6,6 +6,7 @@ import { BandasGrid } from "../features/Banda/components/organisms/BandasGrid";
 import { ModaisContainer } from "../features/Banda/components/organisms/ModaisContainer";
 import { Pagination } from "../components/molecules/Pagination";
 import { Header } from "../components/organisms/Header";
+import { Notificacao } from "../components/Notificacao/Notificacao";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -33,6 +34,8 @@ export function Artista() {
     banda: null,
   });
   const [bandaVisualizar, setBandaVisualizar] = useState(null);
+  const [selectedBanda, setSelectedBanda] = useState(null);
+  const [selectedTurne, setSelectedTurne] = useState(null);
 
   useEffect(() => {
     listarBandasPaginadas(); // Usa DEFAULT_PAGE_SIZE do hook
@@ -87,7 +90,7 @@ export function Artista() {
 
   if (loading && bandas.length === 0) {
     return (
-      <Layout showHeader={false}>
+      <Layout showHeader={false} showNotifications={false}>
         <div className="flex-1 flex items-center justify-center">
           <LoadingState message="Carregando artistas..." />
         </div>
@@ -96,29 +99,51 @@ export function Artista() {
   }
 
   return (
-    <Layout showHeader={false}>
-      {/* Header + Paginação no topo */}
-      <div className="flex items-end justify-between gap-4 mb-6">
-        <ArtistaHeader onAddBanda={openModal} />
-        
-        <Pagination
-          pagination={pagination}
-          onNextPage={nextPage}
-          onPrevPage={prevPage}
-          onGoToPage={goToPage}
-          disabled={loading}
+    <Layout
+      showHeader={false}
+      showNotifications={false}
+      containerClassName="!bg-transparent !border-0 !shadow-none !p-0 overflow-visible"
+    >
+      <div className="flex items-center justify-between gap-4 mb-4">
+        <Header
+          bandas={bandas}
+          turnes={[]}
+          bandaSelecionada={selectedBanda}
+          turneSelecionada={selectedTurne}
+          onBandaChange={setSelectedBanda}
+          onTurneChange={setSelectedTurne}
+          showBandaSelector={true}
+          showTurneSelector={true}
         />
+
+        <Notificacao />
       </div>
 
-      <BandasGrid
-        bandas={bandas}
-        onEdit={handleEdit}
-        onDelete={handleDeleteClick}
-        onVisualizar={(banda) => navigate(`/turne/${banda.id}`)}
-        onAddBanda={openModal}
-        openDropdown={openDropdown}
-        onToggleDropdown={toggleDropdown}
-      />
+      <section className="flex-1 flex flex-col min-h-0 surface-card border border-[var(--border)] rounded-[var(--radius-xl)] p-4 md:p-6">
+        <ArtistaHeader onAddBanda={openModal} />
+
+        <div className="flex-1 min-h-0 overflow-auto mt-2">
+          <BandasGrid
+            bandas={bandas}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
+            onVisualizar={(banda) => navigate(`/turne/${banda.id}`)}
+            onAddBanda={openModal}
+            openDropdown={openDropdown}
+            onToggleDropdown={toggleDropdown}
+          />
+        </div>
+
+        <div className="mt-6 flex justify-center">
+          <Pagination
+            pagination={pagination}
+            onNextPage={nextPage}
+            onPrevPage={prevPage}
+            onGoToPage={goToPage}
+            disabled={loading}
+          />
+        </div>
+      </section>
 
       <ModaisContainer
         isModalOpen={isModalOpen}
