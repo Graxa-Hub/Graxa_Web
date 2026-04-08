@@ -1,7 +1,7 @@
 import { AddButton } from "../../../../components/atoms/AddButton";
 
 export const TurneHeader = ({ titulo = "Turnes", subtitulo, onAddTurne }) => (
-  <div className="flex items-center justify-between gap-4 mb-6">
+  <div className="flex items-center justify-between gap-4">
     <div>
       <h2 className="font-bold text-[var(--text-primary)] text-lg">{titulo}</h2>
       {subtitulo && (
