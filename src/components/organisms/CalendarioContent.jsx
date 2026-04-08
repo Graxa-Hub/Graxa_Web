@@ -1,6 +1,6 @@
-import MainCalendar from "../../../../components/Dashboard/MainCalendar";
-import SideCalendar from "../../../../components/Dashboard/SideCalendar";
-import { TaskList } from "../../../../components/Dashboard/TaskList";
+import MainCalendar from "./MainCalendar";
+import SideCalendar from "./SideCalendar";
+import { TaskList } from "./TaskList";
 
 export function CalendarioContent({
   mainCalendarApi,

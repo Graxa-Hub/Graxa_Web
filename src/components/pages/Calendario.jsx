@@ -1,4 +1,4 @@
-import { useCalendarioViewModel } from "../../features/Calendario/hooks/useCalendarioViewModel";
+import { useCalendarioViewModel } from "../../hooks/useCalendarioViewModel";
 import { CalendarioPageTemplate } from "../templates/CalendarioPageTemplate";
 
 export const Calendario = () => {
