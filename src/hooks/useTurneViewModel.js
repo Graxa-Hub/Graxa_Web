@@ -1,8 +1,11 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { useBandas } from "../../../hooks/useBandas";
-import { useTurnes } from "../../../hooks/useTurnes";
-import { useTurneForm } from "../../../hooks/useTurneForm";
-import { deletarTurne, getTurnesPaginadasPorBanda } from "../../../services/turneService";
+import { useBandas } from "./useBandas";
+import { useTurnes } from "./useTurnes";
+import { useTurneForm } from "./useTurneForm";
+import {
+  deletarTurne,
+  getTurnesPaginadasPorBanda,
+} from "../services/turneService";
 import { useParams } from "react-router-dom";
 
 export function useTurneViewModel() {
@@ -12,7 +15,6 @@ export function useTurneViewModel() {
     turnes,
     loading: turnesLoading,
     pagination,
-    listarTurnes,
     listarTurnesPaginadas,
     nextPage,
     prevPage,
@@ -38,7 +40,6 @@ export function useTurneViewModel() {
   useEffect(() => {
     const fetchData = async () => {
       await listarBandas();
-      // Carregar turnês paginadas para exibição geral (usa DEFAULT_PAGE_SIZE do hook)
       await listarTurnesPaginadas();
     };
     fetchData();
@@ -52,23 +53,28 @@ export function useTurneViewModel() {
     }
   }, [bandaId, bandas]);
 
-  // Carregar turnês da banda quando selectedBand muda
   useEffect(() => {
     const carregarTurnesDaBanda = async () => {
       if (selectedBand?.id) {
         setLoadingBanda(true);
         try {
-          const resultado = await getTurnesPaginadasPorBanda(selectedBand.id, 0, 1);
+          const resultado = await getTurnesPaginadasPorBanda(
+            selectedBand.id,
+            0,
+            1,
+          );
           setTurnesBandaFiltradas(resultado.content || []);
           setPaginacaoBanda(resultado);
         } catch (error) {
-          console.error(`[useTurneViewModel] Erro ao carregar turnês da banda ${selectedBand.id}:`, error);
+          console.error(
+            `[useTurneViewModel] Erro ao carregar turnes da banda ${selectedBand.id}:`,
+            error,
+          );
           setTurnesBandaFiltradas([]);
         } finally {
           setLoadingBanda(false);
         }
       } else {
-        // Limpar dados da banda quando "Todas as Bandas" é selecionada
         setLoadingBanda(false);
         setTurnesBandaFiltradas([]);
         setPaginacaoBanda({
@@ -108,28 +114,45 @@ export function useTurneViewModel() {
     setIsModalOpen(true);
   }, []);
 
-  const handleDeleteTurne = useCallback(async (turne) => {
-    try {
-      await deletarTurne(turne.id);
-      if (selectedBand?.id) {
-        // Recarregar turnês da banda
-        const resultado = await getTurnesPaginadasPorBanda(selectedBand.id, paginacaoBanda.pageNumber, paginacaoBanda.pageSize);
-        setTurnesBandaFiltradas(resultado.content || []);
-        setPaginacaoBanda(resultado);
-      } else {
-        // Recarregar turnês gerais com paginação
-        await listarTurnesPaginadas(pagination.pageNumber, pagination.pageSize);
+  const handleDeleteTurne = useCallback(
+    async (turne) => {
+      try {
+        await deletarTurne(turne.id);
+        if (selectedBand?.id) {
+          const resultado = await getTurnesPaginadasPorBanda(
+            selectedBand.id,
+            paginacaoBanda.pageNumber,
+            paginacaoBanda.pageSize,
+          );
+          setTurnesBandaFiltradas(resultado.content || []);
+          setPaginacaoBanda(resultado);
+        } else {
+          await listarTurnesPaginadas(
+            pagination.pageNumber,
+            pagination.pageSize,
+          );
+        }
+      } catch (error) {
+        console.error("Erro ao excluir turne:", error);
+        setErrorHeader(
+          error.response?.data?.mensagem || "Erro ao excluir turne",
+        );
       }
-    } catch (error) {
-      console.error("Erro ao excluir turnê:", error);
-      setErrorHeader(error.response?.data?.mensagem || "Erro ao excluir turnê");
-    }
-  }, [paginacaoBanda, pagination, selectedBand, listarTurnesPaginadas]);
+    },
+    [paginacaoBanda, pagination, selectedBand, listarTurnesPaginadas],
+  );
 
   const nextPageBanda = useCallback(async () => {
-    if (selectedBand?.id && paginacaoBanda.pageNumber < paginacaoBanda.totalPages - 1) {
+    if (
+      selectedBand?.id &&
+      paginacaoBanda.pageNumber < paginacaoBanda.totalPages - 1
+    ) {
       const novaPage = paginacaoBanda.pageNumber + 1;
-      const resultado = await getTurnesPaginadasPorBanda(selectedBand.id, novaPage, paginacaoBanda.pageSize);
+      const resultado = await getTurnesPaginadasPorBanda(
+        selectedBand.id,
+        novaPage,
+        paginacaoBanda.pageSize,
+      );
       setTurnesBandaFiltradas(resultado.content || []);
       setPaginacaoBanda(resultado);
     }
@@ -138,29 +161,42 @@ export function useTurneViewModel() {
   const prevPageBanda = useCallback(async () => {
     if (selectedBand?.id && paginacaoBanda.pageNumber > 0) {
       const novaPage = paginacaoBanda.pageNumber - 1;
-      const resultado = await getTurnesPaginadasPorBanda(selectedBand.id, novaPage, paginacaoBanda.pageSize);
+      const resultado = await getTurnesPaginadasPorBanda(
+        selectedBand.id,
+        novaPage,
+        paginacaoBanda.pageSize,
+      );
       setTurnesBandaFiltradas(resultado.content || []);
       setPaginacaoBanda(resultado);
     }
   }, [selectedBand, paginacaoBanda]);
 
-  const goToPageBanda = useCallback(async (page) => {
-    if (selectedBand?.id && page >= 0 && page < paginacaoBanda.totalPages) {
-      const resultado = await getTurnesPaginadasPorBanda(selectedBand.id, page, paginacaoBanda.pageSize);
-      setTurnesBandaFiltradas(resultado.content || []);
-      setPaginacaoBanda(resultado);
-    }
-  }, [selectedBand, paginacaoBanda]);
+  const goToPageBanda = useCallback(
+    async (page) => {
+      if (selectedBand?.id && page >= 0 && page < paginacaoBanda.totalPages) {
+        const resultado = await getTurnesPaginadasPorBanda(
+          selectedBand.id,
+          page,
+          paginacaoBanda.pageSize,
+        );
+        setTurnesBandaFiltradas(resultado.content || []);
+        setPaginacaoBanda(resultado);
+      }
+    },
+    [selectedBand, paginacaoBanda],
+  );
 
   const handleSuccess = useCallback(async () => {
     setIsModalOpen(false);
     if (selectedBand?.id) {
-      // Recarregar turnês da banda
-      const resultado = await getTurnesPaginadasPorBanda(selectedBand.id, paginacaoBanda.pageNumber, paginacaoBanda.pageSize);
+      const resultado = await getTurnesPaginadasPorBanda(
+        selectedBand.id,
+        paginacaoBanda.pageNumber,
+        paginacaoBanda.pageSize,
+      );
       setTurnesBandaFiltradas(resultado.content || []);
       setPaginacaoBanda(resultado);
     } else {
-      // Recarregar turnês gerais com paginação
       await listarTurnesPaginadas(pagination.pageNumber, pagination.pageSize);
     }
   }, [paginacaoBanda, pagination, selectedBand, listarTurnesPaginadas]);
@@ -200,7 +236,7 @@ export function useTurneViewModel() {
 
   const closeModal = () => setIsModalOpen(false);
 
-  const modalTitle = isEditMode ? "Editar Turnê" : "Criar Turnê";
+  const modalTitle = isEditMode ? "Editar Turne" : "Criar Turne";
 
   const validateModalStep = (step) => (step === 1 ? validateStep1() : true);
 

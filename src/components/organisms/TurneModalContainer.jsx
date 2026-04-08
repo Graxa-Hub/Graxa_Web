@@ -1,4 +1,4 @@
-import { Modal } from "../../../../components/ModalEventos/Modal";
+import { Modal } from "../ModalEventos/Modal";
 import { TurneFormSteps } from "./TurneFormSteps";
 
 export function TurneModalContainer({

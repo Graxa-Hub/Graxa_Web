@@ -1,4 +1,3 @@
-import React from "react";
 import { TurneMainForm } from "./TurneMainForm";
 import { TurneDetailForm } from "./TurneDetailForm";
 
