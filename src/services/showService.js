@@ -27,8 +27,8 @@ export const showService = {
   async listar() {
     try {
       const response = await api.get('/shows');
-      
-      return response.data;
+      // Garantir que sempre retorna um array
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       console.error('Erro ao listar shows:', error);
       throw error;

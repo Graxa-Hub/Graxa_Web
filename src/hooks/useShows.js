@@ -11,8 +11,10 @@ export function useShows() {
     setError(null);
     try {
       const data = await showService.listar();
-      setShows(data);
-      return data;
+      // Validação defensiva: garantir que é um array
+      const showsArray = Array.isArray(data) ? data : [];
+      setShows(showsArray);
+      return showsArray;
     } catch (err) {
       setError(err.message);
       console.error('Erro ao listar shows:', err);

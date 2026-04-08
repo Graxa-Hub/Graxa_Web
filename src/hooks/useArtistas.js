@@ -11,8 +11,10 @@ export function useArtistas() {
       setLoading(true);
       setError(null);
       const data = await artistaService.listarArtistas();
-      setArtistas(data);
-      return data;
+      // Validação defensiva: garantir que é um array
+      const artistasArray = Array.isArray(data) ? data : [];
+      setArtistas(artistasArray);
+      return artistasArray;
     } catch (err) {
       console.error('Erro ao listar artistas:', err);
       setError(err.response?.data?.message || 'Erro ao carregar artistas');

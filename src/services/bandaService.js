@@ -18,11 +18,20 @@ function buildBandaFormData(dados, foto) {
 }
 
 export const bandaService = {
-  // Listar todas as bandas
+  // Listar todas as bandas (sem paginação - backward compatibility)
   async listarBandas() {
     try {
+      console.log("[bandaService] 🔄 Iniciando requisição GET /bandas");
       const response = await api.get("/bandas");
-      return response.data;
+      console.log("[bandaService] ✅ Resposta recebida:", response.data);
+      // Handle both array and paginated object responses
+      if (Array.isArray(response.data)) {
+        return response.data;
+      } else if (response.data?.content) {
+        return response.data.content;
+      } else {
+        return [];
+      }
     } catch (error) {
       // Se o erro for "Não há bandas salvas", retorna lista vazia ao invés de erro
       const errorMessage =
@@ -38,6 +47,35 @@ export const bandaService = {
       }
 
       console.error("[bandaService] Erro ao listar bandas:", {
+        status: error.response?.status,
+        message: errorMessage,
+      });
+      throw error;
+    }
+  },
+
+  // Listar bandas com paginação
+  async listarBandasPaginadas(page = 0, size = 10) {
+    try {
+      const response = await api.get("/bandas", {
+        params: { page, size },
+      });
+      
+      // Retornar resposta paginada com estrutura normalizada
+      return {
+        content: Array.isArray(response.data.content) ? response.data.content : [],
+        pageable: response.data.pageable || { pageNumber: page, pageSize: size },
+        totalPages: response.data.totalPages || 1,
+        totalElements: response.data.totalElements || 0,
+        first: response.data.first ?? true,
+        last: response.data.last ?? false,
+        empty: response.data.empty ?? true,
+      };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || error.response?.data?.mensagem || "";
+      
+      console.error("[bandaService] Erro ao listar bandas com paginação:", {
         status: error.response?.status,
         message: errorMessage,
       });
@@ -73,7 +111,34 @@ export const bandaService = {
         status: error.response?.status,
         message: serverMessage,
         fullData: fullError,
-    return response.data;
+      });
+      throw error;
+    }
+  },
+
+  // Atualizar banda (com foto opcional)
+  async atualizarBanda(id, dados, foto) {
+    try {
+      const formData = buildBandaFormData(dados, foto);
+
+      const response = await api.put(`/bandas/${id}`, formData);
+      return response.data;
+    } catch (error) {
+      const serverMessage =
+        error.response?.data?.message ||
+        error.response?.data?.mensagem ||
+        error.response?.data?.error ||
+        error.message;
+      
+      const fullError = error.response?.data || error;
+      
+      console.error("[bandaService] Erro ao atualizar banda:", {
+        status: error.response?.status,
+        message: serverMessage,
+        fullData: fullError,
+      });
+      throw error;
+    }
   },
 
   // Excluir banda

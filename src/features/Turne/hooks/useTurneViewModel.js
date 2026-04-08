@@ -1,25 +1,86 @@
-import { useMemo } from "react";
-import { useTurnePage } from "../../../hooks/useTurnePage";
+import { useMemo, useState, useEffect, useCallback } from "react";
+import { useBandas } from "../../../hooks/useBandas";
+import { useTurnes } from "../../../hooks/useTurnes";
 import { useTurneForm } from "../../../hooks/useTurneForm";
+import { deletarTurne } from "../../../services/turneService";
+import { useParams } from "react-router-dom";
 
 export function useTurneViewModel() {
+  const { bandaId } = useParams();
+  const { bandas, loading: bandasLoading, listarBandas } = useBandas();
   const {
-    bandas,
-    bandasLoading,
-    selectedBand,
-    loading,
-    isModalOpen,
-    isEditMode,
-    editingTurne,
-    errorHeader,
-    filteredTurnes,
-    setIsModalOpen,
-    handleBandSelect,
-    handleCreateTurne,
-    handleEditTurne,
-    handleDeleteTurne,
-    handleSuccess,
-  } = useTurnePage();
+    turnes,
+    loading: turnesLoading,
+    pagination,
+    listarTurnesPaginadas,
+    nextPage,
+    prevPage,
+    goToPage,
+  } = useTurnes();
+
+  const [selectedBand, setSelectedBand] = useState(null);
+  const [errorHeader, setErrorHeader] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingTurne, setEditingTurne] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      await listarBandas();
+      await listarTurnesPaginadas(); // Usa DEFAULT_PAGE_SIZE do hook
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (bandaId && bandas.length > 0) {
+      const banda = bandas.find((b) => String(b.id) === String(bandaId));
+      if (banda) setSelectedBand(banda);
+    }
+  }, [bandaId, bandas]);
+
+  const filteredTurnes = useMemo(() => {
+    if (selectedBand && selectedBand.id) {
+      return turnes
+        .filter((t) => {
+          const bandaTurne = t.bandaId || t.banda?.id || t.raw?.bandaId || t.raw?.banda?.id;
+          return bandaTurne === selectedBand.id;
+        })
+        .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+    }
+    return turnes.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  }, [turnes, selectedBand]);
+
+  const handleBandSelect = useCallback((banda) => {
+    setSelectedBand(banda);
+  }, []);
+
+  const handleCreateTurne = useCallback(() => {
+    setIsEditMode(false);
+    setEditingTurne(null);
+    setIsModalOpen(true);
+  }, []);
+
+  const handleEditTurne = useCallback((turne) => {
+    setIsEditMode(true);
+    setEditingTurne(turne);
+    setIsModalOpen(true);
+  }, []);
+
+  const handleDeleteTurne = useCallback(async (turne) => {
+    try {
+      await deletarTurne(turne.id);
+      await listarTurnesPaginadas(pagination.pageNumber, pagination.pageSize);
+    } catch (error) {
+      console.error("Erro ao excluir turnê:", error);
+      setErrorHeader(error.response?.data?.mensagem || "Erro ao excluir turnê");
+    }
+  }, [pagination, listarTurnesPaginadas]);
+
+  const handleSuccess = useCallback(async () => {
+    setIsModalOpen(false);
+    await listarTurnesPaginadas(pagination.pageNumber, pagination.pageSize);
+  }, [pagination, listarTurnesPaginadas]);
 
   const {
     formData,
@@ -52,7 +113,7 @@ export function useTurneViewModel() {
     );
   }, [bandas, bandaSearchText]);
 
-  const isPageLoading = loading || bandasLoading;
+  const isPageLoading = turnesLoading || bandasLoading;
 
   const closeModal = () => setIsModalOpen(false);
 
@@ -83,6 +144,7 @@ export function useTurneViewModel() {
     isEditMode,
     errorHeader,
     filteredTurnes,
+    pagination,
     formData,
     errors,
     submitLoading,
@@ -108,5 +170,8 @@ export function useTurneViewModel() {
     getSelectedBandaName,
     handleInputChange,
     handleChange,
+    nextPage,
+    prevPage,
+    goToPage,
   };
 }

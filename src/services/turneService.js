@@ -3,10 +3,38 @@ import { api } from './axios';
 export async function getTurnes() {
   try {
     const response = await api.get('/turnes');
-    
-    return response.data;
+    // Handle both array and paginated object responses
+    if (Array.isArray(response.data)) {
+      return response.data;
+    } else if (response.data?.content) {
+      return response.data.content;
+    } else {
+      return [];
+    }
   } catch (error) {
     console.error('Erro ao buscar turnês:', error);
+    throw error;
+  }
+}
+
+export async function getTurnesPaginadas(page = 0, size = 10) {
+  try {
+    const response = await api.get('/turnes', {
+      params: { page, size },
+    });
+
+    // Retornar resposta paginada com estrutura normalizada
+    return {
+      content: Array.isArray(response.data.content) ? response.data.content : [],
+      pageable: response.data.pageable || { pageNumber: page, pageSize: size },
+      totalPages: response.data.totalPages || 1,
+      totalElements: response.data.totalElements || 0,
+      first: response.data.first ?? true,
+      last: response.data.last ?? false,
+      empty: response.data.empty ?? true,
+    };
+  } catch (error) {
+    console.error('Erro ao buscar turnês paginadas:', error);
     throw error;
   }
 }

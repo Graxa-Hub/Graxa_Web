@@ -18,10 +18,11 @@ export const useCalendarioPage = () => {
   const bandaIdParam = searchParams.get("bandaId");
   const turneIdParam = searchParams.get("turneId");
 
+  // ✅ Carregamento inicial - SEM dependências para evitar loop
   useEffect(() => {
     listarBandas();
     listarTurnes();
-  }, [listarBandas, listarTurnes]);
+  }, []); // ← Dependências VAZIAS
 
   useEffect(() => {
     if (bandaIdParam && bandas.length > 0) {

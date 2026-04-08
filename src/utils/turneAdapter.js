@@ -2,7 +2,7 @@ import { imagemService } from "../services/imagemService";
 
 export async function adaptTurnesFromBackend(turnes) {
   if (!Array.isArray(turnes)) {
-    console.error("adaptTurnesFromBackend: turnes não é array:", turnes);
+    console.warn("[turneAdapter] Resposta não é array, retornando lista vazia:", turnes);
     return [];
   }
 

@@ -7,6 +7,7 @@ import { TurneFormSteps } from "../features/Turne/components/organisms/TurneForm
 import { TurneError } from "../features/Turne/components/atoms/TurneError";
 import { useTurneViewModel } from "../features/Turne/hooks/useTurneViewModel";
 import { LoadingState } from "../components/molecules/LoadingState";
+import { Pagination } from "../components/molecules/Pagination";
 
 export function Turne() {
   const {
@@ -17,6 +18,7 @@ export function Turne() {
     isEditMode,
     errorHeader,
     filteredTurnes,
+    pagination,
     formData,
     errors,
     submitLoading,
@@ -42,6 +44,9 @@ export function Turne() {
     getSelectedBandaName,
     handleInputChange,
     handleChange,
+    nextPage,
+    prevPage,
+    goToPage,
   } = useTurneViewModel();
 
   if (isPageLoading) {
@@ -56,12 +61,23 @@ export function Turne() {
 
   return (
     <Layout>
-      <TurneHeader
-        bandas={bandas}
-        selectedBand={selectedBand}
-        onBandSelect={handleBandSelect}
-        onAddTurne={handleCreateTurne}
-      />
+      {/* Header + Paginação no topo */}
+      <div className="flex items-end justify-between gap-4 mb-6">
+        <TurneHeader
+          bandas={bandas}
+          selectedBand={selectedBand}
+          onBandSelect={handleBandSelect}
+          onAddTurne={handleCreateTurne}
+        />
+
+        <Pagination
+          pagination={pagination}
+          onNextPage={nextPage}
+          onPrevPage={prevPage}
+          onGoToPage={goToPage}
+          disabled={isPageLoading}
+        />
+      </div>
 
       {errorHeader && <TurneError error={errorHeader} />}
 
