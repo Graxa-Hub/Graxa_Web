@@ -1,4 +1,4 @@
-import { Header } from "../../../../components/organisms/Header";
+import { Header } from "./Header";
 
 export function CalendarioTopBar({
   bandas,

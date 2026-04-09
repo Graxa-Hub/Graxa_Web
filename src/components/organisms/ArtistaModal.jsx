@@ -1,7 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { useBandas } from "../../hooks/useBandas";
 
-export const ArtistaModal = ({ open = false, onClose = () => {}, onSelect = () => {} }) => {
+export function ArtistaModal({
+  open = false,
+  onClose = () => {},
+  onSelect = () => {},
+}) {
   const { bandas, loading, listarBandas } = useBandas();
   const jaCarregou = useRef(false);
 
@@ -38,9 +42,11 @@ export const ArtistaModal = ({ open = false, onClose = () => {}, onSelect = () =
       >
         <header className="mb-5 flex items-end justify-between gap-4 border-b border-[var(--border)] pb-4">
           <div>
-            <h2 className="text-xl font-semibold text-[var(--text-primary)]">Artistas/Bandas</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+              Artistas/Bandas
+            </h2>
             <p className="text-sm text-[var(--text-muted)] mt-1">
-              Selecione o artista de sua preferência
+              Selecione o artista de sua preferencia
             </p>
           </div>
         </header>
@@ -66,7 +72,8 @@ export const ArtistaModal = ({ open = false, onClose = () => {}, onSelect = () =
                 tabIndex={0}
                 onClick={() => handleBandaClick(banda)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") handleBandaClick(banda);
+                  if (e.key === "Enter" || e.key === " ")
+                    handleBandaClick(banda);
                 }}
               >
                 <img
@@ -78,7 +85,9 @@ export const ArtistaModal = ({ open = false, onClose = () => {}, onSelect = () =
                   }}
                 />
                 <div className="pointer-events-none absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black/70 via-black/15 to-transparent">
-                  <span className="text-sm font-semibold text-white truncate">{banda.nome}</span>
+                  <span className="text-sm font-semibold text-white truncate">
+                    {banda.nome}
+                  </span>
                   <span className="mt-2 w-fit rounded-[var(--radius-sm)] border border-white/20 bg-black/35 px-3 py-1 text-xs font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity">
                     Selecionar
                   </span>
@@ -90,4 +99,4 @@ export const ArtistaModal = ({ open = false, onClose = () => {}, onSelect = () =
       </div>
     </div>
   );
-};
+}

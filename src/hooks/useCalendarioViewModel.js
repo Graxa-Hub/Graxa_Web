@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useBandas } from "./useBandas";
 import { useTurnes } from "./useTurnes";
@@ -6,11 +6,12 @@ import { useTurnes } from "./useTurnes";
 const findById = (list = [], id) =>
   list.find((item) => String(item.id) === String(id)) || null;
 
-export const useCalendarioPage = () => {
+export function useCalendarioViewModel() {
   const [mainCalendarApi, setMainCalendarApi] = useState(null);
   const [eventos, setEventos] = useState([]);
   const [bandaSelecionada, setBandaSelecionada] = useState(null);
   const [turneSelecionada, setTurneSelecionada] = useState(null);
+
   const { bandas, listarBandas } = useBandas();
   const { turnes, listarTurnes } = useTurnes();
   const [searchParams] = useSearchParams();
@@ -18,11 +19,10 @@ export const useCalendarioPage = () => {
   const bandaIdParam = searchParams.get("bandaId");
   const turneIdParam = searchParams.get("turneId");
 
-  // ✅ Carregamento inicial - SEM dependências para evitar loop
   useEffect(() => {
     listarBandas();
     listarTurnes();
-  }, []); // ← Dependências VAZIAS
+  }, [listarBandas, listarTurnes]);
 
   useEffect(() => {
     if (bandaIdParam && bandas.length > 0) {
@@ -51,20 +51,16 @@ export const useCalendarioPage = () => {
     }
   }, [bandaSelecionada, turneSelecionada]);
 
-  const handleCalendarReady = useCallback((api) => {
-    setMainCalendarApi(api || null);
-  }, []);
-
-  const handleEventosChange = useCallback((novosEventos = []) => {
-    setEventos(novosEventos);
-  }, []);
-
   return {
-    mainCalendarApi,
+    bandas,
+    turnes,
     eventos,
+    mainCalendarApi,
     bandaSelecionada,
     turneSelecionada,
-    handleCalendarReady,
-    handleEventosChange,
+    setBandaSelecionada,
+    setTurneSelecionada,
+    setMainCalendarApi,
+    setEventos,
   };
-};
+}

@@ -214,6 +214,10 @@ body {
   --fc-today-bg-color: rgba(200, 80, 60, 0.1);
   color: var(--text-secondary);
 }
+.fc .fc-toolbar-title {
+  font-size: 1.5rem !important;
+  font-weight: bold;
+}
 .fc .fc-toolbar-title,
 .fc .fc-col-header-cell-cushion,
 .fc .fc-daygrid-day-number {

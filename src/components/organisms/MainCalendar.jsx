@@ -9,12 +9,21 @@ import "../../index.css";
 import { EventoModal } from "../../features/Evento/components/organisms/EventoModal";
 import { useEventosCalendario } from "../../hooks/useEventosCalendario";
 
-export default function MainCalendar({ onCalendarApi, onEventosChange, bandaId, turneId }) {
+export default function MainCalendar({
+  onCalendarApi,
+  onEventosChange,
+  bandaId,
+  turneId,
+}) {
   const calendarRef = useRef(null);
   const navigate = useNavigate();
-  const { eventos, loading, carregarEventos, adicionarEventoLocal } = useEventosCalendario();
+  const { eventos, loading, carregarEventos, adicionarEventoLocal } =
+    useEventosCalendario();
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [dataHoraSelecionada, setDataHoraSelecionada] = useState({ inicio: "", fim: "" });
+  const [dataHoraSelecionada, setDataHoraSelecionada] = useState({
+    inicio: "",
+    fim: "",
+  });
 
   useEffect(() => {
     carregarEventos({ bandaId, turneId });
@@ -59,7 +68,8 @@ export default function MainCalendar({ onCalendarApi, onEventosChange, bandaId, 
   };
 
   const handleEventClick = (selectInfo) => {
-    const eventoId = selectInfo.event?.extendedProps?.dados?.id || selectInfo.event?.id;
+    const eventoId =
+      selectInfo.event?.extendedProps?.dados?.id || selectInfo.event?.id;
     const tipoEvento = selectInfo.event?.extendedProps?.tipo || "show";
     if (eventoId) navigate(`/visao-evento/${tipoEvento}/${eventoId}`);
   };
@@ -78,7 +88,11 @@ export default function MainCalendar({ onCalendarApi, onEventosChange, bandaId, 
         locale={ptLocale}
         initialView="timeGridWeek"
         aspectRatio={1.35}
-        headerToolbar={{ left: "prev,today,next", center: "title", right: "timeGridWeek,timeGridDay" }}
+        headerToolbar={{
+          left: "prev,today,next",
+          center: "title",
+          right: "timeGridWeek,timeGridDay",
+        }}
         selectable
         select={handleDateSelect}
         events={eventos}

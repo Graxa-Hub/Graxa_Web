@@ -1,6 +1,6 @@
-import MainCalendar from "../../../../components/Dashboard/MainCalendar";
-import SideCalendar from "../../../../components/Dashboard/SideCalendar";
-import { TaskList } from "../../../../components/Dashboard/TaskList";
+import MainCalendar from "./MainCalendar";
+import SideCalendar from "./SideCalendar";
+import { TaskList } from "./TaskList";
 
 export function CalendarioContent({
   mainCalendarApi,
@@ -24,7 +24,7 @@ export function CalendarioContent({
 
       <div className="w-80 min-w-[320px] surface-card p-3 h-full flex flex-col">
         <SideCalendar mainCalendarApi={mainCalendarApi} eventos={eventos} />
-        <div className="flex-1 overflow-auto mt-4 px-1">
+        <div className="flex-1 overflow-auto mt-2">
           <TaskList eventos={eventos} />
         </div>
       </div>

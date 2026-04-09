@@ -1,6 +1,6 @@
-import MainCalendar from "../Dashboard/MainCalendar";
-import SideCalendar from "../Dashboard/SideCalendar";
-import { TaskList } from "../Dashboard/TaskList";
+import MainCalendar from "./MainCalendar";
+import SideCalendar from "./SideCalendar";
+import { TaskList } from "./TaskList";
 
 export const CalendarShell = ({
   mainCalendarApi,
