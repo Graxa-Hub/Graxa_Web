@@ -30,9 +30,9 @@ export function TaskList({ eventos = [] }) {
   };
 
   return (
-    <div className="w-full overflow-auto p-4">
-      <h1 className="text-center text-[var(--text-primary)] font-semibold mb-4">
-        Proximos Eventos ({eventosFuturos.length})
+    <div className="w-full overflow-auto mt-3">
+      <h1 className="text-center text-[var(--text-primary)] font-semibold mb-3 text-sm">
+        Próximos Eventos ({eventosFuturos.length})
       </h1>
 
       {eventosFuturos.length === 0 ? (
@@ -45,7 +45,7 @@ export function TaskList({ eventos = [] }) {
             <li
               key={evento.id || index}
               onClick={() => handleEventoClick(evento)}
-              className="flex items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] px-3 py-3 cursor-pointer hover:bg-[var(--surface-hover)] transition-colors"
+              className="flex items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] p-3 cursor-pointer hover:bg-[var(--surface-hover)] transition-colors"
             >
               <div
                 className={`h-3 w-3 rounded-full flex-shrink-0 mt-1 ${
