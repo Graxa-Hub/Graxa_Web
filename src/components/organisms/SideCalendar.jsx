@@ -26,14 +26,15 @@ export default function SideCalendar({ mainCalendarApi, eventos = [] }) {
   }));
 
   return (
-    <div className="mini-calendar rounded-lg">
+    <div className="mini-calendar rounded-lg h-full">
       <FullCalendar
         locale={ptLocale}
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
         headerToolbar={{ left: "", center: "title", right: "" }}
         dayHeaderFormat={{ weekday: "narrow" }}
-        aspectRatio={1}
+        fixedWeekCount={false}
+        height="100%"
         dateClick={handleDateClick}
         events={eventosDots}
         displayEventTime={false}
