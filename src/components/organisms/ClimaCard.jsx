@@ -1,19 +1,17 @@
 import {
   useHourlyWeather,
   useHourlyWeatherByCoords,
-} from "../../../../hooks/useWeather";
+} from "../../hooks/useWeather";
 import {
   Cloud,
-  CloudRain,
-  Sun,
-  CloudSnow,
   CloudDrizzle,
   CloudFog,
+  CloudRain,
+  CloudSnow,
   MapPin,
+  Sun,
 } from "lucide-react";
-import { getWeatherDescription } from "../../../../services/weatherService";
 
-// Mapeia código WMO para ícone do Lucide
 const getWeatherIcon = (weatherCode) => {
   if (weatherCode === 0) return Sun;
   if (weatherCode >= 1 && weatherCode <= 3) return Cloud;
@@ -35,8 +33,7 @@ const getIconColor = (weatherCode) => {
   return "text-[var(--text-muted)]";
 };
 
-export const ClimaCard = ({ cidade = "São Paulo", lat, lon }) => {
-  // Tenta usar coordenadas se disponíveis, senão usa a cidade
+export const ClimaCard = ({ cidade = "Sao Paulo", lat, lon }) => {
   const { hourlyWeather, loading, error } =
     lat !== undefined && lon !== undefined
       ? useHourlyWeatherByCoords(lat, lon, 5)
@@ -45,8 +42,8 @@ export const ClimaCard = ({ cidade = "São Paulo", lat, lon }) => {
   if (loading) {
     return (
       <div className="w-full">
-        <div className="flex items-center gap-1.5 mb-3">
-          <MapPin className="w-4 h-4 text-[var(--text-muted)]" />
+        <div className="mb-3 flex items-center gap-1.5">
+          <MapPin className="h-4 w-4 text-[var(--text-muted)]" />
           <h4 className="text-xs font-semibold text-[var(--text-muted)]">
             Carregando clima...
           </h4>
@@ -55,12 +52,12 @@ export const ClimaCard = ({ cidade = "São Paulo", lat, lon }) => {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="flex h-48 min-w-0 flex-1 flex-col items-center justify-between rounded-[var(--radius-sm)] bg-[var(--surface-elevated)] p-3 animate-pulse"
+              className="flex h-48 min-w-0 flex-1 animate-pulse flex-col items-center justify-between rounded-[var(--radius-sm)] bg-[var(--surface-elevated)] p-3"
             >
-              <div className="h-4 bg-[var(--surface-hover)] rounded w-12 mb-2"></div>
-              <div className="h-9 bg-[var(--surface-hover)] rounded-full w-9 mb-2"></div>
-              <div className="h-6 bg-[var(--surface-hover)] rounded w-11"></div>
-              <div className="h-3 bg-[var(--surface-hover)] rounded w-14 mt-2"></div>
+              <div className="mb-2 h-4 w-12 rounded bg-[var(--surface-hover)]" />
+              <div className="mb-2 h-9 w-9 rounded-full bg-[var(--surface-hover)]" />
+              <div className="h-6 w-11 rounded bg-[var(--surface-hover)]" />
+              <div className="mt-2 h-3 w-14 rounded bg-[var(--surface-hover)]" />
             </div>
           ))}
         </div>
@@ -71,13 +68,9 @@ export const ClimaCard = ({ cidade = "São Paulo", lat, lon }) => {
   if (error) {
     return (
       <div className="w-full">
-        {/* <div className="flex items-center gap-1.5 mb-3">
-          <MapPin className="w-4 h-4 text-red-400" />
-          <h4 className="text-xs font-semibold text-[var(--accent)]">{cidade}</h4>
-        </div> */}
         <div className="flex w-full flex-row items-center gap-2">
           <div className="flex h-36 w-full flex-col items-center justify-center rounded-[var(--radius-lg)] bg-[var(--surface-elevated)] p-3">
-            <p className="text-xs text-[var(--accent)] text-center">
+            <p className="text-center text-xs text-[var(--accent)]">
               Erro no clima
             </p>
           </div>
@@ -88,7 +81,6 @@ export const ClimaCard = ({ cidade = "São Paulo", lat, lon }) => {
 
   if (!hourlyWeather) return null;
 
-  // Monta array com: tempo atual + próximas 2 horas
   const weatherCards = [
     {
       label: "Agora",
@@ -96,7 +88,6 @@ export const ClimaCard = ({ cidade = "São Paulo", lat, lon }) => {
       weatherCode: hourlyWeather.current.weather_code,
       precipitation: hourlyWeather.current.precipitation,
     },
-    // Próxima hora (índice 0)
     {
       label: new Date(hourlyWeather.hours[0]?.time).toLocaleTimeString(
         "pt-BR",
@@ -109,7 +100,6 @@ export const ClimaCard = ({ cidade = "São Paulo", lat, lon }) => {
       weatherCode: hourlyWeather.hours[0]?.weatherCode,
       precipitation: hourlyWeather.hours[0]?.precipitation,
     },
-    // Daqui a 3 horas (índice 2)
     {
       label: new Date(hourlyWeather.hours[2]?.time).toLocaleTimeString(
         "pt-BR",
@@ -126,58 +116,45 @@ export const ClimaCard = ({ cidade = "São Paulo", lat, lon }) => {
 
   return (
     <div className="w-full">
-      {/* Título com o nome da cidade */}
-      {/* <div className="flex items-center gap-1.5 mb-3">
-        <MapPin className="w-4 h-4 text-[var(--info)]" />
-        <h4 className="text-xs font-semibold text-[var(--text-secondary)]">{cidade}</h4>
-      </div> */}
-
-      {/* Cards de clima */}
-      <div className="flex w-full flex-row items-stretch gap-2 px-1 overflow-visible">
+      <div className="flex w-full flex-row items-stretch gap-2 overflow-visible px-1">
         {weatherCards.map((card, index) => {
           const WeatherIcon = getWeatherIcon(card.weatherCode);
           const iconColor = getIconColor(card.weatherCode);
-          const description = getWeatherDescription(card.weatherCode);
 
           return (
             <div
               key={index}
-              className="flex h-48 min-w-0 flex-1 flex-col items-center rounded-[var(--radius-lg)] bg-[var(--surface-elevated)] p-3 shadow-[var(--shadow-soft)] overflow-visible transition-all"
+              className="flex h-48 min-w-0 flex-1 flex-col items-center overflow-visible rounded-[var(--radius-lg)] bg-[var(--surface-elevated)] p-3 shadow-[var(--shadow-soft)] transition-all"
             >
-              {/* Topo - Label */}
-              <h3 className="text-sm font-semibold text-[var(--text-secondary)] whitespace-nowrap mb-1">
+              <h3 className="mb-1 whitespace-nowrap text-sm font-semibold text-[var(--text-secondary)]">
                 {card.label}
               </h3>
 
-              {/* Meio - Icone e Temp Principal (Centralizado) */}
-              <div className="flex-1 flex flex-col items-center justify-center">
+              <div className="flex flex-1 flex-col items-center justify-center">
                 <WeatherIcon className={`${iconColor} mb-1`} size={32} />
-                <p className="text-xl font-bold text-[var(--text-primary)] leading-none">
+                <p className="text-xl font-bold leading-none text-[var(--text-primary)]">
                   {card.temp}°C
                 </p>
               </div>
 
-              {/* Base - Max/Min e Precipitação (Altura Fixa) */}
-              <div className="flex flex-col items-center justify-end h-10 w-full mt-1 border-t border-gray-50 pt-1">
+              <div className="mt-1 flex h-10 w-full flex-col items-center justify-end border-t border-gray-50 pt-1">
                 {hourlyWeather.daily && (
                   <div className="flex items-center gap-1.5 text-[11px]">
-                    <span className="text-[var(--accent)] font-semibold">
+                    <span className="font-semibold text-[var(--accent)]">
                       ↑{Math.round(hourlyWeather.daily.tempMax)}°
                     </span>
-                    <span className="text-[var(--info)] font-semibold">
+                    <span className="font-semibold text-[var(--info)]">
                       ↓{Math.round(hourlyWeather.daily.tempMin)}°
                     </span>
                   </div>
                 )}
 
                 {card.precipitation > 0 ? (
-                  <p className="text-[10px] text-[var(--info)] font-medium">
+                  <p className="text-[10px] font-medium text-[var(--info)]">
                     💧 {card.precipitation}mm
                   </p>
                 ) : (
-                  <div
-                    className="h-[12px]" /* Spacer para manter o alinhamento */
-                  />
+                  <div className="h-[12px]" />
                 )}
               </div>
             </div>
