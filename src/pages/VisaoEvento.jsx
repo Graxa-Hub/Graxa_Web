@@ -89,7 +89,11 @@ export const VisaoEvento = () => {
     eventosConcluidos.sort((a, b) => b.ordem - a.ordem);
 
     // Itens sem data vão ao final como pendentes
-    const agendasOrdenadas = [...eventosPendentes, ...semData, ...eventosConcluidos];
+    const agendasOrdenadas = [
+      ...eventosPendentes,
+      ...semData,
+      ...eventosConcluidos,
+    ];
 
     const processadas = agendasOrdenadas.map((item, index) => {
       const temData = !!item.dataHoraInicio;
@@ -114,15 +118,12 @@ export const VisaoEvento = () => {
     return { agendasProcessadas: processadas, progresso: progressoCalculado };
   }, [agendas]);
 
-  const handleSelecionarAgenda = useCallback(
-    (agenda) => {
-      setAgendaSelecionada((prev) => {
-        if (prev?.id === agenda?.id) return null;
-        return agenda || null;
-      });
-    },
-    []
-  );
+  const handleSelecionarAgenda = useCallback((agenda) => {
+    setAgendaSelecionada((prev) => {
+      if (prev?.id === agenda?.id) return null;
+      return agenda || null;
+    });
+  }, []);
 
   const handleGerarPdf = () => {
     if (tipoEvento !== "show" || !id) {
@@ -152,7 +153,7 @@ export const VisaoEvento = () => {
     return {
       nomeEvento: evento.nomeEvento || "Evento",
       nomeLocal: nomeLocal,
-      dataInfo: dataInicioEvento ? formatarData(dataInicioEvento) : "",
+      dataInfo: dataInicioEvento ? formatarData(dataInicioEvento) : "Sem data",
       cidade: cidadeExtraida,
       lat: -23.5,
       lon: -46.6,
@@ -175,25 +176,28 @@ export const VisaoEvento = () => {
   if (!dadosEvento) return <div className="p-6">Evento não encontrado.</div>;
 
   return (
-    <Layout className="bg-emerald-50" containerClassName="overflow-hidden" showHeader={false}>
-
+    <Layout
+      className="bg-[var(--bg)]"
+      containerClassName="overflow-hidden"
+      showHeader={false}
+    >
       {/* Componetizar esse bagui aqui -> pode ser VisionEvent  */}
       <div className="flex flex-row justify-between mb-4">
         <div>
-          <h1 className="panel-title">
-            {dadosEvento.nomeEvento}
-          </h1>
+          <h1 className="panel-title">{dadosEvento.nomeEvento}</h1>
           <div className="flex items-center gap-1.5 mt-1">
             <MapPin className="w-4 h-4 text-[var(--text-muted)]" />
-            <p className="text-sm text-[var(--text-secondary)]">{dadosEvento.nomeLocal}</p>
+            <p className="text-sm text-[var(--text-secondary)]">
+              {dadosEvento.nomeLocal}
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="ml-auto flex items-center gap-4 pr-16 lg:pr-20">
           <button
             onClick={handleGerarPdf}
             disabled={tipoEvento !== "show"}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition font-semibold text-sm shadow-[var(--shadow-soft)] disabled:bg-gray-400 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition font-semibold text-sm shadow-[var(--shadow-soft)] disabled:bg-[var(--surface-hover)] disabled:text-[var(--text-muted)] disabled:cursor-not-allowed"
             title={
               tipoEvento !== "show"
                 ? "PDF disponível apenas para Shows"
@@ -205,16 +209,14 @@ export const VisaoEvento = () => {
           </button>
           <button
             onClick={() => navigate(`/criar-evento/${tipoEvento}/${id}`)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition font-semibold text-sm shadow-[var(--shadow-soft)]"
+            className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition font-semibold text-sm shadow-[var(--shadow-soft)]"
           >
             <Edit2 size={16} />
             Editar Evento
           </button>
-          <DiaInfoCard info={dadosEvento.dataInfo} />
+          <DiaInfoCard label="Data" value={dadosEvento.dataInfo} />
         </div>
       </div>
-
-
 
       <div className="grid grid-cols-3 gap-3 flex-1 min-h-0 overflow-hidden">
         <div className="col-span-2 h-full">

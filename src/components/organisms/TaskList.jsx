@@ -30,52 +30,54 @@ export function TaskList({ eventos = [] }) {
   };
 
   return (
-    <div className="w-full overflow-auto mt-3">
-      <h1 className="text-center text-[var(--text-primary)] font-semibold mb-3 text-sm">
+    <div className="w-full h-full flex flex-col overflow-hidden">
+      <h1 className="text-center text-[var(--text-primary)] font-semibold mb-3 text-sm flex-shrink-0">
         Próximos Eventos ({eventosFuturos.length})
       </h1>
 
-      {eventosFuturos.length === 0 ? (
-        <p className="text-center text-[var(--text-muted)] text-sm">
-          Nenhum evento agendado
-        </p>
-      ) : (
-        <ul className="flex flex-col gap-3">
-          {eventosFuturos.map((evento, index) => (
-            <li
-              key={evento.id || index}
-              onClick={() => handleEventoClick(evento)}
-              className="flex items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] p-3 cursor-pointer hover:bg-[var(--surface-hover)] transition-colors"
-            >
-              <div
-                className={`h-3 w-3 rounded-full flex-shrink-0 mt-1 ${
-                  evento.type === "show"
-                    ? "bg-[var(--accent)]"
-                    : "bg-[var(--info)]"
-                }`}
-              ></div>
-              <div className="flex flex-col flex-1 min-w-0">
-                <h2 className="text-xs text-[var(--text-muted)]">
-                  {formatarDataHora(evento.start)}
-                  {evento.end && ` - ${formatarDataHora(evento.end)}`}
-                </h2>
-                <p className="font-medium text-sm text-[var(--text-primary)] truncate">
-                  {evento.title || "Sem titulo"}
-                </p>
-                <span
-                  className={`text-xs ${
+      <div className="flex-1 overflow-y-auto pr-2">
+        {eventosFuturos.length === 0 ? (
+          <p className="text-center text-[var(--text-muted)] text-sm">
+            Nenhum evento agendado
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-3">
+            {eventosFuturos.map((evento, index) => (
+              <li
+                key={evento.id || index}
+                onClick={() => handleEventoClick(evento)}
+                className="flex items-start gap-3 rounded-[var(--radius-sm)] border border-[var(--border)] bg-[var(--surface)] p-3 cursor-pointer hover:bg-[var(--surface-hover)] transition-colors flex-shrink-0"
+              >
+                <div
+                  className={`h-3 w-3 rounded-full flex-shrink-0 mt-1 ${
                     evento.type === "show"
-                      ? "text-[var(--accent)]"
-                      : "text-[var(--info)]"
+                      ? "bg-[var(--accent)]"
+                      : "bg-[var(--info)]"
                   }`}
-                >
-                  {evento.type === "show" ? "Show" : "Viagem"}
-                </span>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+                ></div>
+                <div className="flex flex-col flex-1 min-w-0">
+                  <h2 className="text-xs text-[var(--text-muted)]">
+                    {formatarDataHora(evento.start)}
+                    {evento.end && ` - ${formatarDataHora(evento.end)}`}
+                  </h2>
+                  <p className="font-medium text-sm text-[var(--text-primary)] truncate">
+                    {evento.title || "Sem titulo"}
+                  </p>
+                  <span
+                    className={`text-xs ${
+                      evento.type === "show"
+                        ? "text-[var(--accent)]"
+                        : "text-[var(--info)]"
+                    }`}
+                  >
+                    {evento.type === "show" ? "Show" : "Viagem"}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

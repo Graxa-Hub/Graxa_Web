@@ -9,7 +9,7 @@ export const MapCard = memo(({ lat, lon, origem, destino, titulo }) => {
   const { routeInfo, loading, error, calcularRota } = useMapboxRoute();
   const { mapContainerRef, adicionarRota, adicionarMarcador } = useMapboxMap({
     center: [lon || -46.6333, lat || -23.5505],
-    zoom: 12
+    zoom: 12,
   });
 
   // Calcular rota quando origem/destino existirem
@@ -29,19 +29,15 @@ export const MapCard = memo(({ lat, lon, origem, destino, titulo }) => {
   }, [routeInfo, isRotaMode, lat, lon, adicionarRota, adicionarMarcador]);
 
   return (
-    <div className="flex flex-col bg-[var(--surface-elevated)] shadow-[var(--shadow-soft)] rounded-[var(--radius-sm)] overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col bg-[var(--surface-elevated)] shadow-[var(--shadow-soft)] rounded-[var(--radius-sm)] overflow-hidden">
       {/* Mapa */}
       <div
         ref={mapContainerRef}
-        className="flex-1 w-full relative"
-        style={{ minHeight: '250px' }}
+        className="relative flex-1 w-full"
+        style={{ minHeight: "320px" }}
       >
-        {loading && (
-          <LoadingOverlay />
-        )}
-        {error && (
-          <ErrorOverlay message={error} />
-        )}
+        {loading && <LoadingOverlay />}
+        {error && <ErrorOverlay message={error} />}
       </div>
 
       {/* Info Footer */}
@@ -54,7 +50,7 @@ export const MapCard = memo(({ lat, lon, origem, destino, titulo }) => {
   );
 });
 
-MapCard.displayName = 'MapCard';
+MapCard.displayName = "MapCard";
 
 // ===== COMPONENTES AUXILIARES =====
 
@@ -67,7 +63,7 @@ const LoadingOverlay = memo(() => (
   </div>
 ));
 
-LoadingOverlay.displayName = 'LoadingOverlay';
+LoadingOverlay.displayName = "LoadingOverlay";
 
 const ErrorOverlay = memo(({ message }) => (
   <div className="absolute inset-0 bg-[var(--surface)] flex items-center justify-center z-10 p-4">
@@ -75,13 +71,15 @@ const ErrorOverlay = memo(({ message }) => (
   </div>
 ));
 
-ErrorOverlay.displayName = 'ErrorOverlay';
+ErrorOverlay.displayName = "ErrorOverlay";
 
 const RouteInfo = memo(({ routeInfo, titulo }) => (
   <div className="p-3 text-sm text-[var(--text-secondary)] flex flex-col gap-1 flex-shrink-0">
     <div className="flex items-center gap-2">
       <Navigation className="text-[var(--info)] w-4 h-4" />
-      <span className="font-medium truncate">{titulo || "Rota de Deslocamento"}</span>
+      <span className="font-medium truncate">
+        {titulo || "Rota de Deslocamento"}
+      </span>
     </div>
     <p className="text-xs text-[var(--text-muted)]">
       <b>{routeInfo.distanceKm} km</b> &nbsp;•&nbsp;
@@ -90,7 +88,7 @@ const RouteInfo = memo(({ routeInfo, titulo }) => (
   </div>
 ));
 
-RouteInfo.displayName = 'RouteInfo';
+RouteInfo.displayName = "RouteInfo";
 
 const LocalInfo = memo(() => (
   <div className="p-3 text-sm text-[var(--text-secondary)] flex flex-col gap-1 flex-shrink-0">
@@ -101,4 +99,4 @@ const LocalInfo = memo(() => (
   </div>
 ));
 
-LocalInfo.displayName = 'LocalInfo';
+LocalInfo.displayName = "LocalInfo";

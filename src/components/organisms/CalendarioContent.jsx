@@ -11,7 +11,7 @@ export function CalendarioContent({
   onEventosChange,
 }) {
   return (
-    <div className="flex flex-row gap-5 h-full w-full">
+    <div className="flex flex-row gap-5 h-full min-h-0 w-full">
       <div className="flex-1 min-w-0 h-full">
         <MainCalendar
           onCalendarApi={onCalendarApi}
@@ -22,9 +22,12 @@ export function CalendarioContent({
         />
       </div>
 
-      <div className="w-80 min-w-[320px] surface-card p-3 h-full flex flex-col">
-        <SideCalendar mainCalendarApi={mainCalendarApi} eventos={eventos} />
-        <div className="flex-1 overflow-auto mt-2">
+      <div className="relative w-80 min-w-[320px] h-full min-h-0 flex flex-col gap-4">
+        <div className="surface-card rounded-lg h-[368px] min-h-[340px] flex-shrink-0">
+          <SideCalendar mainCalendarApi={mainCalendarApi} eventos={eventos} />
+        </div>
+
+        <div className="surface-card p-3 flex-1 min-h-0 flex flex-col rounded-lg overflow-hidden">
           <TaskList eventos={eventos} />
         </div>
       </div>
