@@ -12,6 +12,7 @@ import { useViagens } from "../hooks/useViagens";
 import SidebarDireita from "../features/Evento/components/CriarEvento/SidebarDireita";
 import { LocalSelecionadoProvider } from "../context/LocalSelecionadoContext";
 import VisualizarAlocacoes from "../features/Evento/components/CriarEvento/VisualizarAlocacoes";
+import { ConfirmModal } from "../molecules/ConfirmModal";
 import { agendaEventoService } from "../services/agendaEventoService";
 import { useColaboradores } from "../hooks/useColaboradores";
 import { useToast } from "../hooks/useToast";
@@ -299,9 +300,9 @@ export const CriarEvento = () => {
             (hr) =>
               hr.colaboradorId === colabId &&
               String(hr.nomeHotel || "").trim() ===
-              String(hotel.nome || "").trim() &&
+                String(hotel.nome || "").trim() &&
               String(hr.endereco || "").trim() ===
-              String(hotel.endereco || "").trim(),
+                String(hotel.endereco || "").trim(),
           );
 
           // Usa coordsHotel se disponível, senão latitude/longitude do hotel
@@ -349,7 +350,7 @@ export const CriarEvento = () => {
               tr.colaboradorId === colabId &&
               String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
               (tr.saida ? tr.saida.substring(0, 16) : "") ===
-              (t.saida ? t.saida.substring(0, 16) : ""),
+                (t.saida ? t.saida.substring(0, 16) : ""),
           );
 
           const dto = {
@@ -483,9 +484,9 @@ export const CriarEvento = () => {
             (hr) =>
               hr.colaboradorId === colabId &&
               String(hr.nomeHotel || "").trim() ===
-              String(hotel.nome || "").trim() &&
+                String(hotel.nome || "").trim() &&
               String(hr.endereco || "").trim() ===
-              String(hotel.endereco || "").trim(),
+                String(hotel.endereco || "").trim(),
           );
 
           const latitude = hotel.coordsHotel?.lat ?? hotel.latitude ?? null;
@@ -529,11 +530,11 @@ export const CriarEvento = () => {
             (vr) =>
               vr.colaboradorId === colabId &&
               String(vr.ciaAerea || "").trim() ===
-              String(flight.cia || "").trim() &&
+                String(flight.cia || "").trim() &&
               String(vr.codigoVoo || "").trim() ===
-              String(flight.numero || "").trim() &&
+                String(flight.numero || "").trim() &&
               (vr.partida ? vr.partida.substring(0, 16) : "") ===
-              (flight.saida ? flight.saida.substring(0, 16) : ""),
+                (flight.saida ? flight.saida.substring(0, 16) : ""),
           );
 
           const dto = {
@@ -573,7 +574,7 @@ export const CriarEvento = () => {
               tr.colaboradorId === colabId &&
               String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
               (tr.saida ? tr.saida.substring(0, 16) : "") ===
-              (t.saida ? t.saida.substring(0, 16) : ""),
+                (t.saida ? t.saida.substring(0, 16) : ""),
           );
 
           const dto = {
@@ -801,6 +802,12 @@ export const CriarEvento = () => {
       case 2:
         return (
           <>
+            {showId && (
+              <div className="mb-12 border-b pb-8">
+                <VisualizarAlocacoes showId={showId} />
+              </div>
+            )}
+
             <Etapa1Funcoes
               selectedRoles={selectedRoles}
               setSelectedRoles={setSelectedRoles}
@@ -808,12 +815,6 @@ export const CriarEvento = () => {
               setAssignments={setAssignments}
               showId={showId}
             />
-
-            {showId && (
-              <div className="mt-12 border-t pt-8">
-                <VisualizarAlocacoes showId={showId} />
-              </div>
-            )}
           </>
         );
 
@@ -877,58 +878,76 @@ export const CriarEvento = () => {
 
   const [showSidebarDireita, setShowSidebarDireita] = useState(true);
 
+  const handleAbrirVisaoEvento = () => {
+    if (!showId) {
+      showWarning("Salve/abra o evento antes de ir para a Visão do Evento.");
+      return;
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmarVisaoEvento = () => {
+    setModalLoading(true);
+    setIsModalOpen(false);
+    navigate(`/visao-evento/show/${showId}`);
+  };
+
+  const handleCancelarVisaoEvento = () => {
+    setIsModalOpen(false);
+    setModalLoading(false);
+  };
+
   return (
     <LocalSelecionadoProvider>
       <Layout showHeader={false} showNotifications={false}>
-        <div className="flex flex-1 min-h-0 relative">
+        <div className="flex flex-1 min-h-0 relative overflow-x-hidden">
           <div className="flex-1 px-8 py-6 overflow-y-auto">
             <Stepper
               etapaAtual={etapaAtual}
               setEtapaAtual={setEtapaAtual}
               etapas={tipoEvento === "viagem" ? etapasViagem : etapasShow}
-              onVisaoEvento={() => {
-                if (showId) navigate(`/visao-evento/show/${showId}`);
-              }}
+              onEtapaAnterior={
+                etapaAtual > 1 ? () => setEtapaAtual(etapaAtual - 1) : undefined
+              }
+              onProximaEtapa={
+                etapaAtual < (tipoEvento === "viagem" ? 3 : 5)
+                  ? () => setEtapaAtual(etapaAtual + 1)
+                  : undefined
+              }
+              onVisaoEvento={handleAbrirVisaoEvento}
             />
 
             <div className="mt-8">{renderEtapa()}</div>
-
-            <div className="flex justify-end mt-10 gap-4 border-t pt-6 border-[var(--border)]">
-              {/* BOTÃO VOLTAR */}
-              {etapaAtual > 1 && (
-                <button
-                  className="px-6 py-2 bg-[var(--surface-hover)] text-[var(--text-secondary)] rounded-[var(--radius-md)] hover:bg-gray-300"
-                  onClick={() => setEtapaAtual(etapaAtual - 1)}
-                >
-                  Voltar
-                </button>
-              )}
-
-              {/* BOTÃO PRÓXIMA — só aparece se NÃO for a última etapa */}
-              {etapaAtual < (tipoEvento === "viagem" ? 3 : 5) && (
-                <button
-                  className="px-6 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]"
-                  onClick={() => setEtapaAtual(etapaAtual + 1)}
-                >
-                  Próxima Etapa
-                </button>
-              )}
-            </div>
           </div>
 
           {/* SIDEBAR ESTILO OVERLAY (GAVETA) */}
           <div
-            className={`absolute top-0 right-0 h-full z-40 transition-transform duration-300 ease-in-out flex items-center ${showSidebarDireita ? "translate-x-0" : "translate-x-full"
-              }`}
+            className={`absolute top-0 right-0 h-full z-40 transition-transform duration-300 ease-in-out flex items-center ${
+              showSidebarDireita ? "translate-x-0" : "translate-x-full"
+            }`}
           >
             {/* BOTÃO TOGGLE (HANDLE) - FIXO NA BORDA DA GAVETA */}
             <button
               onClick={() => setShowSidebarDireita(!showSidebarDireita)}
-              className="absolute -left-4 bg-[var(--surface-elevated)] border border-[var(--border)] shadow-[var(--shadow-card)] rounded-full w-8 h-8 flex items-center justify-center hover:bg-[var(--surface)] hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
+              className="absolute -left-7 bg-[var(--surface-elevated)] border border-[var(--border)] shadow-[var(--shadow-card)] rounded-full w-8 h-8 flex items-center justify-center hover:bg-[var(--surface)] hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
               title={showSidebarDireita ? "Esconder Resumo" : "Mostrar Resumo"}
             >
-              <div className={`transition-transform duration-300 ${showSidebarDireita ? 'rotate-0' : 'rotate-180'}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+              <div
+                className={`transition-transform duration-300 ${showSidebarDireita ? "rotate-0" : "rotate-180"}`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
               </div>
             </button>
 
@@ -948,6 +967,19 @@ export const CriarEvento = () => {
             </div>
           </div>
         </div>
+
+        <ConfirmModal
+          isOpen={isModalOpen}
+          onClose={handleCancelarVisaoEvento}
+          onConfirm={handleConfirmarVisaoEvento}
+          title="Ir para Visão do Evento?"
+          message="Você realmente deseja sair desta etapa agora? Verifique se as informações importantes já foram salvas."
+          confirmText="Sim, ir para Visão"
+          cancelText="Continuar aqui"
+          type="warning"
+          confirmVariant="danger"
+          loading={modalLoading}
+        />
       </Layout>
     </LocalSelecionadoProvider>
   );

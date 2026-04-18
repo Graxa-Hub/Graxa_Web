@@ -78,8 +78,10 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
   // Busca informações para o local
   useEffect(() => {
     async function buscarDadosLocal() {
-      if (!localSelecionado?.endereco?.cep &&
-          !localSelecionado?.endereco?.logradouro) {
+      if (
+        !localSelecionado?.endereco?.cep &&
+        !localSelecionado?.endereco?.logradouro
+      ) {
         setErro("Digite um endereço ou CEP válido.");
         return;
       }
@@ -88,8 +90,8 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
       setLoading(true);
 
       try {
-        const enderecoBusca = localSelecionado.endereco.cep ||
-                              localSelecionado.endereco.logradouro;
+        const enderecoBusca =
+          localSelecionado.endereco.cep || localSelecionado.endereco.logradouro;
 
         const resolved = await resolverEndereco(enderecoBusca);
 
@@ -125,7 +127,7 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
 
   const handleChange = async (selectedId) => {
     const local = locais.find((l) => l.id === Number(selectedId));
-    
+
     if (!local) {
       setErro("Local não encontrado");
       return;
@@ -156,7 +158,7 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
         }
 
         showSuccess("Local atualizado com sucesso!");
-        setEventoAtual(prev => ({ ...prev, local }));
+        setEventoAtual((prev) => ({ ...prev, local }));
       } catch (error) {
         console.error("Erro ao atualizar local:", error);
         showError("Erro ao atualizar o local do evento");
@@ -193,7 +195,7 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
         }
 
         showSuccess("Novo local criado e vinculado ao evento!");
-        setEventoAtual(prev => ({ ...prev, local: novoLocal }));
+        setEventoAtual((prev) => ({ ...prev, local: novoLocal }));
       } catch (error) {
         console.error("Erro ao vincular novo local:", error);
         showError("Local criado, mas erro ao vincular ao evento");
@@ -226,10 +228,10 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
 
       {/* Card de Detalhes do Local */}
       {localSelecionado && (
-        <div className="bg-gradient-to-br from-white to-gray-50 shadow-[var(--shadow-soft)] rounded-[var(--radius-lg)] border border-[var(--border)] overflow-hidden">
+        <div className="bg-[var(--surface-elevated)] shadow-[var(--shadow-soft)] rounded-[var(--radius-lg)] border border-[var(--border)] overflow-hidden">
           {/* Header do Card */}
-          <div className="bg-[var(--surface-elevated)] px-6 py-4">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+          <div className="bg-[var(--surface-hover)] px-6 py-4">
+            <h3 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-2">
               <Building2 className="w-5 h-5" />
               {localSelecionado.nome}
             </h3>
@@ -241,15 +243,23 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
             <div className="flex items-start gap-3">
               <MapPin className="w-5 h-5 text-[var(--info)] mt-0.5 flex-shrink-0" />
               <div>
-                <p className="text-sm font-semibold text-[var(--text-secondary)]">Endereço</p>
-                <p className="text-sm text-[var(--text-secondary)]">
-                  {localSelecionado.endereco?.logradouro}, {localSelecionado.endereco?.numero}
-                  {localSelecionado.endereco?.complemento && ` - ${localSelecionado.endereco.complemento}`}
+                <p className="text-sm font-semibold text-[var(--text-secondary)]">
+                  Endereço
                 </p>
                 <p className="text-sm text-[var(--text-secondary)]">
-                  {localSelecionado.endereco?.bairro} - {localSelecionado.endereco?.cidade}/{localSelecionado.endereco?.estado}
+                  {localSelecionado.endereco?.logradouro},{" "}
+                  {localSelecionado.endereco?.numero}
+                  {localSelecionado.endereco?.complemento &&
+                    ` - ${localSelecionado.endereco.complemento}`}
                 </p>
-                <p className="text-sm text-[var(--text-muted)]">CEP: {localSelecionado.endereco?.cep}</p>
+                <p className="text-sm text-[var(--text-secondary)]">
+                  {localSelecionado.endereco?.bairro} -{" "}
+                  {localSelecionado.endereco?.cidade}/
+                  {localSelecionado.endereco?.estado}
+                </p>
+                <p className="text-sm text-[var(--text-muted)]">
+                  CEP: {localSelecionado.endereco?.cep}
+                </p>
               </div>
             </div>
 
@@ -257,15 +267,19 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
             <div className="flex items-center gap-3 bg-[var(--surface)] p-3 rounded-[var(--radius-md)]">
               <Info className="w-5 h-5 text-[var(--info)]" />
               <div>
-                <p className="text-sm font-semibold text-[var(--text-secondary)]">Capacidade</p>
-                <p className="text-lg font-bold text-[var(--info)]">{localSelecionado.capacidade} pessoas</p>
+                <p className="text-sm font-semibold text-[var(--text-secondary)]">
+                  Capacidade
+                </p>
+                <p className="text-lg font-bold text-[var(--info)]">
+                  {localSelecionado.capacidade} pessoas
+                </p>
               </div>
             </div>
 
             {/* Loading State */}
             {loading && (
               <div className="flex items-center gap-2 text-[var(--info)] bg-[var(--surface)] p-3 rounded-[var(--radius-md)]">
-                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-[var(--info)] border-t-transparent rounded-full animate-spin" />
                 <p className="text-sm font-medium">Processando...</p>
               </div>
             )}
@@ -279,7 +293,7 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
 
             {/* Informações Adicionais */}
             {localSelecionado.coordsLocal && (
-              <div className="bg-gradient-to-br from-gray-50 to-white p-5 rounded-[var(--radius-lg)] border border-[var(--border)] space-y-4 mt-4">
+              <div className="bg-[var(--surface)] p-5 rounded-[var(--radius-lg)] border border-[var(--border)] space-y-4 mt-4">
                 <h4 className="font-bold text-[var(--text-primary)] text-lg flex items-center gap-2 border-b border-[var(--border)] pb-2">
                   <Info className="w-5 h-5 text-[var(--info)]" />
                   Informações Adicionais
@@ -288,12 +302,20 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
                 {/* Localização */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-xs font-semibold text-[var(--text-muted)] uppercase">Cidade</p>
-                    <p className="text-sm text-[var(--text-primary)] font-medium">{localSelecionado.cidade}</p>
+                    <p className="text-xs font-semibold text-[var(--text-muted)] uppercase">
+                      Cidade
+                    </p>
+                    <p className="text-sm text-[var(--text-primary)] font-medium">
+                      {localSelecionado.cidade}
+                    </p>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-[var(--text-muted)] uppercase">Estado</p>
-                    <p className="text-sm text-[var(--text-primary)] font-medium">{localSelecionado.uf}</p>
+                    <p className="text-xs font-semibold text-[var(--text-muted)] uppercase">
+                      Estado
+                    </p>
+                    <p className="text-sm text-[var(--text-primary)] font-medium">
+                      {localSelecionado.uf}
+                    </p>
                   </div>
                 </div>
 
@@ -302,13 +324,18 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
                   <div className="bg-[var(--surface-elevated)] p-4 rounded-[var(--radius-md)] border border-[var(--border)]">
                     <div className="flex items-center gap-2 mb-2">
                       <Plane className="w-5 h-5 text-[var(--info)]" />
-                      <p className="font-semibold text-[var(--text-primary)]">Aeroporto Mais Próximo</p>
+                      <p className="font-semibold text-[var(--text-primary)]">
+                        Aeroporto Mais Próximo
+                      </p>
                     </div>
                     <p className="text-sm text-[var(--text-secondary)] font-medium">
                       {localSelecionado.aeroportoProximo.nome}
                     </p>
                     <p className="text-xs text-[var(--text-muted)] mt-1">
-                      Distância: <span className="font-semibold text-[var(--info)]">{localSelecionado.aeroportoProximo.distanciaKm} km</span>
+                      Distância:{" "}
+                      <span className="font-semibold text-[var(--info)]">
+                        {localSelecionado.aeroportoProximo.distanciaKm} km
+                      </span>
                     </p>
                   </div>
                 )}
@@ -317,14 +344,23 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
                 {localSelecionado.restaurantesProximos?.length > 0 && (
                   <div className="bg-[var(--surface-elevated)] p-4 rounded-[var(--radius-md)] border border-[var(--border)]">
                     <div className="flex items-center gap-2 mb-3">
-                      <UtensilsCrossed className="w-5 h-5 text-orange-600" />
-                      <p className="font-semibold text-[var(--text-primary)]">Restaurantes Próximos</p>
+                      <UtensilsCrossed className="w-5 h-5 text-[var(--warning)]" />
+                      <p className="font-semibold text-[var(--text-primary)]">
+                        Restaurantes Próximos
+                      </p>
                     </div>
                     <ul className="space-y-2">
                       {localSelecionado.restaurantesProximos.map((r, i) => (
-                        <li key={i} className="flex items-center justify-between text-sm bg-[var(--surface)] p-2 rounded">
-                          <span className="text-[var(--text-secondary)] font-medium">{r.nome}</span>
-                          <span className="text-xs text-orange-600 font-semibold">{r.distanciaKm} km</span>
+                        <li
+                          key={i}
+                          className="flex items-center justify-between text-sm bg-[var(--surface)] p-2 rounded"
+                        >
+                          <span className="text-[var(--text-secondary)] font-medium">
+                            {r.nome}
+                          </span>
+                          <span className="text-xs text-[var(--warning)] font-semibold">
+                            {r.distanciaKm} km
+                          </span>
                         </li>
                       ))}
                     </ul>

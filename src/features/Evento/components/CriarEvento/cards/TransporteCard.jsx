@@ -1,9 +1,16 @@
 import React from "react";
 
-const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemove }) => {
+const TransporteCard = ({
+  transporte = {},
+  colaboradores = [],
+  onChange,
+  onRemove,
+}) => {
   const get = (field, alt) => {
-    if (transporte[field] !== undefined && transporte[field] !== null) return transporte[field];
-    if (alt && transporte[alt] !== undefined && transporte[alt] !== null) return transporte[alt];
+    if (transporte[field] !== undefined && transporte[field] !== null)
+      return transporte[field];
+    if (alt && transporte[alt] !== undefined && transporte[alt] !== null)
+      return transporte[alt];
     return "";
   };
 
@@ -12,15 +19,18 @@ const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemov
   };
 
   const togglePassageiro = (id) => {
-    const passageiros = Array.isArray(transporte.passageiros) ? transporte.passageiros : [];
+    const passageiros = Array.isArray(transporte.passageiros)
+      ? transporte.passageiros
+      : [];
     const exists = passageiros.includes(id);
-    const novaLista = exists ? passageiros.filter((h) => h !== id) : [...passageiros, id];
+    const novaLista = exists
+      ? passageiros.filter((h) => h !== id)
+      : [...passageiros, id];
     updateField("passageiros", novaLista);
   };
 
   return (
     <div className="surface-card p-6 space-y-5 relative">
-
       {/* BOTÃO REMOVER */}
       <button
         onClick={onRemove}
@@ -54,7 +64,9 @@ const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemov
         onChange={(e) => updateField("responsavel", e.target.value)}
       />
 
-      <label className="text-sm font-medium text-[var(--text-secondary)]">Horário de Saída</label>
+      <label className="text-sm font-medium text-[var(--text-secondary)]">
+        Horário de Saída
+      </label>
       <input
         type="datetime-local"
         className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
@@ -62,7 +74,9 @@ const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemov
         onChange={(e) => updateField("saida", e.target.value)}
       />
 
-      <label className="text-sm font-medium text-[var(--text-secondary)]">Horário de Chegada</label>
+      <label className="text-sm font-medium text-[var(--text-secondary)]">
+        Horário de Chegada
+      </label>
       <input
         type="datetime-local"
         className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
@@ -72,11 +86,15 @@ const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemov
 
       {/* PASSAGEIROS */}
       <div>
-        <label className="text-sm font-medium text-[var(--text-secondary)] block mb-2">Passageiros</label>
+        <label className="text-sm font-medium text-[var(--text-secondary)] block mb-2">
+          Passageiros
+        </label>
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
-            const passageiros = Array.isArray(transporte.passageiros) ? transporte.passageiros : [];
+            const passageiros = Array.isArray(transporte.passageiros)
+              ? transporte.passageiros
+              : [];
             const selected = passageiros.includes(c.id);
 
             return (
@@ -84,12 +102,14 @@ const TransporteCard = ({ transporte = {}, colaboradores = [], onChange, onRemov
                 key={c.id}
                 onClick={() => togglePassageiro(c.id)}
                 className={`w-full flex justify-between p-3 border rounded-[var(--radius-md)] transition-colors ${
-                  selected ? "bg-purple-50 border-purple-400 hover:bg-purple-100" : "bg-[var(--surface-hover)] border-[var(--border)] hover:bg-[#383838]"
+                  selected
+                    ? "bg-[var(--surface)] border-[var(--info)] hover:bg-[var(--surface-hover)]"
+                    : "bg-[var(--surface-hover)] border-[var(--border)] hover:bg-[var(--surface)]"
                 }`}
               >
                 <span>{c.nome}</span>
                 {selected && (
-                  <span className="text-purple-600 font-bold">✓</span>
+                  <span className="text-[var(--info)] font-bold">✓</span>
                 )}
               </button>
             );

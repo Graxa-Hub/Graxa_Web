@@ -12,13 +12,13 @@ import { calculateDistance } from "../../../../../utils/endereco/distance";
  * @param {Function} onChange - Callback quando dados mudam
  * @param {Function} onRemove - Callback para remover o item
  */
-const LogisticaCard = ({ 
-  type, 
-  data = {}, 
-  colaboradores = [], 
-  localShow = {}, 
-  onChange, 
-  onRemove 
+const LogisticaCard = ({
+  type,
+  data = {},
+  colaboradores = [],
+  localShow = {},
+  onChange,
+  onRemove,
 }) => {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
@@ -34,10 +34,33 @@ const LogisticaCard = ({
       pessoasKey: "hospedes",
       pessoasLabel: "Hóspedes",
       fields: [
-        { key: "nome", alt: "nomeHotel", label: "Nome do hotel", type: "text", placeholder: "Nome do hotel" },
-        { key: "endereco", alt: "endereco", label: "Endereço", type: "text", placeholder: "Endereço do hotel", hasSearch: true },
-        { key: "checkin", alt: "checkin", label: "Check-in", type: "datetime-local" },
-        { key: "checkout", alt: "checkout", label: "Check-out", type: "datetime-local" },
+        {
+          key: "nome",
+          alt: "nomeHotel",
+          label: "Nome do hotel",
+          type: "text",
+          placeholder: "Nome do hotel",
+        },
+        {
+          key: "endereco",
+          alt: "endereco",
+          label: "Endereço",
+          type: "text",
+          placeholder: "Endereço do hotel",
+          hasSearch: true,
+        },
+        {
+          key: "checkin",
+          alt: "checkin",
+          label: "Check-in",
+          type: "datetime-local",
+        },
+        {
+          key: "checkout",
+          alt: "checkout",
+          label: "Check-out",
+          type: "datetime-local",
+        },
       ],
     },
     flight: {
@@ -47,12 +70,46 @@ const LogisticaCard = ({
       pessoasKey: "passageiros",
       pessoasLabel: "Passageiros",
       fields: [
-        { key: "cia", alt: "ciaAerea", label: "Companhia aérea", type: "text", placeholder: "Companhia aérea" },
-        { key: "numero", alt: "codigoVoo", label: "Número do voo", type: "text", placeholder: "Número do voo" },
-        { key: "origem", alt: "origem", label: "Origem", type: "text", placeholder: "Origem" },
-        { key: "destino", alt: "destino", label: "Destino", type: "text", placeholder: "Destino" },
-        { key: "saida", alt: "partida", label: "Saída", type: "datetime-local" },
-        { key: "chegada", alt: "chegada", label: "Chegada", type: "datetime-local" },
+        {
+          key: "cia",
+          alt: "ciaAerea",
+          label: "Companhia aérea",
+          type: "text",
+          placeholder: "Companhia aérea",
+        },
+        {
+          key: "numero",
+          alt: "codigoVoo",
+          label: "Número do voo",
+          type: "text",
+          placeholder: "Número do voo",
+        },
+        {
+          key: "origem",
+          alt: "origem",
+          label: "Origem",
+          type: "text",
+          placeholder: "Origem",
+        },
+        {
+          key: "destino",
+          alt: "destino",
+          label: "Destino",
+          type: "text",
+          placeholder: "Destino",
+        },
+        {
+          key: "saida",
+          alt: "partida",
+          label: "Saída",
+          type: "datetime-local",
+        },
+        {
+          key: "chegada",
+          alt: "chegada",
+          label: "Chegada",
+          type: "datetime-local",
+        },
       ],
     },
     transporte: {
@@ -62,17 +119,45 @@ const LogisticaCard = ({
       pessoasKey: "passageiros",
       pessoasLabel: "Passageiros",
       fields: [
-        { key: "tipo", alt: "tipo", label: "Tipo", type: "select", options: [
-          { value: "", label: "Selecione o tipo" },
-          { value: "van", label: "Van" },
-          { value: "carro", label: "Carro" },
-          { value: "onibus", label: "Ônibus" },
-          { value: "voo", label: "Voo" },
-        ]},
-        { key: "responsavel", alt: "motorista", label: "Responsável", type: "text", placeholder: "Responsável" },
-        { key: "saida", alt: "saida", label: "Horário de Saída", type: "datetime-local" },
-        { key: "chegada", alt: "chegada", label: "Horário de Chegada", type: "datetime-local" },
-        { key: "observacao", alt: "observacao", label: "Observações", type: "textarea", placeholder: "Observações" },
+        {
+          key: "tipo",
+          alt: "tipo",
+          label: "Tipo",
+          type: "select",
+          options: [
+            { value: "", label: "Selecione o tipo" },
+            { value: "van", label: "Van" },
+            { value: "carro", label: "Carro" },
+            { value: "onibus", label: "Ônibus" },
+            { value: "voo", label: "Voo" },
+          ],
+        },
+        {
+          key: "responsavel",
+          alt: "motorista",
+          label: "Responsável",
+          type: "text",
+          placeholder: "Responsável",
+        },
+        {
+          key: "saida",
+          alt: "saida",
+          label: "Horário de Saída",
+          type: "datetime-local",
+        },
+        {
+          key: "chegada",
+          alt: "chegada",
+          label: "Horário de Chegada",
+          type: "datetime-local",
+        },
+        {
+          key: "observacao",
+          alt: "observacao",
+          label: "Observações",
+          type: "textarea",
+          placeholder: "Observações",
+        },
       ],
     },
   };
@@ -80,7 +165,9 @@ const LogisticaCard = ({
   const currentConfig = config[type];
 
   if (!currentConfig) {
-    return <div className="text-[var(--accent)] text-sm">Tipo inválido: {type}</div>;
+    return (
+      <div className="text-[var(--accent)] text-sm">Tipo inválido: {type}</div>
+    );
   }
 
   // ===================================================================
@@ -127,7 +214,7 @@ const LogisticaCard = ({
           coordsHotel.lat,
           coordsHotel.lon,
           localShow.coordsLocal.lat,
-          localShow.coordsLocal.lon
+          localShow.coordsLocal.lon,
         );
       }
       if (localShow?.aeroportoProximo) {
@@ -135,7 +222,7 @@ const LogisticaCard = ({
           coordsHotel.lat,
           coordsHotel.lon,
           localShow.aeroportoProximo.lat,
-          localShow.aeroportoProximo.lon
+          localShow.aeroportoProximo.lon,
         );
       }
 
@@ -143,8 +230,10 @@ const LogisticaCard = ({
         ...data,
         endereco: resolved.enderecoCompleto,
         coordsHotel,
-        distanciaPalcoKm: distPalco !== null ? Number(distPalco.toFixed(1)) : null,
-        distanciaAeroportoKm: distAeroporto !== null ? Number(distAeroporto.toFixed(1)) : null,
+        distanciaPalcoKm:
+          distPalco !== null ? Number(distPalco.toFixed(1)) : null,
+        distanciaAeroportoKm:
+          distAeroporto !== null ? Number(distAeroporto.toFixed(1)) : null,
       });
     } catch (e) {
       console.error(e);
@@ -158,12 +247,12 @@ const LogisticaCard = ({
   // TOGGLE PESSOAS (hospedes/passageiros)
   // ===================================================================
   const togglePessoa = (id) => {
-    const pessoas = Array.isArray(data[currentConfig.pessoasKey]) 
-      ? data[currentConfig.pessoasKey] 
+    const pessoas = Array.isArray(data[currentConfig.pessoasKey])
+      ? data[currentConfig.pessoasKey]
       : [];
     const exists = pessoas.includes(id);
-    const novaLista = exists 
-      ? pessoas.filter((p) => p !== id) 
+    const novaLista = exists
+      ? pessoas.filter((p) => p !== id)
       : [...pessoas, id];
     updateField(currentConfig.pessoasKey, novaLista);
   };
@@ -173,16 +262,19 @@ const LogisticaCard = ({
   // ===================================================================
   const colorClasses = {
     green: {
-      selected: "bg-[var(--surface)] border-green-400 hover:bg-[var(--surface-hover)]",
+      selected:
+        "bg-[var(--surface)] border-green-400 hover:bg-[var(--surface-hover)]",
       text: "text-[var(--success)]",
     },
     blue: {
-      selected: "bg-[var(--surface)] border-blue-400 hover:bg-[var(--surface-hover)]",
+      selected:
+        "bg-[var(--surface)] border-blue-400 hover:bg-[var(--surface-hover)]",
       text: "text-[var(--info)]",
     },
     purple: {
-      selected: "bg-purple-50 border-purple-400 hover:bg-purple-100",
-      text: "text-purple-600",
+      selected:
+        "bg-[var(--surface)] border-[var(--info)] hover:bg-[var(--surface-hover)]",
+      text: "text-[var(--info)]",
     },
   };
 
@@ -258,7 +350,7 @@ const LogisticaCard = ({
                 {field.label}
               </label>
             )}
-            
+
             <input
               type={field.type}
               className="form-input  focus:ring-0 focus:border-[var(--border-strong)]"
@@ -277,7 +369,9 @@ const LogisticaCard = ({
                 >
                   {loading ? "Buscando..." : "Confirmar Endereço"}
                 </button>
-                {erro && <p className="text-[var(--accent)] text-sm mt-1">{erro}</p>}
+                {erro && (
+                  <p className="text-[var(--accent)] text-sm mt-1">{erro}</p>
+                )}
               </>
             )}
           </div>
@@ -305,8 +399,8 @@ const LogisticaCard = ({
 
         <div className="space-y-1">
           {colaboradores.map((c) => {
-            const pessoas = Array.isArray(data[currentConfig.pessoasKey]) 
-              ? data[currentConfig.pessoasKey] 
+            const pessoas = Array.isArray(data[currentConfig.pessoasKey])
+              ? data[currentConfig.pessoasKey]
               : [];
             const selected = pessoas.includes(c.id);
 
@@ -315,8 +409,8 @@ const LogisticaCard = ({
                 key={c.id}
                 onClick={() => togglePessoa(c.id)}
                 className={`w-full flex justify-between p-3 border rounded-[var(--radius-md)] transition-colors ${
-                  selected 
-                    ? colors.selected 
+                  selected
+                    ? colors.selected
                     : "bg-[var(--surface-hover)] border-[var(--border)] hover:bg-[#383838]"
                 }`}
               >

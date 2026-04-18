@@ -39,7 +39,8 @@ export function NovoLocalForm({
     if (!novoLocal.nome) errors.nomeLocal = "Nome obrigatório";
     if (!novoLocal.capacidade) errors.capacidade = "Capacidade obrigatória";
     if (!novoLocal.endereco.cep) errors.cep = "CEP obrigatório";
-    if (!novoLocal.endereco.logradouro) errors.logradouro = "Logradouro obrigatório";
+    if (!novoLocal.endereco.logradouro)
+      errors.logradouro = "Logradouro obrigatório";
     if (!novoLocal.endereco.numero) errors.numero = "Número obrigatório";
     if (!novoLocal.endereco.cidade) errors.cidade = "Cidade obrigatória";
     if (!novoLocal.endereco.estado) errors.estado = "Estado obrigatória";
@@ -83,13 +84,13 @@ export function NovoLocalForm({
   return (
     <div className="space-y-4 p-4 bg-[var(--surface)] rounded-[var(--radius-md)] border border-[var(--border)]">
       <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-semibold text-blue-900">
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">
           Cadastrar Novo Local
         </h3>
         <button
           type="button"
           onClick={onCancel}
-          className="text-[var(--info)] hover:text-blue-800 text-sm"
+          className="text-[var(--info)] hover:text-[var(--text-primary)] text-sm"
           disabled={adicionando || loading}
         >
           Cancelar
@@ -142,7 +143,7 @@ export function NovoLocalForm({
       <div className="flex justify-end gap-2 mt-2">
         <button
           type="button"
-          className="px-6 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] font-semibold hover:bg-[var(--surface-hover)] transition-colors"
+          className="px-6 py-2 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] font-semibold hover:bg-[var(--surface-hover)] transition-colors"
           onClick={handleSalvar}
           disabled={adicionando || loading}
         >

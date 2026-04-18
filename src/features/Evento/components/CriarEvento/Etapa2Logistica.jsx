@@ -7,7 +7,7 @@ function toValidDateTime(val) {
   // Exemplo: "2025-12-08T14:30:00.000Z" => "2025-12-08T14:30"
   const d = new Date(val);
   if (isNaN(d.getTime())) return "";
-  const pad = n => String(n).padStart(2, '0');
+  const pad = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
@@ -21,7 +21,10 @@ import LogisticaCard from "./cards/LogisticaCard";
 import { ConfirmModal } from "../../../../components/molecules/ConfirmModal";
 import { useToast } from "../../../../hooks/useToast";
 import { useLogistica } from "../../../../hooks/useLogistica";
-import { LOGISTICA_TYPES, LOGISTICA_TEMPLATES } from "../../../../constants/logistica";
+import {
+  LOGISTICA_TYPES,
+  LOGISTICA_TEMPLATES,
+} from "../../../../constants/logistica";
 import { alocacaoService } from "../../../../services/alocacaoService"; // ajuste o path se necessário
 
 const makeTempId = () =>
@@ -39,12 +42,27 @@ const Etapa2Logistica = ({
   setTransports,
   localShow,
   showId,
-  onSave
+  onSave,
 }) => {
   // ✅ Usando hook genérico
-  const { criar: criarHotel, atualizar: atualizarHotel, remover: removerHotelDB, listar: listarHotel } = useLogistica(LOGISTICA_TYPES.HOTEL);
-  const { criar: criarVoo, atualizar: atualizarVoo, remover: removerFlightDB, listar: listarVoo } = useLogistica(LOGISTICA_TYPES.FLIGHT);
-  const { criar: criarTransporte, atualizar: atualizarTransporte, remover: removerTransporteDB, listar: listarTransporte } = useLogistica(LOGISTICA_TYPES.TRANSPORTE);
+  const {
+    criar: criarHotel,
+    atualizar: atualizarHotel,
+    remover: removerHotelDB,
+    listar: listarHotel,
+  } = useLogistica(LOGISTICA_TYPES.HOTEL);
+  const {
+    criar: criarVoo,
+    atualizar: atualizarVoo,
+    remover: removerFlightDB,
+    listar: listarVoo,
+  } = useLogistica(LOGISTICA_TYPES.FLIGHT);
+  const {
+    criar: criarTransporte,
+    atualizar: atualizarTransporte,
+    remover: removerTransporteDB,
+    listar: listarTransporte,
+  } = useLogistica(LOGISTICA_TYPES.TRANSPORTE);
 
   const { showSuccess, showError } = useToast();
 
@@ -62,44 +80,64 @@ const Etapa2Logistica = ({
         console.log("[LOG][Etapa2Logistica] showId recebido:", showId);
         const showIdHotel = typeof showId === "number" ? showId : undefined;
         const showIdVoo = typeof showId === "number" ? showId : undefined;
-        const showIdTransporte = typeof showId === "number" ? showId : undefined;
+        const showIdTransporte =
+          typeof showId === "number" ? showId : undefined;
         console.log("[LOG][Etapa2Logistica] showIdHotel:", showIdHotel);
         console.log("[LOG][Etapa2Logistica] showIdVoo:", showIdVoo);
-        console.log("[LOG][Etapa2Logistica] showIdTransporte:", showIdTransporte);
+        console.log(
+          "[LOG][Etapa2Logistica] showIdTransporte:",
+          showIdTransporte,
+        );
         const [h, v, t] = await Promise.all([
           listarHotel(showIdHotel),
           listarVoo(showIdVoo),
-          listarTransporte(showIdTransporte)
+          listarTransporte(showIdTransporte),
         ]);
         console.log("[LOG][Etapa2Logistica] Resultado listarHotel:", h);
         console.log("[LOG][Etapa2Logistica] Resultado listarVoo:", v);
         console.log("[LOG][Etapa2Logistica] Resultado listarTransporte:", t);
         // Exemplo para hotéis (faça igual para voos e transportes)
         if (Array.isArray(h) && h.length > 0) {
-          setHotels(h.map(hotel => ({
-            ...hotel,
-            nome: hotel.nome || hotel.nomeHotel || "Sem nome",
-            hospedes: hotel.hospedes && hotel.hospedes.length > 0
-              ? hotel.hospedes
-              : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
-          })));
+          setHotels(
+            h.map((hotel) => ({
+              ...hotel,
+              nome: hotel.nome || hotel.nomeHotel || "Sem nome",
+              hospedes:
+                hotel.hospedes && hotel.hospedes.length > 0
+                  ? hotel.hospedes
+                  : hotel.colaboradorId
+                    ? [hotel.colaboradorId]
+                    : [],
+            })),
+          );
         } else {
           setHotels([]);
         }
         if (Array.isArray(v) && v.length > 0) {
-          setFlights(v.map(voo => ({
-            ...voo,
-            passageiros: voo.passageiros || (voo.colaboradorId ? [voo.colaboradorId] : [])
-          })));
+          setFlights(
+            v.map((voo) => ({
+              ...voo,
+              passageiros:
+                voo.passageiros ||
+                (voo.colaboradorId ? [voo.colaboradorId] : []),
+            })),
+          );
         }
         if (Array.isArray(t) && t.length > 0) {
-          setTransports(t.map(transporte => ({
-            ...transporte,
-            passageiros: transporte.passageiros || (transporte.colaboradorId ? [transporte.colaboradorId] : [])
-          })));
+          setTransports(
+            t.map((transporte) => ({
+              ...transporte,
+              passageiros:
+                transporte.passageiros ||
+                (transporte.colaboradorId ? [transporte.colaboradorId] : []),
+            })),
+          );
         }
       } catch (err) {
-        console.error("[LOG][Etapa2Logistica] Erro ao carregar logística:", err);
+        console.error(
+          "[LOG][Etapa2Logistica] Erro ao carregar logística:",
+          err,
+        );
         showError("Erro ao carregar logística do banco.");
       }
     };
@@ -129,10 +167,12 @@ const Etapa2Logistica = ({
             const matches = (hoteisRaw || []).filter(
               (hr) =>
                 hr.colaboradorId === colabId &&
-                String(hr.nomeHotel || "").trim() === String(item.nome || "").trim() &&
-                String(hr.endereco || "").trim() === String(item.endereco || "").trim()
+                String(hr.nomeHotel || "").trim() ===
+                  String(item.nome || "").trim() &&
+                String(hr.endereco || "").trim() ===
+                  String(item.endereco || "").trim(),
             );
-            matches.forEach(match => {
+            matches.forEach((match) => {
               if (match?.id) registros.push(match.id);
             });
           });
@@ -147,16 +187,22 @@ const Etapa2Logistica = ({
           }
         }
         // Após remover, atualiza lista do backend
-        const listaAtual = await listarHotel(typeof showId === "number" ? showId : undefined);
-        setHotels(Array.isArray(listaAtual)
-          ? listaAtual.map(hotel => ({
-            ...hotel,
-            nome: hotel.nome || hotel.nomeHotel || "Sem nome",
-            hospedes: hotel.hospedes && hotel.hospedes.length > 0
-              ? hotel.hospedes
-              : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
-          }))
-          : []
+        const listaAtual = await listarHotel(
+          typeof showId === "number" ? showId : undefined,
+        );
+        setHotels(
+          Array.isArray(listaAtual)
+            ? listaAtual.map((hotel) => ({
+                ...hotel,
+                nome: hotel.nome || hotel.nomeHotel || "Sem nome",
+                hospedes:
+                  hotel.hospedes && hotel.hospedes.length > 0
+                    ? hotel.hospedes
+                    : hotel.colaboradorId
+                      ? [hotel.colaboradorId]
+                      : [],
+              }))
+            : [],
         );
       }
       // 2️⃣ REMOVER VOO
@@ -169,8 +215,10 @@ const Etapa2Logistica = ({
             const match = (voosRaw || []).find(
               (vr) =>
                 vr.colaboradorId === colabId &&
-                String(vr.ciaAerea || "").trim() === String(item.cia || "").trim() &&
-                String(vr.codigoVoo || "").trim() === String(item.numero || "").trim()
+                String(vr.ciaAerea || "").trim() ===
+                  String(item.cia || "").trim() &&
+                String(vr.codigoVoo || "").trim() ===
+                  String(item.numero || "").trim(),
             );
             if (match?.id) registros.push(match.id);
           });
@@ -185,7 +233,9 @@ const Etapa2Logistica = ({
           }
         }
         // Após remover, atualiza lista do backend
-        const listaAtual = await listarVoo(typeof showId === "number" ? showId : undefined);
+        const listaAtual = await listarVoo(
+          typeof showId === "number" ? showId : undefined,
+        );
         setFlights(Array.isArray(listaAtual) ? listaAtual : []);
       }
       // 3️⃣ REMOVER TRANSPORTE
@@ -200,7 +250,7 @@ const Etapa2Logistica = ({
             const match = (transportesRaw || []).find(
               (tr) =>
                 tr.colaboradorId === item.colaboradorId &&
-                String(tr.tipo || "").trim() === String(item.tipo || "").trim()
+                String(tr.tipo || "").trim() === String(item.tipo || "").trim(),
             );
             if (match?.id) registros.push(match.id);
           }
@@ -209,7 +259,7 @@ const Etapa2Logistica = ({
             const match = (transportesRaw || []).find(
               (tr) =>
                 tr.colaboradorId === colabId &&
-                String(tr.tipo || "").trim() === String(item.tipo || "").trim()
+                String(tr.tipo || "").trim() === String(item.tipo || "").trim(),
             );
             if (match?.id) registros.push(match.id);
           });
@@ -217,14 +267,19 @@ const Etapa2Logistica = ({
         console.debug("[Remover][Transporte] IDs encontrados:", registros);
         for (const id of registros) {
           if (id) {
-            console.debug("[Remover][Transporte] Enviando para removerTransporteDB:", id);
+            console.debug(
+              "[Remover][Transporte] Enviando para removerTransporteDB:",
+              id,
+            );
             const resp = await removerTransporteDB(id);
             console.debug("[Remover][Transporte] Resposta:", resp);
             if (resp?.success !== false) sucesso = true;
           }
         }
         // Após remover, atualiza lista do backend
-        const listaAtual = await listarTransporte(typeof showId === "number" ? showId : undefined);
+        const listaAtual = await listarTransporte(
+          typeof showId === "number" ? showId : undefined,
+        );
         setTransports(Array.isArray(listaAtual) ? listaAtual : []);
       }
       if (sucesso) {
@@ -262,8 +317,9 @@ const Etapa2Logistica = ({
       kind,
       item,
       title: "Remover item?",
-      message: `Tem certeza que deseja remover "${item.nome || item.cia || item.tipo || "este item"
-        }"? Esta ação não pode ser desfeita.`,
+      message: `Tem certeza que deseja remover "${
+        item.nome || item.cia || item.tipo || "este item"
+      }"? Esta ação não pode ser desfeita.`,
     });
   };
 
@@ -284,7 +340,10 @@ const Etapa2Logistica = ({
 
   const addTransporte = () =>
     setTransports((prev) => [
-      { ...LOGISTICA_TEMPLATES[LOGISTICA_TYPES.TRANSPORTE], tempId: makeTempId() },
+      {
+        ...LOGISTICA_TEMPLATES[LOGISTICA_TYPES.TRANSPORTE],
+        tempId: makeTempId(),
+      },
       ...prev,
     ]);
 
@@ -300,7 +359,6 @@ const Etapa2Logistica = ({
   const updateTransporteAtIndex = (i, updated) =>
     setTransports((prev) => prev.map((t, idx) => (idx === i ? updated : t)));
 
-
   const mergeUpdate = (original, updated) => {
     // Só sobrescreve campos do original se o updated trouxer valor definido
     const result = { ...original };
@@ -314,16 +372,17 @@ const Etapa2Logistica = ({
 
   function isChanged(original, updated) {
     // Compara todos os campos relevantes
-    return Object.keys(updated).some(
-      key => updated[key] !== original[key]
-    );
+    return Object.keys(updated).some((key) => updated[key] !== original[key]);
   }
 
   const handleSalvarHotel = async (hotel, index) => {
     try {
-      const colaboradorId = typeof hotel.colaboradorId === "number" && hotel.colaboradorId > 0
-        ? hotel.colaboradorId
-        : (Array.isArray(hotel.hospedes) && hotel.hospedes.length > 0 ? hotel.hospedes[0] : null);
+      const colaboradorId =
+        typeof hotel.colaboradorId === "number" && hotel.colaboradorId > 0
+          ? hotel.colaboradorId
+          : Array.isArray(hotel.hospedes) && hotel.hospedes.length > 0
+            ? hotel.hospedes[0]
+            : null;
 
       const payload = {
         nomeHotel: hotel.nome || hotel.nomeHotel || "",
@@ -351,15 +410,19 @@ const Etapa2Logistica = ({
         const { id, tempId, ...payloadSemId } = payload;
         await criarHotel(payloadSemId);
         const listaAtual = await listarHotel(showId);
-        setHotels(Array.isArray(listaAtual)
-          ? listaAtual.map(hotel => ({
-            ...hotel,
-            nome: hotel.nome || hotel.nomeHotel || "Sem nome",
-            hospedes: hotel.hospedes && hotel.hospedes.length > 0
-              ? hotel.hospedes
-              : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
-          }))
-          : []
+        setHotels(
+          Array.isArray(listaAtual)
+            ? listaAtual.map((hotel) => ({
+                ...hotel,
+                nome: hotel.nome || hotel.nomeHotel || "Sem nome",
+                hospedes:
+                  hotel.hospedes && hotel.hospedes.length > 0
+                    ? hotel.hospedes
+                    : hotel.colaboradorId
+                      ? [hotel.colaboradorId]
+                      : [],
+              }))
+            : [],
         );
       }
     } catch (err) {
@@ -370,9 +433,12 @@ const Etapa2Logistica = ({
 
   const handleSalvarVoo = async (voo, index) => {
     try {
-      const colaboradorId = typeof voo.colaboradorId === "number" && voo.colaboradorId > 0
-        ? voo.colaboradorId
-        : (Array.isArray(voo.passageiros) && voo.passageiros.length > 0 ? voo.passageiros[0] : null);
+      const colaboradorId =
+        typeof voo.colaboradorId === "number" && voo.colaboradorId > 0
+          ? voo.colaboradorId
+          : Array.isArray(voo.passageiros) && voo.passageiros.length > 0
+            ? voo.passageiros[0]
+            : null;
 
       let payload = {
         ciaAerea: voo.cia || voo.ciaAerea || "",
@@ -382,7 +448,7 @@ const Etapa2Logistica = ({
         origem: voo.origem || "",
         destino: voo.destino || "",
         chegada: voo.chegada || "",
-        partida: voo.saida || voo.partida || ""
+        partida: voo.saida || voo.partida || "",
       };
       Object.keys(payload).forEach((k) => {
         if (payload[k] === undefined || payload[k] === null) delete payload[k];
@@ -398,15 +464,24 @@ const Etapa2Logistica = ({
         try {
           const updated = await atualizarVoo(voo.id, payload);
           let result;
-          if (!updated || Object.keys(updated).length === 0 || (Object.keys(updated).length === 1 && updated.id)) {
-            showError("O backend não retornou os campos do voo atualizado. Os dados editados foram mantidos.");
+          if (
+            !updated ||
+            Object.keys(updated).length === 0 ||
+            (Object.keys(updated).length === 1 && updated.id)
+          ) {
+            showError(
+              "O backend não retornou os campos do voo atualizado. Os dados editados foram mantidos.",
+            );
             result = { ...voo, ...payload, id: voo.id };
           } else {
             result = mergeUpdate(voo, updated);
           }
           updateFlightAtIndex(index, result);
         } catch (err) {
-          let motivo = err?.response?.data?.message || err?.message || "Erro ao atualizar voo.";
+          let motivo =
+            err?.response?.data?.message ||
+            err?.message ||
+            "Erro ao atualizar voo.";
           showError(motivo);
           console.error("[Voo][Salvar][UPDATE][Erro Backend]", err);
         }
@@ -414,14 +489,18 @@ const Etapa2Logistica = ({
         const { id, tempId, ...payloadSemId } = { ...payload };
         await criarVoo(payloadSemId);
         const listaAtual = await listarVoo(showId);
-        setFlights(Array.isArray(listaAtual)
-          ? listaAtual.map(voo => ({
-            ...voo,
-            passageiros: voo.passageiros && voo.passageiros.length > 0
-              ? voo.passageiros
-              : (voo.colaboradorId ? [voo.colaboradorId] : [])
-          }))
-          : []
+        setFlights(
+          Array.isArray(listaAtual)
+            ? listaAtual.map((voo) => ({
+                ...voo,
+                passageiros:
+                  voo.passageiros && voo.passageiros.length > 0
+                    ? voo.passageiros
+                    : voo.colaboradorId
+                      ? [voo.colaboradorId]
+                      : [],
+              }))
+            : [],
         );
       }
     } catch (err) {
@@ -433,13 +512,22 @@ const Etapa2Logistica = ({
   const handleSalvarTransporte = async (transporte, index) => {
     try {
       let colaboradorId = null;
-      if (typeof transporte.colaboradorId === "number" && transporte.colaboradorId > 0) {
+      if (
+        typeof transporte.colaboradorId === "number" &&
+        transporte.colaboradorId > 0
+      ) {
         colaboradorId = transporte.colaboradorId;
-      } else if (Array.isArray(transporte.passageiros) && transporte.passageiros.length > 0) {
+      } else if (
+        Array.isArray(transporte.passageiros) &&
+        transporte.passageiros.length > 0
+      ) {
         colaboradorId = transporte.passageiros[0];
       }
 
-      const destinoString = typeof transporte.destino === 'string' ? transporte.destino : String(transporte.destino ?? '');
+      const destinoString =
+        typeof transporte.destino === "string"
+          ? transporte.destino
+          : String(transporte.destino ?? "");
 
       const payload = {
         tipo: transporte.tipo || "",
@@ -447,18 +535,30 @@ const Etapa2Logistica = ({
         showId: typeof showId === "number" ? showId : undefined,
         destino: destinoString,
         motorista:
-          transporte.responsavel === undefined || transporte.responsavel === "" || transporte.responsavel === "null"
-            ? (transporte.id ? transports[index]?.motorista : null)
+          transporte.responsavel === undefined ||
+          transporte.responsavel === "" ||
+          transporte.responsavel === "null"
+            ? transporte.id
+              ? transports[index]?.motorista
+              : null
             : transporte.responsavel,
         observacao:
-          transporte.observacao === undefined || transporte.observacao === "" || transporte.observacao === "null"
-            ? (transporte.id ? transports[index]?.observacao : null)
+          transporte.observacao === undefined ||
+          transporte.observacao === "" ||
+          transporte.observacao === "null"
+            ? transporte.id
+              ? transports[index]?.observacao
+              : null
             : transporte.observacao,
         saida:
-          transporte.saida === undefined || transporte.saida === "" || transporte.saida === "null"
-            ? (transporte.id ? transports[index]?.saida : null)
+          transporte.saida === undefined ||
+          transporte.saida === "" ||
+          transporte.saida === "null"
+            ? transporte.id
+              ? transports[index]?.saida
+              : null
             : transporte.saida,
-        chegada: destinoString
+        chegada: destinoString,
       };
       Object.keys(payload).forEach((k) => {
         if (payload[k] === undefined) delete payload[k];
@@ -474,15 +574,24 @@ const Etapa2Logistica = ({
         try {
           const updated = await atualizarTransporte(transporte.id, payload);
           let result;
-          if (!updated || Object.keys(updated).length === 0 || (Object.keys(updated).length === 1 && updated.id)) {
-            showError("O backend não retornou os campos do transporte atualizado. Os dados editados foram mantidos.");
+          if (
+            !updated ||
+            Object.keys(updated).length === 0 ||
+            (Object.keys(updated).length === 1 && updated.id)
+          ) {
+            showError(
+              "O backend não retornou os campos do transporte atualizado. Os dados editados foram mantidos.",
+            );
             result = { ...transporte, ...payload, id: transporte.id };
           } else {
             result = mergeUpdate(transporte, updated);
           }
           updateTransporteAtIndex(index, result);
         } catch (err) {
-          let motivo = err?.response?.data?.message || err?.message || "Erro ao atualizar transporte.";
+          let motivo =
+            err?.response?.data?.message ||
+            err?.message ||
+            "Erro ao atualizar transporte.";
           showError(motivo);
           console.error("[Transporte][Salvar][UPDATE][Erro Backend]", err);
         }
@@ -490,14 +599,18 @@ const Etapa2Logistica = ({
         const { id, tempId, ...payloadSemId } = { ...payload };
         await criarTransporte(payloadSemId);
         const listaAtual = await listarTransporte(showId);
-        setTransports(Array.isArray(listaAtual)
-          ? listaAtual.map(transporte => ({
-            ...transporte,
-            passageiros: transporte.passageiros && transporte.passageiros.length > 0
-              ? transporte.passageiros
-              : (transporte.colaboradorId ? [transporte.colaboradorId] : [])
-          }))
-          : []
+        setTransports(
+          Array.isArray(listaAtual)
+            ? listaAtual.map((transporte) => ({
+                ...transporte,
+                passageiros:
+                  transporte.passageiros && transporte.passageiros.length > 0
+                    ? transporte.passageiros
+                    : transporte.colaboradorId
+                      ? [transporte.colaboradorId]
+                      : [],
+              }))
+            : [],
         );
       }
     } catch (err) {
@@ -514,14 +627,16 @@ const Etapa2Logistica = ({
 
         // Agrupar por colaborador e pegar apenas a alocação mais recente
         const alocsMapPorColaborador = {};
-        (alocacoes || []).forEach(alocacao => {
+        (alocacoes || []).forEach((alocacao) => {
           const colabId = alocacao.colaborador?.id;
           if (!colabId) return;
           if (!alocsMapPorColaborador[colabId]) {
             alocsMapPorColaborador[colabId] = alocacao;
           } else {
             const dataAtual = new Date(alocacao.dataHoraCriacao);
-            const dataSalva = new Date(alocsMapPorColaborador[colabId].dataHoraCriacao);
+            const dataSalva = new Date(
+              alocsMapPorColaborador[colabId].dataHoraCriacao,
+            );
             if (dataAtual > dataSalva) {
               alocsMapPorColaborador[colabId] = alocacao;
             }
@@ -530,16 +645,18 @@ const Etapa2Logistica = ({
 
         // Incluir colaboradores com status ACEITO ou PENDENTE
         const validos = Object.values(alocsMapPorColaborador)
-          .filter(a => {
+          .filter((a) => {
             const status = String(a.status).toUpperCase();
-            return (status === "ACEITO" || status === "PENDENTE") && a.colaborador;
+            return (
+              (status === "ACEITO" || status === "PENDENTE") && a.colaborador
+            );
           })
-          .map(a => a.colaborador);
+          .map((a) => a.colaborador);
 
         // Remove duplicados por id
         const unicos = [];
         const ids = new Set();
-        validos.forEach(c => {
+        validos.forEach((c) => {
           if (!ids.has(c.id)) {
             ids.add(c.id);
             unicos.push(c);
@@ -555,14 +672,16 @@ const Etapa2Logistica = ({
   }, [showId]);
 
   return (
-
     <div className="space-y-8">
       {/* Aviso se listas vierem vazias */}
-      {hotels.length === 0 && flights.length === 0 && transports.length === 0 && (
-        <div className="bg-[var(--surface-hover)] text-yellow-800 p-4 rounded mb-4 text-center">
-          Nenhuma hospedagem, voo ou transporte encontrado no banco para este evento.
-        </div>
-      )}
+      {hotels.length === 0 &&
+        flights.length === 0 &&
+        transports.length === 0 && (
+          <div className="bg-[var(--surface-hover)] text-[var(--warning)] p-4 rounded mb-4 text-center">
+            Nenhuma hospedagem, voo ou transporte encontrado no banco para este
+            evento.
+          </div>
+        )}
       <ConfirmModal
         isOpen={!!confirmModal}
         onClose={() => setConfirmModal(null)}
@@ -577,7 +696,9 @@ const Etapa2Logistica = ({
         loading={loading}
       />
       <section>
-        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Hospedagem</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
+          Hospedagem
+        </h2>
 
         <div className="flex gap-2 mb-2">
           <button
@@ -597,14 +718,18 @@ const Etapa2Logistica = ({
                 let colabErrors = [];
                 // 1️⃣ Validação: só salva se todos os cards estão válidos
                 for (const [index, hotel] of hotels.entries()) {
-                  const colaboradorId = hotel.colaboradorId || (hotel.hospedes && hotel.hospedes[0]);
+                  const colaboradorId =
+                    hotel.colaboradorId ||
+                    (hotel.hospedes && hotel.hospedes[0]);
                   if (!colaboradorId) {
                     colabErrors.push(index);
                   }
                 }
                 setHotelColabErrors(colabErrors);
                 if (colabErrors.length > 0) {
-                  showError("Preencha todos os campos obrigatórios antes de salvar.");
+                  showError(
+                    "Preencha todos os campos obrigatórios antes de salvar.",
+                  );
                   return; // Não envia nada ao backend!
                 }
                 // 2️⃣ Só envia se todos válidos
@@ -617,26 +742,35 @@ const Etapa2Logistica = ({
                     } else {
                       await handleSalvarHotel(hotel, index); // update
                       updated++;
-                      nomesAtualizados.push(hotel.nome || hotel.nomeHotel || "");
+                      nomesAtualizados.push(
+                        hotel.nome || hotel.nomeHotel || "",
+                      );
                     }
                   }
                 }
                 // Só atualiza lista se houve envio
                 if (created || updated) {
-                  const listaAtual = await listarHotel(typeof showId === "number" ? showId : undefined);
-                  setHotels(Array.isArray(listaAtual)
-                    ? listaAtual.map(hotel => ({
-                      ...hotel,
-                      nome: hotel.nome || hotel.nomeHotel || "Sem nome",
-                      hospedes: hotel.hospedes && hotel.hospedes.length > 0
-                        ? hotel.hospedes
-                        : (hotel.colaboradorId ? [hotel.colaboradorId] : [])
-                    }))
-                    : []
+                  const listaAtual = await listarHotel(
+                    typeof showId === "number" ? showId : undefined,
+                  );
+                  setHotels(
+                    Array.isArray(listaAtual)
+                      ? listaAtual.map((hotel) => ({
+                          ...hotel,
+                          nome: hotel.nome || hotel.nomeHotel || "Sem nome",
+                          hospedes:
+                            hotel.hospedes && hotel.hospedes.length > 0
+                              ? hotel.hospedes
+                              : hotel.colaboradorId
+                                ? [hotel.colaboradorId]
+                                : [],
+                        }))
+                      : [],
                   );
                   let msg = `Hospedagem salva!`;
                   if (created) msg += `\nCriado(s): ${nomesCriados.join(", ")}`;
-                  if (updated) msg += `\nAtualizado(s): ${nomesAtualizados.join(", ")}`;
+                  if (updated)
+                    msg += `\nAtualizado(s): ${nomesAtualizados.join(", ")}`;
                   showSuccess(msg);
                 } else {
                   showSuccess("Nenhuma hospedagem foi salva.");
@@ -652,7 +786,8 @@ const Etapa2Logistica = ({
 
         <div className="mt-6 grid md:grid-cols-2 gap-6">
           {hotels.map((hotel, index) => {
-            const colaboradorId = hotel.colaboradorId || (hotel.hospedes && hotel.hospedes[0]);
+            const colaboradorId =
+              hotel.colaboradorId || (hotel.hospedes && hotel.hospedes[0]);
             const faltaColaborador = !colaboradorId;
             const showColabError = hotelColabErrors.includes(index);
             return (
@@ -672,7 +807,7 @@ const Etapa2Logistica = ({
                 )}
                 <div className="absolute top-2 right-2 flex gap-2">
                   <button
-                    className="px-3 py-1 bg-[var(--surface)]0 text-white rounded hover:bg-red-700"
+                    className="px-3 py-1 bg-[var(--accent)] text-white rounded hover:opacity-90"
                     onClick={() => handleRemove("hotel", hotel)}
                   >
                     Remover
@@ -686,7 +821,9 @@ const Etapa2Logistica = ({
 
       {/* VOOS */}
       <section>
-        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Voos da Equipe</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
+          Voos da Equipe
+        </h2>
         <div className="flex gap-2 mb-2">
           <button
             className="px-6 py-2 btn-primary font-medium"
@@ -705,19 +842,25 @@ const Etapa2Logistica = ({
                 let colabErrors = [];
                 // 1️⃣ Validação: só salva se todos os cards estão válidos
                 for (const [index, flight] of flights.entries()) {
-                  const colaboradorId = flight.colaboradorId || (flight.passageiros && flight.passageiros[0]);
+                  const colaboradorId =
+                    flight.colaboradorId ||
+                    (flight.passageiros && flight.passageiros[0]);
                   if (!colaboradorId) {
                     colabErrors.push(index);
                   }
                 }
                 setFlightColabErrors(colabErrors);
                 if (colabErrors.length > 0) {
-                  showError("Preencha todos os campos obrigatórios antes de salvar.");
+                  showError(
+                    "Preencha todos os campos obrigatórios antes de salvar.",
+                  );
                   return; // Não envia nada ao backend!
                 }
                 // 2️⃣ Só envia se todos válidos
                 for (const [index, flight] of flights.entries()) {
-                  const colaboradorId = flight.colaboradorId || (flight.passageiros && flight.passageiros[0]);
+                  const colaboradorId =
+                    flight.colaboradorId ||
+                    (flight.passageiros && flight.passageiros[0]);
                   if (!colaboradorId) {
                     colabErrors.push(index);
                     continue;
@@ -725,30 +868,41 @@ const Etapa2Logistica = ({
                   if (!flight.id && flight.tempId) {
                     await handleSalvarVoo(flight, index); // insert
                     created++;
-                    criados.push(`${flight.cia || flight.ciaAerea || ""} ${flight.numero || flight.codigoVoo || ""}`);
+                    criados.push(
+                      `${flight.cia || flight.ciaAerea || ""} ${flight.numero || flight.codigoVoo || ""}`,
+                    );
                   }
                   if (flight.id) {
                     await handleSalvarVoo(flight, index); // update
                     updated++;
-                    atualizados.push(`${flight.cia || flight.ciaAerea || ""} ${flight.numero || flight.codigoVoo || ""}`);
+                    atualizados.push(
+                      `${flight.cia || flight.ciaAerea || ""} ${flight.numero || flight.codigoVoo || ""}`,
+                    );
                   }
                 }
                 setFlightColabErrors(colabErrors);
                 // Recarrega lista do banco após salvar (garante que o que está no banco aparece na tela)
-                const listaAtual = await listarVoo(typeof showId === "number" ? showId : undefined);
-                setFlights(Array.isArray(listaAtual)
-                  ? listaAtual.map(voo => ({
-                    ...voo,
-                    passageiros: voo.passageiros && voo.passageiros.length > 0
-                      ? voo.passageiros
-                      : (voo.colaboradorId ? [voo.colaboradorId] : [])
-                  }))
-                  : []
+                const listaAtual = await listarVoo(
+                  typeof showId === "number" ? showId : undefined,
+                );
+                setFlights(
+                  Array.isArray(listaAtual)
+                    ? listaAtual.map((voo) => ({
+                        ...voo,
+                        passageiros:
+                          voo.passageiros && voo.passageiros.length > 0
+                            ? voo.passageiros
+                            : voo.colaboradorId
+                              ? [voo.colaboradorId]
+                              : [],
+                      }))
+                    : [],
                 );
                 if (created || updated) {
                   let msg = `Voos salvos!`;
                   if (created) msg += `\nCriado(s): ${criados.join(", ")}`;
-                  if (updated) msg += `\nAtualizado(s): ${atualizados.join(", ")}`;
+                  if (updated)
+                    msg += `\nAtualizado(s): ${atualizados.join(", ")}`;
                   showSuccess(msg);
                 } else if (colabErrors.length === 0) {
                   showSuccess("Nenhum voo foi salvo.");
@@ -763,11 +917,16 @@ const Etapa2Logistica = ({
         </div>
         <div className="mt-6 grid md:grid-cols-2 gap-6">
           {flights.map((flight, index) => {
-            const colaboradorId = flight.colaboradorId || (flight.passageiros && flight.passageiros[0]);
+            const colaboradorId =
+              flight.colaboradorId ||
+              (flight.passageiros && flight.passageiros[0]);
             const faltaColaborador = !colaboradorId;
             const showColabError = flightColabErrors.includes(index);
             return (
-              <div key={flight.tempId || flight.id || index} className="relative">
+              <div
+                key={flight.tempId || flight.id || index}
+                className="relative"
+              >
                 <LogisticaCard
                   type={LOGISTICA_TYPES.FLIGHT}
                   data={flight}
@@ -782,7 +941,7 @@ const Etapa2Logistica = ({
                 )}
                 <div className="absolute top-2 right-2 flex gap-2">
                   <button
-                    className="px-3 py-1 bg-[var(--surface)]0 text-white rounded hover:bg-red-700"
+                    className="px-3 py-1 bg-[var(--accent)] text-white rounded hover:opacity-90"
                     onClick={() => handleRemove("flight", flight)}
                   >
                     Remover
@@ -796,7 +955,9 @@ const Etapa2Logistica = ({
 
       {/* TRANSPORTES */}
       <section>
-        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">Transportes</h2>
+        <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">
+          Transportes
+        </h2>
         <div className="flex gap-2 mb-2">
           <button
             className="px-6 py-2 btn-primary font-medium"
@@ -815,19 +976,23 @@ const Etapa2Logistica = ({
                 let colabErrors = [];
                 // 1️⃣ Validação: só salva se todos os cards estão válidos
                 for (const [index, t] of transports.entries()) {
-                  const colaboradorId = t.colaboradorId || (t.passageiros && t.passageiros[0]);
+                  const colaboradorId =
+                    t.colaboradorId || (t.passageiros && t.passageiros[0]);
                   if (!colaboradorId) {
                     colabErrors.push(index);
                   }
                 }
                 setTranspColabErrors(colabErrors);
                 if (colabErrors.length > 0) {
-                  showError("Preencha todos os campos obrigatórios antes de salvar.");
+                  showError(
+                    "Preencha todos os campos obrigatórios antes de salvar.",
+                  );
                   return; // Não envia nada ao backend!
                 }
                 // 2️⃣ Só envia se todos válidos
                 for (const [index, t] of transports.entries()) {
-                  const colaboradorId = t.colaboradorId || (t.passageiros && t.passageiros[0]);
+                  const colaboradorId =
+                    t.colaboradorId || (t.passageiros && t.passageiros[0]);
                   if (!colaboradorId) {
                     colabErrors.push(index);
                     continue;
@@ -845,20 +1010,28 @@ const Etapa2Logistica = ({
                 }
                 setTranspColabErrors(colabErrors);
                 // Recarrega lista do banco após salvar
-                const listaAtual = await listarTransporte(typeof showId === "number" ? showId : undefined);
-                setTransports(Array.isArray(listaAtual)
-                  ? listaAtual.map(transporte => ({
-                    ...transporte,
-                    passageiros: transporte.passageiros && transporte.passageiros.length > 0
-                      ? transporte.passageiros
-                      : (transporte.colaboradorId ? [transporte.colaboradorId] : [])
-                  }))
-                  : []
+                const listaAtual = await listarTransporte(
+                  typeof showId === "number" ? showId : undefined,
+                );
+                setTransports(
+                  Array.isArray(listaAtual)
+                    ? listaAtual.map((transporte) => ({
+                        ...transporte,
+                        passageiros:
+                          transporte.passageiros &&
+                          transporte.passageiros.length > 0
+                            ? transporte.passageiros
+                            : transporte.colaboradorId
+                              ? [transporte.colaboradorId]
+                              : [],
+                      }))
+                    : [],
                 );
                 if (created || updated) {
                   let msg = `Transportes salvos!`;
                   if (created) msg += `\nCriado(s): ${criados.join(", ")}`;
-                  if (updated) msg += `\nAtualizado(s): ${atualizados.join(", ")}`;
+                  if (updated)
+                    msg += `\nAtualizado(s): ${atualizados.join(", ")}`;
                   showSuccess(msg);
                 } else if (colabErrors.length === 0) {
                   showSuccess("Nenhum transporte foi salvo.");
@@ -873,7 +1046,8 @@ const Etapa2Logistica = ({
         </div>
         <div className="mt-6 grid md:grid-cols-2 gap-6">
           {transports.map((t, index) => {
-            const colaboradorId = t.colaboradorId || (t.passageiros && t.passageiros[0]);
+            const colaboradorId =
+              t.colaboradorId || (t.passageiros && t.passageiros[0]);
             const faltaColaborador = !colaboradorId;
             const showColabError = transpColabErrors.includes(index);
             return (
@@ -883,7 +1057,9 @@ const Etapa2Logistica = ({
                   data={{ ...t, destino: t.destino || "" }}
                   colaboradores={colaboradoresAceitos}
                   onRemove={() => handleRemove("transporte", t)}
-                  onChange={(updated) => updateTransporteAtIndex(index, updated)}
+                  onChange={(updated) =>
+                    updateTransporteAtIndex(index, updated)
+                  }
                 />
                 {showColabError && (
                   <div className="text-[var(--accent)] text-xs mt-2 ml-2">
@@ -892,7 +1068,7 @@ const Etapa2Logistica = ({
                 )}
                 <div className="absolute top-2 right-2 flex gap-2">
                   <button
-                    className="px-3 py-1 bg-[var(--surface)]0 text-white rounded hover:bg-red-700"
+                    className="px-3 py-1 bg-[var(--accent)] text-white rounded hover:opacity-90"
                     onClick={() => handleRemove("transporte", t)}
                   >
                     Remover

@@ -58,7 +58,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
     setConfirmModal({
       item,
       title: "Remover item da agenda?",
-      message: `Tem certeza que deseja remover "${item.titulo || 'este item'}"? Esta ação não pode ser desfeita.`,
+      message: `Tem certeza que deseja remover "${item.titulo || "este item"}"? Esta ação não pode ser desfeita.`,
     });
   };
 
@@ -81,7 +81,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
           const itemKey = i.tempId || i.id;
           const targetKey = item.tempId || item.id;
           return itemKey !== targetKey;
-        })
+        }),
       );
 
       showSuccess("Item removido com sucesso!");
@@ -149,7 +149,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
       <div className="flex gap-3">
         <button
           onClick={() => adicionarItem(TIPOS_ENUM.TECNICO)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors font-medium "
+          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors font-medium"
         >
           <Wrench className="w-4 h-4" />
           Adicionar Técnico
@@ -157,7 +157,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
         <button
           onClick={() => adicionarItem(TIPOS_ENUM.DESLOCAMENTO)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors font-medium "
+          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors font-medium"
         >
           <MapPin className="w-4 h-4" />
           Adicionar Deslocamento
@@ -173,7 +173,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
             }
             if (onSave && typeof onSave === "function") onSave();
           }}
-          className="px-5 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]"
+          className="px-5 py-2 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]"
         >
           Salvar Agenda
         </button>
@@ -184,7 +184,9 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
         {agenda.length === 0 && (
           <div className="text-center py-12 bg-[var(--surface)] rounded-[var(--radius-lg)] border-2 border-dashed border-[var(--border)]">
             <Calendar className="w-12 h-12 text-[var(--text-muted)] mx-auto mb-3" />
-            <p className="text-sm text-[var(--text-muted)]">Nenhum item de agenda criado.</p>
+            <p className="text-sm text-[var(--text-muted)]">
+              Nenhum item de agenda criado.
+            </p>
             <p className="text-xs text-[var(--text-muted)] mt-1">
               Clique nos botões acima para adicionar
             </p>
@@ -197,18 +199,20 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
           return (
             <div
               key={itemKey}
-              className={`bg-[var(--surface-elevated)] p-6 rounded-[var(--radius-lg)] shadow-[var(--shadow-soft)] space-y-4 border-l-4 ${item.tipo === TIPOS_ENUM.DESLOCAMENTO
-                ? "border-l-green-500"
-                : "border-l-blue-500"
-                }`}
+              className={`bg-[var(--surface-elevated)] p-6 rounded-[var(--radius-lg)] shadow-[var(--shadow-soft)] space-y-4 border-l-4 ${
+                item.tipo === TIPOS_ENUM.DESLOCAMENTO
+                  ? "border-l-green-500"
+                  : "border-l-blue-500"
+              }`}
             >
               {/* Badge de Tipo */}
               <div className="flex items-center justify-between">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${item.tipo === TIPOS_ENUM.DESLOCAMENTO
-                    ? "bg-[var(--surface-hover)] text-[var(--success)]"
-                    : "bg-[var(--surface-hover)] text-[var(--info)]"
-                    }`}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${
+                    item.tipo === TIPOS_ENUM.DESLOCAMENTO
+                      ? "bg-[var(--surface-hover)] text-[var(--success)]"
+                      : "bg-[var(--surface-hover)] text-[var(--info)]"
+                  }`}
                 >
                   {item.tipo === TIPOS_ENUM.DESLOCAMENTO ? (
                     <>
@@ -221,13 +225,17 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
                   )}
                 </span>
                 {item.id && (
-                  <span className="text-xs text-[var(--text-muted)]">ID: {item.id}</span>
+                  <span className="text-xs text-[var(--text-muted)]">
+                    ID: {item.id}
+                  </span>
                 )}
               </div>
 
               {/* TIPO */}
               <div>
-                <label className="text-sm font-semibold text-[var(--text-secondary)]">Tipo</label>
+                <label className="text-sm font-semibold text-[var(--text-secondary)]">
+                  Tipo
+                </label>
                 <select
                   className="form-input mt-1
                    focus:ring-0 focus:border-[var(--border-strong)]"
@@ -241,13 +249,17 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
               {/* TITULO */}
               <div>
-                <label className="text-sm font-semibold text-[var(--text-secondary)]">Título</label>
+                <label className="text-sm font-semibold text-[var(--text-secondary)]">
+                  Título
+                </label>
                 <input
                   className="form-input mt-1
                    focus:ring-0 focus:border-[var(--border-strong)]"
                   value={item.titulo}
                   placeholder="Ex: Montagem de palco"
-                  onChange={(e) => updateItem(itemKey, "titulo", e.target.value)}
+                  onChange={(e) =>
+                    updateItem(itemKey, "titulo", e.target.value)
+                  }
                 />
               </div>
 
@@ -255,24 +267,32 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
               {item.tipo === TIPOS_ENUM.DESLOCAMENTO && (
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-semibold text-[var(--text-secondary)]">Origem</label>
+                    <label className="text-sm font-semibold text-[var(--text-secondary)]">
+                      Origem
+                    </label>
                     <input
                       className="form-input mt-1
                        focus:ring-0 focus:border-[var(--border-strong)]"
                       value={item.origem}
                       placeholder="Ex: Hotel X"
-                      onChange={(e) => updateItem(itemKey, "origem", e.target.value)}
+                      onChange={(e) =>
+                        updateItem(itemKey, "origem", e.target.value)
+                      }
                     />
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-[var(--text-secondary)]">Destino</label>
+                    <label className="text-sm font-semibold text-[var(--text-secondary)]">
+                      Destino
+                    </label>
                     <input
                       className="form-input mt-1
                        focus:ring-0 focus:border-[var(--border-strong)]"
                       value={item.destino}
                       placeholder="Ex: Estádio Y"
-                      onChange={(e) => updateItem(itemKey, "destino", e.target.value)}
+                      onChange={(e) =>
+                        updateItem(itemKey, "destino", e.target.value)
+                      }
                     />
                   </div>
                 </div>
@@ -291,7 +311,9 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
                      focus:ring-0 focus:border-[var(--border-strong)]"
                     style={{ minWidth: 0 }}
                     value={item.dataHoraInicio || ""}
-                    onChange={(e) => updateItem(itemKey, "dataHoraInicio", e.target.value)}
+                    onChange={(e) =>
+                      updateItem(itemKey, "dataHoraInicio", e.target.value)
+                    }
                   />
                 </div>
 
@@ -306,21 +328,27 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
                      focus:ring-0 focus:border-[var(--border-strong)]"
                     style={{ minWidth: 0 }}
                     value={item.dataHoraFim || ""}
-                    onChange={(e) => updateItem(itemKey, "dataHoraFim", e.target.value)}
+                    onChange={(e) =>
+                      updateItem(itemKey, "dataHoraFim", e.target.value)
+                    }
                   />
                 </div>
               </div>
 
               {/* DESCRIÇÃO */}
               <div>
-                <label className="text-sm font-semibold text-[var(--text-secondary)]">Descrição</label>
+                <label className="text-sm font-semibold text-[var(--text-secondary)]">
+                  Descrição
+                </label>
                 <textarea
                   className="form-input mt-1
                    focus:ring-0 focus:border-[var(--border-strong)] resize-none"
                   rows="3"
                   value={item.descricao}
                   placeholder="Adicione detalhes sobre esta atividade..."
-                  onChange={(e) => updateItem(itemKey, "descricao", e.target.value)}
+                  onChange={(e) =>
+                    updateItem(itemKey, "descricao", e.target.value)
+                  }
                 />
               </div>
 
@@ -328,7 +356,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
               <div className="flex gap-2 pt-2 border-t border-[var(--border)]">
                 <button
                   onClick={() => handleRemoverClick(item)}
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface)]0 text-white rounded-[var(--radius-md)] text-sm hover:bg-red-600 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--accent)] text-white rounded-[var(--radius-md)] text-sm hover:opacity-90 transition-colors"
                 >
                   <Trash2 className="w-4 h-4" />
                   Remover
@@ -336,7 +364,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
                 <button
                   onClick={() => duplicarItem(item)}
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-hover)] text-[var(--text-primary)] rounded-[var(--radius-md)] text-sm hover:bg-gray-300 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-hover)] text-[var(--text-primary)] rounded-[var(--radius-md)] text-sm hover:bg-[var(--surface)] transition-colors"
                 >
                   <Copy className="w-4 h-4" />
                   Duplicar

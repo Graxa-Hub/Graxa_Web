@@ -13,23 +13,25 @@ const Etapa5Extras = ({ extras, setExtras, onSave, showId }) => {
 
   return (
     <div className="space-y-8">
-
       {/* BOTÃO SALVAR NO TOPO */}
       <div className="flex justify-end">
         <button
           onClick={handleSave}
-          className="px-6 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]"
+          className="px-6 py-2 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]"
         >
           Salvar Extras
         </button>
       </div>
 
-      <h2 className="text-xl font-bold text-[var(--text-primary)]">Informações Extras</h2>
+      <h2 className="text-xl font-bold text-[var(--text-primary)]">
+        Informações Extras
+      </h2>
 
       <div className="bg-[var(--surface-elevated)] p-6 rounded-[var(--radius-lg)] shadow-[var(--shadow-soft)] space-y-4 border border-[var(--border)]">
-
         <div>
-          <label className="text-sm font-medium text-[var(--text-secondary)]">Observações Gerais</label>
+          <label className="text-sm font-medium text-[var(--text-secondary)]">
+            Observações Gerais
+          </label>
           <textarea
             className="w-full p-3 mt-1 border border-[var(--border)] rounded-[var(--radius-md)]  focus:ring-0 focus:border-[var(--border-strong)]"
             rows="5"
@@ -39,7 +41,9 @@ const Etapa5Extras = ({ extras, setExtras, onSave, showId }) => {
         </div>
 
         <div>
-          <label className="text-sm font-medium text-[var(--text-secondary)]">Contatos Importantes</label>
+          <label className="text-sm font-medium text-[var(--text-secondary)]">
+            Contatos Importantes
+          </label>
           <textarea
             className="w-full p-3 mt-1 border border-[var(--border)] rounded-[var(--radius-md)]  focus:ring-0 focus:border-[var(--border-strong)]"
             rows="5"
@@ -47,7 +51,6 @@ const Etapa5Extras = ({ extras, setExtras, onSave, showId }) => {
             onChange={(e) => updateField("contatos", e.target.value)}
           />
         </div>
-
       </div>
     </div>
   );
