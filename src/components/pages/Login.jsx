@@ -1,6 +1,6 @@
-import { AuthLayout } from "../components/templates/AuthLayout";
-import { LoginForm } from "../components/organisms/LoginForm";
-import { useLoginForm } from "../hooks/useLoginForm";
+import { AuthLayout } from "../templates/AuthLayout";
+import { LoginForm } from "../organisms/LoginForm";
+import { useLoginForm } from "../../hooks/useLoginForm";
 
 export const Login = () => {
   const { email, senha, errors, loading, handleChange, handleSubmit } =

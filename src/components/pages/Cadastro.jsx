@@ -1,6 +1,6 @@
-import { AuthLayout } from "../components/templates/AuthLayout";
-import { CadastroForm } from "../components/organisms/CadastroForm";
-import { useCadastroForm } from "../hooks/useCadastroForm";
+import { AuthLayout } from "../templates/AuthLayout";
+import { CadastroForm } from "../organisms/CadastroForm";
+import { useCadastroForm } from "../../hooks/useCadastroForm";
 
 export const Cadastro = () => {
   const { fields, errors, loading, handleChange, handleSubmit } =

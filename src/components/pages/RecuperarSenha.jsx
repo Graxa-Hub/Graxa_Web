@@ -1,6 +1,6 @@
-import { AuthLayout } from "../components/templates/AuthLayout";
-import { RecuperarSenhaForm } from "../components/organisms/RecuperarSenhaForm";
-import { useRecuperarSenhaForm } from "../hooks/useRecuperarSenhaForm";
+import { AuthLayout } from "../templates/AuthLayout";
+import { RecuperarSenhaForm } from "../organisms/RecuperarSenhaForm";
+import { useRecuperarSenhaForm } from "../../hooks/useRecuperarSenhaForm";
 
 export const RecuperarSenha = () => {
   const {

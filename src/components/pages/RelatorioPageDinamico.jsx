@@ -1,11 +1,11 @@
 import { CloudRain } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { showService } from "../services/showService";
-import { alocacaoService } from "../services/alocacaoService";
-import { agendaEventoService } from "../services/agendaEventoService";
-import { logisticaService } from "../services/logisticaService";
-import { formatarData, formatarHora } from "../utils/dateFormatters";
+import { showService } from "../../services/showService";
+import { alocacaoService } from "../../services/alocacaoService";
+import { agendaEventoService } from "../../services/agendaEventoService";
+import { logisticaService } from "../../services/logisticaService";
+import { formatarData, formatarHora } from "../../utils/dateFormatters";
 
 export function RelatorioPageDinamico() {
   const { id } = useParams();

@@ -1,6 +1,6 @@
 import { Input } from "../ModalEventos/Input";
-import { InputFile } from "../InputFile";
-import { ComboBox } from "../ComboBox";
+import { InputFile } from "./InputFile";
+import { ComboBox } from "./ComboBox";
 import { GENEROS } from "../../constants/generos";
 
 export function BandaFormStep({

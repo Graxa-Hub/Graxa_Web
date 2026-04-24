@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Layout } from "../components/templates/Layout";
-import { Sidebar } from "../components/organisms/Sidebar";
+import { Layout } from "../templates/Layout";
+import { Sidebar } from "../organisms/Sidebar";
 import { ChevronDown, Settings, Camera, Volume2, Guitar } from "lucide-react";
-import { DropdownGenerico } from "../components/DropdownGenerico";
-import { useShows } from "../hooks/useShows";
+import { DropdownGenerico } from "../molecules/DropdownGenerico";
+import { useShows } from "../../hooks/useShows";
 
 // Componente do card de etapa
 const StageCard = ({ number, title, description }) => {
@@ -14,7 +14,9 @@ const StageCard = ({ number, title, description }) => {
           {number}
         </div>
         <div>
-          <h3 className="font-semibold text-[var(--text-primary)] mb-1">{title}</h3>
+          <h3 className="font-semibold text-[var(--text-primary)] mb-1">
+            {title}
+          </h3>
           <p className="text-sm text-[var(--text-secondary)]">{description}</p>
         </div>
       </div>
@@ -29,21 +31,28 @@ const RoleCard = ({ role, isSelected, onClick }) => {
   return (
     <div
       onClick={onClick}
-      className={`bg-[var(--surface-elevated)] rounded-[var(--radius-md)]  p-6 flex items-center justify-between hover:bg-[var(--surface)] transition-all cursor-pointer ${isSelected ? "ring-2 ring-red-300" : ""
-        }`}
+      className={`bg-[var(--surface-elevated)] rounded-[var(--radius-md)]  p-6 flex items-center justify-between hover:bg-[var(--surface)] transition-all cursor-pointer ${
+        isSelected ? "ring-2 ring-red-300" : ""
+      }`}
     >
       <div className="flex items-center gap-4">
         <div
-          className={`w-12 h-12 rounded-[var(--radius-md)] flex items-center justify-center ${isSelected ? "bg-[var(--surface)]" : "bg-[var(--surface-hover)]"
-            }`}
+          className={`w-12 h-12 rounded-[var(--radius-md)] flex items-center justify-center ${
+            isSelected ? "bg-[var(--surface)]" : "bg-[var(--surface-hover)]"
+          }`}
         >
           <Icon
-            className={`w-6 h-6 ${isSelected ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"
-              }`}
+            className={`w-6 h-6 ${
+              isSelected
+                ? "text-[var(--accent)]"
+                : "text-[var(--text-secondary)]"
+            }`}
           />
         </div>
         <div>
-          <h3 className="font-semibold text-[var(--text-primary)]">{role.title}</h3>
+          <h3 className="font-semibold text-[var(--text-primary)]">
+            {role.title}
+          </h3>
           <p className="text-sm text-[var(--text-muted)]">{role.description}</p>
         </div>
       </div>

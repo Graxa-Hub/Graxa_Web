@@ -3,7 +3,7 @@ import { AuthHeader } from "../molecules/AuthHeader";
 import { ButtonAlt } from "../atoms/ButtonAlt";
 import { ButtonSign } from "../atoms/ButtonSign";
 import { Logo } from "../atoms/Logo";
-import { ComboBox } from "../ComboBox";
+import { ComboBox } from "../molecules/ComboBox";
 import { TIPOS_USUARIO } from "../../constants/tipoUsuario";
 
 export const CadastroForm = ({

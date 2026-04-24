@@ -1,5 +1,5 @@
 import React from "react";
-import { Textarea } from "../Textarea";
+import { Textarea } from "../atoms/Textarea";
 import { InputFile } from "../InputFile";
 
 export function TurneExtraDetail({
@@ -31,16 +31,18 @@ export function TurneExtraDetail({
         <InputFile
           label="Foto da Turnê"
           value={imagemAtual}
-          onChange={(e) => handleInputChange("imagem", e.target.files?.[0] || null)}
+          onChange={(e) =>
+            handleInputChange("imagem", e.target.files?.[0] || null)
+          }
         />
         {errors.imagem && (
           <p className="text-red-500 text-sm mt-1">{errors.imagem}</p>
         )}
         <p className="text-xs text-gray-500 mt-2">
-                  {isEditMode
-                    ? "Envie apenas se quiser alterar a imagem atual"
-                    : "A imagem é obrigatória para criar uma nova turnê"}
-                </p>
+          {isEditMode
+            ? "Envie apenas se quiser alterar a imagem atual"
+            : "A imagem é obrigatória para criar uma nova turnê"}
+        </p>
       </div>
     </div>
   );

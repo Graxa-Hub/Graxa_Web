@@ -1,5 +1,5 @@
-import { Textarea } from "../Textarea";
-import { InputFile } from "../InputFile";
+import { Textarea } from "../atoms/Textarea";
+import { InputFile } from "../molecules/InputFile";
 
 export function TurneDetailForm({
   formData,
