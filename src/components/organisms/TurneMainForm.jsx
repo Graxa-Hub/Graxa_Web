@@ -1,6 +1,6 @@
 import { Input } from "../ModalEventos/Input";
 import { BandaInput } from "../ModalEventos/BandaInput";
-import { Calendar } from "../Calendar";
+import { Calendar } from "../molecules/Calendar";
 
 export function TurneMainForm({
   formData,

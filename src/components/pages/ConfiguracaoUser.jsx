@@ -1,11 +1,11 @@
 import React from "react";
-import { Layout } from "../components/templates/Layout";
-import { ConfigHeader } from "../components/molecules/ConfigHeader";
-import { ConfigPhoto } from "../components/organisms/ConfigPhoto";
-import { ConfigFormFields } from "../components/organisms/ConfigFormFields";
-import { ConfigPasswordSection } from "../components/organisms/ConfigPasswordSection";
-import { ConfigSaveActions } from "../components/organisms/ConfigSaveActions";
-import { useConfigForm } from "../hooks/useConfigForm";
+import { Layout } from "../templates/Layout";
+import { ConfigHeader } from "../molecules/ConfigHeader";
+import { ConfigPhoto } from "../organisms/ConfigPhoto";
+import { ConfigFormFields } from "../organisms/ConfigFormFields";
+import { ConfigPasswordSection } from "../organisms/ConfigPasswordSection";
+import { ConfigSaveActions } from "../organisms/ConfigSaveActions";
+import { useConfigForm } from "../../hooks/useConfigForm";
 
 export const ConfiguracaoUsuario = () => {
   const {

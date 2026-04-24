@@ -4,7 +4,7 @@ import { List } from "../molecules/List";
 import { EmptyState } from "../molecules/EmptyState";
 import { ConfirmModal } from "../molecules/ConfirmModal";
 import { BandShowOptions } from "../molecules/BandShowOptions";
-import { VisualizarTurneModal } from "../VisualizarTurneModal";
+import { VisualizarTurneModal } from "./VisualizarTurneModal";
 
 export function TurneList({
   turnes = [],

@@ -38,7 +38,7 @@ export const PainelDireito = memo(
       }
 
       return (
-        <div className="min-h-0 flex-1 overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface-elevated)] p-6 shadow-[var(--shadow-soft)]">
+        <div className="min-h-0 flex-1 overflow-hidden rounded-[var(--radius-sm)] bg-[var(--surface-elevated)] shadow-[var(--shadow-soft)]">
           <AnotacoesCard
             title={agendaSelecionada.title}
             content={agendaSelecionada.description}

@@ -1,14 +1,6 @@
 import React from "react";
-
-export const Select = ({ children }) => {
-  return (
-    <div>
-      <select className="form-input">
-        <option disabled selected hidden>
-          Selecione a opção
-        </option>
-        {children}
-      </select>
-    </div>
-  );
-};
+export const Select = ({ children, value, onChange, name, disabled, className = "" }) => (
+    <select value={value} onChange={onChange} name={name} disabled={disabled} className={`form-input ${className}`}>
+        <option value="">Selecione...</option>{children}
+    </select>
+);

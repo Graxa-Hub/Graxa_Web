@@ -1,14 +1,14 @@
 import { CloudRain, Sun, Cloud, CloudSun, Loader2 } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { showService } from "../services/showService";
-import { alocacaoService } from "../services/alocacaoService";
-import { agendaEventoService } from "../services/agendaEventoService";
-import { logisticaService } from "../services/logisticaService";
-import { extrasService } from "../services/extrasService";
-import { formatarData, formatarHora } from "../utils/dateFormatters";
-import { getWeatherForecast, getWeatherDescription } from "../services/weatherService";
-import { TIPOS_USUARIO } from "../constants/tipoUsuario";
+import { showService } from "../../services/showService";
+import { alocacaoService } from "../../services/alocacaoService";
+import { agendaEventoService } from "../../services/agendaEventoService";
+import { logisticaService } from "../../services/logisticaService";
+import { extrasService } from "../../services/extrasService";
+import { formatarData, formatarHora } from "../../utils/dateFormatters";
+import { getWeatherForecast, getWeatherDescription } from "../../services/weatherService";
+import { TIPOS_USUARIO } from "../../constants/tipoUsuario";
 
 // Helper: nome legível do tipoUsuario
 function labelTipoUsuario(tipo) {

@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Layout } from "../components/templates/Layout";
-import Stepper from "../features/Evento/components/CriarEvento/Stepper";
-import Etapa1Funcoes from "../features/Evento/components/CriarEvento/Etapa1Funcoes";
-import Etapa2Logistica from "../features/Evento/components/CriarEvento/Etapa2Logistica";
-import Etapa3Local from "../features/Evento/components/CriarEvento/Etapa3Local";
-import Etapa4Agenda from "../features/Evento/components/CriarEvento/Etapa4Agenda";
-import Etapa5Extras from "../features/Evento/components/CriarEvento/Etapa5Extras";
-import { useShows } from "../hooks/useShows";
-import { useViagens } from "../hooks/useViagens";
-import SidebarDireita from "../features/Evento/components/CriarEvento/SidebarDireita";
-import { LocalSelecionadoProvider } from "../context/LocalSelecionadoContext";
-import VisualizarAlocacoes from "../features/Evento/components/CriarEvento/VisualizarAlocacoes";
-import { agendaEventoService } from "../services/agendaEventoService";
-import { useColaboradores } from "../hooks/useColaboradores";
-import { useToast } from "../hooks/useToast";
-import { logisticaService } from "../services/logisticaService";
+import { Layout } from "../templates/Layout";
+import Stepper from "../features/event/organisms/CriarEvento/Stepper";
+import Etapa1Funcoes from "../features/event/organisms/CriarEvento/Etapa1Funcoes";
+import Etapa2Logistica from "../features/event/organisms/CriarEvento/Etapa2Logistica";
+import Etapa3Local from "../features/event/organisms/CriarEvento/Etapa3Local";
+import Etapa4Agenda from "../features/event/organisms/CriarEvento/Etapa4Agenda";
+import Etapa5Extras from "../features/event/organisms/CriarEvento/Etapa5Extras";
+import { useShows } from "../../hooks/useShows";
+import { useViagens } from "../../hooks/useViagens";
+import SidebarDireita from "../features/event/organisms/CriarEvento/SidebarDireita";
+import { LocalSelecionadoProvider } from "../../context/LocalSelecionadoContext";
+import VisualizarAlocacoes from "../features/event/organisms/CriarEvento/VisualizarAlocacoes";
+import { ConfirmModal } from "../molecules/ConfirmModal";
+import { agendaEventoService } from "../../services/agendaEventoService";
+import { useColaboradores } from "../../hooks/useColaboradores";
+import { useToast } from "../../hooks/useToast";
+import { logisticaService } from "../../services/logisticaService";
 import {
   agruparHoteis,
   agruparVoos,
   agruparTransportes,
-} from "../utils/logistica/logisticaUtils";
-import { useExtrasEvento } from "../hooks/useExtrasEvento";
+} from "../../utils/logistica/logisticaUtils";
+import { useExtrasEvento } from "../../hooks/useExtrasEvento";
+import useAlocacao from "../../hooks/useAlocacao";
 
 export const CriarEvento = () => {
   const [etapaAtual, setEtapaAtual] = useState(1);
@@ -51,6 +53,7 @@ export const CriarEvento = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
   const navigate = useNavigate();
+  const { listarPorShow } = useAlocacao();
 
   // Helper para normalizar/formatar datas para envio (ISO)
   const padDateForApi = (val) => {
@@ -63,6 +66,62 @@ export const CriarEvento = () => {
     if (!showId) return;
     listarExtras(showId);
   }, [showId, listarExtras]);
+
+  // Carrega alocações existentes no mount para popular a sidebar em todas as etapas
+  useEffect(() => {
+    async function carregarAlocacoesParaSidebar() {
+      if (!showId) return;
+      try {
+        const alocacoes = await listarPorShow(Number(showId));
+        const alocacoesPorTipo = {};
+        const rolesComAlocacao = new Set();
+
+        // Agrupar por colaborador e pegar apenas a mais recente
+        const alocsMapPorColaborador = {};
+        alocacoes.forEach((alocacao) => {
+          const colabId = alocacao.colaborador?.id;
+          if (!colabId) return;
+          if (!alocsMapPorColaborador[colabId]) {
+            alocsMapPorColaborador[colabId] = alocacao;
+          } else {
+            const dataAtual = new Date(alocacao.dataHoraCriacao);
+            const dataSalva = new Date(alocsMapPorColaborador[colabId].dataHoraCriacao);
+            if (dataAtual > dataSalva) {
+              alocsMapPorColaborador[colabId] = alocacao;
+            }
+          }
+        });
+
+        // Processar apenas as alocações mais recentes
+        Object.values(alocsMapPorColaborador).forEach((alocacao) => {
+          const statusUpper = alocacao.status?.toUpperCase();
+          if (statusUpper === "CANCELADO" || statusUpper === "RECUSADO") return;
+
+          const colaborador = alocacao.colaborador;
+          if (colaborador) {
+            const tipoUsuario = colaborador.tipoUsuario;
+            if (!alocacoesPorTipo[tipoUsuario]) {
+              alocacoesPorTipo[tipoUsuario] = [];
+            }
+            if (statusUpper === "PENDENTE" || statusUpper === "ACEITO") {
+              alocacoesPorTipo[tipoUsuario].push(colaborador.id);
+              rolesComAlocacao.add(tipoUsuario);
+            }
+          }
+        });
+
+        setAssignments(alocacoesPorTipo);
+        setSelectedRoles((prev) => {
+          const merged = new Set([...prev, ...rolesComAlocacao]);
+          return Array.from(merged);
+        });
+      } catch (err) {
+        console.error("[CriarEvento] Erro ao carregar alocações para sidebar:", err);
+      }
+    }
+
+    carregarAlocacoesParaSidebar();
+  }, [showId, listarPorShow]);
 
   // sempre sincroniza o extras local com o retorno do hook
   const { toasts, showSuccess, showError, showWarning, showInfo } = useToast();
@@ -801,6 +860,12 @@ export const CriarEvento = () => {
       case 2:
         return (
           <>
+            {showId && (
+              <div className="mb-12 border-b pb-8">
+                <VisualizarAlocacoes showId={showId} />
+              </div>
+            )}
+
             <Etapa1Funcoes
               selectedRoles={selectedRoles}
               setSelectedRoles={setSelectedRoles}
@@ -808,12 +873,6 @@ export const CriarEvento = () => {
               setAssignments={setAssignments}
               showId={showId}
             />
-
-            {showId && (
-              <div className="mt-12 border-t pt-8">
-                <VisualizarAlocacoes showId={showId} />
-              </div>
-            )}
           </>
         );
 
@@ -877,63 +936,80 @@ export const CriarEvento = () => {
 
   const [showSidebarDireita, setShowSidebarDireita] = useState(true);
 
+  const handleAbrirVisaoEvento = () => {
+    if (!showId) {
+      showWarning("Salve/abra o evento antes de ir para a Visão do Evento.");
+      return;
+    }
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmarVisaoEvento = () => {
+    setModalLoading(true);
+    setIsModalOpen(false);
+    navigate(`/visao-evento/show/${showId}`);
+  };
+
+  const handleCancelarVisaoEvento = () => {
+    setIsModalOpen(false);
+    setModalLoading(false);
+  };
+
   return (
     <LocalSelecionadoProvider>
       <Layout showHeader={false} showNotifications={false}>
-        <div className="flex flex-1 min-h-0 relative">
+        <div className="flex flex-1 min-h-0 relative overflow-x-hidden">
           <div className="flex-1 px-8 py-6 overflow-y-auto">
             <Stepper
               etapaAtual={etapaAtual}
               setEtapaAtual={setEtapaAtual}
               etapas={tipoEvento === "viagem" ? etapasViagem : etapasShow}
-              onVisaoEvento={() => {
-                if (showId) navigate(`/visao-evento/show/${showId}`);
-              }}
+              onEtapaAnterior={
+                etapaAtual > 1 ? () => setEtapaAtual(etapaAtual - 1) : undefined
+              }
+              onProximaEtapa={
+                etapaAtual < (tipoEvento === "viagem" ? 3 : 5)
+                  ? () => setEtapaAtual(etapaAtual + 1)
+                  : undefined
+              }
+              onVisaoEvento={handleAbrirVisaoEvento}
             />
 
             <div className="mt-8">{renderEtapa()}</div>
-
-            <div className="flex justify-end mt-10 gap-4 border-t pt-6 border-[var(--border)]">
-              {/* BOTÃO VOLTAR */}
-              {etapaAtual > 1 && (
-                <button
-                  className="px-6 py-2 bg-[var(--surface-hover)] text-[var(--text-secondary)] rounded-[var(--radius-md)] hover:bg-gray-300"
-                  onClick={() => setEtapaAtual(etapaAtual - 1)}
-                >
-                  Voltar
-                </button>
-              )}
-
-              {/* BOTÃO PRÓXIMA — só aparece se NÃO for a última etapa */}
-              {etapaAtual < (tipoEvento === "viagem" ? 3 : 5) && (
-                <button
-                  className="px-6 py-2 bg-[var(--surface-elevated)] text-white rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]"
-                  onClick={() => setEtapaAtual(etapaAtual + 1)}
-                >
-                  Próxima Etapa
-                </button>
-              )}
-            </div>
           </div>
 
-          {/* SIDEBAR ESTILO OVERLAY (GAVETA) */}
+          {/* SIDEBAR OVERLAY (RESUMO RÁPIDO) */}
           <div
-            className={`absolute top-0 right-0 h-full z-40 transition-transform duration-300 ease-in-out flex items-center ${showSidebarDireita ? "translate-x-0" : "translate-x-full"
+            className={`fixed top-5 right-0 max-h-screen z-40 transition-transform duration-300 ease-in-out flex items-start ${showSidebarDireita ? "translate-x-0" : "translate-x-full"
               }`}
           >
             {/* BOTÃO TOGGLE (HANDLE) - FIXO NA BORDA DA GAVETA */}
             <button
               onClick={() => setShowSidebarDireita(!showSidebarDireita)}
-              className="absolute -left-4 bg-[var(--surface-elevated)] border border-[var(--border)] shadow-[var(--shadow-card)] rounded-full w-8 h-8 flex items-center justify-center hover:bg-[var(--surface)] hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
+              className="absolute -left-7 top-1/2 -translate-y-1/2 bg-[var(--surface-elevated)] border border-[var(--border)] shadow-[var(--shadow-card)] rounded-full w-8 h-8 flex items-center justify-center hover:bg-[var(--surface)] hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
               title={showSidebarDireita ? "Esconder Resumo" : "Mostrar Resumo"}
             >
-              <div className={`transition-transform duration-300 ${showSidebarDireita ? 'rotate-0' : 'rotate-180'}`}>
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+              <div
+                className={`transition-transform duration-300 ${showSidebarDireita ? "rotate-0" : "rotate-180"}`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#22c55e"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="m9 18 6-6-6-6" />
+                </svg>
               </div>
             </button>
 
             {/* CONTEÚDO DA GAVETA */}
-            <div className="w-80 h-full bg-[var(--surface-elevated)] border-l border-[var(--border)] shadow-[var(--shadow-card)] rounded-[var(--radius-sm)] overflow-hidden">
+            <div className="w-80 max-h-[calc(100vh-2rem)] bg-[var(--surface-elevated)] border-l border-[var(--border)] shadow-[var(--shadow-card)] rounded-[var(--radius-sm)] overflow-y-auto">
               <SidebarDireita
                 etapaAtual={etapaAtual}
                 localShow={localShow}
@@ -948,6 +1024,19 @@ export const CriarEvento = () => {
             </div>
           </div>
         </div>
+
+        <ConfirmModal
+          isOpen={isModalOpen}
+          onClose={handleCancelarVisaoEvento}
+          onConfirm={handleConfirmarVisaoEvento}
+          title="Ir para Visão do Evento?"
+          message="Você realmente deseja sair desta etapa agora? Verifique se as informações importantes já foram salvas."
+          confirmText="Sim, ir para Visão"
+          cancelText="Continuar aqui"
+          type="warning"
+          confirmVariant="danger"
+          loading={modalLoading}
+        />
       </Layout>
     </LocalSelecionadoProvider>
   );

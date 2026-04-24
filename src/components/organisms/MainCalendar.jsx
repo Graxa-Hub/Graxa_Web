@@ -6,7 +6,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import ptLocale from "@fullcalendar/core/locales/pt";
 import "../../index.css";
-import { EventoModal } from "../../features/Evento/components/organisms/EventoModal";
+import { EventoModal } from "../features/event/organisms/EventoModal";
 import { useEventosCalendario } from "../../hooks/useEventosCalendario";
 
 export default function MainCalendar({
