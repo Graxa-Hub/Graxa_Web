@@ -22,13 +22,15 @@ export function CalendarioContent({
         />
       </div>
 
-      <div className="relative w-80 min-w-[320px] h-full min-h-0 flex flex-col gap-4">
-        <div className="surface-card rounded-lg h-[368px] min-h-[340px] flex-shrink-0">
-          <SideCalendar mainCalendarApi={mainCalendarApi} eventos={eventos} />
+      <div className="relative w-[400px] min-w-[400px] h-full min-h-0 overflow-hidden rounded-lg">
+        <div className="surface-card h-[400px] w-full rounded-lg">
+          <SideCalendar mainCalendarApi={mainCalendarApi} />
         </div>
 
-        <div className="surface-card p-3 flex-1 min-h-0 flex flex-col rounded-lg overflow-hidden">
-          <TaskList eventos={eventos} />
+        <div className="absolute bottom-0 left-0 w-full z-10 flex flex-col justify-end pointer-events-none">
+          <div className="pointer-events-auto">
+            <TaskList eventos={eventos} />
+          </div>
         </div>
       </div>
     </div>

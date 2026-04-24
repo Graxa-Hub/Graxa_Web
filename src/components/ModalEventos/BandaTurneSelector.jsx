@@ -57,7 +57,7 @@ export const BandaTurneSelector = ({
         setLoadingTurnes(false);
       }
     };
-    
+
     if (open) {
       carregarTurnesIniciais();
     }
@@ -166,7 +166,7 @@ export const BandaTurneSelector = ({
           // Se tem texto de busca e SEM banda selecionada, busca no geral
           resultado = await buscarTurnes(turneSearchText);
         }
-        
+
         setTurnesBuscadas(resultado || []);
         setTurnePage(0);
       } catch (error) {
@@ -187,7 +187,7 @@ export const BandaTurneSelector = ({
 
   // Usar bandas buscadas (sempre do endpoint)
   const bandasFiltradas = bandasBuscadas;
-  
+
   // Usar turnês buscadas (sempre do endpoint)
   const turnesFiltradas = turnesBuscadas;
 
@@ -202,7 +202,7 @@ export const BandaTurneSelector = ({
   // Paginação turnês: quando tem banda selecionada e SEM busca, usar paginação do backend
   // Caso contrário, paginar localmente os resultados buscados
   const usarPaginacaoBanda = bandaSelecionada?.id && !turneSearchText.trim();
-  
+
   let turnesPaginadas = [];
   let turnePageCount = 0;
   let turnePaginationObj = null;
@@ -241,240 +241,244 @@ export const BandaTurneSelector = ({
   const turnePagination = turnePaginationObj;
 
   return (
-    <div className="absolute top-full left-0 mt-2 z-50 w-full" role="menu">
-      <div className="w-full surface-card overflow-hidden shadow-[var(--shadow-card)] rounded-lg border border-[var(--border)]">
-        {/* ===== BANDAS ===== */}
-        {showBandaSelector && (
-        <div className="border-b border-[var(--border)]">
-          <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)]">
-            <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-              🎸 Bandas
-            </span>
-            <button
-              onClick={onOpenArtist}
-              className="text-xs text-[var(--accent)] hover:text-[var(--text-primary)] font-medium transition-colors"
-            >
-              + Gerenciar
-            </button>
-          </div>
-
-          {/* Search input */}
-          <div className="p-2 border-b border-[var(--border)]">
-            <div className="relative flex items-center">
-              <Search
-                size={14}
-                className="absolute left-3 text-[var(--text-muted)]"
-              />
-              <input
-                type="text"
-                placeholder="Buscar banda..."
-                value={bandaSearchText}
-                onChange={(e) => {
-                  setBandaSearchText(e.target.value);
-                  setBandaPage(0);
-                }}
-                className="form-input pl-9 py-1.5 text-sm w-full"
-              />
-              {bandaSearchText && (
+    <div className="absolute top-full left-0 mt-2 z-50 min-w-[700px]" role="menu">
+      <div className="w-full surface-card overflow-hidden shadow-[var(--shadow-card)] rounded-lg border border-[var(--border)] max-h-[80vh]">
+        <div className="flex flex-row">
+          {/* ===== BANDAS ===== */}
+          {showBandaSelector && (
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)]">
+                <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                  🎸 Bandas
+                </span>
                 <button
-                  type="button"
-                  onClick={() => {
-                    setBandaSearchText("");
-                    setBandaPage(0);
-                  }}
-                  className="absolute right-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                  onClick={onOpenArtist}
+                  className="text-xs text-[var(--accent)] hover:text-[var(--text-primary)] font-medium transition-colors"
                 >
-                  <X size={14} />
+                  + Gerenciar
                 </button>
-              )}
-            </div>
-          </div>
-
-          {/* Lista bandas */}
-          <div className="max-h-48 overflow-y-auto">
-            {loadingBandas ? (
-              <div className="px-4 py-3 text-sm text-[var(--text-muted)] text-center flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
-                Buscando...
               </div>
-            ) : (
-              <>
-                <button
-                  onClick={() => {
-                    onBandaSelect && onBandaSelect(null);
-                    setTurnePage(0);
-                  }}
-                  className={`w-full text-left px-4 py-2.5 hover:bg-[var(--surface-hover)] transition-colors border-l-2 ${
-                    bandaSelecionada === null
-                      ? "bg-[var(--surface-hover)] text-[var(--text-primary)] border-[var(--accent)] font-medium"
-                      : "text-[var(--text-secondary)] border-transparent"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    {bandaSelecionada === null && (
-                      <span className="text-[var(--accent)]">✓</span>
-                    )}
-                    <span>🎵 Todas as Bandas</span>
-                  </div>
-                </button>
-                {bandasFiltradas.length > 0 ? (
-                  bandasPaginadas.map((banda) => (
+
+              {/* Search input */}
+              <div className="p-2 border-b border-[var(--border)]">
+                <div className="relative flex items-center">
+                  {/* <Search
+                    size={14}
+                    className="absolute left-3 text-[var(--text-muted)]"
+                  /> */}
+                  <input
+                    type="text"
+                    placeholder="Buscar banda..."
+                    value={bandaSearchText}
+                    onChange={(e) => {
+                      setBandaSearchText(e.target.value);
+                      setBandaPage(0);
+                    }}
+                    className="form-input p py-1.5 text-sm w-full"
+                  />
+                  {bandaSearchText && (
                     <button
-                      key={banda.id}
+                      type="button"
                       onClick={() => {
-                        onBandaSelect && onBandaSelect(banda);
-                        setTurnePage(0); // Reset turnê page ao mudar banda
+                        setBandaSearchText("");
+                        setBandaPage(0);
                       }}
-                      className={`w-full text-left px-4 py-2.5 hover:bg-[var(--surface-hover)] transition-colors border-l-2 ${
-                        bandaSelecionada?.id === banda.id
-                          ? "bg-[var(--surface-hover)] text-[var(--text-primary)] border-[var(--accent)] font-medium"
-                          : "text-[var(--text-secondary)] border-transparent"
-                      }`}
+                      className="absolute right-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Lista bandas */}
+              <div className="max-h-64 overflow-y-auto">
+                {loadingBandas ? (
+                  <div className="px-4 py-3 text-sm text-[var(--text-muted)] text-center flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+                    Buscando...
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => {
+                        onBandaSelect && onBandaSelect(null);
+                        setTurnePage(0);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 hover:bg-[var(--surface-hover)] transition-colors border-l-2 ${bandaSelecionada === null
+                        ? "bg-[var(--surface-hover)] text-[var(--text-primary)] border-[var(--accent)] font-medium"
+                        : "text-[var(--text-secondary)] border-transparent"
+                        }`}
                     >
                       <div className="flex items-center gap-2">
-                        {bandaSelecionada?.id === banda.id && (
+                        {bandaSelecionada === null && (
                           <span className="text-[var(--accent)]">✓</span>
                         )}
-                        <span>{banda.nome}</span>
+                        <span>🎵 Todas as Bandas</span>
                       </div>
                     </button>
-                  ))
-                ) : (
-                  <div className="px-4 py-3 text-sm text-[var(--text-muted)] text-center">
-                    Nenhuma banda encontrada
-                  </div>
+                    {bandasFiltradas.length > 0 ? (
+                      bandasPaginadas.map((banda) => (
+                        <button
+                          key={banda.id}
+                          onClick={() => {
+                            onBandaSelect && onBandaSelect(banda);
+                            setTurnePage(0); // Reset turnê page ao mudar banda
+                          }}
+                          className={`w-full text-left px-4 py-2.5 hover:bg-[var(--surface-hover)] transition-colors border-l-2 ${bandaSelecionada?.id === banda.id
+                            ? "bg-[var(--surface-hover)] text-[var(--text-primary)] border-[var(--accent)] font-medium"
+                            : "text-[var(--text-secondary)] border-transparent"
+                            }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            {bandaSelecionada?.id === banda.id && (
+                              <span className="text-[var(--accent)]">✓</span>
+                            )}
+                            <span>{banda.nome}</span>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-[var(--text-muted)] text-center">
+                        Nenhuma banda encontrada
+                      </div>
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </div>
+              </div>
 
-          {/* Paginação bandas */}
-          {bandaPageCount > 1 && (
-            <div className="flex items-center justify-center p-2 border-t border-[var(--border)] bg-[var(--surface-hover)]">
-              <Pagination
-                pagination={bandaPagination}
-                onNextPage={() => setBandaPage((p) => p + 1)}
-                onPrevPage={() => setBandaPage((p) => p - 1)}
-                onGoToPage={setBandaPage}
-              />
-            </div>
-          )}
-        </div>
-        )}
-
-        {/* ===== TURNÊS ===== */}
-        {showTurneSelector && (
-        <div>
-          <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)]">
-            <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
-              🎤 Turnês
-            </span>
-            <button
-              onClick={onOpenTour}
-              className="text-xs text-[var(--accent)] hover:text-[var(--text-primary)] font-medium transition-colors"
-            >
-              + Gerenciar
-            </button>
-          </div>
-
-          {/* Search input */}
-          <div className="p-2 border-b border-[var(--border)]">
-            <div className="relative flex items-center">
-              <Search
-                size={14}
-                className="absolute left-3 text-[var(--text-muted)]"
-              />
-              <input
-                type="text"
-                placeholder="Buscar turnê..."
-                value={turneSearchText}
-                onChange={(e) => {
-                  setTurneSearchText(e.target.value);
-                  setTurnePage(0);
-                }}
-                className="form-input pl-9 py-1.5 text-sm w-full"
-              />
-              {turneSearchText && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setTurneSearchText("");
-                    setTurnePage(0);
-                  }}
-                  className="absolute right-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-                >
-                  <X size={14} />
-                </button>
+              {/* Paginação bandas */}
+              {bandaPageCount > 1 && (
+                <div className="flex items-center justify-center p-2 border-t border-[var(--border)] bg-[var(--surface-hover)]">
+                  <Pagination
+                    pagination={bandaPagination}
+                    onNextPage={() => setBandaPage((p) => p + 1)}
+                    onPrevPage={() => setBandaPage((p) => p - 1)}
+                    onGoToPage={setBandaPage}
+                  />
+                </div>
               )}
             </div>
-          </div>
+          )}
 
-          {/* Lista turnês */}
-          <div className="max-h-48 overflow-y-auto">
-            {loadingTurnes ? (
-              <div className="px-4 py-3 text-sm text-[var(--text-muted)] text-center flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
-                Buscando...
-              </div>
-            ) : (
-              <>
+          {/* Divisória vertical */}
+          {showBandaSelector && showTurneSelector && (
+            <div className="w-[3px] bg-[var(--accent)] opacity-60" />
+          )}
+
+          {/* ===== TURNÊS ===== */}
+          {showTurneSelector && (
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between px-4 py-3 bg-[var(--surface)] border-b border-[var(--border)]">
+                <span className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+                  🎤 Turnês
+                </span>
                 <button
-                  onClick={() => onTurneSelect && onTurneSelect(null)}
-                  className={`w-full text-left px-4 py-2.5 hover:bg-[var(--surface-hover)] transition-colors border-l-2 ${
-                    turneSelecionada === null
-                      ? "bg-[var(--surface-hover)] text-[var(--text-primary)] border-[var(--accent)] font-medium"
-                      : "text-[var(--text-secondary)] border-transparent"
-                  }`}
+                  onClick={onOpenTour}
+                  className="text-xs text-[var(--accent)] hover:text-[var(--text-primary)] font-medium transition-colors"
                 >
-                  <div className="flex items-center gap-2">
-                    {turneSelecionada === null && (
-                      <span className="text-[var(--accent)]">✓</span>
-                    )}
-                    <span>📋 Todas as Turnês</span>
-                  </div>
+                  + Gerenciar
                 </button>
+              </div>
 
-                {turnesPaginadas && turnesPaginadas.length > 0 ? (
-                  turnesPaginadas.map((turne) => (
+              {/* Search input */}
+              <div className="p-2 border-b border-[var(--border)]">
+                <div className="relative flex items-center">
+                  {/* <Search
+                    size={14}
+                    className="absolute left-3 text-[var(--text-muted)]"
+                  /> */}
+                  <input
+                    type="text"
+                    placeholder="Buscar turnê..."
+                    value={turneSearchText}
+                    onChange={(e) => {
+                      setTurneSearchText(e.target.value);
+                      setTurnePage(0);
+                    }}
+                    className="form-input py-1.5 text-sm w-full"
+                style={{ paddingLeft: "2.5rem" }}
+                  />
+                  {turneSearchText && (
                     <button
-                      key={turne.id}
-                      onClick={() => onTurneSelect && onTurneSelect(turne)}
-                      className={`w-full text-left px-4 py-2.5 hover:bg-[var(--surface-hover)] transition-colors border-l-2 ${
-                        turneSelecionada?.id === turne.id
-                          ? "bg-[var(--surface-hover)] text-[var(--text-primary)] border-[var(--accent)] font-medium"
-                          : "text-[var(--text-secondary)] border-transparent"
-                      }`}
+                      type="button"
+                      onClick={() => {
+                        setTurneSearchText("");
+                        setTurnePage(0);
+                      }}
+                      className="absolute right-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Lista turnês */}
+              <div className="max-h-64 overflow-y-auto">
+                {loadingTurnes ? (
+                  <div className="px-4 py-3 text-sm text-[var(--text-muted)] text-center flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
+                    Buscando...
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => onTurneSelect && onTurneSelect(null)}
+                      className={`w-full text-left px-4 py-2.5 hover:bg-[var(--surface-hover)] transition-colors border-l-2 ${turneSelecionada === null
+                        ? "bg-[var(--surface-hover)] text-[var(--text-primary)] border-[var(--accent)] font-medium"
+                        : "text-[var(--text-secondary)] border-transparent"
+                        }`}
                     >
                       <div className="flex items-center gap-2">
-                        {turneSelecionada?.id === turne.id && (
+                        {turneSelecionada === null && (
                           <span className="text-[var(--accent)]">✓</span>
                         )}
-                        <span>{turne.name || turne.nomeTurne}</span>
+                        <span>📋 Todas as Turnês</span>
                       </div>
                     </button>
-                  ))
-                ) : (
-                  <div className="px-4 py-3 text-sm text-[var(--text-muted)] text-center">
-                    Nenhuma turnê encontrada
-                  </div>
-                )}
-              </>
-            )}
-          </div>
 
-          {/* Paginação turnês */}
-          {turnePageCount > 1 && (
-            <div className="flex items-center justify-center p-2 border-t border-[var(--border)] bg-[var(--surface-hover)]">
-              <Pagination
-                pagination={turnePagination}
-                onNextPage={usarPaginacaoBanda ? nextPageTurnesBanda : () => setTurnePage((p) => p + 1)}
-                onPrevPage={usarPaginacaoBanda ? prevPageTurnesBanda : () => setTurnePage((p) => p - 1)}
-                onGoToPage={usarPaginacaoBanda ? undefined : setTurnePage}
-              />
+                    {turnesPaginadas && turnesPaginadas.length > 0 ? (
+                      turnesPaginadas.map((turne) => (
+                        <button
+                          key={turne.id}
+                          onClick={() => onTurneSelect && onTurneSelect(turne)}
+                          className={`w-full text-left px-4 py-2.5 hover:bg-[var(--surface-hover)] transition-colors border-l-2 ${turneSelecionada?.id === turne.id
+                            ? "bg-[var(--surface-hover)] text-[var(--text-primary)] border-[var(--accent)] font-medium"
+                            : "text-[var(--text-secondary)] border-transparent"
+                            }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            {turneSelecionada?.id === turne.id && (
+                              <span className="text-[var(--accent)]">✓</span>
+                            )}
+                            <span>{turne.name || turne.nomeTurne}</span>
+                          </div>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-[var(--text-muted)] text-center">
+                        Nenhuma turnê encontrada
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Paginação turnês */}
+              {turnePageCount > 1 && (
+                <div className="flex items-center justify-center p-2 border-t border-[var(--border)] bg-[var(--surface-hover)]">
+                  <Pagination
+                    pagination={turnePagination}
+                    onNextPage={usarPaginacaoBanda ? nextPageTurnesBanda : () => setTurnePage((p) => p + 1)}
+                    onPrevPage={usarPaginacaoBanda ? prevPageTurnesBanda : () => setTurnePage((p) => p - 1)}
+                    onGoToPage={usarPaginacaoBanda ? undefined : setTurnePage}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
-        )}
       </div>
     </div>
   );

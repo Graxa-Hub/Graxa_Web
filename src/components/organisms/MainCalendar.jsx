@@ -91,7 +91,7 @@ export default function MainCalendar({
         headerToolbar={{
           left: "prev,today,next",
           center: "title",
-          right: "timeGridWeek,timeGridDay",
+          right: "dayGridMonth,timeGridWeek",
         }}
         selectable
         select={handleDateSelect}
