@@ -245,10 +245,31 @@ export function EventoModal({
       const eventoInicio = new Date(evento.dataInicio);
       const eventoFim = new Date(evento.dataFim);
 
+      // Ajuste para não bloquear o dia seguinte se terminar exatamente à meia-noite
+      const fimAjustado = new Date(fim);
+      if (fimAjustado.getHours() === 0 && fimAjustado.getMinutes() === 0) {
+        fimAjustado.setMinutes(fimAjustado.getMinutes() - 1);
+      }
+      
+      const eventoFimAjustado = new Date(eventoFim);
+      if (eventoFimAjustado.getHours() === 0 && eventoFimAjustado.getMinutes() === 0) {
+        eventoFimAjustado.setMinutes(eventoFimAjustado.getMinutes() - 1);
+      }
+
+      // Zera as horas para comparar apenas os dias
+      const inicioDia = new Date(inicio);
+      inicioDia.setHours(0, 0, 0, 0);
+      const fimDia = new Date(fimAjustado);
+      fimDia.setHours(23, 59, 59, 999);
+
+      const eventoInicioDia = new Date(eventoInicio);
+      eventoInicioDia.setHours(0, 0, 0, 0);
+      const eventoFimDia = new Date(eventoFimAjustado);
+      eventoFimDia.setHours(23, 59, 59, 999);
+
+      // Se há interseção de dias, há conflito
       const temSobreposicao =
-        (inicio >= eventoInicio && inicio < eventoFim) ||
-        (fim > eventoInicio && fim <= eventoFim) ||
-        (inicio <= eventoInicio && fim >= eventoFim);
+        inicioDia <= eventoFimDia && fimDia >= eventoInicioDia;
 
       return temSobreposicao;
     });

@@ -20,6 +20,7 @@ export default function MainCalendar({
   const { eventos, loading, carregarEventos, adicionarEventoLocal } =
     useEventosCalendario();
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [errorToast, setErrorToast] = useState("");
   const [dataHoraSelecionada, setDataHoraSelecionada] = useState({
     inicio: "",
     fim: "",
@@ -44,6 +45,22 @@ export default function MainCalendar({
   }, [eventos, onEventosChange]);
 
   const handleDateSelect = (selectInfo) => {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const dataSelecionada = new Date(selectInfo.start);
+    dataSelecionada.setHours(0, 0, 0, 0);
+
+    if (dataSelecionada < hoje) {
+      setErrorToast("Não é permitido criar eventos em datas passadas.");
+      setTimeout(() => setErrorToast(""), 3000);
+      try {
+        selectInfo.view.calendar.unselect();
+      } catch {
+        // noop
+      }
+      return;
+    }
+
     const formatarParaDateTimeLocal = (data) => {
       const ano = data.getFullYear();
       const mes = String(data.getMonth() + 1).padStart(2, "0");
@@ -76,6 +93,11 @@ export default function MainCalendar({
 
   return (
     <div className="graxa-calendar-card surface-card p-4 h-full min-h-0 flex flex-col relative overflow-hidden">
+      {errorToast && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-[color:var(--surface-elevated)] border border-[color:var(--accent)] text-[color:var(--accent)] px-4 py-2 rounded-[color:var(--radius-sm)] shadow-[color:var(--shadow-card)] z-20 flex items-center gap-2 font-medium text-sm animate-fade-in">
+          ⚠️ {errorToast}
+        </div>
+      )}
       {loading && (
         <div className="absolute inset-0 bg-[color:var(--overlay)]/30 flex items-center justify-center rounded-[var(--radius-md)] z-10">
           <p className="text-[var(--text-primary)]">Carregando eventos...</p>
