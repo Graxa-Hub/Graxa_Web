@@ -235,6 +235,42 @@ body {
   border-color: var(--accent) !important;
 }
 
+/* Popover (More Events window) */
+.fc-popover {
+  width: 300px !important; /* Aumentar a largura da janela */
+  max-width: 90vw !important;
+  background-color: var(--surface-elevated) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-card) !important;
+  z-index: 150 !important;
+}
+.fc-popover-header {
+  background-color: var(--surface-hover) !important;
+  padding: 10px 14px !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-top-left-radius: var(--radius-md) !important;
+  border-top-right-radius: var(--radius-md) !important;
+}
+.fc-popover-title {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+.fc-popover-body {
+  padding: 10px !important;
+  max-height: 250px !important;
+  overflow-y: auto !important;
+}
+.fc-popover-close {
+  color: var(--text-secondary) !important;
+  opacity: 0.8 !important;
+}
+.fc-popover-close:hover {
+  color: var(--text-primary) !important;
+  opacity: 1 !important;
+}
+
 .modal-overlay,
 .confirm-overlay {
   position: fixed;
@@ -350,7 +386,7 @@ body {
 }
 
 .mini-calendar .fc .fc-scroller {
-  overflow: hidden !important;
+  overflow: visible !important;
 }
 
 .mini-calendar .fc .fc-toolbar-title {
@@ -375,4 +411,53 @@ body {
 .mini-calendar .fc .fc-daygrid-day-number {
   padding: 4px 2px;
   font-size: 11px;
+}
+
+/* Popover ocupando todo o mini-calendario */
+.mini-calendar .fc-popover {
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: var(--radius-md) !important;
+  border: none !important;
+  z-index: 100 !important;
+}
+
+.mini-calendar .fc-popover-body {
+  flex: 1 !important;
+  max-height: none !important;
+  overflow-y: auto !important;
+  padding: 12px !important;
+}
+
+/* Ajustes dos eventos dentro do próprio grid mensal (para acomodar o texto grande) */
+.mini-calendar .fc-daygrid-event {
+  padding: 2px 6px !important;
+  margin: 2px !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* No popover, mostrar tudo normalmente e num tamanho confortável */
+.mini-calendar .fc-popover .fc-daygrid-event {
+  height: auto;
+  margin: 6px 0 !important;
+  padding: 6px 10px !important;
+  border-radius: var(--radius-sm) !important;
+}
+.mini-calendar .fc-popover .fc-event-title {
+  display: inline !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+.mini-calendar .fc-popover .fc-event-main,
+.mini-calendar .fc-popover .custom-fc-event {
+  display: flex !important;
+  width: 100% !important;
 }
