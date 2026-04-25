@@ -1,127 +1,191 @@
-import React, { useState, useEffect } from 'react'
-import { ChevronDown } from 'lucide-react'
-import { useBandas } from '../hooks/useBandas'
+import React, { useState, useRef, useEffect } from "react";
+import { ChevronDown, Search, X } from "lucide-react";
+import { Pagination } from "./Pagination";
 
-export function BandaDropdown({ selectedBand, onBandSelect, showAllOption = true }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const { bandas, loading, listarBandas } = useBandas()
+const ITEMS_PER_PAGE = 5;
 
-  // Carrega as bandas quando o componente montar
+export const BandaDropdown = ({ bandas = [], selectedBand, onSelect }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [page, setPage] = useState(0);
+  const ref = useRef(null);
+
   useEffect(() => {
-    listarBandas()
-  }, [listarBandas])
+    const h = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setIsOpen(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, []);
 
-  const handleBandSelect = (banda) => {
-    onBandSelect(banda)
-    setIsOpen(false)
-  }
+  // Filtrar bandas
+  const bandasFiltradas = bandas.filter((banda) =>
+    banda.nome.toLowerCase().includes(searchText.toLowerCase()),
+  );
 
-  // Exibe nome e inicial, mas agora também retorna imagem se houver
-  const getSelectedDisplay = () => {
-    if (!selectedBand) {
-      return { name: 'Todas as bandas', initial: 'T', imagemUrl: null }
-    }
+  // Paginação
+  const pageCount = Math.ceil(bandasFiltradas.length / ITEMS_PER_PAGE);
+  const start = page * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
+  const bandasPaginadas = bandasFiltradas.slice(start, end);
 
-    return {
-      name: selectedBand.nome,
-      initial: selectedBand.nome.charAt(0).toUpperCase(),
-      imagemUrl: selectedBand.imagemUrl || null
-    }
-  }
-
-  const selectedDisplay = getSelectedDisplay()
-
-  if (loading) {
-    return (
-      <div className="max-w-md">
-        <div className="bg-white rounded-lg shadow-sm p-4">
-          <div className="animate-pulse flex items-center gap-3">
-            <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
-            <div className="flex-1">
-              <div className="h-4 bg-gray-300 rounded w-24 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-16"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  const pagination = {
+    pageNumber: page,
+    totalPages: pageCount,
+    first: page === 0,
+    last: page === pageCount - 1 || pageCount === 0,
+  };
 
   return (
-    <div className="relative max-w-md min-w-110">
+    <div className="relative w-full" ref={ref}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-white rounded-lg shadow-sm p-4 w-full"
+        className="surface-card w-full min-h-[72px] flex items-center justify-between px-4 py-3 hover:border-[var(--border-hover)] transition-all"
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold overflow-hidden border-2 border-green-500">
-              {selectedDisplay.imagemUrl ? (
-                <img
-                  src={selectedDisplay.imagemUrl}
-                  alt={selectedDisplay.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span>{selectedDisplay.initial}</span>
-              )}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--border)] bg-[var(--surface-hover)] flex items-center justify-center text-[var(--text-muted)] font-semibold flex-shrink-0">
+            {selectedBand?.imagemUrl ? (
+              <img
+                src={selectedBand.imagemUrl}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            ) : selectedBand ? (
+              selectedBand.nome?.charAt(0)?.toUpperCase()
+            ) : (
+              "∗"
+            )}
+          </div>
+          <div className="min-w-0 text-left">
+            <div className="font-semibold text-[var(--text-primary)] text-sm truncate">
+              {selectedBand?.nome || "Todas as bandas"}
             </div>
-            <div>
-              <div className="font-semibold text-gray-900">
-                {selectedDisplay.name}
-              </div>
-              <div className="text-sm text-gray-500">
-                {selectedBand ? 'Banda' : 'Filtro'}
-              </div>
+            <div className="text-xs text-[var(--text-muted)] truncate">
+              {selectedBand ? "Banda selecionada" : "Ver todas as turnes"}
             </div>
           </div>
-          <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </div>
+        <ChevronDown
+          className={`w-4 h-4 text-[var(--text-muted)] transition-transform ml-3 flex-shrink-0 ${isOpen ? "rotate-180" : ""}`}
+        />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 w-full z-10 max-h-60 overflow-y-auto">
-          {/* Opção "Todas as bandas" se showAllOption for true */}
-          {showAllOption && (
+        <div className="absolute top-[calc(100%+8px)] left-0 surface-card w-full z-50 overflow-hidden shadow-lg rounded-[var(--radius-sm)] border border-[var(--border)]">
+          {/* Search input */}
+          <div className="p-2 border-b border-[var(--border)]">
+            <div className="relative flex items-center">
+              <Search
+                size={14}
+                className="absolute left-3 text-[var(--text-muted)]"
+              />
+              <input
+                type="text"
+                autoFocus
+                placeholder="Buscar banda..."
+                value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                  setPage(0);
+                }}
+                className="form-input pl-9 py-1.5 text-sm w-full"
+              />
+              {searchText && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchText("");
+                    setPage(0);
+                  }}
+                  className="absolute right-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Lista de bandas */}
+          <div className="max-h-48 overflow-y-auto">
             <button
-              onClick={() => handleBandSelect(null)}
-              className={`w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center gap-3 ${!selectedBand ? 'bg-gray-50' : ''
-                }`}
+              type="button"
+              onClick={() => {
+                onSelect(null);
+                setIsOpen(false);
+                setSearchText("");
+                setPage(0);
+              }}
+              className="w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--surface-hover)] transition-colors border-b border-[var(--border)]"
             >
-              <div className="w-10 h-10 bg-gray-500 rounded-full flex items-center justify-center text-white font-semibold">
-                T
+              <div className="w-10 h-10 rounded-full bg-[var(--border)] flex items-center justify-center text-[var(--text-muted)] font-semibold flex-shrink-0">
+                ∗
               </div>
-              <div>
-                <div className="font-semibold text-gray-900">Todas as bandas</div>
-                <div className="text-sm text-gray-500">Ver todas as turnês</div>
+              <div className="min-w-0">
+                <div className="font-semibold text-[var(--text-primary)] text-sm truncate">
+                  Todas as bandas
+                </div>
+                <div className="text-xs text-[var(--text-muted)] truncate">
+                  Ver todas as turnes
+                </div>
               </div>
             </button>
-          )}
 
-          <ul>
-            {bandas.map((banda) => (
-              <li
-                key={banda.id}
-                onClick={() => handleBandSelect(banda)}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 px-2 py-1 rounded"
-              >
-                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-green-500 bg-gray-200 flex items-center justify-center">
-                  {banda.imagemUrl ? (
-                    <img
-                      src={banda.imagemUrl}
-                      alt={banda.nome}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-gray-400">{banda.nome.charAt(0).toUpperCase()}</span>
-                  )}
-                </div>
-                <span>{banda.nome}</span>
-              </li>
-            ))}
-          </ul>
+            {bandasFiltradas.length > 0 ? (
+              bandasPaginadas.map((banda) => (
+                <button
+                  key={banda.id}
+                  type="button"
+                  onClick={() => {
+                    onSelect(banda);
+                    setIsOpen(false);
+                    setSearchText("");
+                    setPage(0);
+                  }}
+                  className={`w-full text-left px-4 py-2.5 flex items-center gap-3 hover:bg-[var(--surface-hover)] transition-colors ${
+                    selectedBand?.id === banda.id
+                      ? "bg-blue-50 border-l-2 border-blue-500"
+                      : ""
+                  }`}
+                >
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--border)] bg-[var(--surface-hover)] flex items-center justify-center text-[var(--text-muted)] font-semibold flex-shrink-0">
+                    {banda.imagemUrl ? (
+                      <img
+                        src={banda.imagemUrl}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      banda.nome?.charAt(0)?.toUpperCase()
+                    )}
+                  </div>
+                  <div className="font-medium text-[var(--text-primary)] text-sm truncate">
+                    {banda.nome}
+                  </div>
+                </button>
+              ))
+            ) : (
+              <div className="px-4 py-8 text-sm text-[var(--text-muted)] text-center">
+                Nenhuma banda encontrada
+              </div>
+            )}
+          </div>
+
+          {/* Paginação */}
+          {pageCount > 1 && (
+            <div className="flex items-center justify-center p-2 border-t border-[var(--border)] bg-[var(--surface-hover)]">
+              <Pagination
+                pagination={pagination}
+                onNextPage={() => setPage((p) => p + 1)}
+                onPrevPage={() => setPage((p) => p - 1)}
+                onGoToPage={setPage}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
+
+export default BandaDropdown;

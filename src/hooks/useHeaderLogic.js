@@ -46,9 +46,9 @@ export const useHeaderLogic = ({
         (banda) => {
             onBandaChange(banda);
             onTurneChange(null); // reset turnê ao trocar banda
-            fecharDropdown();
+            // NÃO fechar o dropdown para permitir seleção de turnê
         },
-        [onBandaChange, onTurneChange, fecharDropdown]
+        [onBandaChange, onTurneChange]
     );
 
     const handleTurneSelect = useCallback(

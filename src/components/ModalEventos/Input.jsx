@@ -1,34 +1,8 @@
 import React from "react";
-
-export function Input({
-  label,
-  placeholder,
-  value,
-  onChange,
-  type = "text",
-  required = false,
-  className = "",
-  ...props
-}) {
-  return (
-    <div>
-      <div className={`flex flex-col ${className}`}>
-        {label && (
-          <label className="text-sm font-medium text-gray-700">
-            {label}
-            {required && <span className="text-red-500 ml-1">*</span>}
-          </label>
-        )}
-        <input
-          type={type}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          required={required}
-          className="px-4 py-2 border border-gray-200 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors placeholder-gray-400 bg-white"
-          {...props}
-        />
-      </div>
+export const Input = ({ label, required, error, className = "", ...props }) => (
+    <div className={`flex flex-col gap-1.5 ${className}`}>
+        {label && <label className="text-xs uppercase tracking-wide text-[var(--text-muted)]">{label}{required && <span className="text-[var(--accent)] ml-1">*</span>}</label>}
+        <input className={`form-input ${error ? "border-[var(--accent)]" : ""}`} {...props} />
+        {error && <p className="text-xs text-[var(--accent)]">{error}</p>}
     </div>
-  );
-}
+);

@@ -1,46 +1,119 @@
 import { useState, useCallback, useRef } from 'react';
-import { getTurnes, criarTurne as criarTurneService } from '../services/turneService';
+import { getTurnes, getTurnesPaginadas, criarTurne as criarTurneService } from '../services/turneService';
 import { imagemService } from '../services/imagemService';
-import { adaptTurnesFromBackend } from '../utils/turneAdapter';
+import { adaptTurneFromBackend } from '../utils/turneAdapter';
+
+// 🎚️ MUDAR AQUI PARA ALTERAR TAMANHO DE PÁGINA PADRÃO DE TURNÊS
+const DEFAULT_PAGE_SIZE = 1;
 
 export function useTurnes() {
   const [turnes, setTurnes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const jaCarregouImagens = useRef(new Set()); // IDs já processados
+  const [pagination, setPagination] = useState({
+    pageNumber: 0,
+    pageSize: DEFAULT_PAGE_SIZE,
+    totalPages: 0,
+    totalElements: 0,
+    first: true,
+    last: true,
+  });
+  const jaCarregouImagens = useRef(new Set());
+  const turnesCacheRef = useRef(new Map()); // ✅ Cache com Ref
 
-const listarTurnes = useCallback(async (page = 0) => {
-  try {
-    setLoading(true);
-    setError(null);
+  const listarTurnes = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // getTurnes() já aplica o adapter, então não precisa adaptar novamente
+      const turnesAdaptados = await getTurnes();
+      
+      setTurnes(turnesAdaptados);
+      return turnesAdaptados;
+    } catch (err) {
+      console.error('Erro ao listar turnês:', err);
+      setError(err.response?.data?.message || 'Erro ao carregar turnês');
+      setTurnes([]);
+      return [];
+    } finally {
+      setLoading(false);
+    }
+  }, []); // ✅ SEM dependências
 
-    // Busca turnês paginadas do backend (tamanho controlado pelo backend)
-    const data = await getTurnes(page);
+  // Listar turnês com paginação
+  const listarTurnesPaginadas = useCallback(
+    async (page = 0, size = DEFAULT_PAGE_SIZE) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await getTurnesPaginadas(page, size);
+        
+        // getTurnesPaginadas() já retorna dados adaptados em response.content
+        const turnesAdaptados = response.content;
 
-    // Adapta os dados para o formato esperado pela UI
-    const turnesAdaptados = await adaptTurnesFromBackend(data);
+        setPagination({
+          pageNumber: response.pageable?.pageNumber ?? page,
+          pageSize: response.pageable?.pageSize ?? size,
+          totalPages: response.totalPages,
+          totalElements: response.totalElements,
+          first: response.first,
+          last: response.last,
+        });
 
-    setTurnes(turnesAdaptados);
+        setTurnes(turnesAdaptados);
+        return turnesAdaptados;
+      } catch (err) {
+        setError(err.message);
+        console.error('[useTurnes] Erro ao listar turnês paginadas:', err);
+        setTurnes([]);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
-    // Retorna também os metadados de paginação
-    return {
-      content: turnesAdaptados,
-      totalPages: data.totalPages,
-      totalElements: data.totalElements,
-      pageNumber: data.number,
-      pageSize: data.size,
-      first: data.first,
-      last: data.last
-    };
-  } catch (err) {
-    console.error('Erro ao listar turnês:', err);
-    setError(err.response?.data?.message || 'Erro ao carregar turnês');
-    setTurnes([]);
-    return { content: [], totalPages: 0 };
-  } finally {
-    setLoading(false);
-  }
-}, []);
+  // Navegar próxima página
+  const nextPage = useCallback(async () => {
+    if (!pagination.last && !loading) {
+      await listarTurnesPaginadas(
+        pagination.pageNumber + 1,
+        pagination.pageSize
+      );
+    }
+  }, [pagination, loading, listarTurnesPaginadas]);
+
+  // Navegar página anterior
+  const prevPage = useCallback(async () => {
+    if (!pagination.first && !loading) {
+      await listarTurnesPaginadas(
+        pagination.pageNumber - 1,
+        pagination.pageSize
+      );
+    }
+  }, [pagination, loading, listarTurnesPaginadas]);
+
+  // Ir para página específica
+  const goToPage = useCallback(
+    async (pageNumber) => {
+      if (pageNumber >= 0 && pageNumber < pagination.totalPages && !loading) {
+        await listarTurnesPaginadas(pageNumber, pagination.pageSize);
+      }
+    },
+    [pagination, loading, listarTurnesPaginadas]
+  );
+
+  // Mudar tamanho de página
+  const setPageSize = useCallback(
+    async (newSize) => {
+      if (newSize > 0 && newSize !== pagination.pageSize && !loading) {
+        await listarTurnesPaginadas(0, newSize);
+      }
+    },
+    [pagination.pageSize, loading, listarTurnesPaginadas]
+  );
 
   const criar = useCallback(async (dados) => {
     try {
@@ -48,24 +121,11 @@ const listarTurnes = useCallback(async (page = 0) => {
       setError(null);
       const novaTurne = await criarTurneService(dados);
       
-      // Carrega imagem da nova turnê
-      let imagemUrl = null;
-      if (novaTurne.nomeFoto) {
-        try {
-          imagemUrl = await imagemService(novaTurne.nomeFoto);
-          jaCarregouImagens.current.add(novaTurne.id);
-        } catch (err) {
-          console.error('[useTurnes] Erro ao carregar imagem da nova turnê:', err);
-        }
-      }
+      // Adaptar dados da nova turnê usando o adapter
+      const turneAdaptado = await adaptTurneFromBackend(novaTurne);
       
-      const turneComImagem = {
-        ...novaTurne,
-        imagemUrl: imagemUrl || 'https://placehold.co/64x64/e2e8f0/64748b?text=Sem+Imagem'
-      };
-      
-      setTurnes((prev) => [...prev, turneComImagem]);
-      return turneComImagem;
+      setTurnes((prev) => [...prev, turneAdaptado]);
+      return turneAdaptado;
     } catch (err) {
       console.error('Erro ao criar turnê:', err);
       setError(err.response?.data?.message || 'Erro ao criar turnê');
@@ -79,7 +139,13 @@ const listarTurnes = useCallback(async (page = 0) => {
     turnes,
     loading,
     error,
+    pagination,
     listarTurnes,
+    listarTurnesPaginadas,
+    nextPage,
+    prevPage,
+    goToPage,
+    setPageSize,
     criarTurne: criar,
   };
 }

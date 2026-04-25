@@ -1,20 +1,17 @@
 import { imagemService } from "../services/imagemService";
 
-export async function adaptTurnesFromBackend(turnesPage) {
-  // Se não veio nada, retorna vazio
-  if (!turnesPage || !Array.isArray(turnesPage.content)) {
-    console.error("adaptTurnesFromBackend: turnesPage não tem content:", turnesPage);
+export async function adaptTurnesFromBackend(turnes) {
+  if (!Array.isArray(turnes)) {
+    console.warn("[turneAdapter] Resposta não é array, retornando lista vazia:", turnes);
     return [];
   }
 
-  // Mapeia apenas o array dentro de content
   return await Promise.all(
-    turnesPage.content.map(async (turne) => {
+    turnes.map(async (turne) => {
       return await adaptTurneFromBackend(turne);
     })
   );
 }
-
 
 export async function adaptTurneFromBackend(turne) {
   let imageUrl = "/default-turne-image.jpg";

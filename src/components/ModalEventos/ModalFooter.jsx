@@ -9,24 +9,27 @@ export function ModalFooter({
   beforeButtonText = "Voltar",
   onNext,
   onPrevious,
+  loading = false,
 }) {
   if (!showNavigation || !showFooter) return null;
 
   return (
-    <div className="flex justify-center items-center gap-4 px-16 py-6 border-t border-gray-200">
+    <div className="modal-footer">
       {currentStep > 1 && (
-        <button
-          onClick={onPrevious}
-          className="px-8 py-3 bg-gray-400 text-white font-medium rounded-lg hover:bg-gray-500 transition-colors"
+        <button 
+          onClick={onPrevious} 
+          className="modal-btn-secondary"
+          disabled={loading}
         >
           {beforeButtonText}
         </button>
       )}
-      <button
-        onClick={onNext}
-        className="px-8 py-3 bg-gray-700 text-white font-medium rounded-lg hover:bg-gray-600 transition-colors"
+      <button 
+        onClick={onNext} 
+        className="modal-btn-primary"
+        disabled={loading}
       >
-        {currentStep === totalSteps ? "Finalizar" : nextButtonText}
+        {loading ? "Processando..." : (currentStep === totalSteps ? "Finalizar" : nextButtonText)}
       </button>
     </div>
   );

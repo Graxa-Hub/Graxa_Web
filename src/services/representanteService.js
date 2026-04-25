@@ -4,7 +4,8 @@ export const representanteService = {
   // Listar todos os representantes
   async listarRepresentantes() {
     const response = await api.get('/representantes');
-    return response.data;
+    // Garantir que sempre retorna um array
+    return Array.isArray(response.data) ? response.data : [];
   },
 
   // Buscar representante por ID

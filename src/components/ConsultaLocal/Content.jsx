@@ -22,7 +22,7 @@ export const Content = ({ tipo, onClose }) => {
             <h2 className="font-semibold mb-2">Endereço de Origem</h2>
             <input
               type="text"
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input  focus:ring-0"
               placeholder="Digite o endereço de origem"
             />
           </div>
@@ -30,7 +30,7 @@ export const Content = ({ tipo, onClose }) => {
             <h2 className="font-semibold mb-2">Endereço de Destino</h2>
             <input
               type="text"
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input  focus:ring-0"
               placeholder="Digite o endereço de destino"
             />
           </div>
@@ -43,7 +43,7 @@ export const Content = ({ tipo, onClose }) => {
         <h2 className="font-semibold mb-2">Endereço</h2>
         <input
           type="text"
-          className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="form-input  focus:ring-0"
           placeholder="Digite o endereço"
         />
       </div>
@@ -56,7 +56,7 @@ export const Content = ({ tipo, onClose }) => {
       <div className="flex w-full justify-between items-center mb-4 border-b border-neutral-300 pb-2">
         <h2 className="text-lg font-bold">{getTitulo()}</h2>
         <X
-          className="scale-70 text-gray-400 cursor-pointer hover:text-gray-600 transition-colors"
+          className="scale-70 text-[var(--text-muted)] cursor-pointer hover:text-[var(--text-secondary)] transition-colors"
           onClick={onClose}
         />
       </div>
@@ -65,7 +65,7 @@ export const Content = ({ tipo, onClose }) => {
       {renderFields()}
 
       {/* Botão */}
-      <button className="w-full bg-gray-700 text-white py-2 rounded-md hover:bg-gray-800 transition-colors">
+      <button className="w-full bg-[var(--surface-elevated)] text-white py-2 rounded-[var(--radius-sm)] hover:bg-[var(--surface-hover)] transition-colors">
         Buscar
       </button>
     </>

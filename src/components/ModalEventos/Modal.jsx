@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { ModalHeader } from "./ModalHeader";
 import { ModalContent } from "./ModalContent";
 import { ModalFooter } from "./ModalFooter";
@@ -16,39 +15,39 @@ export function Modal({
   showFooter = true,
   size = "md",
   onFinish,
+  loading = false,
 }) {
   const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
-    if (isOpen) {
-      setCurrentStep(1);
-    }
+    if (isOpen) setCurrentStep(1);
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+    if (e.target === e.currentTarget) onClose();
   };
 
-  const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      if (onFinish) {
-        onFinish();
-      } else {
-        onClose();
+  const handleNext = async () => {
+    if (currentStep < totalSteps) setCurrentStep(currentStep + 1);
+    else if (onFinish) {
+      try {
+        const success = await onFinish();
+        // ✅ Só fecha se onFinish retornar true (sucesso)
+        if (success !== false) {
+          setCurrentStep(1);
+          onClose();
+        }
+      } catch (error) {
+        console.error("Erro ao finalizar modal:", error);
       }
     }
+    else onClose();
   };
 
   const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
   const handleClose = () => {
@@ -57,15 +56,8 @@ export function Modal({
   };
 
   return (
-    // Background para dar aspecto escuro no fundo
-    <div
-      className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-      onClick={handleOverlayClick}
-    >
-      {/* Modal Box */}
-      <div className={`bg-white rounded-md shadow-lg min-h-80 h-fit relative overflow-hidden ${size === "lg" ? "w-[780px]" : "w-[700px]"
-        } max-w-[95vw]`}>
-        {/* Header */}
+    <div className="modal-overlay fixed inset-0 flex items-center justify-center z-50 p-4" onClick={handleOverlayClick}>
+      <div className={`modal-panel relative overflow-hidden ${size === "lg" ? "max-w-[920px]" : "max-w-[780px]"}`}>
         <ModalHeader
           title={title}
           currentStep={currentStep}
@@ -73,11 +65,7 @@ export function Modal({
           showNavigation={showNavigation}
           onClose={handleClose}
         />
-
-        {/* Content */}
         <ModalContent currentStep={currentStep}>{children}</ModalContent>
-
-        {/* Footer com botão centrado */}
         <ModalFooter
           showNavigation={showNavigation}
           showFooter={showFooter}
@@ -87,6 +75,7 @@ export function Modal({
           beforeButtonText={beforeButtonText}
           onNext={handleNext}
           onPrevious={handlePrevious}
+          loading={loading}
         />
       </div>
     </div>

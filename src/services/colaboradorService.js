@@ -4,7 +4,8 @@ export const colaboradorService = {
   async listarColaboradores() {
     try {
       const response = await api.get('/colaboradores');
-      return response.data;
+      // Garantir que sempre retorna um array
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.response?.data?.mensagem || '';
       if (error.response?.status === 500 && errorMessage.includes('Não há colaboradores')) {

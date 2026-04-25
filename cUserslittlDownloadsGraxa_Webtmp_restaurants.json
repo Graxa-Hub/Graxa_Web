@@ -1,0 +1,211 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-04-22T23:36:00Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 1609561174,
+  "lat": -23.5057039,
+  "lon": -46.4883229,
+  "tags": {
+    "amenity": "restaurant"
+  }
+},
+{
+  "type": "node",
+  "id": 1609582702,
+  "lat": -23.5073523,
+  "lon": -46.4904087,
+  "tags": {
+    "amenity": "restaurant"
+  }
+},
+{
+  "type": "node",
+  "id": 1838773799,
+  "lat": -23.5439211,
+  "lon": -46.4440081,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "regional",
+    "name": "Bom Apetite"
+  }
+},
+{
+  "type": "node",
+  "id": 2732240792,
+  "lat": -23.5400121,
+  "lon": -46.4500874,
+  "tags": {
+    "addr:city": "São Paulo",
+    "addr:housenumber": "8210",
+    "addr:street": "Avenida Jacu-Pêssego",
+    "amenity": "fast_food",
+    "brand": "Burger King",
+    "brand:wikidata": "Q177054",
+    "brand:wikipedia": "en:Burger King",
+    "cuisine": "burger",
+    "name": "Burger King",
+    "opening_hours": "10:00-22:00",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 2888320137,
+  "lat": -23.5429187,
+  "lon": -46.4950024,
+  "tags": {
+    "amenity": "restaurant",
+    "capacity": "100",
+    "name": "Pizzaria Fellice",
+    "opening_hours": "18:00-24:00",
+    "smoking": "no",
+    "source": "source=knowledge"
+  }
+},
+{
+  "type": "node",
+  "id": 3416438755,
+  "lat": -23.5590534,
+  "lon": -46.4891169,
+  "tags": {
+    "addr:city": "São Paulo",
+    "addr:housenumber": "822",
+    "addr:postcode": "03584-000",
+    "addr:street": "Avenida Osvaldo Valle Cordeiro",
+    "addr:suburb": "Jardim Brasilia",
+    "amenity": "restaurant",
+    "capacity": "100",
+    "cuisine": "regional",
+    "name": "Casa do Norte SavoY",
+    "smoking": "outside"
+  }
+},
+{
+  "type": "node",
+  "id": 3649830261,
+  "lat": -23.5251645,
+  "lon": -46.4788805,
+  "tags": {
+    "addr:city": "São Paulo",
+    "addr:housenumber": "264",
+    "addr:postcode": "03685-000",
+    "addr:street": "Rua Sonho Gaúcho",
+    "amenity": "restaurant"
+  }
+},
+{
+  "type": "node",
+  "id": 3651127352,
+  "lat": -23.5090773,
+  "lon": -46.4775045,
+  "tags": {
+    "addr:street": "Avenida Águia de Haia",
+    "amenity": "restaurant",
+    "cuisine": "regional",
+    "delivery": "yes",
+    "name": "Churrascaria Boi Gaúcho",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 3677055270,
+  "lat": -23.5503717,
+  "lon": -46.5084698,
+  "tags": {
+    "addr:city": "São Paulo",
+    "addr:housenumber": "2220",
+    "addr:street": "Avenida Itaquera",
+    "amenity": "restaurant",
+    "cuisine": "regional",
+    "name": "Portal D' Gastronomia"
+  }
+},
+{
+  "type": "node",
+  "id": 3677055271,
+  "lat": -23.5498311,
+  "lon": -46.5080584,
+  "tags": {
+    "addr:city": "São Paulo",
+    "addr:housenumber": "1795",
+    "addr:street": "Avenida Itaquera",
+    "amenity": "fast_food",
+    "cuisine": "pizza",
+    "name": "Celitta Pizzaria"
+  }
+},
+{
+  "type": "node",
+  "id": 3942033381,
+  "lat": -23.5279091,
+  "lon": -46.5091005,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "arab",
+    "name": "Habib's"
+  }
+},
+{
+  "type": "node",
+  "id": 3942074986,
+  "lat": -23.5234480,
+  "lon": -46.5129401,
+  "tags": {
+    "amenity": "restaurant",
+    "cuisine": "pizza",
+    "name": "Ki Veneza"
+  }
+},
+{
+  "type": "node",
+  "id": 3942074992,
+  "lat": -23.5242793,
+  "lon": -46.5064792,
+  "tags": {
+    "amenity": "fast_food",
+    "brand": "Subway",
+    "brand:wikidata": "Q244457",
+    "cuisine": "sandwich",
+    "name": "Subway",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4153884066,
+  "lat": -23.5136601,
+  "lon": -46.4439337,
+  "tags": {
+    "amenity": "fast_food",
+    "brand": "Habib's",
+    "brand:wikidata": "Q2504930",
+    "cuisine": "middle_eastern",
+    "name": "Habib's",
+    "takeaway": "yes"
+  }
+},
+{
+  "type": "node",
+  "id": 4417003230,
+  "lat": -23.5675767,
+  "lon": -46.4686949,
+  "tags": {
+    "amenity": "fast_food",
+    "cuisine": "regional",
+    "delivery": "no",
+    "drive_through": "no",
+    "name": "Pastelaria",
+    "takeaway": "no"
+  }
+}
+
+  ]
+}

@@ -81,7 +81,8 @@ export const alocacaoService = {
       console.log('[alocacaoService] Listando alocações do show:', showId);
       const response = await api.get(`/alocacoes/show/${showId}`);
       console.log('[alocacaoService] Alocações encontradas:', response.data);
-      return response.data;
+      // Garantir que sempre retorna um array
+      return Array.isArray(response.data) ? response.data : [];
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.response?.data?.mensagem || '';
       

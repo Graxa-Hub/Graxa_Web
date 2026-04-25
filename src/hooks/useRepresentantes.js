@@ -11,8 +11,10 @@ export function useRepresentantes() {
       setLoading(true);
       setError(null);
       const data = await representanteService.listarRepresentantes();
-      setRepresentantes(data);
-      return data;
+      // Validação defensiva: garantir que é um array
+      const representantesArray = Array.isArray(data) ? data : [];
+      setRepresentantes(representantesArray);
+      return representantesArray;
     } catch (err) {
       console.error('Erro ao listar representantes:', err);
       setError(err.response?.data?.message || 'Erro ao carregar representantes');

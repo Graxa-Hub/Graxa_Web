@@ -4,7 +4,8 @@ export const artistaService = {
   // Listar todos os artistas
   async listarArtistas() {
     const response = await api.get('/artistas');
-    return response.data;
+    // Garantir que sempre retorna um array
+    return Array.isArray(response.data) ? response.data : [];
   },
 
   // Criar novo artista

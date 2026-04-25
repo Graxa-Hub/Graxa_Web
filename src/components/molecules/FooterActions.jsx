@@ -3,10 +3,10 @@ import { NavItem } from "../atoms/NavItem";
 
 export const FooterActions = () => {
     return (
-        <ul className="flex flex-col">
-            {footerNavigation.map((item) => (
+        <ul className="flex flex-col gap-1.5 border-t border-[var(--border)] pt-3 mt-3">
+            {Array.isArray(footerNavigation) && footerNavigation.map((item) => (
                 <NavItem
-                    key={item.id}
+                    key={item.id || item.to}
                     to={item.to}
                     label={item.label}
                     icon={item.icon}

@@ -16,9 +16,9 @@ export function BandaInput({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-[var(--text-secondary)] mb-1">
         {label}
-        {required && <span className="text-red-500">*</span>}
+        {required && <span className="text-[var(--accent)]">*</span>}
       </label>
       <div className="relative">
         <input
@@ -27,14 +27,14 @@ export function BandaInput({
           value={showDropdown ? searchText : value}
           onChange={(e) => onSearchChange(e.target.value)}
           onFocus={onFocus}
-          className="w-full px-3 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-lg"
+          className="w-full form-input focus:outline-none  focus:ring-0 shadow-[var(--shadow-soft)]"
           disabled={disabled}
         />
 
         {showDropdown && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-40 overflow-y-auto">
+          <div className="absolute z-10 w-full mt-1 bg-[var(--surface-elevated)] border border-[var(--border)] rounded-[var(--radius-sm)] shadow-[var(--shadow-soft)] max-h-40 overflow-y-auto">
             {filteredBandas.length === 0 ? (
-              <div className="px-3 py-2 text-gray-500 text-sm">
+              <div className="px-3 py-2 text-[var(--text-muted)] text-sm">
                 Nenhuma banda encontrada
               </div>
             ) : (
@@ -43,7 +43,7 @@ export function BandaInput({
                   key={banda.id}
                   type="button"
                   onClick={() => onSelectBanda(banda)}
-                  className="w-full text-left px-3 py-2 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                  className="w-full text-left px-3 py-2 hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] focus:outline-none"
                 >
                   {banda.nome}
                 </button>
@@ -52,7 +52,7 @@ export function BandaInput({
           </div>
         )}
       </div>
-      {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+      {error && <p className="text-[var(--accent)] text-sm mt-1">{error}</p>}
     </div>
   );
 }

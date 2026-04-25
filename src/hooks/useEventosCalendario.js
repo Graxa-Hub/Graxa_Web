@@ -1,6 +1,6 @@
-import { useState, useCallback } from 'react';
-import { showService } from '../services/showService';
-import { viagemService } from '../services/viagemService';
+import { useState, useCallback } from "react";
+import { showService } from "../services/showService";
+import { viagemService } from "../services/viagemService";
 
 export function useEventosCalendario() {
   const [eventos, setEventos] = useState([]);
@@ -10,9 +10,7 @@ export function useEventosCalendario() {
   // ✅ Recebe filtros opcionais: bandaId e turneId
   const carregarEventos = useCallback(async (filtros = {}) => {
     const { bandaId, turneId } = filtros;
-    
-    
-    
+
     try {
       setLoading(true);
       setError(null);
@@ -20,74 +18,78 @@ export function useEventosCalendario() {
       // Busca shows e viagens em paralelo
       const [shows, viagens] = await Promise.all([
         showService.listar(),
-        viagemService.listar()
+        viagemService.listar(),
       ]);
-
-      
 
       // ✅ Aplica filtros nos shows
       let showsFiltrados = shows || [];
       if (turneId) {
-        showsFiltrados = showsFiltrados.filter(show =>
-          (show.turne?.id || show.turneId) === turneId
+        showsFiltrados = showsFiltrados.filter(
+          (show) => String(show.turne?.id || show.turneId) === String(turneId),
         );
       } else if (bandaId) {
-        showsFiltrados = showsFiltrados.filter(show =>
-          (show.turne?.bandaId || show.turne?.banda?.id) === bandaId
+        showsFiltrados = showsFiltrados.filter(
+          (show) =>
+            String(show.turne?.bandaId || show.turne?.banda?.id) ===
+              String(bandaId) ||
+            (Array.isArray(show.bandas) &&
+              show.bandas.some((b) => String(b?.id) === String(bandaId))),
         );
       }
 
       // ✅ Aplica filtros nas viagens
       let viagensFiltradas = viagens || [];
       if (turneId) {
-        viagensFiltradas = viagensFiltradas.filter(viagem =>
-          (viagem.turne?.id || viagem.turneId) === turneId
+        viagensFiltradas = viagensFiltradas.filter(
+          (viagem) =>
+            String(viagem.turne?.id || viagem.turneId) === String(turneId),
         );
       } else if (bandaId) {
-        viagensFiltradas = viagensFiltradas.filter(viagem =>
-          (viagem.turne?.bandaId || viagem.turne?.banda?.id) === bandaId
+        viagensFiltradas = viagensFiltradas.filter(
+          (viagem) =>
+            String(viagem.turne?.bandaId || viagem.turne?.banda?.id) ===
+            String(bandaId),
         );
       }
 
       // Mapeia shows para eventos do calendário
-      const eventosShows = showsFiltrados.map(show => ({
+      const eventosShows = showsFiltrados.map((show) => ({
         id: `show-${show.id}`,
-        title: show.nomeEvento || show.nome || 'Show sem título',
+        title: show.nomeEvento || show.nome || "Show sem título",
         start: show.dataInicio,
         end: show.dataFim,
-        backgroundColor: '#ef4444',
-        borderColor: '#ef4444',
-        type: 'show',
+        backgroundColor: "#ef4444",
+        borderColor: "#ef4444",
+        type: "show",
         extendedProps: {
-          tipo: 'show',
-          dados: show
-        }
+          tipo: "show",
+          dados: show,
+        },
       }));
 
       // Mapeia viagens para eventos do calendário
-      const eventosViagens = viagensFiltradas.map(viagem => ({
+      const eventosViagens = viagensFiltradas.map((viagem) => ({
         id: `viagem-${viagem.id}`,
-        title: `✈️ ${viagem.nomeEvento || viagem.tipoViagem || 'Viagem'}`,
+        title: `✈️ ${viagem.nomeEvento || viagem.tipoViagem || "Viagem"}`,
         start: viagem.dataInicio,
         end: viagem.dataFim,
-        backgroundColor: '#3b82f6',
-        borderColor: '#3b82f6',
-        type: 'viagem',
+        backgroundColor: "#3b82f6",
+        borderColor: "#3b82f6",
+        type: "viagem",
         extendedProps: {
-          tipo: 'viagem',
-          dados: viagem
-        }
+          tipo: "viagem",
+          dados: viagem,
+        },
       }));
 
       const todosEventos = [...eventosShows, ...eventosViagens];
-      
-      
+
       setEventos(todosEventos);
-      
+
       return todosEventos;
     } catch (err) {
-      console.error('[useEventosCalendario] Erro ao carregar eventos:', err);
-      setError(err.message || 'Erro ao carregar eventos');
+      console.error("[useEventosCalendario] Erro ao carregar eventos:", err);
+      setError(err.message || "Erro ao carregar eventos");
       setEventos([]);
       return [];
     } finally {
@@ -96,25 +98,24 @@ export function useEventosCalendario() {
   }, []);
 
   const adicionarEventoLocal = useCallback((entidade, tipo) => {
-    
-    
     const novoEvento = {
       id: `${tipo}-${entidade.id}`,
-      title: tipo === 'show' 
-        ? (entidade.nomeShow || entidade.nome || 'Show')
-        : `✈️ ${entidade.tipoViagem || 'Viagem'}`,
-      start: entidade.dataHoraInicio,
-      end: entidade.dataHoraFim,
-      backgroundColor: tipo === 'show' ? '#ef4444' : '#3b82f6',
-      borderColor: tipo === 'show' ? '#ef4444' : '#3b82f6',
+      title:
+        tipo === "show"
+          ? entidade.nomeEvento || entidade.nomeShow || entidade.nome || "Show"
+          : `✈️ ${entidade.tipoViagem || "Viagem"}`,
+      start: entidade.dataInicio || entidade.dataHoraInicio,
+      end: entidade.dataFim || entidade.dataHoraFim,
+      backgroundColor: tipo === "show" ? "#ef4444" : "#3b82f6",
+      borderColor: tipo === "show" ? "#ef4444" : "#3b82f6",
       type: tipo,
       extendedProps: {
         tipo,
-        dados: entidade
-      }
+        dados: entidade,
+      },
     };
 
-    setEventos(prev => [...prev, novoEvento]);
+    setEventos((prev) => [...prev, novoEvento]);
   }, []);
 
   return {
