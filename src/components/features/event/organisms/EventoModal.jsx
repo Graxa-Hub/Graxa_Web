@@ -76,6 +76,7 @@ export function EventoModal({
     dataInicio: "",
     dataFim: "",
     turneId: "",
+    bandaId: "",
   });
 
   useEffect(() => {
@@ -117,6 +118,7 @@ export function EventoModal({
 
       setViagemData((prev) => ({
         ...prev,
+        bandaId: bandaId ? String(bandaId) : "",
         turneId: turneId ? String(turneId) : "",
         dataInicio: dataHoraInicial.inicio || "",
         dataFim: dataHoraInicial.fim || "",
@@ -142,6 +144,7 @@ export function EventoModal({
         dataInicio: "",
         dataFim: "",
         turneId: "",
+        bandaId: "",
       });
       setNovoLocal({
         nome: "",
@@ -223,8 +226,8 @@ export function EventoModal({
     return null;
   };
 
-  const verificarConflito = (bandasIds, dataInicio, dataFim) => {
-    if (!bandasIds || bandasIds.length === 0 || !dataInicio || !dataFim) {
+  const verificarConflito = (bandasIds, dataInicio, dataFim, tipoEvento) => {
+    if (!bandasIds || bandasIds.length === 0 || !dataInicio || !dataFim || !tipoEvento) {
       return null;
     }
 
@@ -236,6 +239,9 @@ export function EventoModal({
     }
 
     const conflitos = eventosExistentes.filter((evento) => {
+      const tipoExistente = evento.id.startsWith("show-") ? "show" : "viagem";
+      if (tipoExistente !== tipoEvento) return false;
+
       const temBandaEmComum = evento.bandasIds.some((bandaId) =>
         bandasIds.includes(bandaId),
       );
@@ -377,14 +383,15 @@ export function EventoModal({
 
       // Conflito de horário (mantenha como está)
       if (
-        showData.bandaId.length > 0 &&
+        showData.bandaId &&
         showData.dataHoraInicio &&
         showData.dataHoraFim
       ) {
         const conflito = verificarConflito(
-          showData.bandaId,
+          [showData.bandaId],
           showData.dataHoraInicio,
           showData.dataHoraFim,
+          "show"
         );
         if (conflito) {
           setFieldErrors({
@@ -431,14 +438,13 @@ export function EventoModal({
       }
       */
 
-      if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
-        const turne = turnes.find((t) => t.id === Number(viagemData.turneId));
-        if (turne && turne.bandaId) {
-          const conflito = verificarConflito(
-            [turne.bandaId],
-            viagemData.dataInicio,
-            viagemData.dataFim,
-          );
+      if (viagemData.bandaId && viagemData.dataInicio && viagemData.dataFim) {
+        const conflito = verificarConflito(
+          [viagemData.bandaId],
+          viagemData.dataInicio,
+          viagemData.dataFim,
+          "viagem"
+        );
 
           if (conflito) {
             setFieldErrors({
@@ -464,7 +470,6 @@ export function EventoModal({
             return false;
           }
         }
-      }
     }
 
     const newFieldErrors = mapErrorsToFields(errors, fieldMap);
@@ -743,6 +748,7 @@ export function EventoModal({
           data={viagemData}
           setData={setViagemData}
           turnes={turnes}
+          bandas={bandas}
           fieldErrors={fieldErrors}
           clearFieldError={clearFieldError}
         />
@@ -1060,7 +1066,7 @@ function ShowContent({
           label="Título do Show"
           value={data.titulo}
           onChange={(e) => {
-            setData({ ...data, titulo: e.target.value });
+            setData((prev) => ({ ...prev, titulo: e.target.value }));
             if (clearFieldError) clearFieldError("titulo");
           }}
           placeholder="Ex: Festival de Rock 2025"
@@ -1077,11 +1083,11 @@ function ShowContent({
           selectedBandaId={data.bandaId}
           selectedTurneId={data.turneId}
           onBandaChange={(id) => {
-            setData({ ...data, bandaId: id, turneId: "" });
+            setData((prev) => ({ ...prev, bandaId: id, turneId: "" }));
             if (clearFieldError) clearFieldError("bandaId");
           }}
           onTurneChange={(id) => {
-            setData({ ...data, turneId: id });
+            setData((prev) => ({ ...prev, turneId: id }));
             if (clearFieldError) clearFieldError("turneId");
           }}
           bandaError={fieldErrors.bandaId}
@@ -1094,7 +1100,7 @@ function ShowContent({
           <LocalCombobox
             locais={locais}
             selectedId={data.localId}
-            onChange={(id) => setData({ ...data, localId: id })}
+            onChange={(id) => setData((prev) => ({ ...prev, localId: id }))}
             onNovoLocal={() => setShowNovoLocal(true)}
             error={fieldErrors.local} // <-- borda vermelha se erro
             clearError={clearFieldError}
@@ -1172,7 +1178,7 @@ function ShowContent({
           label="Data/Hora de Início"
           value={data.dataHoraInicio}
           onChange={(e) => {
-            setData({ ...data, dataHoraInicio: e.target.value });
+            setData((prev) => ({ ...prev, dataHoraInicio: e.target.value }));
             if (clearFieldError) clearFieldError("dataHoraInicio");
           }}
           required
@@ -1183,7 +1189,7 @@ function ShowContent({
           label="Data/Hora de Fim"
           value={data.dataHoraFim}
           onChange={(e) => {
-            setData({ ...data, dataHoraFim: e.target.value });
+            setData((prev) => ({ ...prev, dataHoraFim: e.target.value }));
             if (clearFieldError) clearFieldError("dataHoraFim");
           }}
           required
@@ -1196,7 +1202,7 @@ function ShowContent({
         </label>
         <textarea
           value={data.descricao}
-          onChange={(e) => setData({ ...data, descricao: e.target.value })}
+          onChange={(e) => setData((prev) => ({ ...prev, descricao: e.target.value }))}
           placeholder="Descreva os detalhes do show..."
           rows={4}
           className="form-input resize-none"
@@ -1212,6 +1218,7 @@ function ViagemContent({
   data,
   setData,
   turnes = [],
+  bandas = [],
   fieldErrors = {},
   clearFieldError,
 }) {
@@ -1300,38 +1307,25 @@ function ViagemContent({
           </div>
         </div>
 
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
-            Turnê *
-          </label>
-          <select
-            value={data.turneId || ""}
-            onChange={(e) => handleChange("turneId", e.target.value)}
-            className={`w-full px-3 py-2 border rounded-[var(--radius-md)]   ${
-              fieldErrors.turneId
-                ? "border-[var(--accent)]"
-                : "border-[var(--border)]"
-            }`}
-          >
-            <option value="">Selecione uma turnê</option>
-            {Array.isArray(turnes) && turnes.length > 0 ? (
-              turnes.map((turne) => (
-                <option key={turne.id} value={turne.id}>
-                  {turne.nomeTurne || turne.nome}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>
-                Nenhuma turnê cadastrada
-              </option>
-            )}
-          </select>
-          {fieldErrors.turneId && (
-            <p className="text-[var(--accent)] text-xs mt-1">
-              {fieldErrors.turneId}
-            </p>
-          )}
-        </div>
+        <BandaTurneSelectorForm
+          bandas={bandas}
+          turnes={turnes}
+          selectedBandaId={data.bandaId}
+          selectedTurneId={data.turneId}
+          onBandaChange={(id) => {
+            setData((prev) => ({ ...prev, bandaId: id, turneId: "" }));
+            if (clearFieldError) clearFieldError("bandaId");
+          }}
+          onTurneChange={(id) => {
+            setData((prev) => ({ ...prev, turneId: id }));
+            if (clearFieldError) clearFieldError("turneId");
+          }}
+          bandaError={fieldErrors.bandaId}
+          turneError={fieldErrors.turneId}
+          clearBandaError={() => clearFieldError("bandaId")}
+          clearTurneError={() => clearFieldError("turneId")}
+          turneRequired={true}
+        />
       </div>
     );
   }
