@@ -99,7 +99,6 @@ export const useCadastroForm = () => {
       });
 
       if (response) {
-        loginToContext({ token: response.token, usuario: response.usuario });
         setFields({
           nome: "",
           apelido: "",
@@ -111,7 +110,7 @@ export const useCadastroForm = () => {
           senha: "",
           confirmarSenha: "",
         });
-        navigate("/dashboard");
+        navigate("/login");
       }
     },
     [fields, handleRegister, loginToContext, navigate, setFieldErrors],

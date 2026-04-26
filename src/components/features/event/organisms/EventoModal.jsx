@@ -231,8 +231,8 @@ export function EventoModal({
     return null;
   };
 
-  const verificarConflito = (bandasIds, dataInicio, dataFim) => {
-    if (!bandasIds || bandasIds.length === 0 || !dataInicio || !dataFim) {
+  const verificarConflito = (bandasIds, dataInicio, dataFim, tipoEvento) => {
+    if (!bandasIds || bandasIds.length === 0 || !dataInicio || !dataFim || !tipoEvento) {
       return null;
     }
 
@@ -244,6 +244,9 @@ export function EventoModal({
     }
 
     const conflitos = eventosExistentes.filter((evento) => {
+      const tipoExistente = evento.id.startsWith("show-") ? "show" : "viagem";
+      if (tipoExistente !== tipoEvento) return false;
+
       const temBandaEmComum = evento.bandasIds.some((bandaId) =>
         bandasIds.includes(bandaId),
       );
@@ -374,14 +377,15 @@ export function EventoModal({
 
       // Conflito de horário (mantenha como está)
       if (
-        showData.bandaId.length > 0 &&
+        showData.bandaId &&
         showData.dataHoraInicio &&
         showData.dataHoraFim
       ) {
         const conflito = verificarConflito(
-          showData.bandaId,
+          [showData.bandaId],
           showData.dataHoraInicio,
           showData.dataHoraFim,
+          "show"
         );
         if (conflito) {
           setFieldErrors({
@@ -428,14 +432,13 @@ export function EventoModal({
       }
       */
 
-      if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
-        const turne = turnes.find((t) => t.id === Number(viagemData.turneId));
-        if (turne && turne.bandaId) {
-          const conflito = verificarConflito(
-            [turne.bandaId],
-            viagemData.dataInicio,
-            viagemData.dataFim,
-          );
+      if (viagemData.bandaId && viagemData.dataInicio && viagemData.dataFim) {
+        const conflito = verificarConflito(
+          [viagemData.bandaId],
+          viagemData.dataInicio,
+          viagemData.dataFim,
+          "viagem"
+        );
 
           if (conflito) {
             setFieldErrors({
@@ -461,7 +464,6 @@ export function EventoModal({
             return false;
           }
         }
-      }
     }
 
     const newFieldErrors = mapErrorsToFields(errors, fieldMap);
@@ -1088,7 +1090,7 @@ function ShowContent({
           label="Título do Show"
           value={data.titulo}
           onChange={(e) => {
-            setData({ ...data, titulo: e.target.value });
+            setData((prev) => ({ ...prev, titulo: e.target.value }));
             if (clearFieldError) clearFieldError("titulo");
           }}
           placeholder="Ex: Festival de Rock 2025"
@@ -1124,7 +1126,7 @@ function ShowContent({
           <LocalCombobox
             locais={locais}
             selectedId={data.localId}
-            onChange={(id) => setData({ ...data, localId: id })}
+            onChange={(id) => setData((prev) => ({ ...prev, localId: id }))}
             onNovoLocal={() => setShowNovoLocal(true)}
             error={fieldErrors.local} // <-- borda vermelha se erro
             clearError={clearFieldError}
@@ -1202,7 +1204,7 @@ function ShowContent({
           label="Data/Hora de Início"
           value={data.dataHoraInicio}
           onChange={(e) => {
-            setData({ ...data, dataHoraInicio: e.target.value });
+            setData((prev) => ({ ...prev, dataHoraInicio: e.target.value }));
             if (clearFieldError) clearFieldError("dataHoraInicio");
           }}
           required
@@ -1213,7 +1215,7 @@ function ShowContent({
           label="Data/Hora de Fim"
           value={data.dataHoraFim}
           onChange={(e) => {
-            setData({ ...data, dataHoraFim: e.target.value });
+            setData((prev) => ({ ...prev, dataHoraFim: e.target.value }));
             if (clearFieldError) clearFieldError("dataHoraFim");
           }}
           required
@@ -1226,7 +1228,7 @@ function ShowContent({
         </label>
         <textarea
           value={data.descricao}
-          onChange={(e) => setData({ ...data, descricao: e.target.value })}
+          onChange={(e) => setData((prev) => ({ ...prev, descricao: e.target.value }))}
           placeholder="Descreva os detalhes do show..."
           rows={4}
           className="form-input resize-none"
