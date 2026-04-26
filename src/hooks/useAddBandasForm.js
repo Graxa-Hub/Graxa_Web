@@ -109,20 +109,22 @@ export function useAddBandaForm({
         return false; // ✅ Indica falha
       }
 
-      // Validar se banda já existe (prevenção de erro 500)
-      try {
-        const bandasExistentes = await bandaService.listarBandas();
-        const bandaJaExiste = bandasExistentes?.some(
-          (b) => b.nome.toLowerCase() === draft.nome.toLowerCase(),
-        );
-        if (bandaJaExiste) {
-          setErrors({ geral: `A banda "${draft.nome}" já existe no sistema.` });
-          return false; // ✅ Indica falha
+      // ✅ Só valida duplicação se NÃO está editando (criando nova banda)
+      if (!isEditMode) {
+        try {
+          const bandasExistentes = await bandaService.listarBandas();
+          const bandaJaExiste = bandasExistentes?.some(
+            (b) => b.nome.toLowerCase() === draft.nome.toLowerCase(),
+          );
+          if (bandaJaExiste) {
+            setErrors({ geral: `A banda "${draft.nome}" já existe no sistema.` });
+            return false; // ✅ Indica falha
+          }
+        } catch (err) {
+          console.warn(
+            "[useAddBandaForm] Aviso: não foi possível validar banda existente",
+          );
         }
-      } catch (err) {
-        console.warn(
-          "[useAddBandaForm] Aviso: não foi possível validar banda existente",
-        );
       }
 
       if (isEditMode) {
@@ -149,7 +151,7 @@ export function useAddBandaForm({
           }
         }
         showSuccess(`"${draft.nome}" foi atualizada com sucesso!`, 'Banda atualizada');
-        onSuccess();
+        await onSuccess(); // ✅ Aguarda antes de retornar
         return true; // ✅ Indica sucesso
       }
       let representanteId = draft.representanteId;
@@ -255,7 +257,7 @@ export function useAddBandaForm({
         await adicionarIntegrantes(bandaCriada.id, integrantesIds);
       }
       showSuccess(`"${draft.nome}" foi criada com sucesso!`, 'Banda criada');
-      onSuccess();
+      await onSuccess(); // ✅ Aguarda antes de retornar
       return true; // ✅ Indica sucesso
     } catch (error) {
       let errorMessage = "Erro ao processar banda";

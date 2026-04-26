@@ -98,12 +98,25 @@ export function TaskList({ eventos = [] }) {
                   <p className="font-medium text-sm text-[var(--text-primary)] truncate">
                     {evento.title || "Sem titulo"}
                   </p>
+
+                  {/* Exibe banda e turne se disponíveis */}
+                  {(evento.extendedProps?.banda || evento.extendedProps?.turne) && (
+                    <div className="text-xs text-[var(--text-muted)] mt-1 space-y-0.5">
+                      {evento.extendedProps.banda?.nome && (
+                        <div>🎵 {evento.extendedProps.banda.nome}</div>
+                      )}
+                      {evento.extendedProps.turne?.nome && (
+                        <div>🎪 {evento.extendedProps.turne.nome}</div>
+                      )}
+                    </div>
+                  )}
+
                   <span
                     className={`text-xs ${
                       evento.type === "show"
                         ? "text-[var(--accent)]"
                         : "text-[var(--info)]"
-                    }`}
+                    } mt-1`}
                   >
                     {evento.type === "show" ? "Show" : "Viagem"}
                   </span>

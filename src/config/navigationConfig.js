@@ -5,13 +5,15 @@ export const mainNavigation = [
         id: 1,
         to: "/artista",
         label: "Bandas",
-        icon: MicVocal
+        icon: MicVocal,
+        requiredRole: "produtor"
     },
     {
         id: 2,
         to: "/turne",
         label: "Turnes",
-        icon: Spotlight
+        icon: Spotlight,
+        requiredRole: "produtor"
     },
     {
         id: 3,

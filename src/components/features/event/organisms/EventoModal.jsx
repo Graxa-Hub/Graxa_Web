@@ -17,6 +17,7 @@ import {
   VIAGEM_ERROR_MAP,
 } from "../../../../utils/errorMapping";
 import { useAuth } from "../../../../context/AuthContext";
+import { X } from "lucide-react";
 
 const TOTAL_STEPS = 2; // Altere para o número de steps que quiser futuramente
 
@@ -38,7 +39,7 @@ export function EventoModal({
   const { bandas, listarBandas } = useBandas();
   const { locais, listarLocais, criarLocal } = useLocais();
   const { turnes, listarTurnes } = useTurnes();
-  const { criarShow, adicionarBandas } = useShows();
+  const { shows, criarShow, adicionarBandas, listarShows } = useShows();
   const { criarViagem } = useViagens();
 
   const [showNovoLocal, setShowNovoLocal] = useState(false);
@@ -75,7 +76,9 @@ export function EventoModal({
     tipoViagem: "onibus",
     dataInicio: "",
     dataFim: "",
+    bandaId: "",
     turneId: "",
+    showId: "",
   });
 
   useEffect(() => {
@@ -99,30 +102,33 @@ export function EventoModal({
       listarBandas();
       listarLocais();
       listarTurnes();
+      listarShows();
       carregarEventos();
       setFieldErrors({});
     }
   }, [isOpen]);
 
-  // Inicializa showData e viagemData com bandaId e turneId quando abrir
+  // Inicializa showData com bandaId/turneId apenas quando o modal abre (uma única vez)
   useEffect(() => {
     if (isOpen) {
       setShowData((prev) => ({
         ...prev,
-        bandaId: bandaId ? String(bandaId) : "",
-        turneId: turneId ? String(turneId) : "",
-        dataHoraInicio: dataHoraInicial.inicio || "",
-        dataHoraFim: dataHoraInicial.fim || "",
+        // Só inicializa se ainda estiver vazios (não sobrescreve seleções do usuário)
+        ...(prev.bandaId === "" && bandaId ? { bandaId: String(bandaId) } : {}),
+        ...(prev.turneId === "" && turneId ? { turneId: String(turneId) } : {}),
+        dataHoraInicio: dataHoraInicial.inicio || prev.dataHoraInicio || "",
+        dataHoraFim: dataHoraInicial.fim || prev.dataHoraFim || "",
       }));
 
       setViagemData((prev) => ({
         ...prev,
-        turneId: turneId ? String(turneId) : "",
-        dataInicio: dataHoraInicial.inicio || "",
-        dataFim: dataHoraInicial.fim || "",
+        ...(prev.bandaId === "" && bandaId ? { bandaId: String(bandaId) } : {}),
+        ...(prev.turneId === "" && turneId ? { turneId: String(turneId) } : {}),
+        dataInicio: dataHoraInicial.inicio || prev.dataInicio || "",
+        dataFim: dataHoraInicial.fim || prev.dataFim || "",
       }));
     }
-  }, [isOpen, bandaId, turneId, dataHoraInicial]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -141,7 +147,9 @@ export function EventoModal({
         tipoViagem: "onibus",
         dataInicio: "",
         dataFim: "",
+        bandaId: "",
         turneId: "",
+        showId: "",
       });
       setNovoLocal({
         nome: "",
@@ -256,20 +264,9 @@ export function EventoModal({
         eventoFimAjustado.setMinutes(eventoFimAjustado.getMinutes() - 1);
       }
 
-      // Zera as horas para comparar apenas os dias
-      const inicioDia = new Date(inicio);
-      inicioDia.setHours(0, 0, 0, 0);
-      const fimDia = new Date(fimAjustado);
-      fimDia.setHours(23, 59, 59, 999);
-
-      const eventoInicioDia = new Date(eventoInicio);
-      eventoInicioDia.setHours(0, 0, 0, 0);
-      const eventoFimDia = new Date(eventoFimAjustado);
-      eventoFimDia.setHours(23, 59, 59, 999);
-
-      // Se há interseção de dias, há conflito
+      // Verifica sobreposição de horários (não apenas dias)
       const temSobreposicao =
-        inicioDia <= eventoFimDia && fimDia >= eventoInicioDia;
+        inicio < eventoFimAjustado && fimAjustado > eventoInicio;
 
       return temSobreposicao;
     });
@@ -674,7 +671,9 @@ export function EventoModal({
           dataFim: padDate(viagemData.dataFim),
           descricao: viagemData.descricao || "",
           tipoViagem: viagemData.tipoViagem,
-          turneId: viagemData.turneId ? Number(viagemData.turneId) : null,
+          bandaId: viagemData.bandaId ? Number(viagemData.bandaId) : null,
+          showId: viagemData.showId ? Number(viagemData.showId) : null,
+          responsavelId: responsavelId,
         };
 
         const viagemCriada = await criarViagem(viagemPayload);
@@ -742,9 +741,38 @@ export function EventoModal({
           currentStep={currentStep}
           data={viagemData}
           setData={setViagemData}
+          bandas={bandas}
           turnes={turnes}
+          shows={shows}
           fieldErrors={fieldErrors}
           clearFieldError={clearFieldError}
+          onBandaChange={(id) => {
+            setViagemData(prevData => ({
+              ...prevData,
+              bandaId: id,
+              turneId: "",
+              showId: "",
+            }));
+          }}
+          onTurneChange={(id) => {
+            setViagemData(prevData => ({
+              ...prevData,
+              turneId: id,
+              showId: "",
+            }));
+          }}
+          onShowChange={(id) => {
+            setViagemData(prevData => ({
+              ...prevData,
+              showId: id,
+            }));
+          }}
+          bandaError={fieldErrors.bandaId}
+          turneError={fieldErrors.turneId}
+          showError={fieldErrors.showId}
+          clearBandaError={() => clearFieldError("bandaId")}
+          clearTurneError={() => clearFieldError("turneId")}
+          clearShowError={() => clearFieldError("showId")}
         />
       );
     }
@@ -1077,11 +1105,13 @@ function ShowContent({
           selectedBandaId={data.bandaId}
           selectedTurneId={data.turneId}
           onBandaChange={(id) => {
-            setData({ ...data, bandaId: id, turneId: "" });
+            setData(prevData => {
+              return { ...prevData, bandaId: id, turneId: "" };
+            });
             if (clearFieldError) clearFieldError("bandaId");
           }}
           onTurneChange={(id) => {
-            setData({ ...data, turneId: id });
+            setData(prevData => ({ ...prevData, turneId: id }));
             if (clearFieldError) clearFieldError("turneId");
           }}
           bandaError={fieldErrors.bandaId}
@@ -1211,14 +1241,32 @@ function ViagemContent({
   currentStep,
   data,
   setData,
+  bandas = [],
   turnes = [],
+  shows = [],
   fieldErrors = {},
   clearFieldError,
+  onBandaChange,
+  onTurneChange,
+  onShowChange,
+  bandaError,
+  turneError,
+  showError,
+  clearBandaError,
+  clearTurneError,
+  clearShowError,
 }) {
   const handleChange = (key, value) => {
     setData((prev) => ({ ...prev, [key]: value }));
     if (clearFieldError) clearFieldError(key);
   };
+
+  // Filtrar shows pela turnê selecionada
+  const showsDaTurne = data.turneId
+    ? shows.filter((show) => String(show.turne?.id || show.turneId) === String(data.turneId))
+    : [];
+
+  const selectedShow = shows.find((s) => String(s.id) === String(data.showId));
 
   if (currentStep === 1) {
     return (
@@ -1234,44 +1282,64 @@ function ViagemContent({
           />
         </div>
 
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
-            Tipo de Transporte *
-          </label>
-          <select
-            value={data.tipoViagem}
-            onChange={(e) => handleChange("tipoViagem", e.target.value)}
-            className={`w-full px-3 py-2 border rounded-[var(--radius-md)]   ${
-              fieldErrors.tipoViagem
-                ? "border-[var(--accent)]"
-                : "border-[var(--border)]"
-            }`}
-          >
-            <option value="aereo">✈️ Aéreo</option>
-            <option value="onibus">🚌 Ônibus</option>
-            <option value="carro">🚗 Carro</option>
-            <option value="van">🚐 Van</option>
-            <option value="terrestre">🚛 Terrestre (Outro)</option>
-          </select>
-          {fieldErrors.tipoViagem && (
-            <p className="text-[var(--accent)] text-xs mt-1">
-              {fieldErrors.tipoViagem}
-            </p>
-          )}
-        </div>
+        <BandaTurneSelectorForm
+          bandas={bandas}
+          turnes={turnes}
+          selectedBandaId={data.bandaId}
+          selectedTurneId={data.turneId}
+          onBandaChange={onBandaChange}
+          onTurneChange={onTurneChange}
+          bandaError={bandaError}
+          turneError={turneError}
+          clearBandaError={clearBandaError}
+          clearTurneError={clearTurneError}
+        />
 
-        <div>
-          <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
-            Descrição
-          </label>
-          <textarea
-            value={data.descricao}
-            onChange={(e) => handleChange("descricao", e.target.value)}
-            placeholder="Informações sobre a viagem..."
-            rows={4}
-            className="form-input resize-none"
-          />
-        </div>
+        {data.turneId && (
+          <div className="relative">
+            <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
+              Show da Viagem
+            </label>
+
+            {selectedShow && (
+              <div className="mb-2 p-3 surface-card flex justify-between items-center">
+                <span className="text-sm font-medium text-[var(--text-primary)]">
+                  {selectedShow.nomeEvento}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onShowChange("")}
+                  className="text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            )}
+
+            <select
+              value={data.showId}
+              onChange={(e) => onShowChange(e.target.value)}
+              className={`w-full px-3 py-2 border rounded-[var(--radius-md)] ${
+                showError ? "border-[var(--accent)]" : "border-[var(--border)]"
+              }`}
+            >
+              <option value="">Selecionar show (opcional)</option>
+              {showsDaTurne.length > 0 ? (
+                showsDaTurne.map((show) => (
+                  <option key={show.id} value={show.id}>
+                    {show.nomeEvento}
+                  </option>
+                ))
+              ) : (
+                <option disabled>Nenhum show disponível</option>
+              )}
+            </select>
+
+            {showError && (
+              <p className="text-[var(--accent)] text-xs mt-1">{showError}</p>
+            )}
+          </div>
+        )}
       </div>
     );
   }
@@ -1302,36 +1370,43 @@ function ViagemContent({
 
         <div>
           <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
-            Turnê *
+            Tipo de Transporte *
           </label>
           <select
-            value={data.turneId || ""}
-            onChange={(e) => handleChange("turneId", e.target.value)}
-            className={`w-full px-3 py-2 border rounded-[var(--radius-md)]   ${
-              fieldErrors.turneId
+            value={data.tipoViagem || "onibus"}
+            onChange={(e) => handleChange("tipoViagem", e.target.value)}
+            className={`w-full px-3 py-2 border rounded-[var(--radius-md)] ${
+              fieldErrors.tipoViagem
                 ? "border-[var(--accent)]"
                 : "border-[var(--border)]"
             }`}
           >
-            <option value="">Selecione uma turnê</option>
-            {Array.isArray(turnes) && turnes.length > 0 ? (
-              turnes.map((turne) => (
-                <option key={turne.id} value={turne.id}>
-                  {turne.nomeTurne || turne.nome}
-                </option>
-              ))
-            ) : (
-              <option value="" disabled>
-                Nenhuma turnê cadastrada
-              </option>
-            )}
+            <option value="aereo">✈️ Aéreo</option>
+            <option value="onibus">🚌 Ônibus</option>
+            <option value="carro">🚗 Carro</option>
+            <option value="van">🚐 Van</option>
+            <option value="terrestre">🚛 Terrestre (Outro)</option>
           </select>
-          {fieldErrors.turneId && (
+          {fieldErrors.tipoViagem && (
             <p className="text-[var(--accent)] text-xs mt-1">
-              {fieldErrors.turneId}
+              {fieldErrors.tipoViagem}
             </p>
           )}
         </div>
+
+        <div>
+          <label className="block text-xs uppercase tracking-wide text-[var(--text-muted)] mb-2">
+            Descrição
+          </label>
+          <textarea
+            value={data.descricao}
+            onChange={(e) => handleChange("descricao", e.target.value)}
+            placeholder="Informações sobre a viagem..."
+            rows={4}
+            className="form-input resize-none"
+          />
+        </div>
+
       </div>
     );
   }

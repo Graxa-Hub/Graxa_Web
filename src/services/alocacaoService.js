@@ -76,6 +76,64 @@ export const alocacaoService = {
     }
   },
 
+  // ✅ NOVA FUNÇÃO: Verificar conflito de horário para um colaborador
+  async verificarConflito(colaboradorId, dataInicio, dataFim) {
+    try {
+      console.log('[alocacaoService] Verificando conflito para colaborador:', {
+        colaboradorId,
+        dataInicio,
+        dataFim
+      });
+
+      const response = await api.get(`/alocacoes/verificar-conflito`, {
+        params: {
+          colaboradorId,
+          dataInicio,
+          dataFim
+        }
+      });
+
+      console.log('[alocacaoService] Resposta de conflito:', response.data);
+      return response.data; // { temConflito: boolean, alocacao?: {...} }
+    } catch (error) {
+      // Se der 404, não há conflito
+      if (error.response?.status === 404) {
+        console.log('[alocacaoService] Nenhum conflito encontrado');
+        return { temConflito: false };
+      }
+
+      console.error('[alocacaoService] Erro ao verificar conflito:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.response?.data?.message || error.response?.data?.mensagem
+      });
+      throw error;
+    }
+  },
+
+  async listarPorColaborador(colaboradorId) {
+    try {
+      console.log('[alocacaoService] Listando alocações do colaborador:', colaboradorId);
+      const response = await api.get(`/alocacoes/colaborador/${colaboradorId}`);
+      console.log('[alocacaoService] Alocações do colaborador encontradas:', response.data);
+      return Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.response?.data?.mensagem || '';
+      
+      if (error.response?.status === 404 || errorMessage.includes('Não há alocações')) {
+        console.warn('[alocacaoService] Nenhuma alocação encontrada para o colaborador:', colaboradorId);
+        return [];
+      }
+
+      console.error('[alocacaoService] Erro ao listar alocações do colaborador:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: errorMessage
+      });
+      throw error;
+    }
+  },
+
   async listarPorShow(showId) {
     try {
       console.log('[alocacaoService] Listando alocações do show:', showId);

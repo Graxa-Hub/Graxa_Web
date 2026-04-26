@@ -17,11 +17,7 @@ export function BandaFormStep({
 }) {
   return (
     <div className="space-y-4">
-      {errors.geral && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
-          {errors.geral}
-        </div>
-      )}
+      {/* Erro geral removido - agora aparece no topo do Modal */}
       <Input
         label="Nome da Banda"
         placeholder="Boogarins"

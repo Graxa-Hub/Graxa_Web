@@ -43,6 +43,7 @@ export function AddBandaModal({
       totalSteps={2}
       onFinish={handleFinish}
       loading={loading}
+      globalError={errors.geral}
     >
       {(currentStep) => (
         <>

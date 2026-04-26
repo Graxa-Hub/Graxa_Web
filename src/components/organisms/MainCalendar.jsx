@@ -27,6 +27,7 @@ export default function MainCalendar({
   });
 
   useEffect(() => {
+    console.log("📡 MainCalendar chamando carregarEventos com:", { bandaId, turneId });
     carregarEventos({ bandaId, turneId });
   }, [bandaId, turneId, carregarEventos]);
 
