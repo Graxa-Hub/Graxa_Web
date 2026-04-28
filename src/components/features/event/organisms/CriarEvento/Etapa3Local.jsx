@@ -301,7 +301,7 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
                 </h4>
 
                 {/* Localização */}
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs font-semibold text-[var(--text-muted)] uppercase">
                       Cidade

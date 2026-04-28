@@ -47,7 +47,7 @@ const FlightCard = ({ flight = {}, colaboradores = [], onChange, onRemove }) => 
         onChange={(e) => updateField("numero", e.target.value)}
       />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <input
           className="p-3 border border-[var(--border)] rounded-[var(--radius-md)]  focus:ring-0 focus:border-[var(--border-strong)]"
           placeholder="Origem"
@@ -63,7 +63,7 @@ const FlightCard = ({ flight = {}, colaboradores = [], onChange, onRemove }) => 
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="text-sm font-medium text-[var(--text-secondary)]">Saída</label>
           <input
