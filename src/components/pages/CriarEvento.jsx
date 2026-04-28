@@ -976,12 +976,7 @@ export const CriarEvento = () => {
 
   return (
     <LocalSelecionadoProvider>
-      <Layout 
-        showHeader={true} 
-        showNotifications={false}
-        showBandaSelector={false}
-        showTurneSelector={false}
-      >
+      <Layout showHeader={false} showNotifications={false}>
         <div className="flex flex-1 min-h-0 relative overflow-x-hidden">
           <div className="flex-1 px-8 py-6 overflow-y-auto">
             <Stepper
@@ -994,7 +989,7 @@ export const CriarEvento = () => {
               onProximaEtapa={
                 etapaAtual < (tipoEvento === "viagem" ? 3 : 5)
                   ? () => setEtapaAtual(etapaAtual + 1)
-                  : salvarEventoCompleto
+                  : undefined
               }
               onVisaoEvento={handleAbrirVisaoEvento}
             />

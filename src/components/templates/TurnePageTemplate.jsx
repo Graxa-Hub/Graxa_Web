@@ -59,18 +59,15 @@ export function TurnePageTemplate({
 
   return (
     <Layout
-      showHeader={true}
-      showNotifications={true}
+      showHeader={false}
+      showNotifications={false}
       containerClassName="!bg-transparent !border-0 !shadow-none !p-0 overflow-visible"
-      bandas={bandas}
-      turnes={[]}
-      bandaSelecionada={selectedBand}
-      turneSelecionada={null}
-      onBandaChange={handleBandSelect}
-      onTurneChange={() => {}}
-      showBandaSelector={true}
-      showTurneSelector={false}
     >
+      <TurneTopBar
+        bandas={bandas}
+        selectedBand={selectedBand}
+        onBandSelect={handleBandSelect}
+      />
 
       <TurneContentSection
         bandas={bandas}

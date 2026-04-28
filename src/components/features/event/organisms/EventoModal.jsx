@@ -1199,7 +1199,7 @@ function ShowContent({
   // ========== Step 2 - Apenas descrição e seleção de turnê ==========
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <InputDate
           label="Data/Hora de Início"
           value={data.dataHoraInicio}

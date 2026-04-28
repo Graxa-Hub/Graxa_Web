@@ -50,15 +50,18 @@ export function ArtistaPageTemplate({
 
   return (
     <Layout
-      showHeader={true}
-      showNotifications={true}
+      showHeader={false}
+      showNotifications={false}
       containerClassName="!bg-transparent !border-0 !shadow-none !p-0 overflow-visible"
-      bandas={bandas}
-      bandaSelecionada={selectedBanda}
-      turneSelecionada={selectedTurne}
-      onBandaChange={setSelectedBanda}
-      onTurneChange={setSelectedTurne}
     >
+      <SearchBar
+        placeholder="Buscar artistas..."
+        value={searchQuery}
+        onChange={handleSearch}
+        onClear={handleClearSearch}
+        debounce={400}
+        loading={loading && !!searchQuery}
+      />
 
       <ArtistaContentSection
         bandas={bandas}

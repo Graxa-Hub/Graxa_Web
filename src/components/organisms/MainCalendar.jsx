@@ -92,12 +92,6 @@ export default function MainCalendar({
     if (eventoId) navigate(`/visao-evento/${tipoEvento}/${eventoId}`);
   };
 
-  const handleDatesSet = (arg) => {
-    localStorage.setItem("graxaCalendarView", arg.view.type);
-  };
-
-  const savedView = localStorage.getItem("graxaCalendarView") || "timeGridWeek";
-
   return (
     <div className="graxa-calendar-card surface-card p-4 h-full min-h-0 flex flex-col relative overflow-hidden">
       {errorToast && (
@@ -115,8 +109,7 @@ export default function MainCalendar({
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         locale={ptLocale}
-        initialView={savedView}
-        datesSet={handleDatesSet}
+        initialView="timeGridWeek"
         aspectRatio={1.35}
         headerToolbar={{
           left: "prev,today,next",

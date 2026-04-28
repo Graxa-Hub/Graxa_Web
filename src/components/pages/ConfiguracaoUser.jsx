@@ -27,24 +27,14 @@ export const ConfiguracaoUsuario = () => {
 
   if (loading || !colaborador || !credencial) {
     return (
-      <Layout 
-      showHeader={true} 
-      showNotifications={false}
-      showBandaSelector={false}
-      showTurneSelector={false}
-    >
+      <Layout showHeader={false} showNotifications={false}>
         <div className="flex items-center justify-center w-full h-screen text-[var(--text-muted)]">Carregando...</div>
       </Layout>
     );
   }
 
   return (
-    <Layout 
-      showHeader={true} 
-      showNotifications={false}
-      showBandaSelector={false}
-      showTurneSelector={false}
-    >
+    <Layout showHeader={false} showNotifications={false}>
       <div className="flex-1 p-6 md:p-10 overflow-y-auto">
         <div className="surface-card max-w-2xl mx-auto space-y-6 p-6 md:p-8">
           <ConfigHeader />

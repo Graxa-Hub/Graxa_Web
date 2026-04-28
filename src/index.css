@@ -218,56 +218,15 @@ body {
   font-size: 1.5rem !important;
   font-weight: bold;
 }
-
-/* Responsividade do Toolbar do Calendário */
-@media (max-width: 640px) {
-  .fc .fc-header-toolbar {
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    justify-content: space-between !important;
-    gap: 12px;
-  }
-  .fc .fc-toolbar-chunk {
-    display: flex;
-    width: auto;
-  }
-  .fc .fc-toolbar-chunk:nth-child(1) {
-    order: 1;
-  }
-  .fc .fc-toolbar-chunk:nth-child(2) {
-    order: 3;
-    width: 100%;
-    justify-content: center;
-  }
-  .fc .fc-toolbar-chunk:nth-child(3) {
-    order: 2;
-  }
-  .fc .fc-toolbar-title {
-    font-size: 1.25rem !important;
-    text-align: center;
-  }
-}
 .fc .fc-toolbar-title,
 .fc .fc-col-header-cell-cushion,
 .fc .fc-daygrid-day-number {
   color: var(--text-primary) !important;
   text-decoration: none !important;
 }
-/* Correção definitiva para o bug de linhas sumindo no Chrome (zoom/resolução) */
-.fc table {
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
-}
-.fc-theme-standard td, 
-.fc-theme-standard th {
-  border-right: 1px solid var(--border) !important;
-  border-bottom: 1px solid var(--border) !important;
-  border-left: none !important;
-  border-top: none !important;
-}
-.fc-theme-standard .fc-scrollgrid {
-  border-left: 1px solid var(--border) !important;
-  border-top: 1px solid var(--border) !important;
+.fc .fc-col-header-cell,
+.fc .fc-list-day-cushion {
+  background: var(--surface) !important;
 }
 .fc .fc-list-event:hover td {
   background: var(--surface-hover) !important;

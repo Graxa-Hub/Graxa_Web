@@ -61,7 +61,7 @@ export function EnderecoForm({ endereco, onChange, errors = {} }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <div className="relative">
           <Input
             label="CEP"
@@ -117,8 +117,8 @@ export function EnderecoForm({ endereco, onChange, errors = {} }) {
         error={errors.cidade}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="md:col-span-2">
+      <div className="grid grid-cols-3 gap-4">
+        <div className="col-span-2">
           <Input
             label="Logradouro"
             value={endereco.logradouro || ""}
@@ -144,7 +144,7 @@ export function EnderecoForm({ endereco, onChange, errors = {} }) {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4">
         <Input
           label="Bairro"
           value={endereco.bairro || ""}

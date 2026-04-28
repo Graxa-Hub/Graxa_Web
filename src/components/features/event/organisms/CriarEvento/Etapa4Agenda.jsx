@@ -159,7 +159,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
           sincronizado.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+        <div className="grid grid-cols-3 gap-3 mt-4">
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-[var(--radius-md)] p-3">
             <p className="text-xs text-[var(--text-muted)] uppercase tracking-wide">
               Total
@@ -301,7 +301,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
               {/* ORIGEM / DESTINO (apenas Deslocamento) */}
               {item.tipo === TIPOS_ENUM.DESLOCAMENTO && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-semibold text-[var(--text-secondary)]">
                       Origem
@@ -335,7 +335,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
               )}
 
               {/* DATA HORA INICIO / FIM */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm font-semibold text-[var(--text-secondary)]">
                     Data e Hora - Início

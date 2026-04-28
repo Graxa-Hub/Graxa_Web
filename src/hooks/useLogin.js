@@ -68,7 +68,6 @@ export const useLogin = () => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
-    localStorage.removeItem('graxaCalendarView');
     setUser(null);
   };
 
