@@ -461,3 +461,26 @@ body {
   display: flex !important;
   width: 100% !important;
 }
+/* SearchBar */
+.search-bar__icon {
+  color: var(--text-muted);
+}
+
+.search-bar__input:focus {
+  border-color: var(--border-strong);
+}
+
+.search-bar__clear {
+  color: var(--text-muted);
+}
+
+.search-bar__clear:hover {
+  color: var(--text-primary);
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
+}
+
+/* Fix: força repaint do placeholder ao trocar tema */
+.search-bar__input--placeholder-fix::placeholder {
+  transition: color 0.12s;
+}

@@ -1,8 +1,14 @@
+import React, { useState } from "react";
 import { Input } from "../ModalEventos/Input";
 import { Trash2, Plus } from "lucide-react";
-import { useState } from "react";
 
-export function IntegranteFormStep({ draft, errors, handleIntegranteChange, adicionarIntegrante, removerIntegrante }) {
+export function IntegranteFormStep({ 
+    draft, 
+    errors, 
+    handleIntegranteChange, 
+    adicionarIntegrante, 
+    removerIntegrante 
+}) {
     const [showAddMultiple, setShowAddMultiple] = useState(false);
     const [quantidadeAdicionar, setQuantidadeAdicionar] = useState(1);
 
@@ -15,35 +21,44 @@ export function IntegranteFormStep({ draft, errors, handleIntegranteChange, adic
     };
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 overflow-visible">
             {errors.integrantes && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
                     {errors.integrantes}
                 </div>
             )}
-            <div className="flex items-center justify-between gap-2">
-                <h3 className="text-sm font-medium text-gray-700">
-                    Integrantes ({draft.integrantes.length})
-                </h3>
-                <div className="flex gap-2">
+
+            {/* Header com botões de ação - NÃO sticky, visível sempre */}
+            <div className="bg-[var(--surface-elevated)] py-3 px-2 border-b border-[var(--border)] flex items-center justify-between gap-2 -mx-4 px-4">
+                <div className="flex-1">
+                    <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+                        Integrantes da Banda
+                    </h3>
+                    <p className="text-xs text-[var(--text-secondary)] mt-0.5">
+                        {draft.integrantes.length} integrante{draft.integrantes.length !== 1 ? "s" : ""} adicionado{draft.integrantes.length !== 1 ? "s" : ""}
+                    </p>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
                     <button
                         type="button"
                         onClick={adicionarIntegrante}
-                        className="px-3 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-1"
+                        className="px-3 py-2 text-sm font-medium bg-[var(--accent)] text-white rounded-[var(--radius-sm)] hover:opacity-90 transition-opacity flex items-center gap-1.5 whitespace-nowrap"
                     >
-                        <Plus className="w-4 h-4" /> 1 Integrante
+                        <Plus className="w-4 h-4" />
+                        Adicionar 1
                     </button>
                     <div className="relative">
                         <button
                             type="button"
                             onClick={() => setShowAddMultiple(!showAddMultiple)}
-                            className="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1"
+                            className="px-3 py-2 text-sm font-medium bg-[var(--accent)] text-white rounded-[var(--radius-sm)] hover:opacity-90 transition-opacity flex items-center gap-1.5 whitespace-nowrap"
                         >
-                            <Plus className="w-4 h-4" /> Vários
+                            <Plus className="w-4 h-4" />
+                            Vários
                         </button>
                         {showAddMultiple && (
-                            <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-10 min-w-max">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <div className="absolute top-full right-0 mt-1 bg-[var(--surface-card)] border border-[var(--border)] rounded-lg shadow-lg p-3 z-50 min-w-max">
+                                <label className="block text-xs font-medium text-[var(--text-secondary)] mb-2">
                                     Quantos integrantes?
                                 </label>
                                 <div className="flex gap-2">
@@ -53,12 +68,12 @@ export function IntegranteFormStep({ draft, errors, handleIntegranteChange, adic
                                         max="20"
                                         value={quantidadeAdicionar}
                                         onChange={(e) => setQuantidadeAdicionar(Math.max(1, parseInt(e.target.value) || 1))}
-                                        className="w-16 px-2 py-1 border border-gray-300 rounded text-sm"
+                                        className="w-16 px-2 py-1 border border-[var(--border)] rounded text-sm text-[var(--text-primary)]"
                                     />
                                     <button
                                         type="button"
                                         onClick={adicionarMultiplos}
-                                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                                        className="px-3 py-1 bg-[var(--accent)] text-white text-sm rounded hover:opacity-90 transition-opacity"
                                     >
                                         Adicionar
                                     </button>
@@ -68,109 +83,99 @@ export function IntegranteFormStep({ draft, errors, handleIntegranteChange, adic
                     </div>
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {draft.integrantes.map((integrante, i) => (
-                    <div
-                        key={i}
-                        className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-3 relative"
-                    >
-                        <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-sm">
-                                Integrante {i + 1}
-                                {integrante.id && (
-                                    <span className="ml-2 text-xs text-green-600">
-                                        (Cadastrado)
-                                    </span>
-                                )}
-                            </h4>
-                            <button
-                                type="button"
-                                onClick={() => removerIntegrante(i)}
-                                className="text-red-500 hover:text-red-700 transition-colors"
-                                title="Remover integrante"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
-                        </div>
-                        <Input
-                            label="Nome"
-                            placeholder="Nome completo"
-                            value={integrante.nome}
-                            onChange={(e) =>
-                                handleIntegranteChange(i, "nome", e.target.value)
-                            }
-                        />
-                        <Input
-                            label="CPF"
-                            placeholder="000.000.000-00"
-                            value={integrante.cpf}
-                            onChange={(e) =>
-                                handleIntegranteChange(i, "cpf", e.target.value)
-                            }
-                        />
-                    </div>
-                ))}
-            </div>
-            {draft.integrantes.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                    <p>Nenhum integrante adicionado.</p>
-                    <p className="text-sm">
-                        Clique em "1 Integrante" ou "Vários" para começar.
+
+            {/* Lista de integrantes */}
+            {draft.integrantes.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 px-4 border-2 border-dashed border-[var(--border)] rounded-lg bg-[var(--surface-hover)]">
+                    <p className="text-sm font-medium text-[var(--text-secondary)] mb-2">
+                        Nenhum integrante adicionado
                     </p>
+                    <p className="text-xs text-[var(--text-muted)] text-center mb-4">
+                        Adicione os membros da banda clicando em um dos botões acima
+                    </p>
+                    <button
+                        type="button"
+                        onClick={adicionarIntegrante}
+                        className="px-3 py-2 text-xs font-medium bg-[var(--accent)] text-white rounded-[var(--radius-sm)] hover:opacity-90 transition-opacity flex items-center gap-1"
+                    >
+                        <Plus className="w-3.5 h-3.5" />
+                        Adicionar Primeiro Integrante
+                    </button>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {draft.integrantes.map((integrante, i) => (
+                        <div
+                            key={i}
+                            className="p-4 border border-[var(--border)] rounded-lg bg-[var(--surface-card)] space-y-3 hover:border-[var(--accent)] transition-colors relative group"
+                        >
+                            {/* Header da card */}
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <div className="w-6 h-6 rounded-full bg-[var(--accent)] flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
+                                        {i + 1}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-xs font-medium text-[var(--text-secondary)]">
+                                            Integrante
+                                        </p>
+                                        {integrante.id && (
+                                            <p className="text-xs text-green-600 font-medium">
+                                                ✓ Cadastrado
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => removerIntegrante(i)}
+                                    className="p-1.5 text-[var(--text-muted)] hover:bg-red-50 hover:text-red-600 rounded-[var(--radius-sm)] transition-colors flex-shrink-0"
+                                    title="Remover integrante"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
+
+                            {/* Campos de entrada */}
+                            <div className="space-y-3">
+                                <div>
+                                    <label className="text-xs font-medium text-[var(--text-secondary)] mb-1.5 block">
+                                        Nome *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="Nome completo"
+                                        value={integrante.nome}
+                                        onChange={(e) =>
+                                            handleIntegranteChange(i, "nome", e.target.value)
+                                        }
+                                        className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs font-medium text-[var(--text-secondary)] mb-1.5 block">
+                                        CPF *
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="000.000.000-00"
+                                        value={integrante.cpf}
+                                        onChange={(e) =>
+                                            handleIntegranteChange(i, "cpf", e.target.value)
+                                        }
+                                        className="w-full px-3 py-2 border border-[var(--border)] rounded-[var(--radius-sm)] text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
-        </div>
-    );
-}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {draft.integrantes.map((integrante, i) => (
-                    <div
-                        key={i}
-                        className="p-4 border border-gray-200 rounded-lg bg-gray-50 space-y-3 relative"
-                    >
-                        <div className="flex items-center justify-between">
-                            <h4 className="font-medium text-sm">
-                                Integrante {i + 1}
-                                {integrante.id && (
-                                    <span className="ml-2 text-xs text-green-600">
-                                        (Cadastrado)
-                                    </span>
-                                )}
-                            </h4>
-                            <button
-                                type="button"
-                                onClick={() => removerIntegrante(i)}
-                                className="text-red-500 hover:text-red-700 transition-colors"
-                                title="Remover integrante"
-                            >
-                                <Trash2 className="w-4 h-4" />
-                            </button>
-                        </div>
-                        <Input
-                            label="Nome"
-                            placeholder="Nome completo"
-                            value={integrante.nome}
-                            onChange={(e) =>
-                                handleIntegranteChange(i, "nome", e.target.value)
-                            }
-                        />
-                        <Input
-                            label="CPF"
-                            placeholder="000.000.000-00"
-                            value={integrante.cpf}
-                            onChange={(e) =>
-                                handleIntegranteChange(i, "cpf", e.target.value)
-                            }
-                        />
-                    </div>
-                ))}
-            </div>
-            {draft.integrantes.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                    <p>Nenhum integrante adicionado.</p>
-                    <p className="text-sm">
-                        Clique em "Adicionar Integrante" para começar.
-                    </p>
+
+            {/* Dica de rodapé */}
+            {draft.integrantes.length > 0 && (
+                <div className="text-xs text-[var(--text-muted)] bg-[var(--surface-hover)] p-3 rounded-lg border border-[var(--border)]">
+                    💡 <strong>Dica:</strong> Preencha nome e CPF de todos os integrantes. Você pode adicionar, editar ou remover membros a qualquer momento.
                 </div>
             )}
         </div>

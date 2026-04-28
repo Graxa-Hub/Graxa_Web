@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: ["attribute", "data-theme"], // <- aqui está o segredo
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
