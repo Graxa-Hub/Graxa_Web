@@ -1,6 +1,7 @@
 import { CardImage } from "../atoms/CardImage";
 import { CardInfo } from "../atoms/CardInfo";
 import { OptionButton } from "../atoms/OptionButton";
+import { DropdownActions } from "../molecules/DropdownActions";
 
 export const Card = ({
   banda,
@@ -35,40 +36,14 @@ export const Card = ({
           />
 
           {isDropdownOpen && (
-            <div
-              className="absolute top-14 right-4 z-30 w-52 max-w-[calc(100%-3rem)] rounded-md border border-[var(--border)] bg-[var(--surface)] shadow-lg overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                type="button"
-                className="w-full px-3 py-2 text-left text-sm text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
-                onClick={() => {
-                  onVisualizar?.(banda);
-                  onToggleDropdown?.();
-                }}
-              >
-                Visualizar dados
-              </button>
-              <button
-                type="button"
-                className="w-full px-3 py-2 text-left text-sm text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
-                onClick={() => {
-                  onEdit?.(banda);
-                  onToggleDropdown?.();
-                }}
-              >
-                Editar dados
-              </button>
-              <button
-                type="button"
-                className="w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-[var(--surface-hover)] transition-colors"
-                onClick={() => {
-                  onDelete?.(banda);
-                  onToggleDropdown?.();
-                }}
-              >
-                Apagar banda
-              </button>
+            <div className="absolute top-14 right-4 z-30">
+              <DropdownActions
+                isOpen={isDropdownOpen}
+                entity={banda}
+                onView={onVisualizar}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
             </div>
           )}
         </>

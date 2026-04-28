@@ -10,6 +10,7 @@ export function useEventosCalendario() {
   // ✅ Recebe filtros opcionais: bandaId e turneId
   const carregarEventos = useCallback(async (filtros = {}) => {
     const { bandaId, turneId } = filtros;
+    console.log("🔍 [useEventosCalendario] Carregando com filtros:", { bandaId, turneId });
 
     try {
       setLoading(true);
@@ -20,6 +21,12 @@ export function useEventosCalendario() {
         showService.listar(),
         viagemService.listar(),
       ]);
+
+      console.log("📊 [useEventosCalendario] Shows recebidos:", shows?.length);
+      console.log("📊 [useEventosCalendario] Viagens recebidas:", viagens?.length);
+      if (viagens?.length > 0) {
+        console.log("🚗 Primeira viagem completa:", JSON.stringify(viagens[0], null, 2));
+      }
 
       // ✅ Aplica filtros nos shows
       let showsFiltrados = shows || [];
@@ -37,20 +44,57 @@ export function useEventosCalendario() {
         );
       }
 
+      console.log("✅ Shows filtrados:", showsFiltrados?.length);
+
       // ✅ Aplica filtros nas viagens
+      // Cria um mapa de shows por ID para referência rápida
+      const showsMap = {};
+      (shows || []).forEach((show) => {
+        showsMap[show.id] = show;
+      });
+
+      console.log("🗺️ Mapa de shows criado com", Object.keys(showsMap).length, "shows");
+
       let viagensFiltradas = viagens || [];
-      if (turneId) {
-        viagensFiltradas = viagensFiltradas.filter(
-          (viagem) =>
-            String(viagem.turne?.id || viagem.turneId) === String(turneId),
-        );
-      } else if (bandaId) {
-        viagensFiltradas = viagensFiltradas.filter(
-          (viagem) =>
-            String(viagem.turne?.bandaId || viagem.turne?.banda?.id) ===
-            String(bandaId),
-        );
+      
+      if (bandaId) {
+        console.log("🔎 Filtrando viagens por bandaId:", bandaId);
+        // Filtra viagens que têm shows associados àquela banda
+        viagensFiltradas = viagensFiltradas.filter((viagem) => {
+          // A viagem pode ter showId (ID) ou show (objeto completo)
+          const showId = viagem.showId || viagem.show?.id;
+          console.log("📍 Verificando viagem:", viagem.id, "com showId/show.id:", showId);
+          
+          if (!showId) {
+            console.log("  ❌ Viagem sem showId ou show");
+            return false;
+          }
+          
+          const showAssociado = showsMap[showId];
+          console.log("  🎯 Show associado encontrado?", !!showAssociado);
+          
+          if (!showAssociado) return false; // Show precisa existir
+          
+          // Se turneId está definido, verifica se o show é daquela turne
+          if (turneId) {
+            const isFromTurne = String(showAssociado.turne?.id || showAssociado.turneId) === String(turneId);
+            console.log("  🎪 É da turne", turneId, "?", isFromTurne);
+            return isFromTurne;
+          }
+          
+          // Se só bandaId, verifica se o show é daquela banda
+          const isBandaMatch = 
+            String(showAssociado.turne?.bandaId || showAssociado.turne?.banda?.id) ===
+              String(bandaId) ||
+            (Array.isArray(showAssociado.bandas) &&
+              showAssociado.bandas.some((b) => String(b?.id) === String(bandaId)));
+          
+          console.log("  🎵 É da banda", bandaId, "?", isBandaMatch);
+          return isBandaMatch;
+        });
       }
+
+      console.log("✅ Viagens filtradas:", viagensFiltradas?.length);
 
       // Mapeia shows para eventos do calendário
       const eventosShows = showsFiltrados.map((show) => ({
@@ -64,8 +108,12 @@ export function useEventosCalendario() {
         extendedProps: {
           tipo: "show",
           dados: show,
+          turne: show.turne, // 📌 Adiciona turne aos dados estendidos
+          banda: show.turne?.banda, // 📌 Adiciona banda aos dados estendidos
         },
       }));
+
+      console.log("📅 Eventos de shows mapeados:", eventosShows.length);
 
       // Mapeia viagens para eventos do calendário
       const eventosViagens = viagensFiltradas.map((viagem) => ({
@@ -79,21 +127,29 @@ export function useEventosCalendario() {
         extendedProps: {
           tipo: "viagem",
           dados: viagem,
+          turne: viagem.show?.turne, // 📌 Adiciona turne aos dados estendidos (via show)
+          banda: viagem.show?.turne?.banda, // 📌 Adiciona banda aos dados estendidos
         },
       }));
 
+      console.log("✈️ Eventos de viagens mapeados:", eventosViagens.length);
+
       const todosEventos = [...eventosShows, ...eventosViagens];
+
+      console.log("🎉 Total de eventos:", todosEventos.length);
 
       setEventos(todosEventos);
 
       return todosEventos;
     } catch (err) {
-      console.error("[useEventosCalendario] Erro ao carregar eventos:", err);
+      console.error("❌ [useEventosCalendario] Erro ao carregar eventos:", err);
+      console.error("Stack:", err.stack);
       setError(err.message || "Erro ao carregar eventos");
       setEventos([]);
       return [];
     } finally {
       setLoading(false);
+      console.log("✅ Carregamento finalizado");
     }
   }, []);
 

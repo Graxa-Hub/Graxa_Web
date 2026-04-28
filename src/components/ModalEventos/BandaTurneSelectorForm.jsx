@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { Search, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { bandaService } from "../../services/bandaService";
 import { buscarTurnesPorBanda, getTurnesPaginadasPorBanda } from "../../services/turneService";
@@ -41,15 +41,29 @@ export const BandaTurneSelectorForm = ({
   const turneInputRef = useRef(null);
   const containerRef = useRef(null);
 
-  const selectedBanda = bandas.find((b) => String(b.id) === String(selectedBandaId));
-  const selectedTurne = turnesPageBanda.content?.find(
-    (t) => String(t.id) === String(selectedTurneId)
-  );
+  // Memoizar busca de banda selecionada para evitar recálculos desnecessários
+  const selectedBanda = useMemo(() => {
+    const bandaId = String(selectedBandaId).trim();
+    if (!bandaId) return null;
+    return bandasBuscadas.find((b) => String(b.id) === bandaId);
+  }, [selectedBandaId, bandasBuscadas]);
 
-  // Fechar dropdowns ao clicar fora
+  // Memoizar busca de turnê selecionada
+  const selectedTurne = useMemo(() => {
+    const turneId = String(selectedTurneId).trim();
+    if (!turneId) return null;
+    return turnesPageBanda.content?.find((t) => String(t.id) === turneId);
+  }, [selectedTurneId, turnesPageBanda.content]);
+
+  // Fechar dropdowns ao clicar fora com verificação mais robusta
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (containerRef.current && !containerRef.current.contains(event.target)) {
+      if (!containerRef.current) return;
+      
+      // Verificar se o clique foi dentro do container (mais robusto)
+      const isClickInside = containerRef.current.contains(event.target);
+      
+      if (!isClickInside) {
         setBandaSearchOpen(false);
         setTurneSearchOpen(false);
       }
@@ -59,12 +73,12 @@ export const BandaTurneSelectorForm = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Sincronizar bandas quando array muda
+  // Sincronizar bandas com o array recebido via props
   useEffect(() => {
-    if (bandas.length > 0) {
+    if (!bandaSearchText.trim() && bandas && bandas.length > 0) {
       setBandasBuscadas(bandas);
     }
-  }, [bandas]);
+  }, [bandas, bandaSearchText]);
 
   // Buscar bandas quando texto muda
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { Edit2, FileDown } from "lucide-react";
+import { useRole } from "../../hooks/useRole";
 import { DiaInfoCard } from "../atoms/DiaInfoCard";
 
 export const EventActions = ({
@@ -7,6 +8,8 @@ export const EventActions = ({
   onGerarPdf,
   onEditarEvento,
 }) => {
+  const { isProducer } = useRole();
+
   return (
     <div className="flex flex-row items-center gap-2 sm:ml-auto">
       <button

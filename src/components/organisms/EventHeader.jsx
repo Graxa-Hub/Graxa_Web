@@ -1,4 +1,4 @@
-import { MapPin } from "lucide-react";
+import { MapPin, ArrowLeft } from "lucide-react";
 import { EventActions } from "../molecules/EventActions";
 
 export const EventHeader = ({
@@ -8,6 +8,7 @@ export const EventHeader = ({
   tipoEvento,
   onGerarPdf,
   onEditarEvento,
+  onVoltar,
 }) => {
   return (
     <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

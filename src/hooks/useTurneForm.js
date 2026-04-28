@@ -104,6 +104,19 @@ export function useTurneForm({
 
         if (!selectedStartDate) newErrors.inicio = "Data de início é obrigatória";
         if (!selectedEndDate) newErrors.fim = "Data de fim é obrigatória";
+        
+        // Valida se as datas estão no passado
+        const agora = new Date();
+        const hoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+        
+        if (selectedStartDate && selectedStartDate < hoje) {
+            newErrors.inicio = "Data de início não pode ser anterior à data atual";
+        }
+        
+        if (selectedEndDate && selectedEndDate < hoje) {
+            newErrors.fim = "Data de fim não pode ser anterior à data atual";
+        }
+        
         if (selectedStartDate && selectedEndDate && selectedEndDate < selectedStartDate) {
             newErrors.fim = "Data de fim deve ser posterior à data de início";
         }
@@ -172,7 +185,9 @@ export function useTurneForm({
             }
 
             const adaptedTurne = await adaptTurneFromBackend(response);
-            onSuccess(adaptedTurne, initialEditMode);
+            // ✅ Aguarda o onSuccess completar antes de finalizar
+            await onSuccess(adaptedTurne, initialEditMode);
+            return true; // ✅ Indica sucesso para o Modal
         } catch (error) {
             const errorMsg = error.response?.data?.mensagem || error.response?.data?.message;
             if (errorMsg?.toLowerCase().includes("já existe")) {
@@ -180,6 +195,7 @@ export function useTurneForm({
             } else {
                 setErrors({ geral: errorMsg || "Erro ao salvar turnê" });
             }
+            return false; // ✅ Indica falha
         } finally {
             setSubmitLoading(false);
         }

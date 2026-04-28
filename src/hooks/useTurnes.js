@@ -4,7 +4,7 @@ import { imagemService } from '../services/imagemService';
 import { adaptTurneFromBackend } from '../utils/turneAdapter';
 
 // 🎚️ MUDAR AQUI PARA ALTERAR TAMANHO DE PÁGINA PADRÃO DE TURNÊS
-const DEFAULT_PAGE_SIZE = 1;
+const DEFAULT_PAGE_SIZE = 3;
 
 export function useTurnes() {
   const [turnes, setTurnes] = useState([]);

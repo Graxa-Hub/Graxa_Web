@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "../templates/Layout";
 import Stepper from "../features/event/organisms/CriarEvento/Stepper";
 import Etapa1Funcoes from "../features/event/organisms/CriarEvento/Etapa1Funcoes";
@@ -26,7 +26,25 @@ import { useExtrasEvento } from "../../hooks/useExtrasEvento";
 import useAlocacao from "../../hooks/useAlocacao";
 
 export const CriarEvento = () => {
-  const [etapaAtual, setEtapaAtual] = useState(1);
+  const [etapaAtual, setEtapaAtualState] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { tipoEvento, eventoId } = useParams();
+  const navigate = useNavigate();
+
+  // Lê o step da URL ao montar o componente
+  useEffect(() => {
+    const stepDaUrl = searchParams.get("step");
+    if (stepDaUrl) {
+      const step = Math.max(1, Math.min(5, Number(stepDaUrl)));
+      setEtapaAtualState(step);
+    }
+  }, []);
+
+  // Função wrapper para atualizar etapa E URL simultaneamente
+  const setEtapaAtual = (novaEtapa) => {
+    setEtapaAtualState(novaEtapa);
+    setSearchParams({ step: novaEtapa });
+  };
   const [localShow, setLocalShow] = useState({});
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [assignments, setAssignments] = useState({});
@@ -35,11 +53,11 @@ export const CriarEvento = () => {
   const [transports, setTransports] = useState([]);
   const [agenda, setAgenda] = useState([]);
   const [extras, setExtras] = useState({});
-  const { tipoEvento, eventoId } = useParams();
   const { buscarShow, atualizarShow } = useShows();
   const { buscarViagem, atualizarViagem } = useViagens();
   const [evento, setEvento] = useState(null);
-  const showId = eventoId ? Number(eventoId) : null;
+  const showId = tipoEvento === "show" && eventoId ? Number(eventoId) : null;
+  const viagemId = tipoEvento === "viagem" && eventoId ? Number(eventoId) : null;
   const [hoteisRaw, setHoteisRaw] = useState([]);
   const [voosRaw, setVoosRaw] = useState([]);
   const [transportesRaw, setTransportesRaw] = useState([]);
@@ -52,7 +70,6 @@ export const CriarEvento = () => {
   } = useExtrasEvento();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
-  const navigate = useNavigate();
   const { listarPorShow } = useAlocacao();
 
   // Helper para normalizar/formatar datas para envio (ISO)
@@ -937,7 +954,8 @@ export const CriarEvento = () => {
   const [showSidebarDireita, setShowSidebarDireita] = useState(true);
 
   const handleAbrirVisaoEvento = () => {
-    if (!showId) {
+    const eventoId = tipoEvento === "show" ? showId : viagemId;
+    if (!eventoId) {
       showWarning("Salve/abra o evento antes de ir para a Visão do Evento.");
       return;
     }
@@ -947,7 +965,8 @@ export const CriarEvento = () => {
   const handleConfirmarVisaoEvento = () => {
     setModalLoading(true);
     setIsModalOpen(false);
-    navigate(`/visao-evento/show/${showId}`);
+    const eventoId = tipoEvento === "show" ? showId : viagemId;
+    navigate(`/visao-evento/${tipoEvento}/${eventoId}`);
   };
 
   const handleCancelarVisaoEvento = () => {

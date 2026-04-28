@@ -16,6 +16,7 @@ export function Modal({
   size = "md",
   onFinish,
   loading = false,
+  globalError = null, // ✅ Novo prop para erro global
 }) {
   const [currentStep, setCurrentStep] = useState(1);
 
@@ -65,7 +66,7 @@ export function Modal({
           showNavigation={showNavigation}
           onClose={handleClose}
         />
-        <ModalContent currentStep={currentStep}>{children}</ModalContent>
+        <ModalContent currentStep={currentStep} globalError={globalError}>{children}</ModalContent>
         <ModalFooter
           showNavigation={showNavigation}
           showFooter={showFooter}

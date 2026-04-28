@@ -1,10 +1,17 @@
 import { Layout } from "../templates/Layout";
 import { useVisaoEventoViewModel } from "../../hooks/useVisaoEventoViewModel";
+import { useNavigate } from "react-router-dom";
 import { EventHeader } from "../organisms/EventHeader";
 import { AgendaList } from "../organisms/AgendaList";
 import { PainelDireito } from "../organisms/PainelDireito";
 
 export const VisaoEvento = () => {
+  const navigate = useNavigate();
+  
+  const handleVoltar = () => {
+    navigate("/calendario");
+  };
+  
   const {
     tipoEvento,
     loading,
@@ -37,6 +44,7 @@ export const VisaoEvento = () => {
         tipoEvento={tipoEvento}
         onGerarPdf={handleGerarPdf}
         onEditarEvento={handleEditarEvento}
+        onVoltar={handleVoltar}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden">

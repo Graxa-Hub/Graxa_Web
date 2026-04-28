@@ -1,5 +1,4 @@
-import { Eye, Edit, Trash2 } from "lucide-react";
-import { ActionMenu } from "../molecules/ActionMenu";
+import { DropdownActions } from "../../molecules/DropdownActions";
 import { useNavigate } from "react-router-dom";
 import { OptionButton } from "../atoms/OptionButton";
 import { CardImage } from "../atoms/CardImage";
@@ -7,33 +6,6 @@ import { CardInfo } from "../atoms/CardInfo";
 
 export function Card({ banda, onEdit, onDelete, isDropdownOpen, onToggleDropdown, onVisualizar }) {
     const navigate = useNavigate();
-
-    const dropdownItems = [
-        {
-            icon: Eye,
-            label: "Visualizar",
-            onClick: (e) => {
-                e.stopPropagation();
-                onVisualizar(banda);
-            }
-        },
-        {
-            icon: Edit,
-            label: "Editar banda",
-            onClick: (e) => {
-                e.stopPropagation();
-                onEdit(banda);
-            }
-        },
-        {
-            icon: Trash2,
-            label: "Excluir banda",
-            onClick: (e) => {
-                e.stopPropagation();
-                onDelete(banda);
-            }
-        }
-    ];
 
     const handleCardClick = () => {
         navigate(`/turne/${banda.id}`);
@@ -51,7 +23,14 @@ export function Card({ banda, onEdit, onDelete, isDropdownOpen, onToggleDropdown
                 }}
             />
 
-            <ActionMenu isOpen={isDropdownOpen} items={dropdownItems} />
+            <DropdownActions
+                isOpen={isDropdownOpen}
+                entity={banda}
+                onView={onVisualizar}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                entityType="banda"
+            />
 
             <CardImage src={banda.imagemUrl} alt={banda.nome} />
 

@@ -8,6 +8,7 @@ import { Login } from "./components/pages/Login";
 import { Cadastro } from "./components/pages/Cadastro";
 import { HomeRedirect } from "./components/organisms/HomeRedirect";
 import { ProtectedLayout } from "./components/organisms/ProtectedLayout";
+import { ProtectedRouteByRole } from "./components/organisms/ProtectedRouteByRole";
 import { Turne } from "./components/pages/Turne";
 import { Artista } from "./components/pages/Artista";
 import { AdicionandoUsuarios } from "./components/pages/AdicionandoUsuario";
@@ -42,15 +43,28 @@ function App() {
 
         {/* Rotas protegidas */}
         <Route path="/calendario" element={<Calendario />} />
-        <Route path="/turne/:bandaId?" element={<Turne />} />
-        <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
-        <Route path="/artista" element={<Artista />} />
-        <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
+        
+        {/* ⛔ Rotas apenas para produtores */}
+        <Route
+          path="/turne/:bandaId?"
+          element={<ProtectedRouteByRole allowedRoles={['produtor']} element={<Turne />} />}
+        />
+        <Route
+          path="/artista"
+          element={<ProtectedRouteByRole allowedRoles={['produtor']} element={<Artista />} />}
+        />
         <Route
           path="/criar-evento/:tipoEvento/:eventoId?"
-          element={<CriarEvento />}
+          element={<ProtectedRouteByRole allowedRoles={['produtor']} element={<CriarEvento />} />}
         />
-        <Route path="/criar-logistica" element={<CriarLogistica />} />
+        <Route
+          path="/criar-logistica"
+          element={<ProtectedRouteByRole allowedRoles={['produtor']} element={<CriarLogistica />} />}
+        />
+        
+        {/* Rotas públicas após login */}
+        <Route path="/adicionando-usuario" element={<AdicionandoUsuarios />} />
+        <Route path="/visao-evento/:tipoEvento/:id" element={<VisaoEvento />} />
         <Route path="/configuracao" element={<ConfiguracaoUsuario />} />
         <Route path="/relatorio/:id" element={<RelatorioPage />} />
         <Route element={<ProtectedLayout />}></Route>
