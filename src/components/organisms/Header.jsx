@@ -1,4 +1,5 @@
 import React from "react";
+import { Menu } from "lucide-react";
 import { useHeaderLogic } from "../../hooks/useHeaderLogic";
 import { ArtistaModal } from "./ArtistaModal";
 import { TurneModal } from "./TurneModal";
@@ -14,6 +15,7 @@ export const Header = ({
   onTurneChange,
   showBandaSelector = true,
   showTurneSelector = true,
+  onMenuClick,
 }) => {
   const {
     isOpen,
@@ -39,8 +41,19 @@ export const Header = ({
   });
 
   return (
-    <header className="w-full mb-2">
-      <div className="relative flex justify-between items-center h-16 w-full max-w-[320px] px-4 surface-card border-[var(--border-hover)] hover:border-[var(--border-strong)] transition-all duration-150">
+    <header className="w-full mb-2 flex flex-wrap sm:flex-nowrap items-center gap-3">
+      {onMenuClick && (
+        <button
+          type="button"
+          onClick={onMenuClick}
+          className="lg:hidden p-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)] rounded-md transition-colors"
+          aria-label="Abrir menu"
+        >
+          <Menu size={24} />
+        </button>
+      )}
+      
+      <div className="relative flex justify-between items-center h-16 w-full max-w-full sm:max-w-[320px] px-4 surface-card border-[var(--border-hover)] hover:border-[var(--border-strong)] transition-all duration-150">
         {showBandaSelector && (
           <BandaTurneSelector
             open={isOpen}

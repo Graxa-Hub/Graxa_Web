@@ -10,7 +10,7 @@ export const EventHeader = ({
   onEditarEvento,
 }) => {
   return (
-    <div className="mb-4 flex flex-row justify-between">
+    <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
         <h1 className="panel-title">{nomeEvento}</h1>
         <div className="mt-1 flex items-center gap-1.5">

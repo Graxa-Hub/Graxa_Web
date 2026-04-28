@@ -26,7 +26,9 @@ export const VisaoEvento = () => {
     <Layout
       className="bg-[var(--bg)]"
       containerClassName="overflow-hidden"
-      showHeader={false}
+      showHeader={true}
+      showBandaSelector={false}
+      showTurneSelector={false}
     >
       <EventHeader
         nomeEvento={dadosEvento.nomeEvento}
@@ -37,8 +39,8 @@ export const VisaoEvento = () => {
         onEditarEvento={handleEditarEvento}
       />
 
-      <div className="grid grid-cols-3 gap-3 flex-1 min-h-0 overflow-hidden">
-        <div className="col-span-2 h-full">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden">
+        <div className="lg:col-span-2 h-[500px] lg:h-full">
           <AgendaList
             itens={agendasProcessadas}
             selectedId={agendaSelecionada?.id}
