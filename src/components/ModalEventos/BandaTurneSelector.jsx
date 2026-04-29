@@ -241,9 +241,15 @@ export const BandaTurneSelector = ({
   const turnePagination = turnePaginationObj;
 
   return (
-    <div className="absolute top-full left-0 mt-2 z-50 min-w-[700px]" role="menu">
-      <div className="w-full surface-card overflow-hidden shadow-[var(--shadow-card)] rounded-lg border border-[var(--border)] max-h-[80vh]">
-        <div className="flex flex-row">
+    <div 
+      className={`absolute top-full left-0 mt-2 z-50 shadow-[var(--shadow-card)] rounded-lg border border-[var(--border)] max-h-[85vh] overflow-y-auto md:overflow-visible surface-card ${
+        showBandaSelector && showTurneSelector 
+          ? "w-[95vw] sm:w-[450px] md:w-[600px] lg:w-[700px]" 
+          : "w-[95vw] sm:w-[350px]"
+      } max-w-[95vw]`} 
+      role="menu"
+    >
+      <div className="w-full flex flex-col md:flex-row">
           {/* ===== BANDAS ===== */}
           {showBandaSelector && (
             <div className="flex-1 min-w-0">
@@ -361,9 +367,9 @@ export const BandaTurneSelector = ({
             </div>
           )}
 
-          {/* Divisória vertical */}
+          {/* Divisória vertical / horizontal */}
           {showBandaSelector && showTurneSelector && (
-            <div className="w-[3px] bg-[var(--accent)] opacity-60" />
+            <div className="w-full h-[2px] md:w-[2px] md:h-auto bg-[var(--accent)] opacity-60 flex-shrink-0" />
           )}
 
           {/* ===== TURNÊS ===== */}
@@ -478,7 +484,6 @@ export const BandaTurneSelector = ({
               )}
             </div>
           )}
-        </div>
       </div>
     </div>
   );

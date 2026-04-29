@@ -51,11 +51,22 @@ export function TaskList({ eventos = [] }) {
   };
 
   return (
-    <div 
-      className={`surface-card w-full flex flex-col overflow-hidden transition-all duration-300 ease-in-out border-t border-[var(--border)] rounded-t-lg shadow-[0_-4px_20px_rgba(0,0,0,0.15)] ${
-        isExpanded ? "h-[800px] max-h-[85vh]" : "h-[48px]"
-      }`}
-    >
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isExpanded && (
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden animate-fade-in"
+          onClick={() => setIsExpanded(false)}
+        />
+      )}
+
+      <div 
+        className={`surface-card w-full flex flex-col overflow-hidden transition-all duration-300 ease-in-out shadow-[0_-4px_20px_rgba(0,0,0,0.15)] ${
+          isExpanded 
+            ? "fixed bottom-0 left-0 z-50 h-[90vh] rounded-t-2xl lg:relative lg:h-full lg:z-auto lg:rounded-t-lg lg:border-t lg:border-[var(--border)]" 
+            : "relative h-[48px] rounded-t-lg border-t border-[var(--border)]"
+        }`}
+      >
       <button 
         onClick={() => setIsExpanded(!isExpanded)}
         className="w-full h-[48px] flex items-center justify-between px-4 text-[var(--text-primary)] font-semibold text-sm flex-shrink-0 bg-[var(--surface)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer border-b border-transparent data-[expanded=true]:border-[var(--border)]"
@@ -127,5 +138,6 @@ export function TaskList({ eventos = [] }) {
         )}
       </div>
     </div>
+    </>
   );
 }

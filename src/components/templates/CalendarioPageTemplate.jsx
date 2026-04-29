@@ -15,15 +15,15 @@ export function CalendarioPageTemplate({
   setEventos,
 }) {
   return (
-    <Layout showHeader={false}>
-      <CalendarioTopBar
-        bandas={bandas}
-        turnes={turnes}
-        bandaSelecionada={bandaSelecionada}
-        turneSelecionada={turneSelecionada}
-        onBandaChange={setBandaSelecionada}
-        onTurneChange={setTurneSelecionada}
-      />
+    <Layout 
+      showHeader={true}
+      bandas={bandas}
+      turnes={turnes}
+      bandaSelecionada={bandaSelecionada}
+      turneSelecionada={turneSelecionada}
+      onBandaChange={setBandaSelecionada}
+      onTurneChange={setTurneSelecionada}
+    >
 
       <CalendarioContent
         mainCalendarApi={mainCalendarApi}
