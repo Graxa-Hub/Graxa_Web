@@ -14,6 +14,7 @@ export default function MainCalendar({
   onEventosChange,
   bandaId,
   turneId,
+  turne,
 }) {
   const calendarRef = useRef(null);
   const navigate = useNavigate();
@@ -46,20 +47,43 @@ export default function MainCalendar({
   }, [eventos, onEventosChange]);
 
   const handleDateSelect = (selectInfo) => {
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
     const dataSelecionada = new Date(selectInfo.start);
     dataSelecionada.setHours(0, 0, 0, 0);
 
-    if (dataSelecionada < hoje) {
-      setErrorToast("Não é permitido criar eventos em datas passadas.");
-      setTimeout(() => setErrorToast(""), 3000);
-      try {
-        selectInfo.view.calendar.unselect();
-      } catch {
-        // noop
+    const turneInicioRaw = turne?.raw?.dataHoraInicioTurne;
+    const turneFimRaw = turne?.raw?.dataHoraFimTurne;
+
+    if (turneInicioRaw && turneFimRaw) {
+      const turneInicio = new Date(turneInicioRaw);
+      turneInicio.setHours(0, 0, 0, 0);
+      const turneFim = new Date(turneFimRaw);
+      turneFim.setHours(23, 59, 59, 999);
+
+      if (dataSelecionada < turneInicio || dataSelecionada > turneFim) {
+        const inicioFormatado = turneInicio.toLocaleDateString("pt-BR");
+        const fimFormatado = turneFim.toLocaleDateString("pt-BR");
+        setErrorToast(`Fora do período da turnê (${inicioFormatado} – ${fimFormatado}).`);
+        setTimeout(() => setErrorToast(""), 4000);
+        try {
+          selectInfo.view.calendar.unselect();
+        } catch {
+          // noop
+        }
+        return;
       }
-      return;
+    } else {
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      if (dataSelecionada < hoje) {
+        setErrorToast("Não é permitido criar eventos em datas passadas.");
+        setTimeout(() => setErrorToast(""), 3000);
+        try {
+          selectInfo.view.calendar.unselect();
+        } catch {
+          // noop
+        }
+        return;
+      }
     }
 
     const formatarParaDateTimeLocal = (data) => {

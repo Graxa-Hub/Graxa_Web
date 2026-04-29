@@ -208,13 +208,14 @@ export function EventoModal({
   const verificarLimitesTurne = (turneId, dataInicio, dataFim) => {
     if (!turneId || !dataInicio || !dataFim) return null;
     const turne = turnes.find((t) => String(t.id) === String(turneId));
-    if (!turne || !turne.dataHoraInicioTurne || !turne.dataHoraFimTurne)
-      return null;
+    const inicioTurneRaw = turne?.raw?.dataHoraInicioTurne;
+    const fimTurneRaw = turne?.raw?.dataHoraFimTurne;
+    if (!turne || !inicioTurneRaw || !fimTurneRaw) return null;
 
     const inicio = new Date(dataInicio);
     const fim = new Date(dataFim);
-    const turneInicio = new Date(turne.dataHoraInicioTurne);
-    const turneFim = new Date(turne.dataHoraFimTurne);
+    const turneInicio = new Date(inicioTurneRaw);
+    const turneFim = new Date(fimTurneRaw);
 
     // Ajusta para o final do dia da turne para incluir o último dia completo
     turneInicio.setHours(0, 0, 0, 0);
@@ -230,6 +231,47 @@ export function EventoModal({
     }
     return null;
   };
+
+  // Validação reativa: mostra erro assim que turnê + datas estão preenchidos fora do range
+  useEffect(() => {
+    if (!isOpen) return;
+
+    let limites = null;
+    if (activeTab === "show" && showData.turneId && showData.dataHoraInicio && showData.dataHoraFim) {
+      limites = verificarLimitesTurne(showData.turneId, showData.dataHoraInicio, showData.dataHoraFim);
+    } else if (activeTab === "viagem" && viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
+      limites = verificarLimitesTurne(viagemData.turneId, viagemData.dataInicio, viagemData.dataFim);
+    }
+
+    if (limites) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        general: (
+          <div>
+            <p className="font-semibold text-[var(--accent)] mb-2">
+              ⚠️ Fora do período da turnê!
+            </p>
+            <div className="text-sm bg-[var(--surface)] p-3 rounded border border-[var(--border)]">
+              O evento deve ocorrer entre <strong>{limites.turneInicio}</strong> e{" "}
+              <strong>{limites.turneFim}</strong>.
+            </div>
+          </div>
+        ),
+      }));
+    } else {
+      setFieldErrors((prev) => {
+        if (!prev.general) return prev;
+        const { general: _, ...rest } = prev;
+        return rest;
+      });
+    }
+  }, [
+    isOpen,
+    activeTab,
+    turnes,
+    showData.turneId, showData.dataHoraInicio, showData.dataHoraFim,
+    viagemData.turneId, viagemData.dataInicio, viagemData.dataFim,
+  ]);
 
   const verificarConflito = (bandasIds, dataInicio, dataFim, tipoEvento) => {
     if (!bandasIds || bandasIds.length === 0 || !dataInicio || !dataFim || !tipoEvento) {
@@ -410,8 +452,6 @@ export function EventoModal({
       errors = validateViagem(viagemData);
       fieldMap = VIAGEM_ERROR_MAP;
 
-      // Validação de Limites da Turnê (Viagem) REMOVIDA
-      /*
       if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
         const limitesErro = verificarLimitesTurne(viagemData.turneId, viagemData.dataInicio, viagemData.dataFim);
         if (limitesErro) {
@@ -430,7 +470,6 @@ export function EventoModal({
           return false;
         }
       }
-      */
 
       if (viagemData.bandaId && viagemData.dataInicio && viagemData.dataFim) {
         const conflito = verificarConflito(
@@ -540,8 +579,6 @@ export function EventoModal({
       errors = validateViagem(viagemData);
       fieldMap = VIAGEM_ERROR_MAP;
 
-      // Validação de Limites da Turnê (Viagem) REMOVIDA
-      /*
       if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
         const limitesErro = verificarLimitesTurne(viagemData.turneId, viagemData.dataInicio, viagemData.dataFim);
         if (limitesErro) {
@@ -560,7 +597,6 @@ export function EventoModal({
           return false;
         }
       }
-      */
 
       if (viagemData.turneId && viagemData.dataInicio && viagemData.dataFim) {
         const turne = turnes.find((t) => t.id === Number(viagemData.turneId));

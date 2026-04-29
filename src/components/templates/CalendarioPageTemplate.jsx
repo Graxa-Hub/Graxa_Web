@@ -16,7 +16,7 @@ export function CalendarioPageTemplate({
 }) {
   return (
     <Layout 
-      showHeader={false}
+      showHeader={true}
       bandas={bandas}
       turnes={turnes}
       bandaSelecionada={bandaSelecionada}
