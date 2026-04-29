@@ -1,9 +1,12 @@
 
 
-
 export function isCep(valor) {
-  const clean = valor.replace(/\D/g, "");
-  return clean.length === 8;
+  if (!valor) return false;
+  const trimmed = valor.trim();
+  const semPrefixo = trimmed.replace(/^cep\s*:?\s*/i, "");
+  // Só aceita como CEP se não tiver letras (apenas dígitos, espaços e hífen)
+  if (!/^[\d\s\-]+$/.test(semPrefixo)) return false;
+  return semPrefixo.replace(/\D/g, "").length === 8;
 }
 
 export async function buscarCep(cep) {

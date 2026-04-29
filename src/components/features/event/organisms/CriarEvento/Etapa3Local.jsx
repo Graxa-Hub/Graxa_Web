@@ -90,10 +90,7 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
       setLoading(true);
 
       try {
-        const enderecoBusca =
-          localSelecionado.endereco.cep || localSelecionado.endereco.logradouro;
-
-        const resolved = await resolverEndereco(enderecoBusca);
+        const resolved = await resolverEndereco(localSelecionado.endereco);
 
         if (!resolved.sucesso) {
           setErro(resolved.erro);
