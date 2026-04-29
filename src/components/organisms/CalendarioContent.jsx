@@ -28,8 +28,6 @@ export function CalendarioContent({
         <div className="hidden lg:block surface-card h-[400px] w-full rounded-lg">
           <SideCalendar
             mainCalendarApi={mainCalendarApi}
-            bandaId={bandaSelecionada?.id}
-            turneId={turneSelecionada?.id}
           />
         </div>
 

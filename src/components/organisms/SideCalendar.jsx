@@ -5,14 +5,14 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import ptLocale from "@fullcalendar/core/locales/pt";
 import { useEventosCalendario } from "../../hooks/useEventosCalendario";
 
-export default function SideCalendar({ mainCalendarApi, bandaId, turneId }) {
+export default function SideCalendar({ mainCalendarApi }) {
   const { eventos: todosEventos, carregarEventos } = useEventosCalendario();
   const navigate = useNavigate();
 
-  // Carrega eventos com filtros de banda/turne
+  // Carrega todos os eventos sem filtros
   useEffect(() => {
-    carregarEventos({ bandaId, turneId });
-  }, [bandaId, turneId, carregarEventos]);
+    carregarEventos();
+  }, [carregarEventos]);
 
   const handleDateClick = (arg) => {
     if (mainCalendarApi && typeof mainCalendarApi.gotoDate === "function") {
