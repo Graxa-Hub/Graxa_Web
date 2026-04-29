@@ -25,6 +25,9 @@ export function CalendarioContent({
       <div className="relative w-full lg:w-[400px] lg:min-w-[400px] h-auto lg:h-full lg:min-h-0 overflow-visible lg:overflow-hidden rounded-lg flex-shrink-0">
         <div className="hidden lg:block surface-card h-[400px] w-full rounded-lg">
           <SideCalendar mainCalendarApi={mainCalendarApi} />
+      <div className="relative w-[400px] min-w-[400px] h-full min-h-0 overflow-hidden rounded-lg">
+        <div className="surface-card h-[400px] w-full rounded-lg">
+          <SideCalendar mainCalendarApi={mainCalendarApi} bandaId={bandaSelecionada?.id} turneId={turneSelecionada?.id} />
         </div>
 
         <div className="relative lg:absolute lg:bottom-0 lg:left-0 w-full lg:z-10 flex flex-col lg:justify-end lg:pointer-events-none lg:h-full">

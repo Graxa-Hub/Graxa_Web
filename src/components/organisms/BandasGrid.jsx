@@ -1,5 +1,6 @@
 import { Card } from "./Card";
 import { EmptyState } from "../molecules/EmptyState";
+import { useNavigate } from "react-router-dom";
 
 export function BandasGrid({
   bandas,
@@ -10,6 +11,8 @@ export function BandasGrid({
   openDropdown,
   onToggleDropdown,
 }) {
+  const navigate = useNavigate();
+
   if (bandas.length === 0) {
     return <EmptyState onAdd={onAddBanda} />;
   }
@@ -20,7 +23,7 @@ export function BandasGrid({
         <Card
           key={banda.id}
           banda={banda}
-          onClick={() => onVisualizar?.(banda)}
+          onClick={() => navigate(`/turne/${banda.id}`)}
           onEdit={onEdit}
           onDelete={onDelete}
           isDropdownOpen={openDropdown === banda.id}

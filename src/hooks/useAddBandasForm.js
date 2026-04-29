@@ -4,6 +4,18 @@ import { useArtistas } from "./useArtistas";
 import { useToast } from "./useToast";
 import { bandaService } from "../services/bandaService";
 
+// Função para limpar máscara de CPF
+const limparCPF = (cpf) => cpf.replace(/\D/g, "");
+
+// Função para formatar CPF com máscara
+const formatarCPF = (valor) => {
+  const apenasNumeros = limparCPF(valor).slice(0, 11);
+  if (apenasNumeros.length <= 3) return apenasNumeros;
+  if (apenasNumeros.length <= 6) return `${apenasNumeros.slice(0, 3)}.${apenasNumeros.slice(3)}`;
+  if (apenasNumeros.length <= 9) return `${apenasNumeros.slice(0, 3)}.${apenasNumeros.slice(3, 6)}.${apenasNumeros.slice(6)}`;
+  return `${apenasNumeros.slice(0, 3)}.${apenasNumeros.slice(3, 6)}.${apenasNumeros.slice(6, 9)}-${apenasNumeros.slice(9)}`;
+};
+
 export function useAddBandaForm({
   bandaParaEditar,
   criarBanda,
@@ -26,9 +38,12 @@ export function useAddBandaForm({
     integrantes: bandaParaEditar?.integrantes?.map((int) => ({
       id: int.id,
       nome: int.nome || "",
-      cpf: int.cpf || "",
+      cpf: formatarCPF(int.cpf || ""),
     })) || [{ nome: "", cpf: "" }],
   });
+
+  // Rastrear IDs de integrantes removidos para deletar do backend
+  const [integrantesRemovidos, setIntegrantesRemovidos] = useState([]);
 
   const [showNovoRepresentante, setShowNovoRepresentante] = useState(false);
   const [novoRepresentante, setNovoRepresentante] = useState({
@@ -84,14 +99,11 @@ export function useAddBandaForm({
         `Tem certeza que deseja remover ${integrante.nome} da banda?`,
       );
       if (!confirmar) return;
-      try {
-        // Aqui pode chamar excluirArtista se quiser remover do backend
-      } catch (error) {
-        console.error("Erro ao remover integrante:", error);
-        alert("Erro ao remover integrante. Tente novamente.");
-        return;
-      }
+      
+      // Rastrear ID para deletar depois
+      setIntegrantesRemovidos((prev) => [...prev, integrante.id]);
     }
+    
     const updated = draft.integrantes.filter((_, i) => i !== index);
     setDraft((d) => ({
       ...d,
@@ -109,20 +121,22 @@ export function useAddBandaForm({
         return false; // ✅ Indica falha
       }
 
-      // Validar se banda já existe (prevenção de erro 500)
-      try {
-        const bandasExistentes = await bandaService.listarBandas();
-        const bandaJaExiste = bandasExistentes?.some(
-          (b) => b.nome.toLowerCase() === draft.nome.toLowerCase(),
-        );
-        if (bandaJaExiste) {
-          setErrors({ geral: `A banda "${draft.nome}" já existe no sistema.` });
-          return false; // ✅ Indica falha
+      // ✅ Só valida duplicação se NÃO está editando (criando nova banda)
+      if (!isEditMode) {
+        try {
+          const bandasExistentes = await bandaService.listarBandas();
+          const bandaJaExiste = bandasExistentes?.some(
+            (b) => b.nome.toLowerCase() === draft.nome.toLowerCase(),
+          );
+          if (bandaJaExiste) {
+            setErrors({ geral: `A banda "${draft.nome}" já existe no sistema.` });
+            return false; // ✅ Indica falha
+          }
+        } catch (err) {
+          console.warn(
+            "[useAddBandaForm] Aviso: não foi possível validar banda existente",
+          );
         }
-      } catch (err) {
-        console.warn(
-          "[useAddBandaForm] Aviso: não foi possível validar banda existente",
-        );
       }
 
       if (isEditMode) {
@@ -133,23 +147,36 @@ export function useAddBandaForm({
           representanteId: draft.representanteId,
         };
         await atualizarBanda(bandaParaEditar.id, dadosAtualizacao, draft.foto);
+
+        // Deletar integrantes removidos
+        for (const integranteId of integrantesRemovidos) {
+          try {
+            await excluirArtista(integranteId);
+          } catch (error) {
+            console.error(`Erro ao remover integrante ${integranteId}:`, error);
+            // Não bloqueia o fluxo se falhar a exclusão
+          }
+        }
+
+        // Adicionar/Atualizar integrantes
         for (const integrante of draft.integrantes) {
           if (integrante.id) {
             await atualizarArtista(integrante.id, {
               nome: integrante.nome,
-              cpf: integrante.cpf,
+              cpf: limparCPF(integrante.cpf),
             });
           } else if (integrante.nome && integrante.cpf) {
             const artistaCriado = await criarArtista({
               nome: integrante.nome,
-              cpf: integrante.cpf,
+              cpf: limparCPF(integrante.cpf),
               fotoNome: null,
             });
             await adicionarIntegrantes(bandaParaEditar.id, [artistaCriado.id]);
           }
         }
+
         showSuccess(`"${draft.nome}" foi atualizada com sucesso!`, 'Banda atualizada');
-        onSuccess();
+        await onSuccess(); // ✅ Aguarda antes de retornar
         return true; // ✅ Indica sucesso
       }
       let representanteId = draft.representanteId;
@@ -175,7 +202,7 @@ export function useAddBandaForm({
         });
         return false; // ✅ Indica falha
       }
-      const cpfs = integrantesValidos.map((int) => int.cpf.replace(/\D/g, ""));
+      const cpfs = integrantesValidos.map((int) => limparCPF(int.cpf));
       const cpfsDuplicados = cpfs.filter(
         (cpf, index) => cpfs.indexOf(cpf) !== index,
       );
@@ -190,11 +217,11 @@ export function useAddBandaForm({
       try {
         const artistasExistentes = await listarArtistas();
         const cpfsExistentes = artistasExistentes.map((a) =>
-          (a.cpf || "").replace(/\D/g, ""),
+          limparCPF(a.cpf || ""),
         );
 
         const cpfComDuplicataNoBanco = integrantesValidos.find((integrante) => {
-          const cpfLimpo = integrante.cpf.replace(/\D/g, "");
+          const cpfLimpo = limparCPF(integrante.cpf);
           return cpfsExistentes.includes(cpfLimpo);
         });
 
@@ -255,41 +282,44 @@ export function useAddBandaForm({
         await adicionarIntegrantes(bandaCriada.id, integrantesIds);
       }
       showSuccess(`"${draft.nome}" foi criada com sucesso!`, 'Banda criada');
-      onSuccess();
+      await onSuccess(); // ✅ Aguarda antes de retornar
       return true; // ✅ Indica sucesso
     } catch (error) {
-      let errorMessage = "Erro ao processar banda";
+      let errorMessage = "Desculpe, não foi possível salvar a banda. Tente novamente.";
       const serverMessage =
         error.response?.data?.message || error.response?.data?.mensagem;
       const serverData =
         error.response?.data?.mensagem || error.response?.data?.message || "";
+      const statusCode = error.response?.status;
 
-      if (serverMessage) {
-        if (
-          serverMessage.includes("uploads\\") ||
-          serverMessage.includes("uploads/")
-        ) {
-          errorMessage =
-            "Erro ao fazer upload da imagem. Verifique se o servidor tem permissão para salvar arquivos.";
-        } else if (
-          serverMessage.includes("Unique index") ||
-          serverMessage.includes("duplicate")
-        ) {
-          errorMessage =
-            "CPF já cadastrado no sistema. Verifique os dados dos integrantes.";
-        } else if (
-          serverMessage.includes("Já existe") ||
-          serverData.includes("Já existe")
-        ) {
-          errorMessage = serverData || serverMessage;
-        } else {
-          errorMessage = serverMessage;
+      // Tratamento amigável de erros
+      if (error.code === "ECONNABORTED") {
+        errorMessage = "A requisição demorou muito tempo. Verifique sua conexão e tente novamente.";
+      } else if (statusCode === 500 || statusCode === 502 || statusCode === 503) {
+        errorMessage = "O servidor está indisponível no momento. Tente novamente em alguns segundos.";
+      } else if (statusCode === 400) {
+        if (serverMessage?.includes("uploads")) {
+          errorMessage = "❌ Problema ao fazer upload da imagem. Verifique o tamanho e formato do arquivo.";
+        } else if (serverMessage?.includes("Unique") || serverMessage?.includes("duplicate") || serverMessage?.includes("CPF")) {
+          errorMessage = "❌ Um integrante com este CPF já existe no sistema. Verifique os dados.";
+        } else if (serverMessage?.includes("Já existe")) {
+          errorMessage = `❌ ${serverData || serverMessage}`;
+        } else if (serverMessage) {
+          errorMessage = `❌ ${serverMessage}`;
         }
-      } else if (error.message) {
-        errorMessage = error.message;
+      } else if (statusCode === 404) {
+        errorMessage = "❌ Recurso não encontrado. Verifique os dados e tente novamente.";
+      } else if (statusCode === 409) {
+        errorMessage = "❌ Conflito ao salvar. Pode ser que a banda ou um integrante já exista.";
+      } else if (serverMessage) {
+        errorMessage = `❌ ${serverMessage}`;
+      } else if (error.message && !error.message.includes("Network")) {
+        errorMessage = `❌ ${error.message}`;
       }
+
+      console.error("[useAddBandaForm] Erro:", { statusCode, serverMessage, error });
       setErrors({ geral: errorMessage });
-      showError(errorMessage, 'Erro ao processar banda');
+      showError(errorMessage, '⚠️ Erro ao processar');
       return false; // ✅ Indica falha
     } finally {
       setLoading(false);

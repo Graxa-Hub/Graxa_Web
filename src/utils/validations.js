@@ -26,6 +26,18 @@ export const isValidDateRange = (inicio, fim, startLabel = 'início', endLabel =
   return null;
 };
 
+export const isDateInPast = (data, fieldName = 'Data') => {
+  if (!data) return null;
+  
+  const dataDate = new Date(data);
+  const agora = new Date();
+  
+  if (dataDate < agora) {
+    return `${fieldName} não pode ser anterior à data/hora atual`;
+  }
+  return null;
+};
+
 export const isValidCep = (cep) => {
   if (!cep) return null;
   const cepLimpo = cep.replace(/\D/g, '');
@@ -125,7 +137,7 @@ function validateDateRange(dataInicio, dataFim, labelInicio = 'Data de início',
 export function validateShow(data, novoLocal, showNovoLocal) {
   const errors = [];
 
- if (!data.titulo || !data.titulo.trim()) errors.push("Título é obrigatório");
+  if (!data.titulo || !data.titulo.trim()) errors.push("Título é obrigatório");
   if (!data.bandaId) errors.push("Banda é obrigatória");
 
   if (!showNovoLocal) {
@@ -142,6 +154,13 @@ export function validateShow(data, novoLocal, showNovoLocal) {
 
   if (!data.dataHoraInicio) errors.push("Data/hora de início é obrigatória");
   if (!data.dataHoraFim) errors.push("Data/hora de fim é obrigatória");
+  
+  const inicioNoPassadoError = isDateInPast(data.dataHoraInicio, "Data/hora de início");
+  if (inicioNoPassadoError) errors.push(inicioNoPassadoError);
+  
+  const fimNoPassadoError = isDateInPast(data.dataHoraFim, "Data/hora de fim");
+  if (fimNoPassadoError) errors.push(fimNoPassadoError);
+  
   if (
     data.dataHoraInicio &&
     data.dataHoraFim &&
@@ -160,6 +179,13 @@ export function validateViagem(data) {
   if (!data.tipoViagem) errors.push("Tipo de transporte é obrigatório");
   if (!data.dataInicio) errors.push("Data/hora de partida é obrigatória");
   if (!data.dataFim) errors.push("Data/hora de chegada é obrigatória");
+  
+  const inicioNoPassadoError = isDateInPast(data.dataInicio, "Data/hora de partida");
+  if (inicioNoPassadoError) errors.push(inicioNoPassadoError);
+  
+  const fimNoPassadoError = isDateInPast(data.dataFim, "Data/hora de chegada");
+  if (fimNoPassadoError) errors.push(fimNoPassadoError);
+  
   if (
     data.dataInicio &&
     data.dataFim &&

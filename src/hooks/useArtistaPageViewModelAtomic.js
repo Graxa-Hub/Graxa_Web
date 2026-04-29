@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useBandas } from "./useBandas";
 
 export function useArtistaPageViewModelAtomic() {
-  const navigate = useNavigate();
   const {
     bandas,
     loading,
     pagination,
+    buscaAtiva,
     listarBandasPaginadas,
+    buscarBandas,
     nextPage,
     prevPage,
     goToPage,
@@ -21,18 +21,31 @@ export function useArtistaPageViewModelAtomic() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState(null);
   const [bandaParaEditar, setBandaParaEditar] = useState(null);
-  const [confirmModal, setConfirmModal] = useState({
-    isOpen: false,
-    banda: null,
-  });
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, banda: null });
   const [bandaVisualizar, setBandaVisualizar] = useState(null);
   const [selectedBanda, setSelectedBanda] = useState(null);
   const [selectedTurne, setSelectedTurne] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     listarBandasPaginadas();
   }, [listarBandasPaginadas]);
 
+  // ─── Busca ─────────────────────────────────────────────────────────────────
+  const handleSearch = useCallback(
+    (query) => {
+      setSearchQuery(query);
+      buscarBandas(query);
+    },
+    [buscarBandas]
+  );
+
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery("");
+    buscarBandas("");
+  }, [buscarBandas]);
+
+  // ─── Modal ─────────────────────────────────────────────────────────────────
   const openModal = useCallback(() => {
     setBandaParaEditar(null);
     setIsModalOpen(true);
@@ -48,10 +61,11 @@ export function useArtistaPageViewModelAtomic() {
     try {
       await listarBandasPaginadas();
     } catch (err) {
-      console.error("Erro ao atualizar lista de bandas apos criacao:", err);
+      console.error("Erro ao atualizar lista de bandas após criação:", err);
     }
   }, [closeModal, listarBandasPaginadas]);
 
+  // ─── Ações ─────────────────────────────────────────────────────────────────
   const handleEdit = useCallback((banda) => {
     setBandaParaEditar(banda);
     setIsModalOpen(true);
@@ -73,7 +87,6 @@ export function useArtistaPageViewModelAtomic() {
         alert("Erro ao excluir banda. Tente novamente.");
       }
     }
-
     setConfirmModal({ isOpen: false, banda: null });
   }, [confirmModal.banda, excluirBanda, listarBandasPaginadas]);
 
@@ -81,12 +94,10 @@ export function useArtistaPageViewModelAtomic() {
     setOpenDropdown((prev) => (prev === bandaId ? null : bandaId));
   }, []);
 
-  const handleVisualizar = useCallback(
-    (banda) => {
-      navigate(`/turne/${banda.id}`);
-    },
-    [navigate],
-  );
+  const handleVisualizar = useCallback((banda) => {
+    setBandaVisualizar(banda);
+    setOpenDropdown(null);
+  }, []);
 
   const closeConfirmModal = useCallback(() => {
     setConfirmModal({ isOpen: false, banda: null });
@@ -100,6 +111,8 @@ export function useArtistaPageViewModelAtomic() {
     bandas,
     loading,
     pagination,
+    buscaAtiva,
+    searchQuery,
     selectedBanda,
     selectedTurne,
     setSelectedBanda,
@@ -125,5 +138,7 @@ export function useArtistaPageViewModelAtomic() {
     handleConfirmDelete,
     bandaVisualizar,
     closeBandaVisualizar,
+    handleSearch,
+    handleClearSearch,
   };
 }

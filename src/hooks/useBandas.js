@@ -3,12 +3,42 @@ import { bandaService } from "../services/bandaService";
 import { imagemService } from "../services/imagemService";
 
 // 🎚️ MUDAR AQUI PARA ALTERAR TAMANHO DE PÁGINA PADRÃO DE BANDAS
-const DEFAULT_PAGE_SIZE = 1;
+const DEFAULT_PAGE_SIZE = 3;
+
+// Utilitário para processar imagens — evita duplicar lógica
+async function processarImagens(bandasArray, cacheRef) {
+  return Promise.all(
+    bandasArray.map(async (banda) => {
+      if (cacheRef.current.has(banda.id)) {
+        return cacheRef.current.get(banda.id);
+      }
+
+      let imagemUrl = null;
+      if (banda.nomeFoto) {
+        try {
+          imagemUrl = await imagemService(banda.nomeFoto);
+        } catch (err) {
+          console.error("[useBandas] Erro ao carregar imagem:", err);
+        }
+      }
+
+      const bandaComImagem = {
+        ...banda,
+        imagemUrl:
+          imagemUrl ||
+          "https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem",
+      };
+      cacheRef.current.set(banda.id, bandaComImagem);
+      return bandaComImagem;
+    })
+  );
+}
 
 export function useBandas() {
   const [bandas, setBandas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [buscaAtiva, setBuscaAtiva] = useState(false);
   const [pagination, setPagination] = useState({
     pageNumber: 0,
     pageSize: DEFAULT_PAGE_SIZE,
@@ -17,90 +47,38 @@ export function useBandas() {
     first: true,
     last: true,
   });
-  const jaCarregouImagens = useRef(new Set());
-  const bandaCacheRef = useRef(new Map()); // Cache para evitar reprocessar
 
-  // Listar bandas sem paginação (backward compatibility)
+  const jaCarregouImagens = useRef(new Set());
+  const bandaCacheRef = useRef(new Map());
+
+  // ─── Listar sem paginação ──────────────────────────────────────────────────
   const listarBandas = useCallback(async () => {
-    console.log("[useBandas] 🎬 listarBandas chamado");
     setLoading(true);
     setError(null);
     try {
-      console.log("[useBandas] 📡 Chamando bandaService.listarBandas()...");
       const data = await bandaService.listarBandas();
-      console.log("[useBandas] 📦 Dados recebidos:", data);
       const bandasArray = Array.isArray(data) ? data : [];
-      
-      // Processar imagens inline
-      const bandasComImagem = await Promise.all(
-        bandasArray.map(async (banda) => {
-          if (bandaCacheRef.current.has(banda.id)) {
-            return bandaCacheRef.current.get(banda.id);
-          }
-
-          let imagemUrl = null;
-          if (banda.nomeFoto) {
-            try {
-              imagemUrl = await imagemService(banda.nomeFoto);
-            } catch (err) {
-              console.error("[useBandas] Erro ao carregar imagem:", err);
-            }
-          }
-
-          const bandaComImagem = {
-            ...banda,
-            imagemUrl: imagemUrl || "https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem",
-          };
-          bandaCacheRef.current.set(banda.id, bandaComImagem);
-          return bandaComImagem;
-        })
-      );
-
+      const bandasComImagem = await processarImagens(bandasArray, bandaCacheRef);
       setBandas(bandasComImagem);
-      console.log("[useBandas] ✅ Bandas carregadas com sucesso, total: ", bandasComImagem.length);
       return bandasComImagem;
     } catch (err) {
-      console.error("[useBandas] ❌ ERRO ao listar bandas:", err);
       setError(err.message);
       console.error("[useBandas] Erro ao listar bandas:", err);
       setBandas([]);
     } finally {
       setLoading(false);
     }
-  }, []); // ✅ SEM dependências
+  }, []);
 
-  // Listar bandas com paginação
+  // ─── Listar com paginação ──────────────────────────────────────────────────
   const listarBandasPaginadas = useCallback(
     async (page = 0, size = DEFAULT_PAGE_SIZE) => {
       setLoading(true);
       setError(null);
+      setBuscaAtiva(false);
       try {
         const response = await bandaService.listarBandasPaginadas(page, size);
-        
-        // Processar imagens inline
-        const bandasComImagem = await Promise.all(
-          response.content.map(async (banda) => {
-            if (bandaCacheRef.current.has(banda.id)) {
-              return bandaCacheRef.current.get(banda.id);
-            }
-
-            let imagemUrl = null;
-            if (banda.nomeFoto) {
-              try {
-                imagemUrl = await imagemService(banda.nomeFoto);
-              } catch (err) {
-                console.error("[useBandas] Erro ao carregar imagem:", err);
-              }
-            }
-
-            const bandaComImagem = {
-              ...banda,
-              imagemUrl: imagemUrl || "https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem",
-            };
-            bandaCacheRef.current.set(banda.id, bandaComImagem);
-            return bandaComImagem;
-          })
-        );
+        const bandasComImagem = await processarImagens(response.content, bandaCacheRef);
 
         setPagination({
           pageNumber: response.pageable?.pageNumber ?? page,
@@ -122,30 +100,49 @@ export function useBandas() {
         setLoading(false);
       }
     },
-    [] // ✅ SEM dependências
+    []
   );
 
-  // Navegar próxima página
+  // ─── Buscar por query ──────────────────────────────────────────────────────
+  const buscarBandas = useCallback(async (query) => {
+    // Query vazia volta para a listagem paginada normal
+    if (!query?.trim()) {
+      setBuscaAtiva(false);
+      await listarBandasPaginadas(0, DEFAULT_PAGE_SIZE);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setBuscaAtiva(true);
+    try {
+      const data = await bandaService.buscarBandas(query.trim());
+      const bandasArray = Array.isArray(data) ? data : [];
+      const bandasComImagem = await processarImagens(bandasArray, bandaCacheRef);
+      setBandas(bandasComImagem);
+      return bandasComImagem;
+    } catch (err) {
+      setError(err.message);
+      console.error("[useBandas] Erro ao buscar bandas:", err);
+      setBandas([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [listarBandasPaginadas]);
+
+  // ─── Paginação ─────────────────────────────────────────────────────────────
   const nextPage = useCallback(async () => {
     if (!pagination.last && !loading) {
-      await listarBandasPaginadas(
-        pagination.pageNumber + 1,
-        pagination.pageSize
-      );
+      await listarBandasPaginadas(pagination.pageNumber + 1, pagination.pageSize);
     }
   }, [pagination, loading, listarBandasPaginadas]);
 
-  // Navegar página anterior
   const prevPage = useCallback(async () => {
     if (!pagination.first && !loading) {
-      await listarBandasPaginadas(
-        pagination.pageNumber - 1,
-        pagination.pageSize
-      );
+      await listarBandasPaginadas(pagination.pageNumber - 1, pagination.pageSize);
     }
   }, [pagination, loading, listarBandasPaginadas]);
 
-  // Ir para página específica
   const goToPage = useCallback(
     async (pageNumber) => {
       if (pageNumber >= 0 && pageNumber < pagination.totalPages && !loading) {
@@ -155,7 +152,6 @@ export function useBandas() {
     [pagination, loading, listarBandasPaginadas]
   );
 
-  // Mudar tamanho de página
   const setPageSize = useCallback(
     async (newSize) => {
       if (newSize > 0 && newSize !== pagination.pageSize && !loading) {
@@ -165,12 +161,12 @@ export function useBandas() {
     [pagination.pageSize, loading, listarBandasPaginadas]
   );
 
+  // ─── CRUD ──────────────────────────────────────────────────────────────────
   const buscarBandaPorId = useCallback(async (id) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await bandaService.buscarBandaPorId(id);
-      return data;
+      return await bandaService.buscarBandaPorId(id);
     } catch (err) {
       setError(err.message);
       console.error("[useBandas] Erro ao buscar banda:", err);
@@ -187,40 +183,27 @@ export function useBandas() {
       const novaBanda = await bandaService.criarBanda(dados, foto);
 
       let imagemUrl = null;
-      const nomeImagem =
-        novaBanda.nomeFoto || novaBanda.imagem || novaBanda.fotoNome;
+      const nomeImagem = novaBanda.nomeFoto || novaBanda.imagem || novaBanda.fotoNome;
       if (nomeImagem) {
         try {
           imagemUrl = await imagemService(nomeImagem);
           jaCarregouImagens.current.add(novaBanda.id);
         } catch (err) {
-          console.error(
-            "[useBandas] Erro ao carregar imagem da nova banda:",
-            err,
-          );
+          console.error("[useBandas] Erro ao carregar imagem da nova banda:", err);
         }
       }
 
       const bandaComImagem = {
         ...novaBanda,
-        imagemUrl:
-          imagemUrl ||
-          "https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem",
+        imagemUrl: imagemUrl || "https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem",
       };
 
       setBandas((prev) => [...prev, bandaComImagem]);
       return bandaComImagem;
     } catch (err) {
-      const backendMessage =
-        err.response?.data?.message ||
-        err.response?.data?.mensagem ||
-        err.message;
+      const backendMessage = err.response?.data?.message || err.response?.data?.mensagem || err.message;
       setError(backendMessage);
-      console.error("[useBandas] Erro ao criar banda:", {
-        status: err.response?.status,
-        message: backendMessage,
-        data: err.response?.data,
-      });
+      console.error("[useBandas] Erro ao criar banda:", err);
       throw err;
     } finally {
       setLoading(false);
@@ -231,49 +214,32 @@ export function useBandas() {
     setLoading(true);
     setError(null);
     try {
-      const bandaAtualizada = await bandaService.atualizarBanda(
-        id,
-        dados,
-        foto,
-      );
+      const bandaAtualizada = await bandaService.atualizarBanda(id, dados, foto);
 
       let imagemUrl = null;
-      const nomeImagem =
-        bandaAtualizada.nomeFoto ||
-        bandaAtualizada.imagem ||
-        bandaAtualizada.fotoNome;
+      const nomeImagem = bandaAtualizada.nomeFoto || bandaAtualizada.imagem || bandaAtualizada.fotoNome;
       if (nomeImagem) {
         try {
           imagemUrl = await imagemService(nomeImagem);
           jaCarregouImagens.current.add(id);
         } catch (err) {
-          console.error(
-            "[useBandas] Erro ao carregar imagem da banda atualizada:",
-            err,
-          );
+          console.error("[useBandas] Erro ao carregar imagem da banda atualizada:", err);
         }
       }
 
       const bandaComImagem = {
         ...bandaAtualizada,
-        imagemUrl:
-          imagemUrl ||
-          "https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem",
+        imagemUrl: imagemUrl || "https://placehold.co/300x300/e2e8f0/64748b?text=Sem+Imagem",
       };
 
+      // Invalida cache para forçar reprocessamento
+      bandaCacheRef.current.delete(id);
       setBandas((prev) => prev.map((b) => (b.id === id ? bandaComImagem : b)));
       return bandaComImagem;
     } catch (err) {
-      const backendMessage =
-        err.response?.data?.message ||
-        err.response?.data?.mensagem ||
-        err.message;
+      const backendMessage = err.response?.data?.message || err.response?.data?.mensagem || err.message;
       setError(backendMessage);
-      console.error("[useBandas] Erro ao atualizar banda:", {
-        status: err.response?.status,
-        message: backendMessage,
-        data: err.response?.data,
-      });
+      console.error("[useBandas] Erro ao atualizar banda:", err);
       throw err;
     } finally {
       setLoading(false);
@@ -286,6 +252,7 @@ export function useBandas() {
     try {
       await bandaService.excluirBanda(id);
       jaCarregouImagens.current.delete(id);
+      bandaCacheRef.current.delete(id);
       setBandas((prev) => prev.filter((b) => b.id !== id));
     } catch (err) {
       setError(err.message);
@@ -300,19 +267,12 @@ export function useBandas() {
     setLoading(true);
     setError(null);
     try {
-      const bandaAtualizada = await bandaService.adicionarIntegrantes(
-        bandaId,
-        artistasIds,
-      );
-
+      const bandaAtualizada = await bandaService.adicionarIntegrantes(bandaId, artistasIds);
       setBandas((prev) =>
         prev.map((b) =>
-          b.id === bandaId
-            ? { ...b, integrantes: bandaAtualizada.integrantes }
-            : b,
-        ),
+          b.id === bandaId ? { ...b, integrantes: bandaAtualizada.integrantes } : b
+        )
       );
-
       return bandaAtualizada;
     } catch (err) {
       setError(err.message);
@@ -327,9 +287,11 @@ export function useBandas() {
     bandas,
     loading,
     error,
+    buscaAtiva,
     pagination,
     listarBandas,
     listarBandasPaginadas,
+    buscarBandas,
     nextPage,
     prevPage,
     goToPage,

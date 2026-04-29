@@ -69,6 +69,14 @@ export const useAlocacao = () => {
     }
   }, []);
 
+  // ✅ FUNÇÃO: Verificar conflito de horário
+  const verificarConflito = useCallback(async (colaboradorId, dataInicio, dataFim) => {
+    return executarOperacao(async () => {
+      const resultado = await alocacaoService.verificarConflito(colaboradorId, dataInicio, dataFim);
+      return resultado;
+    });
+  }, [executarOperacao]);
+
   // ✅ FUNÇÃO: Listar alocações por show (com fotos)
   const listarPorShow = useCallback(async (showId) => {
     return executarOperacao(async () => {

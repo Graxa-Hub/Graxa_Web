@@ -55,38 +55,44 @@ export const Header = ({
       
       <div className="relative flex justify-between items-center h-16 w-full max-w-full sm:max-w-[320px] px-4 surface-card border-[var(--border-hover)] hover:border-[var(--border-strong)] transition-all duration-150">
         {showBandaSelector && (
-          <BandaTurneSelector
-            open={isOpen}
-            active={activeOption}
-            bandas={bandas}
-            turnes={turnes}
-            bandaSelecionada={bandaSelecionada}
-            turneSelecionada={turneSelecionada}
-            onOpenArtist={handleOpenArtist}
-            onOpenTour={handleOpenTour}
-            onBandaSelect={handleBandaSelect}
-            onTurneSelect={handleTurneSelect}
-            showBandaSelector={showBandaSelector}
-            showTurneSelector={showTurneSelector}
-          />
+          <>
+            <BandaTurneSelector
+              open={isOpen}
+              active={activeOption}
+              bandas={bandas}
+              turnes={turnes}
+              bandaSelecionada={bandaSelecionada}
+              turneSelecionada={turneSelecionada}
+              onOpenArtist={handleOpenArtist}
+              onOpenTour={handleOpenTour}
+              onBandaSelect={handleBandaSelect}
+              onTurneSelect={handleTurneSelect}
+              showBandaSelector={showBandaSelector}
+              showTurneSelector={showTurneSelector}
+            />
+            <HeaderDrilldownTrigger
+              bandaSelecionada={bandaSelecionada}
+              turneSelecionada={turneSelecionada}
+              isOpen={isOpen}
+              onToggle={alternarDropdown}
+            />
+          </>
         )}
-        <HeaderDrilldownTrigger
-          bandaSelecionada={bandaSelecionada}
-          turneSelecionada={turneSelecionada}
-          isOpen={isOpen}
-          onToggle={alternarDropdown}
-        />
 
-        <ArtistaModal
-          open={artistOpen}
-          onSelect={handleBandaSelectFromModal}
-          onClose={() => setArtistOpen(false)}
-        />
-        <TurneModal
-          open={tourOpen}
-          onSelect={handleTurneSelectFromModal}
-          onClose={() => setTourOpen(false)}
-        />
+        {showBandaSelector && (
+          <>
+            <ArtistaModal
+              open={artistOpen}
+              onSelect={handleBandaSelectFromModal}
+              onClose={() => setArtistOpen(false)}
+            />
+            <TurneModal
+              open={tourOpen}
+              onSelect={handleTurneSelectFromModal}
+              onClose={() => setTourOpen(false)}
+            />
+          </>
+        )}
       </div>
     </header>
   );

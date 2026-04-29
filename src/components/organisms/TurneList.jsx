@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { List } from "../molecules/List";
 import { EmptyState } from "../molecules/EmptyState";
 import { ConfirmModal } from "../molecules/ConfirmModal";
-import { BandShowOptions } from "../molecules/BandShowOptions";
+import { DropdownActions } from "../molecules/DropdownActions";
 import { VisualizarTurneModal } from "./VisualizarTurneModal";
 
 export function TurneList({
@@ -65,31 +65,25 @@ export function TurneList({
           const isSelected = selectedTurne === turne.id;
 
           return (
-            <div key={turne.id} className="relative">
-              <List
-                title={turne.name}
-                description={turne.description}
-                image={turne.image}
-                isSelected={isSelected}
-                onClick={() => handleTurneClick(turne)}
-                onOptions={() => toggleDropdown(turne.id)}
-              />
-
-              {openDropdown === turne.id && (
-                <div
-                  className="absolute top-14 right-2 z-20"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <BandShowOptions
-                    entity={turne}
-                    onView={handleVisualizarTurne}
-                    onEdit={handleEdit}
-                    onDelete={handleDeleteClick}
-                    label="Turne"
-                  />
-                </div>
-              )}
-            </div>
+            <List
+              key={turne.id}
+              title={turne.name}
+              description={turne.description}
+              image={turne.image}
+              isSelected={isSelected}
+              onClick={() => handleTurneClick(turne)}
+              onToggleMenu={() => toggleDropdown(turne.id)}
+              isMenuOpen={openDropdown === turne.id}
+              menuItems={
+                <DropdownActions
+                  entity={turne}
+                  onView={handleVisualizarTurne}
+                  onEdit={handleEdit}
+                  onDelete={handleDeleteClick}
+                  entityType="turne"
+                />
+              }
+            />
           );
         })}
       </div>

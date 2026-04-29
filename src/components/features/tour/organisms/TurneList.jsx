@@ -4,7 +4,7 @@ import { EmptyState } from '../molecules/EmptyState'
 import { ConfirmModal } from '../molecules/ConfirmModal'
 import { useNavigate } from "react-router-dom";
 import { VisualizarTurneModal } from "./VisualizarTurneModal";
-import { BandShowOptions } from '../molecules/BandShowOptions';
+import { DropdownActions } from '../../molecules/DropdownActions';
 
 export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTurne }) {
   const [openDropdown, setOpenDropdown] = useState(null)
@@ -71,13 +71,13 @@ export function TurneList({ turnes = [], onEditTurne, onDeleteTurne, onCreateTur
                 onToggleMenu={() => toggleDropdown(turne.id)}
                 isMenuOpen={openDropdown === turne.id}
                 menuItems={
-                  <BandShowOptions
+                  <DropdownActions
                     isOpen={openDropdown === turne.id}
                     entity={turne}
                     onView={handleVisualizarTurne}
                     onEdit={handleEdit}
                     onDelete={handleDeleteClick}
-                    label="Turnê"
+                    entityType="turne"
                   />
                 }
               />

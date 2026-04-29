@@ -1,4 +1,5 @@
 import { Header } from "./Header";
+import { useRole } from "../../hooks/useRole";
 
 export function CalendarioTopBar({
   bandas,
@@ -8,6 +9,8 @@ export function CalendarioTopBar({
   onBandaChange,
   onTurneChange,
 }) {
+  const { isProducer } = useRole();
+
   return (
     <div className="mb-4">
       <Header
@@ -17,8 +20,8 @@ export function CalendarioTopBar({
         turneSelecionada={turneSelecionada}
         onBandaChange={onBandaChange}
         onTurneChange={onTurneChange}
-        showBandaSelector={true}
-        showTurneSelector={true}
+        showBandaSelector={isProducer()}
+        showTurneSelector={isProducer()}
       />
     </div>
   );
