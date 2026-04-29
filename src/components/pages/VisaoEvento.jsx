@@ -33,7 +33,7 @@ export const VisaoEvento = () => {
     <Layout
       className="bg-[var(--bg)]"
       containerClassName="overflow-hidden"
-      showHeader={true}
+      showHeader={false}
       showBandaSelector={false}
       showTurneSelector={false}
     >

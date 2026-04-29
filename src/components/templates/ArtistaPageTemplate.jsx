@@ -50,7 +50,7 @@ export function ArtistaPageTemplate({
 
   return (
     <Layout
-      showHeader={true}
+      showHeader={false}
       showNotifications={true}
       containerClassName="!bg-transparent !border-0 !shadow-none !p-0 overflow-visible"
       bandas={bandas}
