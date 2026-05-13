@@ -976,8 +976,8 @@ export const CriarEvento = () => {
 
   return (
     <LocalSelecionadoProvider>
-      <Layout 
-        showHeader={true} 
+      <Layout
+        showHeader={false}
         showNotifications={false}
         showBandaSelector={false}
         showTurneSelector={false}
