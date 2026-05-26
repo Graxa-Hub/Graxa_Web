@@ -1,7 +1,16 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+} from "react";
 import { Search, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { bandaService } from "../../services/bandaService";
-import { buscarTurnesPorBanda, getTurnesPaginadasPorBanda } from "../../services/turneService";
+import {
+  buscarTurnesPorBanda,
+  getTurnesPaginadasPorBanda,
+} from "../../services/turneService";
 
 const ITEMS_PER_PAGE = 5;
 const DEBOUNCE_DELAY = 200;
@@ -59,10 +68,10 @@ export const BandaTurneSelectorForm = ({
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!containerRef.current) return;
-      
+
       // Verificar se o clique foi dentro do container (mais robusto)
       const isClickInside = containerRef.current.contains(event.target);
-      
+
       if (!isClickInside) {
         setBandaSearchOpen(false);
         setTurneSearchOpen(false);
@@ -111,7 +120,7 @@ export const BandaTurneSelectorForm = ({
           const resultado = await getTurnesPaginadasPorBanda(
             selectedBandaId,
             0,
-            ITEMS_PER_PAGE
+            ITEMS_PER_PAGE,
           );
           setTurnesPageBanda(resultado);
           setTurnePageBanda(0);
@@ -142,16 +151,13 @@ export const BandaTurneSelectorForm = ({
   };
 
   const nextPageTurnes = useCallback(async () => {
-    if (
-      selectedBandaId &&
-      turnePageBanda < turnesPageBanda.totalPages - 1
-    ) {
+    if (selectedBandaId && turnePageBanda < turnesPageBanda.totalPages - 1) {
       setLoadingTurnes(true);
       try {
         const resultado = await getTurnesPaginadasPorBanda(
           selectedBandaId,
           turnePageBanda + 1,
-          ITEMS_PER_PAGE
+          ITEMS_PER_PAGE,
         );
         setTurnesPageBanda(resultado);
         setTurnePageBanda(turnePageBanda + 1);
@@ -170,7 +176,7 @@ export const BandaTurneSelectorForm = ({
         const resultado = await getTurnesPaginadasPorBanda(
           selectedBandaId,
           turnePageBanda - 1,
-          ITEMS_PER_PAGE
+          ITEMS_PER_PAGE,
         );
         setTurnesPageBanda(resultado);
         setTurnePageBanda(turnePageBanda - 1);
@@ -225,8 +231,9 @@ export const BandaTurneSelectorForm = ({
             value={bandaSearchText}
             onChange={(e) => setBandaSearchText(e.target.value)}
             onFocus={() => setBandaSearchOpen(true)}
-            className={`w-full pl-10 pr-3 py-2 border rounded-[var(--radius-md)] ${bandaError ? "border-[var(--accent)]" : "border-[var(--border)]"
-              }`}
+            className={`w-full pl-10 pr-3 py-2 border rounded-[var(--radius-md)] ${
+              bandaError ? "border-[var(--accent)]" : "border-[var(--border)]"
+            }`}
           />
           {bandaSearchText && (
             <button
@@ -245,9 +252,7 @@ export const BandaTurneSelectorForm = ({
 
         {/* Banda Dropdown */}
         {bandaSearchOpen && (
-          <div
-            className="absolute z-50 w-full mt-1 surface-card max-h-60 overflow-y-auto rounded-[var(--radius-md)] border border-[var(--border)]"
-          >
+          <div className="absolute z-50 w-full mt-1 surface-card max-h-60 overflow-y-auto rounded-[var(--radius-md)] border border-[var(--border)]">
             {loadingBandas ? (
               <div className="px-4 py-3 text-sm text-[var(--text-muted)] text-center flex items-center justify-center gap-2">
                 <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
@@ -293,7 +298,7 @@ export const BandaTurneSelectorForm = ({
                       onClick={(e) => {
                         e.stopPropagation();
                         setBandaPage((p) =>
-                          Math.min(bandaPageCount - 1, p + 1)
+                          Math.min(bandaPageCount - 1, p + 1),
                         );
                       }}
                       disabled={bandaPage === bandaPageCount - 1}
@@ -345,8 +350,9 @@ export const BandaTurneSelectorForm = ({
             <button
               type="button"
               onClick={() => setTurneSearchOpen(!turneSearchOpen)}
-              className={`w-full px-3 py-2 border rounded-[var(--radius-md)] text-left flex items-center justify-between ${turneError ? "border-[var(--accent)]" : "border-[var(--border)]"
-                }`}
+              className={`w-full px-3 py-2 border rounded-[var(--radius-md)] text-left flex items-center justify-between ${
+                turneError ? "border-[var(--accent)]" : "border-[var(--border)]"
+              }`}
             >
               <span className="text-sm text-[var(--text-muted)]">
                 {selectedTurne
@@ -355,8 +361,9 @@ export const BandaTurneSelectorForm = ({
               </span>
               <ChevronLeft
                 size={16}
-                className={`transition-transform ${turneSearchOpen ? "rotate-90" : "-rotate-90"
-                  }`}
+                className={`transition-transform ${
+                  turneSearchOpen ? "rotate-90" : "-rotate-90"
+                }`}
               />
             </button>
 
@@ -372,7 +379,8 @@ export const BandaTurneSelectorForm = ({
                     <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin"></div>
                     Buscando...
                   </div>
-                ) : turnesPageBanda.content && turnesPageBanda.content.length > 0 ? (
+                ) : turnesPageBanda.content &&
+                  turnesPageBanda.content.length > 0 ? (
                   <>
                     <button
                       type="button"
@@ -383,7 +391,9 @@ export const BandaTurneSelectorForm = ({
                       }}
                       className="w-full px-4 py-2.5 text-left hover:bg-[var(--surface-hover)] border-b border-[var(--border)] transition-colors"
                     >
-                      <p className="text-sm text-[var(--text-muted)]">Sem turnê</p>
+                      <p className="text-sm text-[var(--text-muted)]">
+                        Sem turnê
+                      </p>
                     </button>
 
                     {turnesPageBanda.content.map((turne) => (
@@ -394,10 +404,11 @@ export const BandaTurneSelectorForm = ({
                           e.stopPropagation();
                           handleTurneSelect(turne);
                         }}
-                        className={`w-full px-4 py-2.5 text-left hover:bg-[var(--surface-hover)] border-b border-[var(--border)] last:border-0 transition-colors ${String(selectedTurneId) === String(turne.id)
-                          ? "bg-[var(--surface-hover)]"
-                          : ""
-                          }`}
+                        className={`w-full px-4 py-2.5 text-left hover:bg-[var(--surface-hover)] border-b border-[var(--border)] last:border-0 transition-colors ${
+                          String(selectedTurneId) === String(turne.id)
+                            ? "bg-[var(--surface-hover)]"
+                            : ""
+                        }`}
                       >
                         <p className="text-sm font-medium text-[var(--text-primary)]">
                           {turne.name || turne.nomeTurne}
@@ -429,7 +440,9 @@ export const BandaTurneSelectorForm = ({
                             e.stopPropagation();
                             nextPageTurnes();
                           }}
-                          disabled={turnePageBanda >= turnesPageBanda.totalPages - 1}
+                          disabled={
+                            turnePageBanda >= turnesPageBanda.totalPages - 1
+                          }
                           className="p-1 hover:bg-[var(--surface)] rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                           title="Próxima página"
                         >

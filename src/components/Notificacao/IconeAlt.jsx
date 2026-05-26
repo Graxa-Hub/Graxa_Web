@@ -10,7 +10,7 @@ export const IconeNotificao = ({
     <div className="relative flex items-center">
       <button
         onClick={handleOpen}
-        className={`relative p-2 rounded-[var(--radius-md)] transition-all duration-200 flex items-center justify-center ${
+        className={`relative p-2 rounded-[var(--radius-md)] flex items-center justify-center ${
           unreadCount > 0
             ? "text-[var(--info)] bg-[var(--surface)] hover:bg-[var(--surface-hover)]"
             : "text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--surface-hover)]"
@@ -23,7 +23,7 @@ export const IconeNotificao = ({
 
         {/* ✅ Badge de contador */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] bg-[var(--surface)]0 text-white text-xs font-medium rounded-full animate-pulse">
+          <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[18px] h-[18px] bg-[var(--btn-danger-bg)] text-[var(--btn-danger-text)] border border-[var(--btn-danger-border)] text-xs font-medium rounded-full">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         )}

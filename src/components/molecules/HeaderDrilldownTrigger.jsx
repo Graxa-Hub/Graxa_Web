@@ -9,7 +9,7 @@ export const HeaderDrilldownTrigger = ({
   // Determinar qual imagem exibir e qual emoji usar
   const temImagemTurne = turneSelecionada && turneSelecionada.imagemUrl;
   const temImagemBanda = bandaSelecionada && bandaSelecionada.imagemUrl;
-  
+
   return (
     <>
       <div className="flex gap-3 items-center">
@@ -38,7 +38,11 @@ export const HeaderDrilldownTrigger = ({
             {bandaSelecionada?.nome || "Selecione"}
           </h2>
           <p className="text-[var(--text-muted)] text-xs uppercase tracking-wide">
-            TURNE: {turneSelecionada?.name || turneSelecionada?.nomeTurne || turneSelecionada?.nome || "Todas"}
+            TURNE:{" "}
+            {turneSelecionada?.name ||
+              turneSelecionada?.nomeTurne ||
+              turneSelecionada?.nome ||
+              "Todas"}
           </p>
         </div>
       </div>
@@ -49,7 +53,11 @@ export const HeaderDrilldownTrigger = ({
         className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
         aria-label={isOpen ? "Fechar selecao" : "Abrir selecao"}
       >
-        {isOpen ? <ChevronDown className="cursor-pointer" /> : <ChevronUp className="cursor-pointer" />}
+        {isOpen ? (
+          <ChevronDown className="cursor-pointer" />
+        ) : (
+          <ChevronUp className="cursor-pointer" />
+        )}
       </button>
     </>
   );

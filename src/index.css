@@ -29,6 +29,16 @@
   --radius-lg: 12px;
   --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.35);
   --shadow-card: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --btn-success-bg: var(--surface);
+  --btn-success-border: #5c9e6e;
+  --btn-success-text: #7dcea0;
+  --btn-success-hover-bg: #2a3a30;
+  --btn-success-hover-text: #a3e4bc;
+  --btn-danger-bg: var(--surface-hover);
+  --btn-danger-border: #b05050;
+  --btn-danger-text: #e88a8a;
+  --btn-danger-hover-bg: #3a2a2a;
+  --btn-danger-hover-text: #f5a8a8;
 }
 
 [data-theme="light"] {
@@ -46,6 +56,16 @@
   --overlay: rgba(0, 0, 0, 0.35);
   --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.12);
   --shadow-card: 0 16px 48px rgba(0, 0, 0, 0.2);
+  --btn-success-bg: #22c55e;
+  --btn-success-border: #22c55e;
+  --btn-success-text: #ffffff;
+  --btn-success-hover-bg: #16a34a;
+  --btn-success-hover-text: #ffffff;
+  --btn-danger-bg: #fef2f2;
+  --btn-danger-border: #fecaca;
+  --btn-danger-text: #dc2626;
+  --btn-danger-hover-bg: #fee2e2;
+  --btn-danger-hover-text: #b91c1c;
 }
 
 body {
@@ -89,6 +109,31 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
+  transition: none;
+}
+
+.btn-success {
+  background: var(--btn-success-bg);
+  border: 1px solid var(--btn-success-border);
+  color: var(--btn-success-text);
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-success:hover {
+  background: var(--btn-success-hover-bg);
+  color: var(--btn-success-hover-text);
+}
+
+.btn-danger {
+  background: var(--btn-danger-bg);
+  border: 1px solid var(--btn-danger-border);
+  color: var(--btn-danger-text);
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn-danger:hover {
+  background: var(--btn-danger-hover-bg);
+  color: var(--btn-danger-hover-text);
 }
 
 .form-input {
@@ -100,9 +145,6 @@ body {
   font-size: 14px;
   padding: 9px 10px;
   outline: none;
-  transition:
-    border-color 0.12s,
-    background 0.12s;
 }
 .form-input:focus {
   border-color: var(--border-strong);
@@ -119,9 +161,6 @@ body {
   font-size: 13px;
   font-weight: 600;
   padding: 9px 14px;
-  transition:
-    background 0.12s,
-    border-color 0.12s;
 }
 .btn-primary:hover {
   background: #383838;
@@ -178,6 +217,7 @@ body {
   color: var(--text-primary);
   border-color: var(--border-hover);
   font-weight: 600;
+  transition: none;
 }
 
 .panel-title {
@@ -207,12 +247,21 @@ body {
   --fc-border-color: var(--border);
   --fc-button-bg-color: var(--surface-hover);
   --fc-button-border-color: var(--border-hover);
-  --fc-button-hover-bg-color: #383838;
+  --fc-button-hover-bg-color: var(--surface-hover);
   --fc-button-hover-border-color: var(--border-strong);
-  --fc-button-active-bg-color: #3d3d3d;
+  --fc-button-active-bg-color: var(--surface-hover);
   --fc-button-active-border-color: var(--border-strong);
   --fc-today-bg-color: rgba(200, 80, 60, 0.1);
   color: var(--text-secondary);
+}
+
+.fc .fc-button-primary {
+  color: var(--text-primary) !important;
+}
+
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):hover {
+  color: var(--text-primary) !important;
 }
 .fc .fc-toolbar-title {
   font-size: 1.5rem !important;
@@ -258,7 +307,7 @@ body {
   border-collapse: separate !important;
   border-spacing: 0 !important;
 }
-.fc-theme-standard td, 
+.fc-theme-standard td,
 .fc-theme-standard th {
   border-right: 1px solid var(--border) !important;
   border-bottom: 1px solid var(--border) !important;
@@ -285,6 +334,7 @@ body {
   border-radius: var(--radius-md) !important;
   box-shadow: var(--shadow-card) !important;
   z-index: 150 !important;
+  transition: none !important;
 }
 .fc-popover-header {
   background-color: var(--surface-hover) !important;
@@ -407,7 +457,6 @@ body {
   border-color: var(--border-hover);
 }
 
-/* Mini Calendar Styling */
 .mini-calendar {
   width: 100%;
   height: 100%;
@@ -469,6 +518,7 @@ body {
   border-radius: var(--radius-md) !important;
   border: none !important;
   z-index: 100 !important;
+  transition: none !important;
 }
 
 .mini-calendar .fc-popover-body {
@@ -524,4 +574,28 @@ body {
 /* Fix: força repaint do placeholder ao trocar tema */
 .search-bar__input--placeholder-fix::placeholder {
   transition: color 0.12s;
+}
+
+/* Eventos de viagem com background azul preenchido */
+.fc-event.viagem-event {
+  background-color: #3b82f6 !important;
+}
+
+.fc-event.viagem-event .fc-event-bg {
+  background-color: #3b82f6 !important;
+  border: none !important;
+}
+
+.fc-event.viagem-event .fc-event-main {
+  background-color: #3b82f6 !important;
+}
+
+.fc-event.viagem-event .fc-event-title {
+  color: white !important;
+  font-weight: bold !important;
+}
+
+.fc-event.viagem-event .fc-event-time {
+  color: white !important;
+  font-weight: bold !important;
 }

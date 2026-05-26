@@ -256,7 +256,7 @@ const VisualizarAlocacoes = ({ showId }) => {
         <button
           onClick={carregarAlocacoes}
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors disabled:bg-[var(--surface-hover)] disabled:text-[var(--text-muted)]"
+          className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)]  disabled:bg-[var(--surface-hover)] disabled:text-[var(--text-muted)]"
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           Atualizar
@@ -272,7 +272,7 @@ const VisualizarAlocacoes = ({ showId }) => {
           return (
             <div
               key={status}
-              className={`${config.bgColor} ${config.borderColor} border-2 rounded-[var(--radius-lg)] p-5 cursor-pointer transition-all hover:shadow-[var(--shadow-soft)] ${
+              className={`${config.bgColor} ${config.borderColor} border-2 rounded-[var(--radius-lg)] p-5 cursor-pointer hover:shadow-[var(--shadow-soft)] ${
                 filtroStatus === status
                   ? "ring-2 ring-offset-2 ring-[var(--info)]"
                   : ""

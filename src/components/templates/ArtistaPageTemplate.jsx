@@ -66,6 +66,7 @@ export function ArtistaPageTemplate({
         onClear={handleClearSearch}
         debounce={400}
         loading={loading && !!searchQuery}
+        className="mb-6"
       />
 
       <ArtistaContentSection

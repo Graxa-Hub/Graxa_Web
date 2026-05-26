@@ -11,11 +11,11 @@ export const EventActions = ({
   const { isProducer } = useRole();
 
   return (
-    <div className="flex flex-row items-center gap-2 sm:ml-auto">
+    <div className="flex flex-row items-center gap-2 ml-auto mr-32">
       <button
         onClick={onGerarPdf}
         disabled={tipoEvento !== "show"}
-        className="flex h-14 w-14 items-center justify-center rounded-[var(--radius-md)] bg-[var(--surface-elevated)] shadow-[var(--shadow-soft)] transition hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:bg-[var(--surface-hover)] disabled:text-[var(--text-muted)]"
+        className="flex h-14 w-14 items-center justify-center rounded-[var(--radius-md)] bg-[var(--surface-elevated)] shadow-[var(--shadow-soft)] hover:bg-[var(--surface-hover)] disabled:cursor-not-allowed disabled:bg-[var(--surface-hover)] disabled:text-[var(--text-muted)]"
         title={
           tipoEvento !== "show"
             ? "PDF disponivel apenas para Shows"
@@ -27,7 +27,7 @@ export const EventActions = ({
 
       <button
         onClick={onEditarEvento}
-        className="flex h-14 w-14 items-center justify-center rounded-[var(--radius-md)] bg-[var(--surface-elevated)] shadow-[var(--shadow-soft)] transition hover:bg-[var(--surface-hover)]"
+        className="flex h-14 w-14 items-center justify-center rounded-[var(--radius-md)] bg-[var(--surface-elevated)] shadow-[var(--shadow-soft)] hover:bg-[var(--surface-hover)]"
         title="Editar Evento"
       >
         <Edit2 size={20} />

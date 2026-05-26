@@ -1,7 +1,7 @@
 import { AgendaCard } from "../molecules/AgendaCard";
 
 export const AgendaList = ({ itens = [], selectedId, onSelect }) => (
-  <div className="col-span-2 flex h-full flex-col overflow-hidden p-4 surface-card">
+  <div className="col-span-2 flex h-full flex-col overflow-hidden surface-card p-6">
     <h3 className="mb-3 border-b border-[var(--border)] pb-3 text-sm font-bold text-[var(--text-primary)]">
       Agenda do Dia
     </h3>

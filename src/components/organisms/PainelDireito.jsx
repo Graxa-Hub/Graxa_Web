@@ -56,11 +56,11 @@ export const PainelDireito = memo(
 
           <div className="flex-1 overflow-visible">
             {activeView === "progress" ? (
-              <div className="animate-in slide-in-from-bottom-2 fade-in overflow-visible duration-300">
+              <div className="animate-in slide-in-from-bottom-2 fade-in overflow-visible">
                 <PorcentagemCard value={progresso} />
               </div>
             ) : (
-              <div className="animate-in slide-in-from-bottom-2 fade-in overflow-visible duration-300">
+              <div className="animate-in slide-in-from-bottom-2 fade-in overflow-visible">
                 <ClimaCard cidade={cidade} lat={lat} lon={lon} />
               </div>
             )}

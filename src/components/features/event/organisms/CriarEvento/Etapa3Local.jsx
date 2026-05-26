@@ -337,33 +337,6 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
                     </p>
                   </div>
                 )}
-
-                {/* Restaurantes Próximos */}
-                {localSelecionado.restaurantesProximos?.length > 0 && (
-                  <div className="bg-[var(--surface-elevated)] p-4 rounded-[var(--radius-md)] border border-[var(--border)]">
-                    <div className="flex items-center gap-2 mb-3">
-                      <UtensilsCrossed className="w-5 h-5 text-[var(--warning)]" />
-                      <p className="font-semibold text-[var(--text-primary)]">
-                        Restaurantes Próximos
-                      </p>
-                    </div>
-                    <ul className="space-y-2">
-                      {localSelecionado.restaurantesProximos.map((r, i) => (
-                        <li
-                          key={i}
-                          className="flex items-center justify-between text-sm bg-[var(--surface)] p-2 rounded"
-                        >
-                          <span className="text-[var(--text-secondary)] font-medium">
-                            {r.nome}
-                          </span>
-                          <span className="text-xs text-[var(--warning)] font-semibold">
-                            {r.distanciaKm} km
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
             )}
           </div>
@@ -388,47 +361,51 @@ const Etapa3Local = ({ localInicial, setLocalShow }) => {
           <div className="p-6">
             {localSelecionado.restaurantesProximos?.length > 0 ? (
               <ul className="space-y-3">
-                {localSelecionado.restaurantesProximos.slice(0, 5).map((r, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center justify-between bg-[var(--surface)] p-3 rounded-[var(--radius-md)] border border-[var(--border)] hover:border-[var(--warning)] transition-colors"
-                  >
-                    <div className="flex items-center gap-3 min-w-0 flex-1">
-                      <span className="text-lg flex-shrink-0">🍽️</span>
-                      <div className="min-w-0">
-                        <p className="text-sm text-[var(--text-primary)] font-medium truncate flex items-center gap-2">
-                          {r.nome}
-                          {r.culinaria && (
-                            <span className="text-[10px] text-[var(--text-muted)] bg-[var(--surface-hover)] px-2 py-0.5 rounded-full font-normal">
-                              {r.culinaria}
-                            </span>
-                          )}
-                        </p>
-                        {r.endereco ? (
-                          <p className="text-xs text-[var(--text-muted)] truncate">
-                            📍 {r.endereco}
+                {localSelecionado.restaurantesProximos
+                  .slice(0, 5)
+                  .map((r, i) => (
+                    <li
+                      key={i}
+                      className="flex items-center justify-between bg-[var(--surface)] p-3 rounded-[var(--radius-md)] border border-[var(--border)] hover:border-[var(--warning)]"
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <span className="text-lg flex-shrink-0">🍽️</span>
+                        <div className="min-w-0">
+                          <p className="text-sm text-[var(--text-primary)] font-medium truncate flex items-center gap-2">
+                            {r.nome}
+                            {r.culinaria && (
+                              <span className="text-[10px] text-[var(--text-muted)] bg-[var(--surface-hover)] px-2 py-0.5 rounded-full font-normal">
+                                {r.culinaria}
+                              </span>
+                            )}
                           </p>
-                        ) : (
-                          <a
-                            href={r.googleMapsUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-[var(--info)] hover:underline"
-                          >
-                            📍 Ver localização no mapa
-                          </a>
-                        )}
+                          {r.endereco ? (
+                            <p className="text-xs text-[var(--text-muted)] truncate">
+                              📍 {r.endereco}
+                            </p>
+                          ) : (
+                            <a
+                              href={r.googleMapsUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-[var(--info)] hover:underline"
+                            >
+                              📍 Ver localização no mapa
+                            </a>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    <span className="text-xs font-semibold text-[var(--warning)] bg-[var(--surface-hover)] px-3 py-1 rounded-full whitespace-nowrap ml-2 flex-shrink-0">
-                      {r.distanciaKm} km
-                    </span>
-                  </li>
-                ))}
+                      <span className="text-xs font-semibold text-[var(--warning)] bg-[var(--surface-hover)] px-3 py-1 rounded-full whitespace-nowrap ml-2 flex-shrink-0">
+                        {r.distanciaKm} km
+                      </span>
+                    </li>
+                  ))}
               </ul>
             ) : (
               <p className="text-sm text-[var(--text-muted)] italic">
-                {loading ? "Buscando restaurantes próximos..." : "Nenhum restaurante encontrado para este local."}
+                {loading
+                  ? "Buscando restaurantes próximos..."
+                  : "Nenhum restaurante encontrado para este local."}
               </p>
             )}
           </div>

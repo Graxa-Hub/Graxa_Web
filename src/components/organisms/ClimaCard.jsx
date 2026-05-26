@@ -124,7 +124,7 @@ export const ClimaCard = ({ cidade = "Sao Paulo", lat, lon }) => {
           return (
             <div
               key={index}
-              className="flex h-48 min-w-0 flex-1 flex-col items-center overflow-visible rounded-[var(--radius-lg)] bg-[var(--surface-elevated)] p-3 shadow-[var(--shadow-soft)] transition-all"
+              className="flex h-48 min-w-0 flex-1 flex-col items-center overflow-visible rounded-[var(--radius-lg)] bg-[var(--surface-elevated)] p-3 shadow-[var(--shadow-soft)]"
             >
               <h3 className="mb-1 whitespace-nowrap text-sm font-semibold text-[var(--text-secondary)]">
                 {card.label}

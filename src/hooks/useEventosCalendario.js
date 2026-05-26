@@ -123,6 +123,7 @@ export function useEventosCalendario() {
         end: viagem.dataFim,
         backgroundColor: "#3b82f6",
         borderColor: "#3b82f6",
+        classNames: ["viagem-event"],
         type: "viagem",
         extendedProps: {
           tipo: "viagem",
@@ -164,6 +165,7 @@ export function useEventosCalendario() {
       end: entidade.dataFim || entidade.dataHoraFim,
       backgroundColor: tipo === "show" ? "#ef4444" : "#3b82f6",
       borderColor: tipo === "show" ? "#ef4444" : "#3b82f6",
+      classNames: [tipo === "show" ? "show-event" : "viagem-event"],
       type: tipo,
       extendedProps: {
         tipo,

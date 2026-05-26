@@ -32,6 +32,7 @@ export function EventoModal({
   const [activeTab, setActiveTab] = useState("show");
   const [currentStep, setCurrentStep] = useState(1);
   const [fieldErrors, setFieldErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const { usuario } = useAuth();
   const responsavelId = usuario?.id || 1;
@@ -445,6 +446,7 @@ export function EventoModal({
               </div>
             ),
           });
+          setIsLoading(false);
           return false;
         }
       }
@@ -467,6 +469,7 @@ export function EventoModal({
               </div>
             ),
           });
+          setIsLoading(false);
           return false;
         }
       }
@@ -512,6 +515,7 @@ export function EventoModal({
   };
 
   const handleFinish = async () => {
+    setIsLoading(true);
     let errors = [];
     let fieldMap = {};
 
@@ -541,6 +545,7 @@ export function EventoModal({
               </div>
             ),
           });
+          setIsLoading(false);
           return false;
         }
       }
@@ -572,6 +577,7 @@ export function EventoModal({
               </div>
             ),
           });
+          setIsLoading(false);
           return false;
         }
       }
@@ -628,6 +634,7 @@ export function EventoModal({
                 </div>
               ),
             });
+            setIsLoading(false);
             return false;
           }
         }
@@ -655,10 +662,14 @@ export function EventoModal({
     const hasStep1Error = errors.some((key) => step1Fields.includes(key));
     if (hasStep1Error && currentStep === TOTAL_STEPS) {
       setCurrentStep(1);
+      setIsLoading(false);
       return;
     }
 
-    if (errors.length > 0) return;
+    if (errors.length > 0) {
+      setIsLoading(false);
+      return;
+    }
 
     if (activeTab === "show") {
       try {
@@ -697,6 +708,7 @@ export function EventoModal({
             error.response?.data?.message ||
             "Erro ao cadastrar show. Tente novamente.",
         });
+        setIsLoading(false);
         return;
       }
     } else if (activeTab === "viagem") {
@@ -725,9 +737,11 @@ export function EventoModal({
             error.response?.data?.message ||
             "Erro ao cadastrar viagem. Tente novamente.",
         });
+        setIsLoading(false);
         return;
       }
     }
+    setIsLoading(false);
   };
 
   const handleNext = () => {
@@ -913,8 +927,8 @@ export function EventoModal({
                 </button>
               )}
 
-              <button onClick={handleNext} className="btn-primary px-6 h-9">
-                {currentStep === TOTAL_STEPS ? "Finalizar" : "Próxima Etapa"}
+              <button onClick={handleNext} disabled={isLoading} className="btn-primary px-6 h-9 disabled:opacity-60 disabled:cursor-not-allowed">
+                {isLoading ? "Processando..." : currentStep === TOTAL_STEPS ? "Finalizar" : "Próxima Etapa"}
               </button>
             </div>
           </div>

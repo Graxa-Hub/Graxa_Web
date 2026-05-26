@@ -30,8 +30,8 @@ export const ConfirmModal = ({
 
   const confirmButtonClass =
     confirmVariant === "danger"
-      ? "flex-1 h-10 rounded-[var(--radius-sm)] border border-[#fecaca] bg-[#fef2f2] text-[#b91c1c] hover:bg-[#fee2e2] hover:text-[#991b1b]"
-      : "flex-1 h-10 rounded-[var(--radius-sm)] border border-[var(--border-hover)] bg-[var(--surface-hover)] text-[var(--text-primary)] hover:bg-[#383838]";
+      ? "flex-1 h-10 rounded-[var(--radius-sm)] btn-danger"
+      : "flex-1 h-10 rounded-[var(--radius-sm)] btn-danger";
 
   return (
     <div className="confirm-overlay fixed inset-0 z-50 flex items-center justify-center p-4">

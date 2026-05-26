@@ -11,7 +11,7 @@ export const AnotacoesCard = ({
   const conteudoExibido = content ?? conteudo ?? descricao ?? "Sem anotacoes.";
 
   return (
-    <div className="flex h-full flex-col overflow-hidden p-4 surface-card">
+    <div className="flex h-full flex-col overflow-hidden surface-card p-6">
       <div className="mb-3 flex items-center gap-2 border-b border-[var(--border)] pb-3">
         <FileText className="h-4 w-4 text-[var(--text-secondary)]" />
         <h3 className="truncate text-sm font-semibold text-[var(--text-primary)]">

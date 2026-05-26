@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   Calendar,
   Clock,
@@ -9,17 +9,24 @@ import {
   Star,
   Info,
   CheckCircle,
-  XCircle
-} from 'lucide-react';
-import { useAlocacao } from '../../hooks/useAlocacao';
-import { useToast } from '../../hooks/useToast';
-import { ConfirmModal } from '../molecules/ConfirmModal';
-import { ToastContainer } from '../organisms/ToastContainer';
-import { obterFuncao, obterIcone, obterCategoria } from '../../utils/tipoUsuarioUtils';
+  XCircle,
+} from "lucide-react";
+import { useAlocacao } from "../../hooks/useAlocacao";
+import { useToast } from "../../hooks/useToast";
+import { ConfirmModal } from "../molecules/ConfirmModal";
+import { ToastContainer } from "../organisms/ToastContainer";
+import {
+  obterFuncao,
+  obterIcone,
+  obterCategoria,
+} from "../../utils/tipoUsuarioUtils";
 
 export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
   const { responderAlocacao, loading: loadingResponse } = useAlocacao();
-  const [confirmModal, setConfirmModal] = useState({ isOpen: false, tipo: null });
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    tipo: null,
+  });
   const [alocacaoAtualizada, setAlocacaoAtualizada] = useState(null);
 
   // ✅ Hook de toast
@@ -38,72 +45,72 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
   const local = show?.local;
 
   const formatarData = (data) => {
-    if (!data) return 'Data não informada';
-    return new Date(data).toLocaleString('pt-BR', {
-      weekday: 'long',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    if (!data) return "Data não informada";
+    return new Date(data).toLocaleString("pt-BR", {
+      weekday: "long",
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const formatarDataCurta = (data) => {
-    if (!data) return 'Data não informada';
-    return new Date(data).toLocaleString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    if (!data) return "Data não informada";
+    return new Date(data).toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const obterCorStatus = (status) => {
     switch (status?.toLowerCase()) {
-      case 'aceito':
-      case 'aceita':
-      case 'confirmada':
-        return 'text-[var(--success)] bg-[var(--surface-hover)] border-green-200';
-      case 'recusado':
-      case 'recusada':
-        return 'text-[var(--accent)] bg-[var(--surface-hover)] border-[var(--border)]';
-      case 'cancelado':
-      case 'cancelada':
-        return 'text-[var(--text-secondary)] bg-[var(--surface-hover)] border-[var(--border)]';
-      case 'pendente':
+      case "aceito":
+      case "aceita":
+      case "confirmada":
+        return "text-[var(--success)] bg-[var(--surface-hover)] border-green-200";
+      case "recusado":
+      case "recusada":
+        return "text-[var(--accent)] bg-[var(--surface-hover)] border-[var(--border)]";
+      case "cancelado":
+      case "cancelada":
+        return "text-[var(--text-secondary)] bg-[var(--surface-hover)] border-[var(--border)]";
+      case "pendente":
       default:
-        return 'text-[var(--warning)] bg-[var(--surface-hover)] border-[var(--border)]';
+        return "text-[var(--warning)] bg-[var(--surface-hover)] border-[var(--border)]";
     }
   };
 
   const formatarEndereco = (endereco) => {
-    if (!endereco) return '';
+    if (!endereco) return "";
     const { logradouro, numero, bairro, cidade, estado, cep } = endereco;
     return `${logradouro}, ${numero} - ${bairro}, ${cidade}/${estado} - CEP: ${cep}`;
   };
 
   const handleAccept = () => {
-    setConfirmModal({ isOpen: true, tipo: 'aceitar' });
+    setConfirmModal({ isOpen: true, tipo: "aceitar" });
   };
 
   const handleReject = () => {
-    setConfirmModal({ isOpen: true, tipo: 'recusar' });
+    setConfirmModal({ isOpen: true, tipo: "recusar" });
   };
 
   const handleConfirm = async () => {
-    const aceitar = confirmModal.tipo === 'aceitar';
+    const aceitar = confirmModal.tipo === "aceitar";
 
     try {
-      const status = aceitar ? 'ACEITO' : 'RECUSADO';
+      const status = aceitar ? "ACEITO" : "RECUSADO";
       await responderAlocacao(alocacao.id, status);
 
       // ✅ Atualizar estado local com novo status
       const novaAlocacao = {
         ...alocacao,
         status: status.toLowerCase(),
-        dataHoraResposta: new Date().toISOString()
+        dataHoraResposta: new Date().toISOString(),
       };
 
       setAlocacaoAtualizada(novaAlocacao);
@@ -111,36 +118,33 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
 
       showSuccess(
         aceitar
-          ? `Convite aceito com sucesso! Você confirmou participação no show "${show?.nomeEvento || 'show'}".`
+          ? `Convite aceito com sucesso! Você confirmou participação no show "${show?.nomeEvento || "show"}".`
           : `Convite recusado. Obrigado por responder.`,
-        aceitar ? 'Convite Aceito!' : 'Convite Recusado'
+        aceitar ? "Convite Aceito!" : "Convite Recusado",
       );
 
       // ✅ Notificar o componente pai sobre a resposta (mas não fechar)
       if (onResponse) {
         onResponse(aceitar, novaAlocacao);
       }
-
     } catch (error) {
-      console.error('❌ Erro ao responder alocação:', error);
+      console.error("❌ Erro ao responder alocação:", error);
 
-      let errorMsg = 'Erro desconhecido';
+      let errorMsg = "Erro desconhecido";
 
       if (error.response?.data?.message) {
         errorMsg = error.response.data.message;
-        if (errorMsg.includes('Invalid boolean value')) {
-          errorMsg = 'Erro de validação no servidor. Tente novamente.';
-        } else if (errorMsg.includes('Alocação não encontrada')) {
-          errorMsg = 'Esta alocação não foi encontrada. A página será atualizada.';
+        if (errorMsg.includes("Invalid boolean value")) {
+          errorMsg = "Erro de validação no servidor. Tente novamente.";
+        } else if (errorMsg.includes("Alocação não encontrada")) {
+          errorMsg =
+            "Esta alocação não foi encontrada. A página será atualizada.";
         }
       } else if (error.message) {
         errorMsg = error.message;
       }
 
-      showError(
-        `Erro ao responder alocação: ${errorMsg}`,
-        'Falha na Resposta'
-      );
+      showError(`Erro ao responder alocação: ${errorMsg}`, "Falha na Resposta");
     }
   };
 
@@ -163,9 +167,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                   <Music className="w-6 h-6" />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold">
-                    Convite para Show
-                  </h2>
+                  <h2 className="text-xl font-bold">Convite para Show</h2>
                   <p className="text-blue-100 text-sm flex items-center gap-2">
                     <span>{obterIcone(colaborador?.tipoUsuario)}</span>
                     {obterFuncao(colaborador?.tipoUsuario)}
@@ -224,7 +226,9 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                         <Calendar className="w-4 h-4 text-[var(--info)]" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-[var(--text-primary)]">Data do Show</p>
+                        <p className="font-medium text-[var(--text-primary)]">
+                          Data do Show
+                        </p>
                         <p className="text-sm text-[var(--text-secondary)] mt-1">
                           {formatarData(show.dataInicio)}
                         </p>
@@ -242,9 +246,11 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                         <MapPin className="w-4 h-4 text-[var(--success)]" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-[var(--text-primary)]">Local</p>
+                        <p className="font-medium text-[var(--text-primary)]">
+                          Local
+                        </p>
                         <p className="text-sm text-[var(--text-secondary)] mt-1">
-                          {local?.nome || 'Local não informado'}
+                          {local?.nome || "Local não informado"}
                         </p>
                         {local?.endereco && (
                           <p className="text-xs text-[var(--text-muted)] mt-1">
@@ -253,7 +259,8 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                         )}
                         {local?.capacidade && (
                           <p className="text-xs text-[var(--text-muted)] mt-1">
-                            Capacidade: {local.capacidade.toLocaleString()} pessoas
+                            Capacidade: {local.capacidade.toLocaleString()}{" "}
+                            pessoas
                           </p>
                         )}
                       </div>
@@ -265,7 +272,9 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                         <Users className="w-4 h-4 text-purple-600" />
                       </div>
                       <div className="flex-1">
-                        <p className="font-medium text-[var(--text-primary)]">Sua Função</p>
+                        <p className="font-medium text-[var(--text-primary)]">
+                          Sua Função
+                        </p>
                         <div className="mt-2">
                           <span className="inline-flex items-center px-3 py-1 rounded-[var(--radius-sm)] text-xs font-medium bg-[var(--surface-hover)] text-[var(--text-secondary)] gap-2 border border-[var(--border)]">
                             <span>{obterIcone(colaborador?.tipoUsuario)}</span>
@@ -287,20 +296,27 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                           <Clock className="w-4 h-4 text-[var(--text-secondary)]" />
                         </div>
                         <div className="flex-1">
-                          <p className="font-medium text-[var(--text-primary)]">Status</p>
+                          <p className="font-medium text-[var(--text-primary)]">
+                            Status
+                          </p>
                           <div className="mt-2">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${obterCorStatus(alocacao.status)}`}>
-                              {alocacao.status.charAt(0).toUpperCase() + alocacao.status.slice(1).toLowerCase()}
+                            <span
+                              className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${obterCorStatus(alocacao.status)}`}
+                            >
+                              {alocacao.status.charAt(0).toUpperCase() +
+                                alocacao.status.slice(1).toLowerCase()}
                             </span>
                           </div>
                           {alocacao.dataHoraCriacao && (
                             <p className="text-xs text-[var(--text-muted)] mt-1">
-                              Criado em: {formatarDataCurta(alocacao.dataHoraCriacao)}
+                              Criado em:{" "}
+                              {formatarDataCurta(alocacao.dataHoraCriacao)}
                             </p>
                           )}
                           {alocacao.dataHoraResposta && (
                             <p className="text-xs text-[var(--text-muted)]">
-                              Respondido em: {formatarDataCurta(alocacao.dataHoraResposta)}
+                              Respondido em:{" "}
+                              {formatarDataCurta(alocacao.dataHoraResposta)}
                             </p>
                           )}
                         </div>
@@ -310,7 +326,9 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                     {/* Descrição */}
                     {show.descricao && (
                       <div className="pt-4 border-t border-[var(--border)]">
-                        <h4 className="font-medium text-[var(--text-primary)] mb-3">Sobre o Show</h4>
+                        <h4 className="font-medium text-[var(--text-primary)] mb-3">
+                          Sobre o Show
+                        </h4>
                         <p className="text-sm text-[var(--text-secondary)] leading-relaxed bg-[var(--surface)] p-4 rounded-[var(--radius-md)]">
                           {show.descricao}
                         </p>
@@ -330,7 +348,8 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                         <p className="text-[var(--warning)] text-xs mt-1 flex items-center gap-1">
                           Sua função:
                           <span className="font-medium flex items-center gap-1">
-                            {obterIcone(colaborador.tipoUsuario)} {obterFuncao(colaborador.tipoUsuario)}
+                            {obterIcone(colaborador.tipoUsuario)}{" "}
+                            {obterFuncao(colaborador.tipoUsuario)}
                           </span>
                         </p>
                       )}
@@ -348,7 +367,9 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                   <div className="text-sm text-yellow-800">
                     <p className="font-medium mb-1">⚠️ Importante:</p>
                     <ul className="space-y-1 text-xs">
-                      <li>• Ao aceitar, você se compromete a comparecer no horário</li>
+                      <li>
+                        • Ao aceitar, você se compromete a comparecer no horário
+                      </li>
                       <li>• Chegue 30 minutos antes do início</li>
                       <li>• Em caso de imprevistos, comunique a produção</li>
                     </ul>
@@ -361,7 +382,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                 <div className="flex justify-between items-center text-xs text-[var(--text-muted)]">
                   <span className="flex items-center gap-2">
                     <span className="w-2 h-2 bg-blue-400 rounded-full"></span>
-                    {notificacao.tipo?.replace('_', ' ').toUpperCase()}
+                    {notificacao.tipo?.replace("_", " ").toUpperCase()}
                   </span>
                   <span>
                     Recebido em {formatarDataCurta(notificacao.dataHoraCriacao)}
@@ -372,7 +393,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
           </div>
 
           {/* Footer com botões - APENAS para status PENDENTE */}
-          {alocacao?.status?.toLowerCase() === 'pendente' && (
+          {alocacao?.status?.toLowerCase() === "pendente" && (
             <div className="modal-footer">
               <div className="flex gap-3">
                 <button
@@ -381,7 +402,7 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-red-300 text-[var(--accent)] rounded-[var(--radius-lg)] hover:bg-[var(--surface)] hover:border-red-400 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <XCircle className="w-4 h-4" />
-                  {loadingResponse ? 'Processando...' : 'Recusar'}
+                  {loadingResponse ? "Processando..." : "Recusar"}
                 </button>
                 <button
                   onClick={handleAccept}
@@ -389,34 +410,41 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
                   className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-[var(--radius-lg)] hover:from-green-700 hover:to-green-800 transition-all font-medium shadow-[var(--shadow-soft)] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  {loadingResponse ? 'Processando...' : 'Aceitar'}
+                  {loadingResponse ? "Processando..." : "Aceitar"}
                 </button>
               </div>
             </div>
           )}
 
           {/* Status já respondido */}
-          {alocacao?.status && alocacao.status.toLowerCase() !== 'pendente' && (
+          {alocacao?.status && alocacao.status.toLowerCase() !== "pendente" && (
             <div className="modal-footer">
               <div className="text-center">
                 <p className="text-sm text-[var(--text-secondary)]">
                   {(() => {
                     const status = alocacao.status.toLowerCase();
-                    if (status === 'aceito' || status === 'aceita' || status === 'confirmada') {
-                      return '✅ Você já aceitou este convite';
-                    } else if (status === 'cancelado' || status === 'cancelada') {
-                      return '🚫 Esta alocação foi cancelada pela produção';
+                    if (
+                      status === "aceito" ||
+                      status === "aceita" ||
+                      status === "confirmada"
+                    ) {
+                      return "✅ Você já aceitou este convite";
+                    } else if (
+                      status === "cancelado" ||
+                      status === "cancelada"
+                    ) {
+                      return "🚫 Esta alocação foi cancelada pela produção";
                     } else {
-                      return '❌ Você recusou este convite';
+                      return "❌ Você recusou este convite";
                     }
                   })()}
                 </p>
                 {alocacao.dataHoraResposta && (
                   <p className="text-xs text-[var(--text-muted)] mt-1">
-                    {alocacao.status.toLowerCase() === 'cancelado' || alocacao.status.toLowerCase() === 'cancelada'
+                    {alocacao.status.toLowerCase() === "cancelado" ||
+                    alocacao.status.toLowerCase() === "cancelada"
                       ? `Cancelado em: ${formatarDataCurta(alocacao.dataHoraResposta)}`
-                      : `Respondido em: ${formatarDataCurta(alocacao.dataHoraResposta)}`
-                    }
+                      : `Respondido em: ${formatarDataCurta(alocacao.dataHoraResposta)}`}
                   </p>
                 )}
               </div>
@@ -430,15 +458,21 @@ export function AlocacaoModal({ isOpen, onClose, notificacao, onResponse }) {
         isOpen={confirmModal.isOpen}
         onClose={() => setConfirmModal({ isOpen: false, tipo: null })}
         onConfirm={handleConfirm}
-        title={confirmModal.tipo === 'aceitar' ? '✅ Aceitar Convite' : '❌ Recusar Convite'}
-        message={
-          confirmModal.tipo === 'aceitar'
-            ? `Confirma sua participação no show "${show?.nomeEvento || 'show'}"? Você se compromete a comparecer no horário estabelecido.`
-            : `Tem certeza que deseja recusar o convite para "${show?.nomeEvento || 'show'}"? Esta ação não pode ser desfeita.`
+        title={
+          confirmModal.tipo === "aceitar"
+            ? "✅ Aceitar Convite"
+            : "❌ Recusar Convite"
         }
-        confirmText={confirmModal.tipo === 'aceitar' ? 'Sim, aceitar!' : 'Sim, recusar'}
+        message={
+          confirmModal.tipo === "aceitar"
+            ? `Confirma sua participação no show "${show?.nomeEvento || "show"}"? Você se compromete a comparecer no horário estabelecido.`
+            : `Tem certeza que deseja recusar o convite para "${show?.nomeEvento || "show"}"? Esta ação não pode ser desfeita.`
+        }
+        confirmText={
+          confirmModal.tipo === "aceitar" ? "Sim, aceitar!" : "Sim, recusar"
+        }
         cancelText="Cancelar"
-        type={confirmModal.tipo === 'aceitar' ? 'success' : 'error'}
+        type={confirmModal.tipo === "aceitar" ? "success" : "error"}
         loading={loadingResponse}
       />
 

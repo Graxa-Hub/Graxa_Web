@@ -34,15 +34,12 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
   const totalTecnicos = totalItens - totalDeslocamentos;
 
   const adicionarItem = (tipo = TIPOS_ENUM.TECNICO) => {
-    setAgenda((prev) => {
-      const next = [...prev, makeEmptyItem(tipo)];
-      return sortByInicio(next);
-    });
+    setAgenda((prev) => [...prev, makeEmptyItem(tipo)]);
   };
 
   const updateItem = (tempId, field, value) => {
-    setAgenda((prev) => {
-      const newAgenda = prev.map((item) => {
+    setAgenda((prev) =>
+      prev.map((item) => {
         if (item.tempId === tempId || item.id === tempId) {
           const updated = { ...item, [field]: value };
 
@@ -54,10 +51,8 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
           return updated;
         }
         return item;
-      });
-
-      return sortByInicio(newAgenda);
-    });
+      }),
+    );
   };
 
   const handleRemoverClick = (item) => {
@@ -103,7 +98,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
   const duplicarItem = (item) => {
     const duplicated = {
       ...item,
-      id: null, // Novo item, sem ID do banco
+      id: null,
       tempId: `temp_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
     };
 
@@ -112,8 +107,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
       const index = prev.findIndex((i) => (i.tempId || i.id) === itemKey);
       const newAgenda = [...prev];
       newAgenda.splice(index + 1, 0, duplicated);
-
-      return sortByInicio(newAgenda);
+      return newAgenda;
     });
   };
 
@@ -191,7 +185,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
       <div className="flex flex-wrap gap-3">
         <button
           onClick={() => adicionarItem(TIPOS_ENUM.TECNICO)}
-          className="flex items-center gap-2 px-5 py-2.5 border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors font-medium"
+          className="flex items-center gap-2 px-5 py-2.5 border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] font-medium"
         >
           <Wrench className="w-4 h-4" />
           Adicionar Técnico
@@ -199,7 +193,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
         <button
           onClick={() => adicionarItem(TIPOS_ENUM.DESLOCAMENTO)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] transition-colors font-medium"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[var(--surface-elevated)] text-[var(--text-primary)] rounded-[var(--radius-md)] hover:bg-[var(--surface-hover)] font-medium"
         >
           <MapPin className="w-4 h-4" />
           Adicionar Deslocamento
@@ -209,7 +203,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
       <div className="flex justify-end gap-2">
         <button
           onClick={handleSalvarAgenda}
-          className="px-5 py-2 border border-emerald-500 bg-slate-800 text-emerald-300 rounded-[var(--radius-md)] hover:bg-slate-700 hover:text-emerald-200 font-medium transition-colors"
+          className="px-5 py-2 rounded-[var(--radius-md)] btn-success font-medium"
         >
           Salvar Agenda
         </button>
@@ -400,7 +394,7 @@ const Etapa4Agenda = ({ agenda, setAgenda, onSave, showId }) => {
 
                 <button
                   onClick={() => duplicarItem(item)}
-                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-hover)] text-[var(--text-primary)] rounded-[var(--radius-md)] text-sm hover:bg-[var(--surface)] transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-hover)] text-[var(--text-primary)] rounded-[var(--radius-md)] text-sm hover:bg-[var(--surface)]"
                 >
                   <Copy className="w-4 h-4" />
                   Duplicar

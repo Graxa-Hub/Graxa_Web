@@ -36,21 +36,21 @@ export default function SideCalendar({ mainCalendarApi }) {
   const eventosDots = todosEventos.map((evento) => {
     const dados = evento.extendedProps?.dados || {};
     let title = evento.title || "Evento";
-    
+
     // Tenta extrair o nome da banda e turnê
     let bandaNome = "";
     if (dados.turne?.banda?.nome) {
-        bandaNome = dados.turne.banda.nome;
+      bandaNome = dados.turne.banda.nome;
     } else if (dados.bandas && dados.bandas.length > 0) {
-        bandaNome = dados.bandas[0].nome;
+      bandaNome = dados.bandas[0].nome;
     }
-    
+
     let turneNome = dados.turne?.nomeTurne || dados.turne?.name || "";
-    
+
     if (bandaNome && turneNome) {
-        title = `${bandaNome} - ${turneNome}`;
+      title = `${bandaNome} - ${turneNome}`;
     } else if (turneNome) {
-        title = turneNome;
+      title = turneNome;
     }
 
     return {
@@ -66,7 +66,7 @@ export default function SideCalendar({ mainCalendarApi }) {
   });
 
   return (
-    <div className="mini-calendar rounded-lg h-full">
+    <div className="mini-calendar rounded-sm h-full">
       <FullCalendar
         locale={ptLocale}
         plugins={[dayGridPlugin]}

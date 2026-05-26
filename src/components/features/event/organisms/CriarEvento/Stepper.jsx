@@ -27,9 +27,9 @@ const Stepper = ({
                 className="flex items-center"
                 onClick={() => setEtapaAtual(stepNum)}
               >
-                <div className="group flex cursor-pointer items-center transition-all">
+                <div className="group flex cursor-pointer items-center">
                   <div
-                    className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 ${
+                    className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${
                       isActive
                         ? "bg-[var(--accent)] text-white shadow-[0_0_15px_rgba(200,80,60,0.4)]"
                         : isCompleted
@@ -40,8 +40,10 @@ const Stepper = ({
                     {isCompleted ? "✓" : stepNum}
                   </div>
                   <span
-                    className={`ml-3 whitespace-nowrap text-sm font-medium transition-colors ${
-                      isActive ? "text-[var(--text-primary)] font-semibold" : "text-[var(--text-muted)]"
+                    className={`ml-3 whitespace-nowrap text-sm font-medium ${
+                      isActive
+                        ? "text-[var(--text-primary)] font-semibold"
+                        : "text-[var(--text-muted)]"
                     }`}
                   >
                     {etapa.label}
@@ -56,15 +58,18 @@ const Stepper = ({
         </div>
       </div>
 
-      {/* Indicadores de Etapa - TABLET/MOBILE (2-Step Sliding) */}
       <div className="flex lg:hidden items-center justify-between bg-[var(--surface-hover)]/30 p-3 rounded-xl border border-[var(--border)]">
         <div className="flex items-center gap-3">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent)] text-white text-xs font-bold shadow-lg">
             {etapaAtual}
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-bold">Atual</span>
-            <span className="text-sm font-bold text-[var(--text-primary)] leading-tight">{etapas[indexAtual].label}</span>
+            <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-bold">
+              Atual
+            </span>
+            <span className="text-sm font-bold text-[var(--text-primary)] leading-tight">
+              {etapas[indexAtual].label}
+            </span>
           </div>
         </div>
 
@@ -76,8 +81,12 @@ const Stepper = ({
                 {etapaAtual + 1}
               </div>
               <div className="flex flex-col">
-                <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-bold">Próxima</span>
-                <span className="text-sm font-medium text-[var(--text-secondary)] leading-tight">{proximaEtapa.label}</span>
+                <span className="text-[10px] uppercase tracking-wider text-[var(--text-muted)] font-bold">
+                  Próxima
+                </span>
+                <span className="text-sm font-medium text-[var(--text-secondary)] leading-tight">
+                  {proximaEtapa.label}
+                </span>
               </div>
             </div>
           </>
@@ -89,7 +98,7 @@ const Stepper = ({
         <div className="flex gap-2">
           {onEtapaAnterior && (
             <button
-              className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--surface-elevated)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-all border border-[var(--border)] shadow-sm"
+              className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--surface-elevated)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] border border-[var(--border)] shadow-sm"
               onClick={onEtapaAnterior}
               title="Voltar"
             >
@@ -99,7 +108,7 @@ const Stepper = ({
 
           {onVisaoEvento && (
             <button
-              className="flex h-11 items-center gap-2 px-4 rounded-xl bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] transition-all border border-[var(--border)] text-sm font-medium shadow-sm"
+              className="flex h-11 items-center gap-2 px-4 rounded-xl bg-[var(--surface-elevated)] text-[var(--text-secondary)] hover:bg-[var(--surface-hover)] border border-[var(--border)] text-sm font-medium shadow-sm"
               onClick={onVisaoEvento}
             >
               <LayoutDashboard size={18} />

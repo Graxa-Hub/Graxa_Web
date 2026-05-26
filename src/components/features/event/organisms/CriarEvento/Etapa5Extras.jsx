@@ -27,7 +27,7 @@ const Etapa5Extras = ({ extras, setExtras, onSave, showId }) => {
 
           <button
             onClick={handleSave}
-            className="px-5 py-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors font-medium"
+            className="px-5 py-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] font-medium"
           >
             Salvar Extras
           </button>

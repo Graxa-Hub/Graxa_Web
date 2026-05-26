@@ -1,22 +1,66 @@
 import { useState, useRef, useEffect } from "react";
 
 const ClearIcon = ({ className = "" }) => (
-  <svg className={className} width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path d="M2 2L12 12M12 2L2 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  <svg
+    className={className}
+    width="14"
+    height="14"
+    viewBox="0 0 14 14"
+    fill="none"
+  >
+    <path
+      d="M2 2L12 12M12 2L2 12"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
 const LoadingIcon = ({ className = "" }) => (
-  <svg className={`animate-spin ${className}`} width="16" height="16" viewBox="0 0 16 16" fill="none">
-    <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5" strokeOpacity="0.2" />
-    <path d="M8 2a6 6 0 0 1 6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+  <svg
+    className={`animate-spin ${className}`}
+    width="16"
+    height="16"
+    viewBox="0 0 16 16"
+    fill="none"
+  >
+    <circle
+      cx="8"
+      cy="8"
+      r="6"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeOpacity="0.2"
+    />
+    <path
+      d="M8 2a6 6 0 0 1 6 6"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
 const sizeConfig = {
-  sm: { wrapper: "h-8",  input: "text-xs pl-8 pr-8",   icon: "left-2.5", action: "right-2"   },
-  md: { wrapper: "h-9",  input: "text-sm pl-9 pr-9",   icon: "left-2.5", action: "right-2"   },
-  lg: { wrapper: "h-11", input: "text-sm pl-10 pr-10", icon: "left-3",   action: "right-2.5" },
+  sm: {
+    wrapper: "h-10",
+    input: "text-xs pl-10 pr-10",
+    icon: "left-3",
+    action: "right-3",
+  },
+  md: {
+    wrapper: "h-11",
+    input: "text-sm pl-11 pr-11",
+    icon: "left-3.5",
+    action: "right-3",
+  },
+  lg: {
+    wrapper: "h-12",
+    input: "text-sm pl-12 pr-12",
+    icon: "left-4",
+    action: "right-3.5",
+  },
 };
 
 /**
@@ -100,41 +144,44 @@ export const SearchBar = ({
   const s = sizeConfig[size] ?? sizeConfig.md;
 
   return (
-    <div className={`relative w-full ${s.wrapper} ${className}`}>
-
-      <input
-        ref={inputRef}
-        type="search"
-        value={displayValue}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholder}
-        disabled={disabled}
-        autoComplete="off"
-        className={`
+    <div className="flex justify-center w-full">
+      <div className={`relative w-1/3 ${s.wrapper} ${className}`}>
+        <input
+          ref={inputRef}
+          type="search"
+          value={displayValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          disabled={disabled}
+          autoComplete="off"
+          className={`
           form-input search-bar__input
           h-full outline-none
           disabled:opacity-50 disabled:cursor-not-allowed
           [&::-webkit-search-cancel-button]:hidden
           ${s.input}
         `}
-      />
+        />
 
-      <span className={`absolute ${s.action} top-1/2 -translate-y-1/2 flex items-center`}>
-        {loading ? (
-          <LoadingIcon className="search-bar__icon" />
-        ) : displayValue ? (
-          <button
-            type="button"
-            onClick={handleClear}
-            aria-label="Limpar busca"
-            className="search-bar__clear flex items-center justify-center w-6 h-6 rounded transition-all duration-100 active:scale-95"
-          >
-            <ClearIcon />
-          </button>
-        ) : null}
-      </span>
-
+        <span
+          className={`absolute ${s.action} top-1/2 -translate-y-1/2 flex items-center`}
+        >
+          {loading ? (
+            <LoadingIcon className="search-bar__icon" />
+          ) : displayValue ? (
+            <button
+              type="button"
+              onClick={handleClear}
+              aria-label="Limpar busca"
+              className="search-bar__clear flex items-center justify-center w-6 h-6 rounded active:scale-95"
+            >
+              \
+              <ClearIcon />
+            </button>
+          ) : null}
+        </span>
+      </div>
     </div>
   );
 };

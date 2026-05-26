@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Layout } from "../templates/Layout";
 import Stepper from "../features/event/organisms/CriarEvento/Stepper";
 import Etapa1Funcoes from "../features/event/organisms/CriarEvento/Etapa1Funcoes";
@@ -23,28 +23,9 @@ import {
   agruparTransportes,
 } from "../../utils/logistica/logisticaUtils";
 import { useExtrasEvento } from "../../hooks/useExtrasEvento";
-import useAlocacao from "../../hooks/useAlocacao";
 
 export const CriarEvento = () => {
-  const [etapaAtual, setEtapaAtualState] = useState(1);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const { tipoEvento, eventoId } = useParams();
-  const navigate = useNavigate();
-
-  // Lê o step da URL ao montar o componente
-  useEffect(() => {
-    const stepDaUrl = searchParams.get("step");
-    if (stepDaUrl) {
-      const step = Math.max(1, Math.min(5, Number(stepDaUrl)));
-      setEtapaAtualState(step);
-    }
-  }, []);
-
-  // Função wrapper para atualizar etapa E URL simultaneamente
-  const setEtapaAtual = (novaEtapa) => {
-    setEtapaAtualState(novaEtapa);
-    setSearchParams({ step: novaEtapa });
-  };
+  const [etapaAtual, setEtapaAtual] = useState(1);
   const [localShow, setLocalShow] = useState({});
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [assignments, setAssignments] = useState({});
@@ -53,11 +34,11 @@ export const CriarEvento = () => {
   const [transports, setTransports] = useState([]);
   const [agenda, setAgenda] = useState([]);
   const [extras, setExtras] = useState({});
+  const { tipoEvento, eventoId } = useParams();
   const { buscarShow, atualizarShow } = useShows();
   const { buscarViagem, atualizarViagem } = useViagens();
   const [evento, setEvento] = useState(null);
-  const showId = tipoEvento === "show" && eventoId ? Number(eventoId) : null;
-  const viagemId = tipoEvento === "viagem" && eventoId ? Number(eventoId) : null;
+  const showId = eventoId ? Number(eventoId) : null;
   const [hoteisRaw, setHoteisRaw] = useState([]);
   const [voosRaw, setVoosRaw] = useState([]);
   const [transportesRaw, setTransportesRaw] = useState([]);
@@ -70,7 +51,7 @@ export const CriarEvento = () => {
   } = useExtrasEvento();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalLoading, setModalLoading] = useState(false);
-  const { listarPorShow } = useAlocacao();
+  const navigate = useNavigate();
 
   // Helper para normalizar/formatar datas para envio (ISO)
   const padDateForApi = (val) => {
@@ -83,62 +64,6 @@ export const CriarEvento = () => {
     if (!showId) return;
     listarExtras(showId);
   }, [showId, listarExtras]);
-
-  // Carrega alocações existentes no mount para popular a sidebar em todas as etapas
-  useEffect(() => {
-    async function carregarAlocacoesParaSidebar() {
-      if (!showId) return;
-      try {
-        const alocacoes = await listarPorShow(Number(showId));
-        const alocacoesPorTipo = {};
-        const rolesComAlocacao = new Set();
-
-        // Agrupar por colaborador e pegar apenas a mais recente
-        const alocsMapPorColaborador = {};
-        alocacoes.forEach((alocacao) => {
-          const colabId = alocacao.colaborador?.id;
-          if (!colabId) return;
-          if (!alocsMapPorColaborador[colabId]) {
-            alocsMapPorColaborador[colabId] = alocacao;
-          } else {
-            const dataAtual = new Date(alocacao.dataHoraCriacao);
-            const dataSalva = new Date(alocsMapPorColaborador[colabId].dataHoraCriacao);
-            if (dataAtual > dataSalva) {
-              alocsMapPorColaborador[colabId] = alocacao;
-            }
-          }
-        });
-
-        // Processar apenas as alocações mais recentes
-        Object.values(alocsMapPorColaborador).forEach((alocacao) => {
-          const statusUpper = alocacao.status?.toUpperCase();
-          if (statusUpper === "CANCELADO" || statusUpper === "RECUSADO") return;
-
-          const colaborador = alocacao.colaborador;
-          if (colaborador) {
-            const tipoUsuario = colaborador.tipoUsuario;
-            if (!alocacoesPorTipo[tipoUsuario]) {
-              alocacoesPorTipo[tipoUsuario] = [];
-            }
-            if (statusUpper === "PENDENTE" || statusUpper === "ACEITO") {
-              alocacoesPorTipo[tipoUsuario].push(colaborador.id);
-              rolesComAlocacao.add(tipoUsuario);
-            }
-          }
-        });
-
-        setAssignments(alocacoesPorTipo);
-        setSelectedRoles((prev) => {
-          const merged = new Set([...prev, ...rolesComAlocacao]);
-          return Array.from(merged);
-        });
-      } catch (err) {
-        console.error("[CriarEvento] Erro ao carregar alocações para sidebar:", err);
-      }
-    }
-
-    carregarAlocacoesParaSidebar();
-  }, [showId, listarPorShow]);
 
   // sempre sincroniza o extras local com o retorno do hook
   const { toasts, showSuccess, showError, showWarning, showInfo } = useToast();
@@ -375,9 +300,9 @@ export const CriarEvento = () => {
             (hr) =>
               hr.colaboradorId === colabId &&
               String(hr.nomeHotel || "").trim() ===
-              String(hotel.nome || "").trim() &&
+                String(hotel.nome || "").trim() &&
               String(hr.endereco || "").trim() ===
-              String(hotel.endereco || "").trim(),
+                String(hotel.endereco || "").trim(),
           );
 
           // Usa coordsHotel se disponível, senão latitude/longitude do hotel
@@ -425,7 +350,7 @@ export const CriarEvento = () => {
               tr.colaboradorId === colabId &&
               String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
               (tr.saida ? tr.saida.substring(0, 16) : "") ===
-              (t.saida ? t.saida.substring(0, 16) : ""),
+                (t.saida ? t.saida.substring(0, 16) : ""),
           );
 
           const dto = {
@@ -559,9 +484,9 @@ export const CriarEvento = () => {
             (hr) =>
               hr.colaboradorId === colabId &&
               String(hr.nomeHotel || "").trim() ===
-              String(hotel.nome || "").trim() &&
+                String(hotel.nome || "").trim() &&
               String(hr.endereco || "").trim() ===
-              String(hotel.endereco || "").trim(),
+                String(hotel.endereco || "").trim(),
           );
 
           const latitude = hotel.coordsHotel?.lat ?? hotel.latitude ?? null;
@@ -605,11 +530,11 @@ export const CriarEvento = () => {
             (vr) =>
               vr.colaboradorId === colabId &&
               String(vr.ciaAerea || "").trim() ===
-              String(flight.cia || "").trim() &&
+                String(flight.cia || "").trim() &&
               String(vr.codigoVoo || "").trim() ===
-              String(flight.numero || "").trim() &&
+                String(flight.numero || "").trim() &&
               (vr.partida ? vr.partida.substring(0, 16) : "") ===
-              (flight.saida ? flight.saida.substring(0, 16) : ""),
+                (flight.saida ? flight.saida.substring(0, 16) : ""),
           );
 
           const dto = {
@@ -649,7 +574,7 @@ export const CriarEvento = () => {
               tr.colaboradorId === colabId &&
               String(tr.tipo || "").trim() === String(t.tipo || "").trim() &&
               (tr.saida ? tr.saida.substring(0, 16) : "") ===
-              (t.saida ? t.saida.substring(0, 16) : ""),
+                (t.saida ? t.saida.substring(0, 16) : ""),
           );
 
           const dto = {
@@ -954,8 +879,7 @@ export const CriarEvento = () => {
   const [showSidebarDireita, setShowSidebarDireita] = useState(true);
 
   const handleAbrirVisaoEvento = () => {
-    const eventoId = tipoEvento === "show" ? showId : viagemId;
-    if (!eventoId) {
+    if (!showId) {
       showWarning("Salve/abra o evento antes de ir para a Visão do Evento.");
       return;
     }
@@ -965,8 +889,7 @@ export const CriarEvento = () => {
   const handleConfirmarVisaoEvento = () => {
     setModalLoading(true);
     setIsModalOpen(false);
-    const eventoId = tipoEvento === "show" ? showId : viagemId;
-    navigate(`/visao-evento/${tipoEvento}/${eventoId}`);
+    navigate(`/visao-evento/show/${showId}`);
   };
 
   const handleCancelarVisaoEvento = () => {
@@ -976,14 +899,9 @@ export const CriarEvento = () => {
 
   return (
     <LocalSelecionadoProvider>
-      <Layout
-        showHeader={false}
-        showNotifications={false}
-        showBandaSelector={false}
-        showTurneSelector={false}
-      >
+      <Layout showHeader={false} showNotifications={false}>
         <div className="flex flex-1 min-h-0 relative overflow-x-hidden">
-          <div className="flex-1 px-8 py-6 overflow-y-auto">
+          <div className="flex-1 px-8 py-6">
             <Stepper
               etapaAtual={etapaAtual}
               setEtapaAtual={setEtapaAtual}
@@ -994,7 +912,7 @@ export const CriarEvento = () => {
               onProximaEtapa={
                 etapaAtual < (tipoEvento === "viagem" ? 3 : 5)
                   ? () => setEtapaAtual(etapaAtual + 1)
-                  : salvarEventoCompleto
+                  : undefined
               }
               onVisaoEvento={handleAbrirVisaoEvento}
             />
@@ -1002,19 +920,20 @@ export const CriarEvento = () => {
             <div className="mt-8">{renderEtapa()}</div>
           </div>
 
-          {/* SIDEBAR OVERLAY (RESUMO RÁPIDO) */}
           <div
-            className={`fixed top-5 right-0 max-h-screen z-40 transition-transform duration-300 ease-in-out flex items-start ${showSidebarDireita ? "translate-x-0" : "translate-x-full"
-              }`}
+            className={`fixed top-0 right-0 h-screen z-40 transition-transform duration-300 ease-in-out flex items-start pt-4 ${
+              showSidebarDireita
+                ? "translate-x-0"
+                : "translate-x-[calc(100%-2rem)]"
+            }`}
           >
-            {/* BOTÃO TOGGLE (HANDLE) - FIXO NA BORDA DA GAVETA */}
             <button
               onClick={() => setShowSidebarDireita(!showSidebarDireita)}
-              className="absolute -left-7 top-1/2 -translate-y-1/2 bg-[var(--surface-elevated)] border border-[var(--border)] shadow-[var(--shadow-card)] rounded-full w-8 h-8 flex items-center justify-center hover:bg-[var(--surface)] hover:scale-110 active:scale-95 transition-all duration-300 group z-50"
+              className="flex-shrink-0 mt-[50vh] -translate-y-1/2 bg-[var(--surface-elevated)] border border-[var(--border)] shadow-[var(--shadow-card)] rounded-l-full w-8 h-8 flex items-center justify-center hover:bg-[var(--surface)] hover:scale-110 active:scale-95 z-50"
               title={showSidebarDireita ? "Esconder Resumo" : "Mostrar Resumo"}
             >
               <div
-                className={`transition-transform duration-300 ${showSidebarDireita ? "rotate-0" : "rotate-180"}`}
+                className={`transition-transform ${showSidebarDireita ? "rotate-0" : "rotate-180"}`}
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1032,8 +951,7 @@ export const CriarEvento = () => {
               </div>
             </button>
 
-            {/* CONTEÚDO DA GAVETA */}
-            <div className="w-80 max-h-[calc(100vh-2rem)] bg-[var(--surface-elevated)] border-l border-[var(--border)] shadow-[var(--shadow-card)] rounded-[var(--radius-sm)] overflow-y-auto">
+            <div className="w-80 h-full max-h-screen bg-[var(--surface-elevated)] border-l border-[var(--border)] shadow-[var(--shadow-card)] overflow-y-auto">
               <SidebarDireita
                 etapaAtual={etapaAtual}
                 localShow={localShow}

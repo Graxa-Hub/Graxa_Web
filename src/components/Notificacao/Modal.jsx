@@ -11,7 +11,7 @@ export const Modal = ({
   error = null,
   onMarkAsRead,
   onMarkAllAsRead,
-  onRefreshNotifications
+  onRefreshNotifications,
 }) => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [isAlocacaoModalOpen, setIsAlocacaoModalOpen] = useState(false);
@@ -25,7 +25,10 @@ export const Modal = ({
 
   const handleAlocacaoResponse = (aceito, alocacaoAtualizada) => {
     if (selectedNotification && alocacaoAtualizada) {
-      setSelectedNotification({ ...selectedNotification, alocacao: alocacaoAtualizada });
+      setSelectedNotification({
+        ...selectedNotification,
+        alocacao: alocacaoAtualizada,
+      });
     }
     if (onRefreshNotifications) {
       setTimeout(() => onRefreshNotifications(), 1000);
@@ -48,7 +51,9 @@ export const Modal = ({
       <div className="fixed top-16 right-4 z-40 w-80 sm:w-96 max-h-[80vh] bg-[var(--surface-elevated)] rounded-[var(--radius-md)] shadow-[var(--shadow-card)] border border-[var(--border)] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-3">
-            <h2 className="text-base font-semibold text-[var(--text-primary)]">Notificações</h2>
+            <h2 className="text-base font-semibold text-[var(--text-primary)]">
+              Notificações
+            </h2>
             {notificacaoLista.length > 0 && (
               <span className="bg-[var(--surface-hover)] border border-[var(--border)] text-[11px] px-2 py-0.5 rounded-full text-[var(--text-secondary)]">
                 {notificacaoLista.length}
@@ -80,7 +85,9 @@ export const Modal = ({
             <div className="flex items-center justify-center p-8">
               <div className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[var(--accent)]"></div>
-                <p className="text-[var(--text-muted)]">Carregando notificações...</p>
+                <p className="text-[var(--text-muted)]">
+                  Carregando notificações...
+                </p>
               </div>
             </div>
           ) : error ? (

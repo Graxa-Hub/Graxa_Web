@@ -52,7 +52,7 @@ export const Header = ({
           <Menu size={24} />
         </button>
       )}
-      
+
       <div className="relative flex justify-between items-center h-16 w-full max-w-full sm:max-w-[320px] px-4 surface-card border-[var(--border-hover)] hover:border-[var(--border-strong)] transition-all duration-150">
         {showBandaSelector && (
           <>

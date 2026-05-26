@@ -388,7 +388,7 @@ const Etapa1Funcoes = ({
           <button
             onClick={handleAlocarUsuarios}
             disabled={loadingAlocacao || selectedRoles.length === 0 || !showId}
-            className={`flex items-center justify-center gap-2 px-6 py-3 rounded-[var(--radius-md)] font-semibold transition-all ${
+            className={`flex items-center justify-center gap-2 px-6 py-3 rounded-[var(--radius-md)] font-semibold ${
               selectedRoles.length === 0 || !showId
                 ? "bg-[var(--surface-hover)] text-[var(--text-muted)] cursor-not-allowed"
                 : "bg-red-400 text-[var(--text-primary)] hover:bg-[var(--surface-hover)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-card)]"
@@ -454,7 +454,7 @@ const Etapa1Funcoes = ({
           <button
             type="button"
             onClick={() => setMostrarSomenteComSelecionados((prev) => !prev)}
-            className={`px-4 py-2 rounded-[var(--radius-md)] border transition-colors whitespace-nowrap ${
+            className={`px-4 py-2 rounded-[var(--radius-md)] border whitespace-nowrap ${
               mostrarSomenteComSelecionados
                 ? "border-[var(--success)] text-[var(--success)] bg-[var(--surface)]"
                 : "border-[var(--border)] text-[var(--text-secondary)] bg-[var(--surface-elevated)]"
@@ -478,7 +478,7 @@ const Etapa1Funcoes = ({
                   key={role.id}
                   type="button"
                   onClick={() => toggleRole(role.id)}
-                  className={`px-3 py-2 rounded-[var(--radius-md)] border text-sm transition-colors ${
+                  className={`px-3 py-2 rounded-[var(--radius-md)] border text-sm ${
                     isSelecionada
                       ? "bg-[var(--surface-elevated)] border-[var(--success)] text-[var(--text-primary)]"
                       : "bg-[var(--surface-hover)] border-[var(--border)] text-[var(--text-secondary)] hover:bg-[var(--surface)]"

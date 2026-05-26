@@ -7,7 +7,10 @@ import { agendaEventoService } from "../../services/agendaEventoService";
 import { logisticaService } from "../../services/logisticaService";
 import { extrasService } from "../../services/extrasService";
 import { formatarData, formatarHora } from "../../utils/dateFormatters";
-import { getWeatherForecast, getWeatherDescription } from "../../services/weatherService";
+import {
+  getWeatherForecast,
+  getWeatherDescription,
+} from "../../services/weatherService";
 import { TIPOS_USUARIO } from "../../constants/tipoUsuario";
 
 // Helper: nome legível do tipoUsuario
@@ -61,7 +64,10 @@ export function RelatorioPage() {
         ]);
 
         if (showResult.status === "rejected") {
-          console.error("[RelatorioPage] Erro ao buscar show:", showResult.reason);
+          console.error(
+            "[RelatorioPage] Erro ao buscar show:",
+            showResult.reason,
+          );
           setDados((prev) => ({ ...prev, show: null }));
           return;
         }
@@ -69,7 +75,8 @@ export function RelatorioPage() {
         const showData = showResult.value;
 
         // Filtrar alocações: apenas mais recente por colaborador, ACEITO ou PENDENTE
-        const alocacoes = alocacoesResult.status === "fulfilled" ? alocacoesResult.value : [];
+        const alocacoes =
+          alocacoesResult.status === "fulfilled" ? alocacoesResult.value : [];
         const porColab = {};
         (alocacoes || []).forEach((a) => {
           const cId = a.colaborador?.id;
@@ -89,8 +96,10 @@ export function RelatorioPage() {
 
         // Buscar clima se local com coordenadas
         let climaData = null;
-        const lat = showData?.local?.endereco?.latitude || showData?.local?.latitude;
-        const lon = showData?.local?.endereco?.longitude || showData?.local?.longitude;
+        const lat =
+          showData?.local?.endereco?.latitude || showData?.local?.latitude;
+        const lon =
+          showData?.local?.endereco?.longitude || showData?.local?.longitude;
         if (lat && lon) {
           try {
             climaData = await getWeatherForecast(lat, lon, { forecastDays: 7 });
@@ -100,7 +109,8 @@ export function RelatorioPage() {
         }
 
         // Extras: pode ser array ou objeto
-        let extrasData = extrasResult.status === "fulfilled" ? extrasResult.value : null;
+        let extrasData =
+          extrasResult.status === "fulfilled" ? extrasResult.value : null;
         if (Array.isArray(extrasData) && extrasData.length > 0) {
           extrasData = extrasData[0];
         }
@@ -108,10 +118,15 @@ export function RelatorioPage() {
         setDados({
           show: showData,
           colaboradores: colabsFiltrados,
-          agenda: agendaResult.status === "fulfilled" ? agendaResult.value || [] : [],
-          hoteis: hoteisResult.status === "fulfilled" ? hoteisResult.value || [] : [],
+          agenda:
+            agendaResult.status === "fulfilled" ? agendaResult.value || [] : [],
+          hoteis:
+            hoteisResult.status === "fulfilled" ? hoteisResult.value || [] : [],
           voos: voosResult.status === "fulfilled" ? voosResult.value || [] : [],
-          transportes: transportesResult.status === "fulfilled" ? transportesResult.value || [] : [],
+          transportes:
+            transportesResult.status === "fulfilled"
+              ? transportesResult.value || []
+              : [],
           extras: extrasData,
           clima: climaData,
         });
@@ -152,7 +167,16 @@ export function RelatorioPage() {
     );
   }
 
-  const { show, colaboradores, agenda, hoteis, voos, transportes, extras, clima } = dados;
+  const {
+    show,
+    colaboradores,
+    agenda,
+    hoteis,
+    voos,
+    transportes,
+    extras,
+    clima,
+  } = dados;
 
   if (!show) {
     return (
@@ -181,14 +205,14 @@ export function RelatorioPage() {
 
   const enderecoLocal = show.local?.endereco
     ? [
-      show.local.endereco.logradouro,
-      show.local.endereco.numero,
-      show.local.endereco.bairro,
-      show.local.endereco.cidade,
-      show.local.endereco.uf,
-    ]
-      .filter(Boolean)
-      .join(", ")
+        show.local.endereco.logradouro,
+        show.local.endereco.numero,
+        show.local.endereco.bairro,
+        show.local.endereco.cidade,
+        show.local.endereco.uf,
+      ]
+        .filter(Boolean)
+        .join(", ")
     : "Endereço não definido";
 
   const nomeBanda = show.bandas?.[0]?.nome || show.nomeEvento || "Evento";
@@ -232,13 +256,13 @@ export function RelatorioPage() {
       <div className="fixed top-4 right-4 print:hidden z-50 flex gap-2">
         <button
           onClick={() => navigate(-1)}
-          className="bg-gray-600 hover:bg-[var(--surface-elevated)] text-white font-bold py-2 px-4 rounded shadow-[var(--shadow-soft)]"
+          className="bg-[var(--surface-elevated)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] hover:text-[var(--text-primary)] font-bold py-2 px-4 rounded shadow-[var(--shadow-soft)] transition-colors"
         >
           Voltar
         </button>
         <button
           onClick={handleGeneratePDF}
-          className="btn-primary py-2 px-4 shadow-[var(--shadow-soft)]"
+          className="bg-[var(--surface-elevated)] hover:bg-[var(--surface-hover)] text-[var(--text-primary)] hover:text-[var(--text-primary)] font-bold py-2 px-4 rounded shadow-[var(--shadow-soft)] transition-colors"
         >
           Gerar PDF
         </button>
@@ -249,9 +273,12 @@ export function RelatorioPage() {
         {/* ===== CABEÇALHO ===== */}
         <div className="mb-20">
           <h1 className="text-4xl font-bold text-center mb-4">{nomeBanda}</h1>
-          <p className="text-center text-black mb-2 text-lg">CRONOGRAMA DE HORÁRIO</p>
+          <p className="text-center text-black mb-2 text-lg">
+            CRONOGRAMA DE HORÁRIO
+          </p>
           <p className="text-center text-[var(--text-primary)] font-bold mb-2 text-base">
-            {dataEvento} - {diaSemana.toUpperCase()} - {show.nomeEvento || "Evento"}
+            {dataEvento} - {diaSemana.toUpperCase()} -{" "}
+            {show.nomeEvento || "Evento"}
           </p>
           <p className="text-center text-[var(--text-secondary)] font-bold text-base">
             {nomeLocal} - {enderecoLocal}
@@ -260,7 +287,9 @@ export function RelatorioPage() {
 
         {/* ===== EQUIPE ===== */}
         <div className="px-8 print:break-inside-avoid">
-          <h1 className="text-center text-xl font-bold text-red-400 mb-10">EQUIPE</h1>
+          <h1 className="text-center text-xl font-bold text-red-400 mb-10">
+            EQUIPE
+          </h1>
 
           {colaboradores.length > 0 ? (
             colaboradores.map((alocacao) => (
@@ -268,19 +297,28 @@ export function RelatorioPage() {
                 <p className="font-bold">
                   {labelTipoUsuario(alocacao.colaborador?.tipoUsuario)}:
                 </p>
-                <span>{alocacao.colaborador?.nome || "Nome não disponível"}</span>
+                <span>
+                  {alocacao.colaborador?.nome || "Nome não disponível"}
+                </span>
                 {alocacao.colaborador?.telefone && (
                   <span> - {alocacao.colaborador.telefone}</span>
                 )}
               </div>
             ))
           ) : (
-            <p className="text-center text-[var(--text-muted)]">Nenhum colaborador alocado</p>
+            <p className="text-center text-[var(--text-muted)]">
+              Nenhum colaborador alocado
+            </p>
           )}
 
           {integrantesBanda.length > 0 && (
             <>
-              <p className="mt-5 font-bold text-lg">Banda: <span className="font-normal">{integrantesBanda.join(", ")}</span></p>
+              <p className="mt-5 font-bold text-lg">
+                Banda:{" "}
+                <span className="font-normal">
+                  {integrantesBanda.join(", ")}
+                </span>
+              </p>
             </>
           )}
         </div>
@@ -346,17 +384,20 @@ export function RelatorioPage() {
                     {item.descricao && (
                       <p className="text-blue-400 ml-16">*{item.descricao}</p>
                     )}
-                    {item.tipo === "DESLOCAMENTO" && (item.origem || item.destino) && (
-                      <p className="text-[var(--text-muted)] ml-16 text-sm">
-                        {item.origem || "—"} → {item.destino || "—"}
-                      </p>
-                    )}
+                    {item.tipo === "DESLOCAMENTO" &&
+                      (item.origem || item.destino) && (
+                        <p className="text-[var(--text-muted)] ml-16 text-sm">
+                          {item.origem || "—"} → {item.destino || "—"}
+                        </p>
+                      )}
                   </li>
                 );
               })}
             </ul>
           ) : (
-            <p className="text-center text-[var(--text-muted)]">Nenhum evento agendado</p>
+            <p className="text-center text-[var(--text-muted)]">
+              Nenhum evento agendado
+            </p>
           )}
         </div>
 
@@ -372,7 +413,9 @@ export function RelatorioPage() {
                   HOSPEDAGEM {hoteis.length > 1 ? index + 1 : ""}
                 </h1>
                 <h2 className="underline text-lg">
-                  {hotel.nomeHotel || hotel.hotel?.nome || "Hotel não especificado"}
+                  {hotel.nomeHotel ||
+                    hotel.hotel?.nome ||
+                    "Hotel não especificado"}
                 </h2>
                 {(hotel.endereco || hotel.hotel?.endereco) && (
                   <h3 className="text-lg">
@@ -427,36 +470,38 @@ export function RelatorioPage() {
         {/* ===== TRANSPORTES ===== */}
         {transportes.length > 0 && (
           <div className="px-8 mt-20 print:break-inside-avoid">
-            <h1 className="text-center text-xl font-bold text-red-400 mb-10">TRANSPORTES</h1>
-            {transportes.map((t) => (
-              <div key={t.id} className="mb-4 border-b border-[var(--border)] pb-3">
-                <p className="text-lg">
-                  <span className="font-bold">{t.tipo ? t.tipo.charAt(0).toUpperCase() + t.tipo.slice(1) : "Transporte"}: </span>
-                  {t.destino || "Destino não definido"}
-                </p>
-                {t.saida && (
+            <h1 className="text-center text-xl font-bold text-red-400 mb-10">
+              TRANSPORTES
+            </h1>
+            {transportes.map((t) => {
+              // Backend retorna chegada em "destino" (campo legado)
+              const chegada = t.chegada || t.destino;
+              return (
+                <div
+                  key={t.id}
+                  className="mb-4 border-b border-[var(--border)] pb-3"
+                >
                   <p className="text-lg">
                     <span className="font-bold">Saída: </span>
-                    {formatarData(new Date(t.saida))} {formatarHora(new Date(t.saida))}
+                    {t.saida &&
+                      `${formatarData(new Date(t.saida))} ${formatarHora(new Date(t.saida))}`}
                   </p>
-                )}
-                {t.motorista && (
                   <p className="text-lg">
-                    <span className="font-bold">Motorista: </span>
+                    <span className="font-bold">Chegada: </span>
+                    {chegada &&
+                      `${formatarData(new Date(chegada))} ${formatarHora(new Date(chegada))}`}
+                  </p>
+                  <p className="text-lg">
+                    <span className="font-bold">Veículo: </span>
+                    {t.tipo && t.tipo.charAt(0).toUpperCase() + t.tipo.slice(1)}
+                  </p>
+                  <p className="text-lg">
+                    <span className="font-bold">Responsável: </span>
                     {t.motorista}
                   </p>
-                )}
-                {t.colaborador?.nome && (
-                  <p className="text-lg">
-                    <span className="font-bold">Passageiro: </span>
-                    {t.colaborador.nome}
-                  </p>
-                )}
-                {t.observacao && (
-                  <p className="text-blue-400">*{t.observacao}</p>
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -477,7 +522,8 @@ export function RelatorioPage() {
                       {item.diaSemana}. {item.dia}
                     </p>
                     <p className="w-24 text-xl whitespace-nowrap">
-                      <span className="font-bold">{item.tempMax}°</span> / {item.tempMin}°
+                      <span className="font-bold">{item.tempMax}°</span> /{" "}
+                      {item.tempMin}°
                     </p>
                     <p>
                       {item.precipitacao > 1 ? (
@@ -490,7 +536,9 @@ export function RelatorioPage() {
                         <Sun className="text-yellow-400" />
                       )}
                     </p>
-                    <p className="w-32 text-lg text-right">{item.descricao || "—"}</p>
+                    <p className="w-32 text-lg text-right">
+                      {item.descricao || "—"}
+                    </p>
                   </li>
                 ))}
               </ul>
@@ -500,11 +548,15 @@ export function RelatorioPage() {
 
         {/* ===== OBSERVAÇÕES ===== */}
         <div className="px-8 mt-20 print:break-inside-avoid">
-          <h1 className="text-center text-xl font-bold text-red-400 mb-8">OBSERVAÇÕES</h1>
+          <h1 className="text-center text-xl font-bold text-red-400 mb-8">
+            OBSERVAÇÕES
+          </h1>
           {extras?.obs ? (
             <p className="text-lg whitespace-pre-wrap">{extras.obs}</p>
           ) : (
-            <p className="text-center text-[var(--text-muted)] italic">Nenhuma observação registrada</p>
+            <p className="text-center text-[var(--text-muted)] italic">
+              Nenhuma observação registrada
+            </p>
           )}
           {extras?.contatos && (
             <>

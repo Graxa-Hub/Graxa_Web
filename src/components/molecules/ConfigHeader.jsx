@@ -7,8 +7,12 @@ export const ConfigHeader = () => {
         <Settings size={18} className="text-[var(--text-secondary)]" />
       </div>
       <div>
-        <h1 className="text-xl font-semibold text-[var(--text-primary)]">Configurações do Usuário</h1>
-        <p className="text-sm text-[var(--text-muted)]">Atualize seus dados e preferências visuais.</p>
+        <h1 className="text-xl font-semibold text-[var(--text-primary)]">
+          Configurações do Usuário
+        </h1>
+        <p className="text-sm text-[var(--text-muted)]">
+          Atualize seus dados e preferências visuais.
+        </p>
       </div>
     </div>
   );

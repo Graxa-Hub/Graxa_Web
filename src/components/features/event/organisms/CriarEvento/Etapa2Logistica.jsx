@@ -844,13 +844,13 @@ const Etapa2Logistica = ({
 
         <div className="flex flex-wrap gap-2 mb-2">
           <button
-            className="px-5 py-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors font-medium"
+            className="px-5 py-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] font-medium"
             onClick={addHotel}
           >
             Adicionar Hotel
           </button>
           <button
-            className="px-5 py-2 rounded-[var(--radius-md)] border border-green-500 bg-[var(--surface)] text-green-300 hover:bg-slate-700 hover:text-green-200 transition-colors font-medium"
+            className="px-5 py-2 rounded-[var(--radius-md)] btn-success font-medium"
             onClick={async () => {
               try {
                 let created = 0;
@@ -968,13 +968,13 @@ const Etapa2Logistica = ({
         </p>
         <div className="flex flex-wrap gap-2 mb-2">
           <button
-            className="px-5 py-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors font-medium"
+            className="px-5 py-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] font-medium"
             onClick={addFlight}
           >
             Adicionar Voo
           </button>
           <button
-            className="px-5 py-2 rounded-[var(--radius-md)] border border-green-500 bg-[var(--surface)] text-green-300 hover:bg-slate-700 hover:text-green-200 transition-colors font-medium"
+            className="px-5 py-2 rounded-[var(--radius-md)] btn-success font-medium"
             onClick={async () => {
               try {
                 let created = 0;
@@ -1103,13 +1103,13 @@ const Etapa2Logistica = ({
         </p>
         <div className="flex flex-wrap gap-2 mb-2">
           <button
-            className="px-5 py-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors font-medium"
+            className="px-5 py-2 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--surface)] text-[var(--text-primary)] hover:bg-[var(--surface-hover)] font-medium"
             onClick={addTransporte}
           >
             Adicionar Transporte
           </button>
           <button
-            className="px-5 py-2 rounded-[var(--radius-md)] border border-green-500 bg-[var(--surface)] text-green-300 hover:bg-slate-700 hover:text-green-200 transition-colors font-medium"
+            className="px-5 py-2 rounded-[var(--radius-md)] btn-success font-medium"
             onClick={async () => {
               try {
                 let created = 0;
