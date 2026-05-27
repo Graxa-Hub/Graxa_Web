@@ -13,6 +13,7 @@ export const CadastroForm = ({
   onChange,
   onSubmit,
 }) => {
+  const handleLgpdChange = (e) => onChange("lgpdConsentimento", e.target.checked);
   return (
     <div className="p-6 md:p-8 bg-[var(--surface-elevated)] space-y-6">
       <AuthHeader
@@ -105,6 +106,31 @@ export const CadastroForm = ({
             placeholder="********"
             error={errors.confirmarSenha}
           />
+        </div>
+
+        {/* Consentimento LGPD — Art. 7º Inciso I e Art. 8º */}
+        <div className="space-y-1">
+          <label className="flex items-start gap-3 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={fields.lgpdConsentimento}
+              onChange={handleLgpdChange}
+              className="mt-1 h-4 w-4 flex-shrink-0 accent-[var(--color-purple-600,#7c3aed)] cursor-pointer"
+            />
+            <span className="text-xs text-[var(--text-secondary)] leading-snug">
+              Li e concordo com a{" "}
+              <strong>Política de Privacidade</strong>. Declaro meu
+              consentimento <strong>livre, informado e inequívoco</strong> com
+              o tratamento dos meus dados pessoais conforme a{" "}
+              <strong>Lei nº 13.709/2018 (LGPD)</strong> — Art. 7º, Inciso I
+              e Art. 8º.
+            </span>
+          </label>
+          {errors.lgpdConsentimento && (
+            <p className="text-[var(--accent)] text-xs">
+              • {errors.lgpdConsentimento}
+            </p>
+          )}
         </div>
 
         {errors.geral && (

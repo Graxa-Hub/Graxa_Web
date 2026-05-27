@@ -17,6 +17,8 @@ const validateFields = (fields) => {
   if (!fields.senha.trim()) errors.senha = "Senha é obrigatória";
   if (!fields.confirmarSenha.trim())
     errors.confirmarSenha = "Confirmação de senha é obrigatória";
+  if (!fields.lgpdConsentimento)
+    errors.lgpdConsentimento = "Você deve aceitar os termos da LGPD para prosseguir";
   return errors;
 };
 
@@ -48,6 +50,7 @@ export const useCadastroForm = () => {
     email: "",
     senha: "",
     confirmarSenha: "",
+    lgpdConsentimento: false,
   });
   const [errors, setErrors] = useState({});
   const { handleRegister, loading, fieldErrors, setFieldErrors } =
@@ -96,6 +99,7 @@ export const useCadastroForm = () => {
         email: fields.email.trim(),
         senha: fields.senha.trim(),
         confirmarSenha: fields.confirmarSenha.trim(),
+        lgpdConsentimento: fields.lgpdConsentimento,
       });
 
       if (response) {
@@ -109,6 +113,7 @@ export const useCadastroForm = () => {
           email: "",
           senha: "",
           confirmarSenha: "",
+          lgpdConsentimento: false,
         });
         navigate("/login");
       }

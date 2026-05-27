@@ -25,6 +25,7 @@ export const useRegister = () => {
           tipoTelefone: numeroSemDDD.startsWith("9") ? "celular" : "fixo",
           numeroTelefone: numeroLimpo,
         },
+        lgpdConsentimento: formData.lgpdConsentimento,
       };
 
       console.log("Dados para envio:", dadoUser);
